@@ -1,0 +1,17 @@
+$ENTRY Go {
+	= <Run 'abcd'>;
+}
+
+Run {
+	s.a e.bcd,
+		<Verifi e.bcd> : true
+		=	<Prout 'bcd = 'e.bcd'    a = ' s.a>;
+
+	e.else = ;
+}
+
+Verifi {
+	e.a 'c' e.bcd = true;
+	e.else = ;
+}
+
