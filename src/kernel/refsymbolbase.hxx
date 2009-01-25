@@ -5,6 +5,7 @@
 
 #include <sstream>
 
+
 class RefValuedData : public RefData {
     public:
         virtual void setValueFromString(unistring) = 0;
@@ -26,6 +27,11 @@ class RefSymbolBase : public RefValuedData {
             virtual T getValue() = 0;
             virtual void setValue(T) = 0;
             virtual bool operator ==(RefData &rd);
+            virtual bool operator >(RefData &rd){
+                RefSymbolBase<T> *t = dynamic_cast<RefSymbolBase*>(&rd);
+                if (!t) RUNTIMEERROR("operator >", "different types for compare");
+                return (getValue() > t->getValue());
+                };
 
             virtual TResult init(Session* s, RefData *&currentPoint); //  --> operator==() => [return GO] else [return BACK]
             virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
@@ -56,6 +62,7 @@ class RefSymbol : public RefSymbolBase<T>{
             virtual void setValueFromString(unistring);
 
             void forceback(Session *){};
+
 };
 
 
@@ -104,7 +111,8 @@ typedef RefVarForSymbol<RefByteBase>     RefVarByte;
 RefData *getNewEmptyRefSymbolByTypeName(unistring);
 RefVariable *getVariableByTypename(unistring vtype, unistring vname);
 
-/*void RefVarForSymbol<unichar>::setValueFromString(unistring s);
+/*
+void RefVarForSymbol<unichar>::setValueFromString(unistring s);
 void RefVarForSymbol<char>::setValueFromString(unistring s);
 void RefVarForSymbol<infint>::setValueFromString(unistring s);
 void RefVarForSymbol<infreal>::setValueFromString(unistring s);

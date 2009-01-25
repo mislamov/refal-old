@@ -351,10 +351,10 @@ Scan{
 	' '  e.all = <Scan e.all>;
 	'\n' e.all = <Scan e.all>;
 	'\t' e.all = <Scan e.all>;
-	'*' e.all = (MUL)	<Scan e.all>;
-	'/' e.all = (DIV)	<Scan e.all>;
-	'+' e.all = (PLUS)	<Scan e.all>;
-	'-' e.all = (MINUS)	<Scan e.all>;
+	'*' e.all = (Mul)	<Scan e.all>;
+	'/' e.all = (Div)	<Scan e.all>;
+	'+' e.all = (Add)	<Scan e.all>;
+	'-' e.all = (Dec)	<Scan e.all>;
 	'\''e.all = <Scan ('\'' ()) e.all>;
 	'"' e.all = <Scan ('"'  ()) e.all>;
 	(s.quo (e.e)) '\\' e.all,
@@ -376,6 +376,11 @@ Scan{
 
 	e.all, <Type e.all> : {
 			'L's.sub e.all, <Implode  e.all > : t.word e.else = (t.word) <Scan e.else>;
+			'D's.sub e.all, 
+				<ImplNumb e.all > : t.word s.separ e.else,
+				<Type s.separ> : s.s e.e,
+				'LD' : e.e1 s.s e.e2  =  <Scan 'drefVName'e.all>;  /* имя переменной с цифры */
+				
 			'D's.sub e.all, <ImplNumb e.all > : t.word e.else = (t.word) <Scan e.else>;
 			'Pl' s.w e.1 = (s.w) <Scan e.1>;
 			s.1 s.2 s.3 e.e = <MakeError Scan 'unknown type "'s.1 s.2 '" of RIGHT-PART elemet of ' e.all>;

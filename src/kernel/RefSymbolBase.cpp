@@ -8,8 +8,8 @@
 #include "kernel.h"
 #include "data.h"
 
+// счетчик для контроля утечек памяти
 long symcount = 0;
-
 long RefValuedData::getCount(){ return symcount; };
 
 

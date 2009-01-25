@@ -38,6 +38,22 @@ public:
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
 };
 
+class system_LENW : public RefBuildInFunction {
+public:
+    system_LENW(RefDllModule *m) : RefBuildInFunction("Lenw", m) {}
+    unistring toString(){ return "LENW"; };
+    unistring getName(){ return "Lenw"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
+class system_COMPARE : public RefBuildInFunction {
+public:
+    system_COMPARE(RefDllModule *m) : RefBuildInFunction("Compare", m) {}
+    unistring toString(){ return "COMPARE"; };
+    unistring getName(){ return "Compare"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
 class system_CARD : public RefBuildInFunction {
 public:
     system_CARD(RefDllModule *m) : RefBuildInFunction("Card", m) {}
@@ -65,6 +81,9 @@ public:
         setObjectByName("Div",  new system_DIV(this));
         setObjectByName("Mul",  new system_MUL(this));
         setObjectByName("Sum",  new system_SUM(this));
+
+        setObjectByName("Lenw",  new system_LENW(this));
+        setObjectByName("Compare",  new system_COMPARE(this));
 
         setObjectByName("Add",  getObjectByName("Sum"));
         setObjectByName("Sub",  getObjectByName("Dec"));

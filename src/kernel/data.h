@@ -72,6 +72,12 @@ class RefData : public RefObject {
         ///todo:  virtual void 	   dropall( Session*);
 
         virtual bool operator ==(RefData &rd) =0;//{ return false; };
+        virtual bool operator >(RefData &rd)  { RUNTIMEERROR("operator >", "Not comparable"); };
+/*
+        virtual bool operator <(RefData &rd)  { return ! (*this>rd || *this==rd); };
+        virtual bool operator <=(RefData &rd) { return ! (*this>rd); };
+        virtual bool operator >=(RefData &rd) { return ! (*this<rd); };
+*/
 //        virtual bool dynamic_same(RefData *); // для динамических точек - признак эквивалентности
         virtual TResult init(Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
         virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
@@ -100,8 +106,7 @@ class RefNULL : public RefData {
         virtual TResult init(Session*, RefData *&);
         virtual TResult back(Session*, RefData *&, RefData *&);
 
-        //virtual unistring toString(){ unistring s ="RefNull"; return s; };
-        virtual unistring toString(){ unistring s ="."; return s; };
+        virtual unistring toString(){ /*unistring s ="."; return s;*/ return ""; };
         void forceback(Session *){};
 };
 
@@ -183,7 +188,6 @@ class RefBracketBase : public RefData {
         virtual RefData*  endOfTerm ();
 
         virtual bool       operator ==(RefData &rd);
-
         virtual RefData* Copy(RefBracketBase *b, RefData *rp=0)=0;
         virtual RefData* Copy(RefData *rp=0)=0;
 

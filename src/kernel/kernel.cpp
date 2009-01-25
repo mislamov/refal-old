@@ -156,6 +156,23 @@ TResult  RefVariable_s::back(Session *s, RefData *&l, RefData *&r) {
 
 
 
+TResult  RefVariable_t::init(Session *s, RefData *&a) {
+    move_to_next_term(a, myid(), s);
+    if (dynamic_cast<RefData_DOT *>(a) ){
+        return BACK;
+    } else {
+        // *a оставляем на открытой скобке в надежде на то, что move_to_next_term будет перекидывать за закрытую скобку
+        return GO;
+    }
+};
+
+TResult  RefVariable_t::back(Session *s, RefData *&l, RefData *&r) {
+    return BACK;
+};
+
+
+
+
 TResult  RefVariable_e::init(Session *s, RefData *&a) {
     return GO;
 };

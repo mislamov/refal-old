@@ -251,18 +251,18 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
         case ERROR :
             //return -1;
             #ifdef DEBUG
-            std::cout << "\nERROR signal when maching!" << std::flush;
+            LOG( "ERROR signal when maching!" );
             #endif
             return false;
         case FAIL   :
             #ifdef DEBUG
-            std::cout << "\nFAIL signal when maching!" << std::flush;
+            //LOG( "FAIL signal when maching!" );
             #endif
             return false;
 
         case SUCCESS :
             #ifdef DEBUG
-            std::cout << "\nSUCCESS signal when maching!" << std::flush;
+            //LOG( "SUCCESS signal when maching!" );
             #endif
             return true;
 
@@ -276,14 +276,14 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                 #ifdef DEBUG
                 if (! s->getCurrentSopostStack()->size()) SYSTEMERROR("Empty getCurrentSopostStack() while FORCEBACKing");
                 #endif
-                std::cout << "\n>> BACKFORSE DROP: " << s->getCurrentSopostStack()->top()->owner->toString();
+                LOG( ">> BACKFORSE DROP: " << s->getCurrentSopostStack()->top()->owner->toString() );
                 s->getCurrentSopostStack()->pop(); /// clean pered pop ?
             }
 
             // сейчас активна закрытая скобка
             while (activeTemplate != br->getOther()){
                 activeTemplate->forceback(s);  // принудительный откат переменной
-                std::cout << "\n>> BACKFORSE forceback: " << activeTemplate->toString();
+                LOG( ">> BACKFORSE forceback: " << activeTemplate->toString() );
                 move_to_pred_point(activeTemplate, 0, s);
             }; // (
 

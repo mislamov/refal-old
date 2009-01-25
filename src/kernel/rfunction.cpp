@@ -19,7 +19,8 @@ RefSentence::RefSentence(RefChain *l, RefChain *r) : RefObject() {
     rightPart = r;
 };
 unistring RefSentence::toString(){
-    return "$RefSentence: Lp="+(leftPart?leftPart->toString():"$notset")+"   Rp="+(rightPart?rightPart->toString():"$noset");
+    //return "$RefSentence: Lp="+(leftPart?leftPart->toString():"$notset")+"   Rp="+(rightPart?rightPart->toString():"$noset");
+    return "\t\t\t"+(leftPart?leftPart->toString():"$notset")+"   ::==   "+(rightPart?rightPart->toString():"$noset");
 };
 
 

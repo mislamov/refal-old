@@ -53,8 +53,8 @@ class RefVariable_t : public RefVariable {
 
         bool operator==(RefData &rd){};
 
-        TResult  init(Session *, RefData *&){ SYSTEMERROR(""); };
-        TResult  back(Session *, RefData *&, RefData *&){ SYSTEMERROR(""); };
+        TResult  init(Session *, RefData *&);//{ SYSTEMERROR(""); };
+        TResult  back(Session *, RefData *&, RefData *&);//{ SYSTEMERROR(""); };
     	virtual RefData*  Copy(RefData *d = 0){ return new RefVariable_t(getName()); };
     	virtual unistring toString(){ return "t."+getName(); };
 };

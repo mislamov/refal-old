@@ -56,7 +56,7 @@ void SAXPrintHandlers::startElement(const   XMLCh* const  name,  AttributeList& 
     RefObject *tmp = 0;
 
     unistring command = toWstring(name);
-    std::cout << _L("SAXPrintHandlers::startElement::[") << command << "] (attr: "<< attributes.getLength() << " )\n";
+    //LOG( _L("SAXPrintHandlers::startElement::[") << command << "] (attr: "<< attributes.getLength() << " )" );
     loader->activeTag.push(command);
 
 #ifdef DEBUG
@@ -130,7 +130,7 @@ void SAXPrintHandlers::characters(const     XMLCh* const    chars
     loader->currentchars = toWstring(chars, length);
     #ifdef DEBUG
     unistring ss = toWstring(chars);
-    std::cout << "SAXPrintHandlers::characters:: " << ss.c_str() << "\n";
+    //LOG( "SAXPrintHandlers::characters:: " << ss.c_str() );
     #endif
     //fFormatter.formatBuf(chars, length, XMLFormatter::CharEscapes);
 }
@@ -162,7 +162,7 @@ unistring getVarName(unistring &str){
 
 void SAXPrintHandlers::endElement(const XMLCh* const name)
 {
-    std::cout << _L("SAXPrintHandlers::endElement:: [") << toWstring(name) << "]\n";
+    //LOG( _L("SAXPrintHandlers::endElement:: [") << toWstring(name) << "]" );
     RefObject *tmpobj = 0;
     RefValuedData *tmpvdata = 0;
     unistring command = toWstring(name);
@@ -170,6 +170,9 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     #ifdef DEBUG
     try {
     #endif
+    if (! command.compare(_L("ERROR"))) {
+        SYSTEMERROR(loader->currentchars);
+    } else
     if (! command.compare(_L("BEGIN"))) {
         // модуль прочитан полностью
     } else

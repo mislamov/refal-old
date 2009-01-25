@@ -40,9 +40,8 @@ TResult RefData_DOT::back(Session* sess, RefData *&l, RefData *&r){
 
     unistring  RefData_DOT::toString() {
         std::ostringstream s;
-//        s << "@DOT(" << (is_opened?"opened":"closed") << ")." << (long)this << ":other=" << (long)this->other << " ";  return s.str(); };
         s << (is_opened?" [":" ]"); /*<< ")." << (long)this << ":other=" << (long)this->other << " ";*/
-        s << "." << (long)this << ' ';
+//        s << "." << (long)this << ' ';
         return s.str();
     };
 	RefData* RefData_DOT::next_term( ThisId var_id, Session *s ) { return next; };

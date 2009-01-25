@@ -76,6 +76,41 @@ RefChain* Mul (RefData* beg, RefData* end, Session* s){
 
 
 
+RefChain* Lenw (RefData* beg, RefData* end, Session* s){
+    infint thecount = 0;
+    RefInteger *a;
+    if (beg) while(beg != end->next){
+        thecount++;
+        move_to_next_point(beg, 0, s);
+    }
+
+    a = new RefInteger(thecount);
+    return new RefChain(a, a);
+};
+
+
+RefChain*  DataCompare(RefData* beg, RefData* end, Session* s){
+    RefData *a = 0;
+    if (beg->next != end){
+        RUNTIMEERROR("Compare", "Must be 2 arguments");
+        return 0;
+    }
+
+
+    if (*beg > *end){
+        a = new RefAlpha('+');
+    } else if (*beg == *end){
+        a = new RefAlpha('0');
+    } else {
+        a = new RefAlpha('-');
+    }
+    return new RefChain(a, a);
+};
+
+
+
+
+
 RefChain* Card (RefData* beg, RefData* end, Session* s){
     if (beg) {
         RUNTIMEERROR("Card", "Not empty args in Card : " << vectorToString(beg, end));
@@ -116,6 +151,18 @@ bool system_MUL::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s)
 
 bool system_SUM::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     result = Sum(lft, rht, s);
+    if (result) return true;
+    return false;
+};
+
+bool system_LENW::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    result = Lenw(lft, rht, s);
+    if (result) return true;
+    return false;
+};
+
+bool system_COMPARE::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    result = DataCompare(lft, rht, s);
     if (result) return true;
     return false;
 };
