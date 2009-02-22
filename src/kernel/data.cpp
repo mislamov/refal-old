@@ -175,7 +175,8 @@ RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 
 
 
-// only for ObjectExpressions !!!
+// only for ObjectExpressions !!! Возвращает копию цепочки. Вместо ссылок на переменные - значения. Так как применяется для правых частей
+// то открытых переменных быть не должно!
 RefChain* RefChain::Copy(Session *s){
     //std::cout << "\n{ RefChain for copy: " << this->toString();
     RefData  *srcL = this->first;
@@ -286,7 +287,8 @@ RefChain* RefChain::Copy(Session *s){
 
 void RefChain::clear(){
         std::cout << "\n\n---RefChain::clear() - zaglushka---: " << this->toString() << "\n\n" << std::flush;
-        first->pred = second->next = 0;
+        if (first) first->pred = 0;
+        if (second) second->next = 0;
         //delChain(first, second);
         return;
 };

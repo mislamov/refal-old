@@ -81,9 +81,6 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
         std::stack<TVarBody *>  *recoverSopost = 0;
         TVarBodyTable           *recoverVBody = 0;
 
-    //std::cout << "\n===================================================";
-    //std::cout << "\n" << RefObject::getCout() << " " << RefValuedData::getCount() << "\tEXEC: <" << getName() << " " << std::flush << RefChain(argfirst,argsecond).toString() << ">";
-    //std::cout << "\n::: " << this->toString() << "\n::::\n";
     LOG("<" << getName() << " " << std::flush << RefChain(argfirst,argsecond).toString() << " >" );
 
     s->initializationArg(argfirst, argsecond);
@@ -91,27 +88,20 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
     RefData *ldot = s->pole_zrenija.top()->first; // границы наших действий
     RefData *rdot = s->pole_zrenija.top()->second;
 
-    std::list<RefSentence *>::iterator sent = body.begin();
+    std::list<RefSentence *>::iterator sent = body.begin(); // перебор предложений функции
     bool reslt = false;
 
-    do {
+   /// создание точки восстановления
+   s->StacksOfSopost.push( recoverSopost = new std::stack<TVarBody *> );   // новый под-стек сопоставления
+   s->varTables.push( recoverVBody = new TVarBodyTable() );                // новая под-таблица переменных
+   ///
 
-        //std::cout << "\n:" << std::flush << (*sent)->rightPart->toString() << std::flush;
-        //std::cout << "\n\n{{{{{ " << std::flush <<  (*sent)->leftPart->toString() << " }}}}}";
+    do {
         s->initializationTemplate( (*sent)->leftPart ); /// todo сделать мосты или копирование - иначе изменение исходного тела функции
-        //std::cout << "\n{{{{{ " << std::flush << (*sent)->leftPart->toString() << " }}}}}";
+
         LOG("\ttring this: " << (*sent)->toString() );
 
-
-        /// создание точки восстановления
-        //std::cout << "\n\n/// create recover-dot : создание точки восстановления\n" << std::flush;
-        s->StacksOfSopost.push( recoverSopost = new std::stack<TVarBody *> );
-        s->varTables.push(recoverVBody = new TVarBodyTable());
-        ///
-
         if (s->matching( (*sent)->leftPart )){
-            //std::cout << "\nMACH\n" << std::flush;
-            //std::cout << s->varTableToText();
             LOG("\tsucessfull!");
             RefChain *newoe = s->RightPartToObjectExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
 
@@ -135,9 +125,7 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
             }
             delete newoe; // больше незачем хранить старую оболочку - новый вектор встроен в поле зрения
 
-            //std::cout << "\n\n<<<<< " << std::flush << (*sent)->leftPart->toString() << " >>>>>";
             s->deinitializationTemplate( (*sent)->leftPart );
-            //std::cout << "\n<<<<< " << std::flush << (*sent)->leftPart->toString() << " >>>>>\n\n";
 
             reslt = true;
         } else {
@@ -150,8 +138,10 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
     //std::cout << "\n\n/// back to recover-dot : возврат сессии в точку восстановления\n" << std::flush;
     // восстанавливаем выражение в поле зрения
     RefChain *pz = s->deinitializationArg();  // датадоты удалены с автовыравниванием ссылок
-    if (recoverVBody != s->varTables.top()) SYSTEMERROR("enother var table !"); // если случается - удалять до точки восстан-я
+
+    if (recoverVBody != s->varTables.top()) SYSTEMERROR("enother var table !"); // проверка корректности точки восстановления
     if (recoverSopost != s->StacksOfSopost.top()) SYSTEMERROR("enother sopost stack !"); //  -- || --
+    // удалять до точки восстан-я
     s->StacksOfSopost.pop(); /// todo очистка
     s->varTables.pop();      /// todo очистка
 
@@ -237,6 +227,9 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     if (!d){
         return BACK;
     }
+
+    s->showStatus();
+
     RefChain *newpz = s->RightPartToObjectExpression(this->rightPart);  /// todo: тут создается - тут же и кильнуть
     s->initializationArg(newpz->first, newpz->second); // это уже копия с дотами
     std::cout << "\nCOND-EVALUTE:::\t" << newpz->toString() << " : " << this->leftPart->toString();
@@ -259,6 +252,10 @@ TResult  RefCondition::init(Session* s, RefData *&l){
         delete newpz;
 
         std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";
+
+    s->showStatus();
+
+
         return BACK;
     }
 };

@@ -114,7 +114,7 @@ class RefCondition : public RefConditionBase {
 
         RefCondition(RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system = false; }
         virtual ~RefCondition(){};
-        unistring toString(){ return " @Condition$" + rightPart->toString() + "::" + leftPart->toString() + ' '; }
+        unistring toString(){ return sss=" @Condition$" + rightPart->toString() + "::" + leftPart->toString() + ' '; }
         RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected try to Copy REF-condition"); return 0; };
 
 

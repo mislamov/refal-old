@@ -34,6 +34,12 @@ public:
 //////////////////////////////////////////////////////////////////
 // Данные для процесса вычисления функции (сессия сопоставления)
 class Session : public RefObject {
+
+    class SessionMaching {
+        public:
+            int i;
+    };
+
   public:
     std::stack<RefChain *> pole_zrenija;		// begin- и end-шаблон (поле зрения)
     std::map <unistring, RefModuleBase*> modules;  // подгруженные модули
@@ -83,6 +89,7 @@ class Session : public RefObject {
 
     virtual unistring toString(){ return "Session"; };
     void flush(){ varTables.top()->clear(); }; // сброс лишних данных после вычислений.
+    void showStatus();
 };
 
 
@@ -100,6 +107,7 @@ public:
     RefData *leftPoint;	// левый край захватывемой подцепочки
 
     DataForRepeater(RefData *o);
+    std::string toString(){ return ("@DataForRepeater:owner=" + owner->toString()); }
 };
 
 #endif

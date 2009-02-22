@@ -217,7 +217,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                             newowner = s->getCurrentSopostStack()->top()->owner;
                         }
                         if (!lastowner  ||  lastowner != newowner){
-                            SYSTEMERROR("!lastowner  &&  lastowner != newowner,   lastowner=" << lastowner->toString());
+                            SYSTEMERROR("!lastowner  ||  lastowner != newowner,   lastowner=" << (lastowner?lastowner->toString():"null"));
                         }
                         //std::cout << "\n" << "{{{{{{ " << lastowner << std::flush << ": " ;
                         //std::cout << ((RefData *)(lastowner))->toString() << std::flush;
@@ -315,7 +315,9 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src){  // готови�
 
 };
 
-void Session::initializationArg(RefData* &l, RefData* &r) { //  взгляд на новое поле зрения, подготовка к матчингу
+
+//  взгляд на новое поле зрения, подготовка к матчингу
+void Session::initializationArg(RefData* &l, RefData* &r) {
     //std::cout << "\ninitializationArg::\t\t" << vectorToString(l, r);
     #ifdef DEBUG
     if (!r) SYSTEMERROR("!r nelza tak! esli pustaja, to nado pokazat posle kakoj refdata ona stiot => r!=0 !!!");
@@ -323,9 +325,7 @@ void Session::initializationArg(RefData* &l, RefData* &r) { //  взгляд н�
     // снабжаем область зрения датадотами
     RefData_DOT *leftd = new RefData_DOT();
     RefData_DOT *rightd = new RefData_DOT(leftd, 0);
-
 //    std::cout << "\n\nleftd=" << leftd->toString() << "    rightd=" << rightd->toString() << "\n\n";
-
     //leftd->pred = (l?l->pred:0);
 
     if (!l){ // пустая
@@ -351,8 +351,8 @@ void Session::initializationArg(RefData* &l, RefData* &r) { //  взгляд н�
 
 
 
-
-RefChain* Session::deinitializationArg() { //  завершение работы с текущим полем зрения. удаление датадот и возврат устаревшего поля зрения
+//  завершение работы с текущим полем зрения. удаление датадот и возврат устаревшего поля зрения
+RefChain* Session::deinitializationArg() {
     RefChain *pz = pole_zrenija.top();
     //std::cout << "\ndeinitializationArg::\t" << pz->toString();
     RefData* pleft  = pz->first;
@@ -577,3 +577,18 @@ DataForRepeater::DataForRepeater(RefData *o) {
         from = to = step = mustbe = current_step = 0;
         leftPoint = 0;
 };
+
+void Session::showStatus(){
+    std::cout << "\n\n";
+    std::cout << "\n    pole_zrenija: size=" << pole_zrenija.size() << "  " << (pole_zrenija.empty() ? "" : pole_zrenija.top()->toString());
+    std::cout << "\n    StopBrackForceVar: " << (StopBrackForceVar?StopBrackForceVar->toString():"null");
+    std::cout << "\n    StacksOfSopost : size=" << StacksOfSopost.size();
+    if (StacksOfSopost.size()) {    std::cout << "\n\t    StacksOfSopost.top() : size=" << StacksOfSopost.top()->size();   };
+    std::cout << "\n    varTables : size=" << varTables.size() <<  varTableToText();
+    std::cout << "\n    StackOfDataSkob : size=" << StackOfDataSkob.size() << std::flush;  std::cout << "  " << (StackOfDataSkob.empty() ? "" : StackOfDataSkob.top()->toString());
+    std::cout << "\n    StackOfRepeatSkob : size=" << StackOfRepeatSkob.size() << "  " << (StackOfRepeatSkob.empty() ? "" : StackOfRepeatSkob.top()->toString());
+    std::cout << "\n    StackOfRepeatSkobDoned : size=" << StackOfRepeatSkobDoned.size() << "  " << (StackOfRepeatSkobDoned.empty() ? "" : StackOfRepeatSkobDoned.top()->toString());
+    std::cout << "\n    StackOfGroupSkob : size=" << StackOfGroupSkob.size() << "  " << (StackOfGroupSkob.empty() ? "" : StackOfGroupSkob.top()->toString());
+    std::cout << "\n\n";
+
+}

@@ -5,6 +5,7 @@
 #include "rfunction.h"
 #include "kernel.h"
 
+// вычисляет цепочку до тех пор, пока в ней есть функциональные вызовы <>
 RefChain* evalutor(RefChain *argline, Session *s){
 
 /*
@@ -32,8 +33,8 @@ std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pre
         TVarBodyTable *vars     = 0;
         for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_point(it, 0, s)){
             exec = dynamic_cast<RefExecBracket *>(it);
-            if (exec && !exec->isOpen()){
-                it = exec->getOther()->pred;
+            if (exec && !exec->isOpen()){    // поиск >
+                it = exec->getOther()->pred; // получение точки перед <  (может быть 0)
 
                 // плучение ссылки на функцию
                 fn = dynamic_cast<RefWord *>(exec->getOther()->next->next);
@@ -47,13 +48,13 @@ std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pre
                     SYSTEMERROR("Function name is not RefWord! : " << exec->getOther()->next->next->toString());
                 }
 
-                bool succes = funk;
+                bool succes = funk; // результат поиска функции по имени
 
-                if (fn->next == exec){ // выполнить с пустым аргументом
+                if (fn->next == exec){ // выполнить с пустым аргументом  (  <fn >  )
                     succes = succes && funk->execute(0, fn, s);
                 } else {
                     // выполнить с аргументом
-                    succes = succes && funk->execute(fn->next, exec->pred, s);
+                    succes = succes && funk->execute(fn->next, exec->pred, s);  //   <fn  fn_next..exec_pred>
                 }
                 if (!succes){
                         SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue()+"[$null]") << " " << RefChain(fn->next, exec->pred).toString() << "\nPOLEZ: " << argline->toString());
@@ -69,7 +70,7 @@ std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pre
                 //std::cout << "\n@ exec->getOther() = " << exec->getOther()->toString();
                 //std::cout << "\n@ exec = " << exec->toString();
 
-                delete exec->getOther()->next->next;
+                delete exec->getOther()->next->next; // удаляем вызов - остается только результат вызова
                 delete exec->getOther()->next;
                 delete exec->getOther();
                 delete exec;
