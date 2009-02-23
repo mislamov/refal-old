@@ -35,11 +35,6 @@ public:
 // Данные для процесса вычисления функции (сессия сопоставления)
 class Session : public RefObject {
 
-    class SessionMaching {
-        public:
-            int i;
-    };
-
   public:
     std::stack<RefChain *> pole_zrenija;		// begin- и end-шаблон (поле зрения)
     std::map <unistring, RefModuleBase*> modules;  // подгруженные модули
@@ -55,10 +50,9 @@ class Session : public RefObject {
     unistring varTableToText();
 
     std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
+    std::stack<RefData *>	StackOfGroupSkob;	            // Стек указателей на ПЕРЕДначало группы шаблонов
     std::stack<DataForRepeater *>	StackOfRepeatSkob;	    // Стек итераций повторителей
     std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
-
-    std::stack<RefData *>	StackOfGroupSkob;	    // Стек указателей на ПЕРЕДначало группы шаблонов
     //std::stack<ref_variant_vert*> StackOfVariants;	//
 
     Session();
@@ -67,11 +61,11 @@ class Session : public RefObject {
     void SaveTempl   (RefData* var, RefData* l, RefData* r); // если аргумент - переменная, то добавляем ее состояние
     void RestoreTempl(RefData *owner, RefData* &l, RefData* &r ); // извлекаем последнее сохраненное сост-е
 
-    void  initializationArg(RefData*&, RefData*&);        // регистрация ОО для сапостовления. приставка дот
+    void  initializationArg(RefData*, RefData*);        // регистрация ОО для сапостовления. приставка дот
     void  initializationTemplate(RefChain *tmpl);   // оснащение дотами
     RefChain*  deinitializationArg();                        // откат регистрации ОО в initialization
     void  deinitializationTemplate(RefChain *&tmpl); // удаление дот
-    bool  matching(RefChain *tmplate, bool isdemaching=false); // сопоставляет шаблон tmplate с объектным выражением в initialization. Если isdemaching, то делать откат от последнего дота
+    bool  matching(RefChain *tmplate, RefData*l, RefData*r, bool isdemaching=false); // сопоставляет шаблон tmplate с объектным выражением в initialization. Если isdemaching, то делать откат от последнего дота
     RefChain *execChain();  // вычисляет поле зрения
 
     std::stack<TVarBody*> *getCurrentSopostStack(){
@@ -90,6 +84,62 @@ class Session : public RefObject {
     virtual unistring toString(){ return "Session"; };
     void flush(){ varTables.top()->clear(); }; // сброс лишних данных после вычислений.
     void showStatus();
+
+    class SessionMachingRecoverPoint {
+        public:
+            RefBracketBase* stackOfDataSkobPoint;
+            RefData*        stackOfGroupSkobPoint;
+            TVarBodyTable*  varTablesPoint;
+            std::stack<TVarBody*> * stacksOfSopostPoint;
+            //DataForRepeater*stackOfRepeatSkobPoint;
+            //DataForRepeater*stackOfRepeatSkobDonedPoint;
+    };
+
+    // создает и возвращает точку восстановления
+    SessionMachingRecoverPoint createRecoverPoint(){
+        SessionMachingRecoverPoint recoverPoint;
+        recoverPoint.stackOfDataSkobPoint   =   this->StackOfDataSkob.top();
+        recoverPoint.stackOfGroupSkobPoint  =   this->StackOfGroupSkob.top();
+        recoverPoint.varTablesPoint         =   this->varTables.top();
+        recoverPoint.stacksOfSopostPoint    =   this->StacksOfSopost.top();
+        //this->StackOfRepeatSkob.top();
+        //this->StackOfRepeatSkobDoned.top();
+
+        StacksOfSopost.push(new std::stack<TVarBody*>());
+        varTables.push(new TVarBodyTable());
+        return recoverPoint;
+    };
+
+    // восстанавливает состояние сессии до точки point
+    void recoverToPoint(SessionMachingRecoverPoint recoverPoint){
+        while(recoverPoint.stackOfDataSkobPoint   !=   this->StackOfDataSkob.top())  // закр скобки
+        {
+            delete this->StackOfDataSkob.top();
+            this->StackOfDataSkob.pop();
+        };
+        while(recoverPoint.stackOfGroupSkobPoint  !=   this->StackOfGroupSkob.top())  //
+        {
+            delete this->StackOfGroupSkob.top();
+            this->StackOfGroupSkob.pop();
+        };
+        while(recoverPoint.varTablesPoint         !=   this->varTables.top())   // под-таблицы переменных
+        {
+            this->varTables.top()->clear();
+            delete this->varTables.top();
+            this->varTables.pop();
+        };
+        while(recoverPoint.stacksOfSopostPoint    !=   this->StacksOfSopost.top()) // под-стеки сопоставлений
+        {
+            std::stack<TVarBody *> *tvb_s = this->StacksOfSopost.top();
+            while (! tvb_s->empty()){
+                delete tvb_s->top();
+                tvb_s->pop();
+            }
+            delete tvb_s;
+            this->StacksOfSopost.pop();
+        };
+
+    }
 };
 
 

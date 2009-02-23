@@ -78,30 +78,35 @@ unistring RefUserFunction::toString() {
 
 /// аргументы - концы чистого ОВ
 bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s){
-        std::stack<TVarBody *>  *recoverSopost = 0;
-        TVarBodyTable           *recoverVBody = 0;
+        //std::stack<TVarBody *>  *recoverSopost = 0;
+        //TVarBodyTable           *recoverVBody = 0;
+
+        RefData *ldot = argfirst ->pred;
+        RefData *rdot = argsecond->next;
+        #ifdef DEBUG
+        // должно вызываться только для части цепочки => окружено чем-то. Нужно чтоб не потерять место изменения
+        if (! ldot )
+            SYSTEMERROR("RefUserFunction::execute( argfirst->pred != RefDATA not null, ...) !\RefUserFunction::execute( " << RefChain(argfirst, argsecond).toString() << " )");
+        if (! rdot )
+            SYSTEMERROR("RefUserFunction::execute(..., argsecond->next != RefDATA not null) !\RefUserFunction::execute( " << RefChain(argfirst, argsecond).toString() << " )");
+        #endif
+
 
     LOG("<" << getName() << " " << std::flush << RefChain(argfirst,argsecond).toString() << " >" );
 
-    s->initializationArg(argfirst, argsecond);
-
-    RefData *ldot = s->pole_zrenija.top()->first; // границы наших действий
-    RefData *rdot = s->pole_zrenija.top()->second;
 
     std::list<RefSentence *>::iterator sent = body.begin(); // перебор предложений функции
     bool reslt = false;
 
    /// создание точки восстановления
-   s->StacksOfSopost.push( recoverSopost = new std::stack<TVarBody *> );   // новый под-стек сопоставления
-   s->varTables.push( recoverVBody = new TVarBodyTable() );                // новая под-таблица переменных
-   ///
-
+   //s->StacksOfSopost.push( recoverSopost = new std::stack<TVarBody *> );   // новый под-стек сопоставления
+   //s->varTables.push( recoverVBody = new TVarBodyTable() );                // новая под-таблица переменных
     do {
-        s->initializationTemplate( (*sent)->leftPart ); /// todo сделать мосты или копирование - иначе изменение исходного тела функции
+        //s->initializationTemplate( (*sent)->leftPart ); /// todo сделать мосты или копирование - иначе изменение исходного тела функции
 
         LOG("\ttring this: " << (*sent)->toString() );
 
-        if (s->matching( (*sent)->leftPart )){
+        if (s->matching( (*sent)->leftPart, argfirst, argsecond)){
             LOG("\tsucessfull!");
             RefChain *newoe = s->RightPartToObjectExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
 
@@ -125,11 +130,11 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
             }
             delete newoe; // больше незачем хранить старую оболочку - новый вектор встроен в поле зрения
 
-            s->deinitializationTemplate( (*sent)->leftPart );
+            //s->deinitializationTemplate( (*sent)->leftPart );
 
             reslt = true;
         } else {
-            s->deinitializationTemplate( (*sent)->leftPart );
+            //s->deinitializationTemplate( (*sent)->leftPart );
             sent++;
         }
     } while (!reslt && sent != body.end());
@@ -137,13 +142,13 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
     /// возврат сессии в точку восстановления
     //std::cout << "\n\n/// back to recover-dot : возврат сессии в точку восстановления\n" << std::flush;
     // восстанавливаем выражение в поле зрения
-    RefChain *pz = s->deinitializationArg();  // датадоты удалены с автовыравниванием ссылок
+    //RefChain *pz = s->deinitializationArg();  // датадоты удалены с автовыравниванием ссылок
 
-    if (recoverVBody != s->varTables.top()) SYSTEMERROR("enother var table !"); // проверка корректности точки восстановления
-    if (recoverSopost != s->StacksOfSopost.top()) SYSTEMERROR("enother sopost stack !"); //  -- || --
+    //if (recoverVBody != s->varTables.top()) SYSTEMERROR("enother var table !"); // проверка корректности точки восстановления
+    //if (recoverSopost != s->StacksOfSopost.top()) SYSTEMERROR("enother sopost stack !"); //  -- || --
     // удалять до точки восстан-я
-    s->StacksOfSopost.pop(); /// todo очистка
-    s->varTables.pop();      /// todo очистка
+    //s->StacksOfSopost.pop(); /// todo очистка
+    //s->varTables.pop();      /// todo очистка
 
     return reslt;
 };
@@ -239,7 +244,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     std::cout << "\nCOND-EVALUTE-OO:\t" << newpz->toString() << " : " << this->leftPart->toString();
     //newpz =
     s->initializationTemplate(this->leftPart);
-    if (s->matching( this->leftPart )){
+    if (s->matching( this->leftPart, 0, 0 )){ /// todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // s->deinitializationArg(); - не надо удалять! а если вернется откат?
         // возможно надо убрать доты
         s->deinitializationTemplate(this->leftPart);
@@ -263,7 +268,9 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
 
     s->initializationTemplate(this->leftPart);
-    if (s->matching( this->leftPart, true )){ // продолжаем поиск вариантов
+
+    /// todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (s->matching( this->leftPart, 0, 0, true )){ // продолжаем поиск вариантов
         //s->deinitializationArg(); - не удалять Арг - вдруг снова откат
         s->deinitializationTemplate(this->leftPart);
 

@@ -111,14 +111,25 @@ void matchingGarbageCleaner(Session *s, bool tosavevarmap=false){
 
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
 
+/*  Сопоставляет шаблон с аргументом.
+    Если дематчинг, то аргумент должен быть из поля зрения, и argleft c argright - это НЕ датадоты
+    Если внутри шаблона есть друугие датадоты, то для их сопоставления НУЖНО запускать отдельный матчинг
+    Управляет полями зрения во время сопоставления
+*/
+bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argright, bool isdemaching){
+    /// точка восстановления
+    SessionMachingRecoverPoint recPoint = createRecoverPoint();
 
-bool  Session::matching(RefChain *tmplate, bool isdemaching){
-    if (! isdemaching){
-        // не нужно ничего создавать если откат!
-        matchingGarbagePrepare(this);
+    this->initializationTemplate(tmplate); /// todo: проблемы с паралельными потоками! Изменяются края статической части программы - ЛЧ предложения функции. Нужно проваливание или копия
+    if (! isdemaching) {
+        this->initializationArg(argleft, argright); // теперь это датадоты
     }
+    ///
 
     #ifdef DEBUG
+    if (argleft->pred != pole_zrenija.top()->first || argright->next != pole_zrenija.top()->second){
+        SYSTEMERROR("Unbalanced POLE_ZRENIJA stack and matching!");
+    }
     if (! dynamic_cast<RefData_DOT *>( pole_zrenija.top()->second )) SYSTEMERROR("unexpected situation!");
     #endif
 
@@ -133,10 +144,13 @@ bool  Session::matching(RefChain *tmplate, bool isdemaching){
     #endif
 
     //std::cout << "\n$poping by " << this->toString() << "  :  " << StackOfDataSkob.top()->toString() <<  "    left: " << StackOfDataSkob.size()-1;
+    this->deinitializationTemplate(tmplate);
     if (succmatch){
-        //matchingGarbageCleaner(this, true);
+        // оставляем точку восстановления для возможного отката
     } else {
-        matchingGarbageCleaner(this, false);
+        this->deinitializationArg();
+        // восстанавливаем до предыдущей точки восстановления
+        recoverToPoint(recPoint);
     }
     return succmatch;
 }
@@ -316,8 +330,8 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src){  // готови�
 };
 
 
-//  взгляд на новое поле зрения, подготовка к матчингу
-void Session::initializationArg(RefData* &l, RefData* &r) {
+//  взгляд на новое поле зрения, подготовка к матчингу. l и r не изменяются
+void Session::initializationArg(RefData* l, RefData* r) {
     //std::cout << "\ninitializationArg::\t\t" << vectorToString(l, r);
     #ifdef DEBUG
     if (!r) SYSTEMERROR("!r nelza tak! esli pustaja, to nado pokazat posle kakoj refdata ona stiot => r!=0 !!!");
@@ -343,15 +357,15 @@ void Session::initializationArg(RefData* &l, RefData* &r) {
 
     //std::cout << "\t->\t" << newPole->toString();
     //std::cout << "\t->\t" << newPole->toString();
-    l = leftd;
-    r = rightd;
+    //l = leftd;
+    //r = rightd;
     //current_point = newPole->first;
     //extention_number = 0;
 };
 
 
 
-//  завершение работы с текущим полем зрения. удаление датадот и возврат устаревшего поля зрения
+//  завершение работы с текущим полем зрения. удаление датадот и возврат устаревшего поля зрения как вектора
 RefChain* Session::deinitializationArg() {
     RefChain *pz = pole_zrenija.top();
     //std::cout << "\ndeinitializationArg::\t" << pz->toString();
