@@ -208,6 +208,9 @@ class RefChain : public std::pair<RefData*, RefData*> {
         RefChain* Copy(Session *);         // Если ссылка на сессию != 0, то вместо ссылок будут значения переменных
         RefChain* Copy( ){ return this->Copy(0); }; // Только для объектных выражений!!!
 
+        RefChain* aroundByDots();            //  окружает цепочку датадотами
+        inline void set(RefData *&l, RefData *&r){l=first; r=second;};  //  присваивает концы цепочки аргументам
+
         unistring toString();
 };
 

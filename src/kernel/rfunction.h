@@ -34,7 +34,8 @@ class RefUserFunction : public RefFunctionBase {
 public:
     std::list<RefSentence *> body; // предложения
 
-    virtual bool execute(RefData*, RefData*, Session*); // заменяет вобъектном выражении участок(перед. в аргум). Ничего не возвращает
+    /// аргументы - концы чистого ОВ   // заменяет в объектном выражении участок(перед. в аргум)
+    virtual bool execute(RefData *argfirst, RefData *argsecond, Session *s);
     virtual unistring getName()  { return name; };
     virtual unistring toString();
     RefUserFunction(unistring nname){ name = nname; }

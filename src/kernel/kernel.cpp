@@ -31,29 +31,26 @@ TResult RefStructBracket::init(Session* s, RefData *&l) {
     RefStructBracket* aux = dynamic_cast<RefStructBracket *>(l);
     if (!aux || (isOpen()!=aux->isOpen()))  return BACK; //   )  (
     if (isOpen()) {  //    (  (
-
         //std::cout << "\n% % % : " << std::flush;
-        //std::cout << s->StackOfDataSkob.size() << std::flush;
-
-        s->StackOfDataSkob.push( aux->getOther() );
+        //std::cout << s->getStackOfDataSkob()->size() << std::flush;
+        s->getStackOfDataSkob()->push( aux->getOther() );
         l = l->next; // jump into brackets (to NULL-dot)
         return GO;
     };
     //    )  )
-    if (aux != s->StackOfDataSkob.top()){
+    if (aux != s->getStackOfDataSkob()->top()){
         return BACK;
     }
-
-    //std::cout << "\n$poping by " << this->toString() << "  :  " << s->StackOfDataSkob.top()->toString();
-    s->StackOfDataSkob.pop();
+    //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
+    s->getStackOfDataSkob()->pop();
     return GO;
 
 };
 
 TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
     if (is_opened) { //  (
-        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->StackOfDataSkob.top()->toString();
-        s->StackOfDataSkob.pop(); /// clean?
+        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
+        s->getStackOfDataSkob()->pop(); /// clean?
         return BACK;
     }
 
@@ -63,7 +60,7 @@ TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
         SYSTEMERROR("may be unnormal situation");
     }
     #endif
-    s->StackOfDataSkob.push( (RefBracketBase*) r );
+    s->getStackOfDataSkob()->push( (RefBracketBase*) r );
     //return FORCEBACK; - не надо, т к ситуация мб такая: (e.1 e.all)
     return BACK;
 };
@@ -71,8 +68,8 @@ TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
 
 void RefStructBracket::forceback(Session *s){
     if (this->isOpen()){
-        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->StackOfDataSkob.top()->toString();
-        //s->StackOfDataSkob.pop(); /// - в стеке скобок нет инфы для этой скобки! Она и ее пара была сопоставлена
+        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
+        //s->getStackOfDataSkob()->pop(); /// - в стеке скобок нет инфы для этой скобки! Она и ее пара была сопоставлена
     }
     return;
 }
@@ -111,17 +108,17 @@ TResult RefExecBracket::init(Session* s, RefData *&l) {
 //    if (a)  a->drop(myid()); //   удаляет старую ссылку если создатель
     if (!aux || (is_opened!=aux->is_opened))  return BACK; //   )  (
     if (is_opened) {  //    (  (
-        s->StackOfDataSkob.push( aux->other );
+        s->getStackOfDataSkob()->push( aux->other );
         l = l -> next; // jump into brackets (to NULL-dot)
         return GO;
     };
     //    )  )
-    if (aux != s->StackOfDataSkob.top()){
+    if (aux != s->getStackOfDataSkob()->top()){
         return BACK;
     }
 
-    //std::cout << "\n$poping by " << this->toString() << "  :  " << s->StackOfDataSkob.top()->toString();
-    s->StackOfDataSkob.pop();
+    //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
+    s->getStackOfDataSkob()->pop();
     return GO;
 
 };
@@ -130,8 +127,8 @@ TResult RefExecBracket::back(Session* s, RefData *&l, RefData *&r) {
     SYSTEMERROR("RefExecBracket::back! Exec bracket can't to match!");
     if (is_opened) { //  (
 
-        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->StackOfDataSkob.top()->toString();
-        s->StackOfDataSkob.pop();
+        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
+        s->getStackOfDataSkob()->pop();
         return BACK;
     } else {          //  )
         return FORCEBACK;
@@ -185,11 +182,11 @@ TResult  RefVariable_E::init(Session *s, RefData *&a) {
 TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
     //std::cout << "\n## restore for e.e: " << std::flush; if (l) l->print_inf(); std::cout << " , "; if (r) r->print_inf(); std::cout << " next: " << r->next->toString() << "\n" << flush;
     if (l) {
-        if (r==s->StackOfDataSkob.top()) {
-            //std::cout << "\n\n[r] back: " << r->toString() << ' ' << s->StackOfDataSkob.size() << std::flush;
+        if (r==s->getStackOfDataSkob()->top()) {
+            //std::cout << "\n\n[r] back: " << r->toString() << ' ' << s->getStackOfDataSkob()->size() << std::flush;
             return BACK;
         };
-        //std::cout << "\n\n[r]: r==" << r->toString() << "  top=" << s->StackOfDataSkob.top()->toString() << "   " << s->StackOfDataSkob.size() << std::flush;
+        //std::cout << "\n\n[r]: r==" << r->toString() << "  top=" << s->getStackOfDataSkob()->top()->toString() << "   " << s->getStackOfDataSkob()->size() << std::flush;
 
 
 
@@ -201,8 +198,8 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
         r = r->endOfTerm();
     }
 
-    //std::cout << "\ns->StackOfDataSkob.top() = " << s->StackOfDataSkob.top()->toString();
-    if (r==s->StackOfDataSkob.top()) {
+    //std::cout << "\ns->getStackOfDataSkob()->top() = " << s->getStackOfDataSkob()->top()->toString();
+    if (r==s->getStackOfDataSkob()->top()) {
         return BACK;
     };
     return GO;

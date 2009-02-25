@@ -78,6 +78,7 @@ try {
     } else
     if ( command.compare(_L("LEFT-PART")) == 0) {
             loader->createChainToStack();
+            loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
     } else
     if ( command.compare(_L("RIGHT-PART")) == 0) {
             loader->createChainToStack();

@@ -1,4 +1,5 @@
 #include <pair.h>
+#include <list>
 #include <sstream>
 
 
@@ -16,117 +17,93 @@ TVarBody::TVarBody(RefData* l, RefData* r, RefObject* o, TVarBodyTable *themap) 
 
 
 Session::Session() {
-    //varTables.push( new TVarBodyTable() );
-    StacksOfSopost.push( new std::stack<TVarBody *> );
-/*
-    RefData_DOT *l_dot = new RefData_DOT();
-    RefData_DOT *r_dot = new RefData_DOT(l_dot);
-    TVarBody *p = new TVarBody(l_dot, r_dot, this);
-
-    pole_zrenija.push( p );
-    StackOfDataSkob.push(r_dot);
-    StopBrackForceVar = 0;
-    varTable.push(new TTableVarSaver(l_dot, r_dot));
-*/
 };
 
 Session::~Session(){
 };
 
 TVarBody* Session::getVarBody( unistring vname ){
-    return (*(varTables.top()))[ vname ];
+
+    std::list<SessionOfMaching *>::iterator som = this->matchSessions.end();
+    TVarBody* result = 0;
+
+    while( *som ){  // ?  som != mylist.end()
+        TVarBody* result = (* (*som)->varTable)[vname];
+        if (result){
+            return result;
+        }
+        som--;
+    }
+    return 0;
 };
 
 TVarBody* Session::setVarBody( unistring vname, TVarBody* vb){
-    (* varTables.top())[ vname ] = vb;
+    (* matchSessions.back()->varTable )[ vname ] = vb;
 };
 
 unistring Session::varTableToText(){
         //std::string result = "";
-        if (! varTables.size()){
-            return "\n\nVARTABLES  varTables\t:\tempty\n";
-        }
-
         std::ostringstream s;
-        s << "\n\nVARTABLES\t:" << varTables.size() << "\n";
+        s << "\n\nVARTABLES\t:" << "\n";
 
-        if (! (* varTables.top()).size() ){
-            s << "VARTABLES  varTables.top()\t:\tempty\n";
-            return s.str();
+        std::list<SessionOfMaching *>::iterator som = this->matchSessions.end();
+        while( *som ){  // ?  som != mylist.end()
+            TVarBodyTable* tbl = (*som)->varTable;
+            TVarBodyTable::iterator it;
+            for (it = tbl->begin(); it != tbl->end(); it++){
+               if ((*it).second){
+                   s << (*it).first << '\t' << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n';
+               }
+            }
+
+            s << "=============================\n";
+            som--;
         }
 
-        s << "VARTABLES.TOP\t:" << (* varTables.top()).size() << "\n";
-        TVarBodyTable::iterator it;
-        for (it = (* varTables.top()).begin(); it!=(* varTables.top()).end(); it++){
-           if ((*it).second) {
-               s << (*it).first << '\t' << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n';
-           }
-        }
         return s.str();
 };
 
 
-// подготовка к матчингу. подстановка мусорного ведра
-void matchingGarbagePrepare(Session *s){
-    // создаем свежий стек сопоставлений
-    //s->StacksOfSopost.push( new std::stack<TVarBody*> );
-    s->StackOfDataSkob.push((RefData_DOT *) s->pole_zrenija.top()->second );
-/** /
-    std::cout << "\n#######################################################\n";
-    std::cout << "BEFORE matching:\n";
-    std::cout << "\ts->StackOfDataSkob.top :\t" <<  (s->StackOfDataSkob.empty()?"$empty":s->StackOfDataSkob.top()->toString()) << "\n";
-    //std::cout << "\ts->StackOfGroupSkob.top :\t" << (s->StackOfGroupSkob.empty()?"$empty":s->StackOfGroupSkob.top()->toString()) << "\n";
-    //std::cout << "\ts->StackOfRepeatSkob :\t" << s->StackOfRepeatSkob.top()->toString() << "\n";
-    //std::cout << "\ts->StackOfRepeatSkobDoned.top :\t" << s->StackOfRepeatSkobDoned.top()->toString() << "\n";
-    std::cout << "\ts->StacksOfSopost.top.top :\t" << ( (s->StacksOfSopost.empty()||s->StacksOfSopost.top()->empty())?"$empty":s->StacksOfSopost.top()->top()->toString()) << "\n";
-    std::cout << "#######################################################\n";
-//*/
-}
+
 
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
 
-/*  Сопоставляет шаблон с аргументом.
-    Если дематчинг, то аргумент должен быть из поля зрения, и argleft c argright - это НЕ датадоты
-    Если внутри шаблона есть друугие датадоты, то для их сопоставления НУЖНО запускать отдельный матчинг
+/*  Сопоставляет шаблон с аргументом. Аргумент должен быть подцепочкой (т.е. окружон слева и справа элементами)
+    Шаблон должен быть с дотами (на данный момент все левые части оснащ. дотами при загрузке)
+    Если внутри шаблона есть другие датадоты, то для их сопоставления НУЖНО запускать отдельный матчинг
     Управляет полями зрения во время сопоставления
+
+    После провального матчинга условия - сессия д.б. исходной. Все новое - мусор
+    После успешного матчинга условия - все новое нужно сохранить для возможного отката
+
+    Если isdemaching==true, то argleft и argrigh игнорируются.
 */
-bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argright, bool isdemaching){
+bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, bool isdemaching){
+    bool succmatch = false;
 
-    this->initializationTemplate(tmplate); /// todo: проблемы с паралельными потоками! Изменяются края статической части программы - ЛЧ предложения функции. Нужно проваливание или копия или изначально датадоты в левых частях
-    if (! isdemaching) {
-        this->initializationArg(argleft, argright);
-    }
-    /// точка восстановления
-    SessionMachingRecoverPoint recPoint = createRecoverPoint();
-    ///
-
-    #ifdef DEBUG
-    if (argleft->pred != pole_zrenija.top()->first || argright->next != pole_zrenija.top()->second){
-        SYSTEMERROR("Unbalanced POLE_ZRENIJA stack and matching!");
-    }
-    if (! dynamic_cast<RefData_DOT *>( pole_zrenija.top()->second )) SYSTEMERROR("unexpected situation!");
-    #endif
-
-    bool succmatch = matchingBySession(this, tmplate, isdemaching);
-
-    #ifdef DEBUG
-    if (! pole_zrenija.size()) SYSTEMERROR("empty pole");
-    if (! this->StackOfDataSkob.size()) SYSTEMERROR("empty skobs " << StackOfDataSkob.size());
-    if (pole_zrenija.top()->second != this->StackOfDataSkob.top()) {
-        SYSTEMERROR("matching with not balanced skobs : pole_zrenija.top()->second=" << pole_zrenija.top()->second->toString() << "   !=  this->StackOfDataSkob.top()=" << this->StackOfDataSkob.top()->toString() << "("<< this->StackOfDataSkob.size() <<")" );
-    }
-    #endif
-
-    //std::cout << "\n$poping by " << this->toString() << "  :  " << StackOfDataSkob.top()->toString() <<  "    left: " << StackOfDataSkob.size()-1;
-    this->deinitializationTemplate(tmplate);
-    if (succmatch){
-        // оставляем точку восстановления для возможного отката
+    if (! isdemaching){
+        /// новое сопоставление в цепочке
+        //  поместить новое поле зрения в стек
+        //  создать точку восстановления
+        this->matchSessions.push_back( new SessionOfMaching(argleft, argrigh) );
+        //  запустиь матчинг
+        succmatch = matchingBySession(this, tmplate, isdemaching);
     } else {
-        // восстанавливаем до предыдущей точки восстановления
-        recoverToPoint(recPoint);
-        this->deinitializationArg();
+        /// продолжение старого сопоставления, начиная с предыдущего состояния (цепочке условий неудача)
+        //  задействовать нужное поле зрения (уже: должно быть на вершине стека подсессий, так как предшествующая неудача должна была удалить свою точку - останется эта)
+        //  начать с конца матчинг
+        succmatch = matchingBySession(this, tmplate, isdemaching);
     }
-    return succmatch;
+
+    if (succmatch){
+        // если успех, то сохранить состояние, и вернуть успех
+        return succmatch;
+    }//else {
+        // если провал, то очистить все последствия (откатиться до точки, очистить созданное после точки и саму точку)
+        delete this->matchSessions.back();
+        this->matchSessions.pop_back();
+        return succmatch;
+    //}
 }
 
 
@@ -146,7 +123,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
     TResult  pre_sost = isdemaching?BACK:GO, result_sost = isdemaching?BACK:GO;
 
-    RefChain *args = s->pole_zrenija.top();
+    RefChain *args = s->getPole_zrenija();
     #ifdef DEBUG
     if (!args || !args->first || !args->second) { SYSTEMERROR("unexpected NULLs in session::matching arguments!"); }
     #endif
@@ -154,20 +131,15 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
     // запускается вне матчинга: initialization(args->first, args->second);
     RefData *l=0, *r=0,
         *activeTemplate = isdemaching?tmplate->second->pred:tmplate->first, // tmplate->second->pred - это потому что последний датадот
-        //*currentLeft  = this->pole_zrenija.top()->first,
-        //*currentRight = this->pole_zrenija.top()->first,
-        //*preCurrentLeft, *preCurrentRight;
-        //*currentPoint = this->pole_zrenija.top()->first,
         *preCurrentPoint=0;
 
     RefVariable * ifvar=0;
-    l=r=s->pole_zrenija.top()->first; // для isdemaching не важно - все равно сначала будет restore
+    l=r=s->getPole_zrenija()->first; // для isdemaching не важно - все равно сначала будет restore
 
     while (activeTemplate) {
         /* */
         //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
         //std::cout << "\t" << activeTemplate->toString() << " ~ " /*<< getCurrentSopostStack().size()*/ << std::flush;
-
         //std::cout << "\t";  print_vector(r);
         //*/
         pre_sost = result_sost;
@@ -178,6 +150,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             #ifdef DEBUG
             RefObject *lastowner = 0;
             if (s->getCurrentSopostStack()->empty()){
+
                 lastowner = 0;
             } else {
                 lastowner = s->getCurrentSopostStack()->top()->owner;
@@ -187,10 +160,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                     result_sost = activeTemplate->init(s, r);
                     if (result_sost == GO){
                         if (l==r){ // r не изменилось => пустое
-                            s->SaveTempl(activeTemplate, 0, l);
+                            s->SaveTemplItem(activeTemplate, 0, l);
                         } else {
                             move_to_next_point(l, 0, s);  ///
-                            s->SaveTempl(activeTemplate, l, r);
+                            s->SaveTemplItem(activeTemplate, l, r);
                         }
                         move_to_next_point(activeTemplate, 0, s);
                     } else
@@ -219,13 +192,13 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
         } else
         if (pre_sost==BACK){
-            s->RestoreTempl(activeTemplate, l, r);
+            s->RestoreTemplItem(activeTemplate, l, r);
             result_sost = activeTemplate->back(s, l, r);
             if (result_sost == GO){
                 #ifdef DEBUG
                 if (!l) SYSTEMERROR("Unexpected situation: after back(l,r) method, l==null ! For simple variable it is mistake! Marat, prover - eli peremennaja ne prostaja, to vozmozhno nado ubrat etu proverku. Peremennaja: "+activeTemplate->toString() << "[" << activeTemplate << "]  BACK -> back() -> GO");
                 #endif
-                s->SaveTempl(activeTemplate, l, r);
+                s->SaveTemplItem(activeTemplate, l, r);
                 move_to_next_point(activeTemplate, 0, s);
             } else
             if (result_sost == BACK){
@@ -303,45 +276,7 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src){  // готови�
 
 };
 
-
-//  взгляд на новое поле зрения, подготовка к матчингу. l и r не изменяются
-//
-void Session::initializationArg(RefData* l, RefData* r) {
-    //std::cout << "\ninitializationArg::\t\t" << vectorToString(l, r);
-    #ifdef DEBUG
-    if (!r) SYSTEMERROR("!r nelza tak! esli pustaja, to nado pokazat posle kakoj refdata ona stiot => r!=0 !!!");
-    #endif
-    // снабжаем область зрения датадотами
-    RefData_DOT *leftd = new RefData_DOT();
-    RefData_DOT *rightd = new RefData_DOT(leftd, 0);
-//    std::cout << "\n\nleftd=" << leftd->toString() << "    rightd=" << rightd->toString() << "\n\n";
-    //leftd->pred = (l?l->pred:0);
-
-    if (!l){ // пустая
-        r->afterInsert(leftd);
-        leftd->afterInsert(rightd);
-    } else {
-        l->predInsert(leftd);
-        r->afterInsert(rightd);
-    }
-    // запоминаем  поле езрения в стеке - теперь оно активно
-    RefChain *newPole = new RefChain(leftd, rightd);
-    pole_zrenija.push(newPole);
-
-    //StackOfDataSkob.push(rightd); /// ?
-
-    StopBrackForceVar = 0;
-
-    //std::cout << "\t->\t" << newPole->toString();
-    //std::cout << "\t->\t" << newPole->toString();
-    //l = leftd;
-    //r = rightd;
-    //current_point = newPole->first;
-    //extention_number = 0;
-};
-
-
-
+/*
 //  завершение работы с текущим полем зрения. удаление датадот и возврат устаревшего поля зрения как вектора
 RefChain* Session::deinitializationArg() {
     RefChain *pz = pole_zrenija.top();
@@ -355,7 +290,7 @@ RefChain* Session::deinitializationArg() {
     #endif
     StackOfDataSkob.pop(); //???  а если удачное сопост-е
     std::cout << "\n\n% % % after.pop: " << StackOfDataSkob.size() << "\n\n" << std::flush;
-    */
+    * /
     pole_zrenija.pop();
 
     #ifdef DEBUG
@@ -370,8 +305,8 @@ RefChain* Session::deinitializationArg() {
         pright = pleft->pred;
         pleft = 0;
     } else {    // не пустое поле зрения  dot[ - ... - ]dot
-        /*if (pleft  ->next) */ pleft  ->next->pred = pleft  ->pred;
-        /*if (pright ->pred) */ pright ->pred->next = pright ->next;
+        /*if (pleft  ->next) * / pleft  ->next->pred = pleft  ->pred;
+        /*if (pright ->pred) * / pright ->pred->next = pright ->next;
         if (pleft  ->pred) pleft  ->pred->next = pleft  ->next;
         if (pright ->next) pright ->next->pred = pright ->pred;
         pleft  = pleft->next;
@@ -386,11 +321,11 @@ RefChain* Session::deinitializationArg() {
     //std::cout << "\t->\t" << pz->toString();
     return pz;
 };
+*/
 
 
 
-
-void Session::initializationTemplate(RefChain *tpl) { //  оснащение дотами шаблона
+/*void Session::initializationTemplate(RefChain *tpl) { //  оснащение дотами шаблона
     RefData * l =  tpl->first;
     RefData * r =  tpl->second;
     //std::cout << "\ninitializationTemplate::\t" << tpl->toString();
@@ -432,7 +367,7 @@ void Session::deinitializationTemplate(RefChain *&tpl) { //  удаление д
     /*tmp = dynamic_cast<RefData_DOT *>(tpl->second->next);
     if (!tmp) SYSTEMERROR("tpl->second->next not a DOT : " << ((tpl->second->next)?tpl->second->next->toString():"0"));
     tmp = dynamic_cast<RefData_DOT *>(tpl->first->pred);
-    if (!tmp) SYSTEMERROR("tpl->first->pred not a DOT : " << ((tpl->first->pred)?tpl->first->pred->toString():"0"));*/
+    if (!tmp) SYSTEMERROR("tpl->first->pred not a DOT : " << ((tpl->first->pred)?tpl->first->pred->toString():"0"));* /
 
     tmp = dynamic_cast<RefData_DOT *>(tpl->second);
     if (!tmp) SYSTEMERROR("tpl->second not a DOT : " << ((tpl->second)?tpl->second->toString():"0"));
@@ -452,13 +387,13 @@ void Session::deinitializationTemplate(RefChain *&tpl) { //  удаление д
 
     //std::cout << "\t->\t" << tpl->toString();
 
-};
+};*/
 
 
 
 
 
-void Session::SaveTempl(RefData* v, RefData* l, RefData* r) {
+void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     //std::cout << "\nSaveTempl::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
     RefBracketBase *rb;
     //RefVariable* vart = dynamic_cast <RefVariable *>(v);
@@ -470,9 +405,9 @@ void Session::SaveTempl(RefData* v, RefData* l, RefData* r) {
     //getCurrentSopostStack().push( varTable.top()->vars[vname] = new TVarSaver(l, r) );
 
     RefVariable* vart = dynamic_cast <RefVariable *>(v);
-    #ifdef DEBUG
+    /*#ifdef DEBUG
     if (StacksOfSopost.empty()) SYSTEMERROR("emplty stacks!");
-    #endif
+    #endif*/
     if (vart && vart->getName() != EmptyUniString){
         getCurrentSopostStack()->push( setVarBody(vart->getName(), new TVarBody(l, r, v)) );
     } else {
@@ -481,9 +416,9 @@ void Session::SaveTempl(RefData* v, RefData* l, RefData* r) {
 
 };
 
-void Session::RestoreTempl(RefData *owner, RefData* &l, RefData* &r) {
+void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     #ifdef DEBUG
-    if (! getCurrentSopostStack()->size() ) SYSTEMERROR("empty stak!!!  staks=" << StacksOfSopost.size());
+    if (! getCurrentSopostStack()->size() ) SYSTEMERROR("empty stak!!!  " );
     #endif
     TVarBody  *pd = getCurrentSopostStack()->top();
     #ifdef DEBUG
@@ -492,7 +427,7 @@ void Session::RestoreTempl(RefData *owner, RefData* &l, RefData* &r) {
         std::cout << "\npd->owner=" << pd->owner << "\n\n\n\n\n\n\n\n" << std::flush;
         std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;
         printf("\n");
-        SYSTEMERROR("RestoreTempl for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << pd->owner->toString() << "[" << pd->owner << "] expected!");
+        SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << pd->owner->toString() << "[" << pd->owner << "] expected!");
     }
     #endif
     l = pd->first;
@@ -507,7 +442,7 @@ void Session::RestoreTempl(RefData *owner, RefData* &l, RefData* &r) {
     #endif
     //( varTable[vart->getName()] = new TVarBody(l, r, v) );
     delete tmp;
-    //std::cout << "\nRestoreTempl::\t" << owner->toString() << "\t->\t" << vectorToString(l, r);
+    //std::cout << "\nRestoreTemplItem::\t" << owner->toString() << "\t->\t" << vectorToString(l, r);
     return;
 };
 
@@ -571,6 +506,8 @@ DataForRepeater::DataForRepeater(RefData *o) {
 
 void Session::showStatus(){
     std::cout << "\n\n";
+    std::cout << "\nZAGL !!!!";
+    /*
     std::cout << "\n    pole_zrenija: size=" << pole_zrenija.size() << "  " << (pole_zrenija.empty() ? "" : pole_zrenija.top()->toString());
     std::cout << "\n    StopBrackForceVar: " << (StopBrackForceVar?StopBrackForceVar->toString():"null");
     std::cout << "\n    StacksOfSopost : size=" << StacksOfSopost.size();
@@ -580,6 +517,7 @@ void Session::showStatus(){
     std::cout << "\n    StackOfRepeatSkob : size=" << StackOfRepeatSkob.size() << "  " << (StackOfRepeatSkob.empty() ? "" : StackOfRepeatSkob.top()->toString());
     std::cout << "\n    StackOfRepeatSkobDoned : size=" << StackOfRepeatSkobDoned.size() << "  " << (StackOfRepeatSkobDoned.empty() ? "" : StackOfRepeatSkobDoned.top()->toString());
     std::cout << "\n    StackOfGroupSkob : size=" << StackOfGroupSkob.size() << "  " << (StackOfGroupSkob.empty() ? "" : StackOfGroupSkob.top()->toString());
+    */
     std::cout << "\n\n";
 
 }

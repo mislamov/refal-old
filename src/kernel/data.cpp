@@ -375,6 +375,39 @@ RefChain::~RefChain(){
 };
 
 
+RefChain* RefChain::aroundByDots(){
+    RefData * l =  this->first;
+    RefData * r =  this->second;
+    //std::cout << "\ninitializationTemplate::\t" << tpl->toString();
+
+    #ifdef DEBUG
+    if (dynamic_cast<RefData_DOT *>(l) || dynamic_cast<RefData_DOT *>(r)){
+        SYSTEMERROR(" situation : l or r already DataDOTs !");
+    }
+    #endif
+    // снабжаем область зрения датадотами
+    RefData_DOT *leftd = new RefData_DOT();
+    RefData_DOT *rightd = new RefData_DOT(leftd, 0);
+    if (l) {
+        #ifdef DEBUG
+        if (!r) SYSTEMERROR("!r && l  !!! l="<<l<< " r="<<r);
+        #endif
+        l->predInsert(leftd);
+        r->afterInsert(rightd);
+    } else {
+        if (r){
+            r->afterInsert(leftd);
+            leftd->afterInsert(rightd);
+        } else {
+            leftd->afterInsert( rightd );
+        }
+    }
+    this->first = leftd;
+    this->second = rightd;
+
+    return this;
+}
+
 
 ////////////////////////////////////////////
 //

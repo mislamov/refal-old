@@ -103,23 +103,27 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
     std::list<RefSentence *>::iterator sent = body.begin(); // перебор предложений функции
     bool reslt = false;
 
-   /// создание точки восстановления
-   //s->StacksOfSopost.push( recoverSopost = new std::stack<TVarBody *> );   // новый под-стек сопоставления
-   //s->varTables.push( recoverVBody = new TVarBodyTable() );                // новая под-таблица переменных
     do {
-        //s->initializationTemplate( (*sent)->leftPart ); /// todo сделать мосты или копирование - иначе изменение исходного тела функции
-
         LOG("\ttring this: " << (*sent)->toString() );
 
-        if (s->matching( (*sent)->leftPart, argfirst, argsecond)){
+        /// todo: создать тут точку отката сессии для очистки последствий функции
+        SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
+
+        if (s->matching( (*sent)->leftPart, argfirst, argsecond, false)){
             LOG("\tsucessfull!");
             RefChain *newoe = s->RightPartToObjectExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
+
+            /// todo: откатиться до созданной точки, оставив только newoe и глобальные данные. Созданные переменные удалить.
+            // сейчас дилетантский откат:
+            while (s->matchSessions.back() != stateBeforeMatch){
+                delete s->matchSessions.back();
+                s->matchSessions.pop_back();
+            } // конец дилетантского отката
 
             // удаляем старый вектор аргументов
             if (ldot->next != rdot){
                 delChain(ldot->next, rdot->pred);
             }
-
             // вставляем новый вектор
             if (newoe->first){
                 ldot->next = newoe->first;
@@ -135,25 +139,15 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
             }
             delete newoe; // больше незачем хранить старую оболочку - новый вектор встроен в поле зрения
 
-            //s->deinitializationTemplate( (*sent)->leftPart );
-
             reslt = true;
         } else {
-            //s->deinitializationTemplate( (*sent)->leftPart );
+            // по идее если матчинг закончился не удачно, то в нем происходит откат к исходному состоянию и удаление мусора
+            #ifdef DEBUG
+            if (stateBeforeMatch != s->matchSessions.back()) SYSTEMERROR("unbalansed sub-sessions and recover-dots"); // хм...
+            #endif
             sent++;
         }
     } while (!reslt && sent != body.end());
-
-    /// возврат сессии в точку восстановления
-    //std::cout << "\n\n/// back to recover-dot : возврат сессии в точку восстановления\n" << std::flush;
-    // восстанавливаем выражение в поле зрения
-    //RefChain *pz = s->deinitializationArg();  // датадоты удалены с автовыравниванием ссылок
-
-    //if (recoverVBody != s->varTables.top()) SYSTEMERROR("enother var table !"); // проверка корректности точки восстановления
-    //if (recoverSopost != s->StacksOfSopost.top()) SYSTEMERROR("enother sopost stack !"); //  -- || --
-    // удалять до точки восстан-я
-    //s->StacksOfSopost.pop(); /// todo очистка
-    //s->varTables.pop();      /// todo очистка
 
     return reslt;
 };
@@ -233,6 +227,7 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
 
 
 TResult  RefCondition::init(Session* s, RefData *&l){
+    /*
     RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
     if (!d){
         return BACK;
@@ -241,7 +236,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     s->showStatus();
 
     RefChain *newpz = s->RightPartToObjectExpression(this->rightPart);  /// todo: тут создается - тут же и кильнуть
-    s->initializationArg(newpz->first, newpz->second); // это уже копия с дотами
+    //s->initializationArg(newpz->first, newpz->second); // это уже копия с дотами
     std::cout << "\nCOND-EVALUTE:::\t" << newpz->toString() << " : " << this->leftPart->toString();
 
     evalutor(newpz, s);
@@ -256,7 +251,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
         std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
         return GO;
     } else {
-        newpz = s->deinitializationArg();
+        //newpz = s->deinitializationArg();
         s->deinitializationTemplate(this->leftPart);
         newpz->clear(); // сопоставление неуспешно - удаляем
         delete newpz;
@@ -268,10 +263,11 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 
         return BACK;
     }
+    */
 };
 
 TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
-
+/*
     s->initializationTemplate(this->leftPart);
 
     /// todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -289,7 +285,7 @@ TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
         std::cout << "\n\nCOND-RETURN:::\tback-> BACK" << std::flush << "\n\n\n";
         return BACK;
     }
-
+*/
 };
 
 
