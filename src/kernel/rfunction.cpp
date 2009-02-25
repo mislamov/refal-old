@@ -78,11 +78,16 @@ unistring RefUserFunction::toString() {
 
 /// аргументы - концы чистого ОВ
 bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s){
-        //std::stack<TVarBody *>  *recoverSopost = 0;
-        //TVarBodyTable           *recoverVBody = 0;
+        RefData *ldot;
+        RefData *rdot;
 
-        RefData *ldot = argfirst ->pred;
-        RefData *rdot = argsecond->next;
+        if (!argfirst){
+            // пустой аргумент
+            ldot = argsecond;
+        } else {
+            ldot = argfirst ->pred;
+        }
+        rdot = argsecond->next;
         #ifdef DEBUG
         // должно вызываться только для части цепочки => окружено чем-то. Нужно чтоб не потерять место изменения
         if (! ldot )

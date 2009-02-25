@@ -83,32 +83,6 @@ void matchingGarbagePrepare(Session *s){
 //*/
 }
 
-// очищение мусора сессии. Если tosavevarmap, то среди мусора может оказаться нужное - то что в карте переменных
-void matchingGarbageCleaner(Session *s, bool tosavevarmap=false){
-    // удаляет последний стек сопоставлений, очищая его содержимое. Если tosavevarmap, то очищает не полностью - оставляет то, что в карте переменных
-    //std::stack<TVarBody *> *upstack = s->getCurrentSopostStack();
-    //s->StacksOfSopost.pop(); - не надо чистить, тк это может быть для условия, кот-е придется откатывать
-
-        //std::cout << "\n$poping by matchingGarbageCleaner" << "  :  " << s->StackOfDataSkob.top()->toString();
-        s->StackOfDataSkob.pop(); // del DOT
-
-    /// todo аккуратное удаление данных сопоставления
-
-    //delete upstack; // стек очищен где надо
-/** /
-    std::cout << "\n######################  matchingGarbageCleaner  #################################\n";
-    std::cout << "After matching:\n";
-    std::cout << "\ts->StackOfDataSkob.top :\t" <<  (s->StackOfDataSkob.empty()?"$empty":s->StackOfDataSkob.top()->toString()) << "\n";
-    //std::cout << "\ts->StackOfGroupSkob.top :\t" << (s->StackOfGroupSkob.empty()?"$empty":s->StackOfGroupSkob.top()->toString()) << "\n";
-    //std::cout << "\ts->StackOfRepeatSkob :\t" << s->StackOfRepeatSkob.top()->toString() << "\n";
-    //std::cout << "\ts->StackOfRepeatSkobDoned.top :\t" << s->StackOfRepeatSkobDoned.top()->toString() << "\n";
-    std::cout << "\ts->StacksOfSopost.top.top :\t" << ( (s->StacksOfSopost.empty()||s->StacksOfSopost.top()->empty()) ?"$empty":s->StacksOfSopost.top()->top()->toString()) << "\n";
-    std::cout << "#######################################################\n";
-//*/
-    return;
-}
-
-
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
 
 /*  Сопоставляет шаблон с аргументом.
@@ -117,13 +91,13 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
     Управляет полями зрения во время сопоставления
 */
 bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argright, bool isdemaching){
+
+    this->initializationTemplate(tmplate); /// todo: проблемы с паралельными потоками! Изменяются края статической части программы - ЛЧ предложения функции. Нужно проваливание или копия или изначально датадоты в левых частях
+    if (! isdemaching) {
+        this->initializationArg(argleft, argright);
+    }
     /// точка восстановления
     SessionMachingRecoverPoint recPoint = createRecoverPoint();
-
-    this->initializationTemplate(tmplate); /// todo: проблемы с паралельными потоками! Изменяются края статической части программы - ЛЧ предложения функции. Нужно проваливание или копия
-    if (! isdemaching) {
-        this->initializationArg(argleft, argright); // теперь это датадоты
-    }
     ///
 
     #ifdef DEBUG
@@ -148,9 +122,9 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argright, 
     if (succmatch){
         // оставляем точку восстановления для возможного отката
     } else {
-        this->deinitializationArg();
         // восстанавливаем до предыдущей точки восстановления
         recoverToPoint(recPoint);
+        this->deinitializationArg();
     }
     return succmatch;
 }
@@ -331,6 +305,7 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src){  // готови�
 
 
 //  взгляд на новое поле зрения, подготовка к матчингу. l и r не изменяются
+//
 void Session::initializationArg(RefData* l, RefData* r) {
     //std::cout << "\ninitializationArg::\t\t" << vectorToString(l, r);
     #ifdef DEBUG
@@ -352,7 +327,9 @@ void Session::initializationArg(RefData* l, RefData* r) {
     // запоминаем  поле езрения в стеке - теперь оно активно
     RefChain *newPole = new RefChain(leftd, rightd);
     pole_zrenija.push(newPole);
-    //StackOfDataSkob.push(rightd);
+
+    //StackOfDataSkob.push(rightd); /// ?
+
     StopBrackForceVar = 0;
 
     //std::cout << "\t->\t" << newPole->toString();
