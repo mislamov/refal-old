@@ -24,6 +24,7 @@ class TVarBodyTable : public std::map<unistring, TVarBody*>{};
 
 // тело сопоставленной переменной
 class TVarBody : public pair<RefData *, RefData *>{
+    unistring sss;
 public:
     RefObject *owner; // ссылка на описание типа переменной
     TVarBodyTable *subv;  // подпеременные - для пользовательских шаблонов

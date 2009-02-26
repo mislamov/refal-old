@@ -12,6 +12,8 @@
 
 class RefSentence : public RefObject {
 public:
+    unistring sss;
+
     RefChain *leftPart;
     RefChain *rightPart;
     virtual unistring toString();

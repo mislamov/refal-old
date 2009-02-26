@@ -36,6 +36,8 @@ class Session;
 // Родитель всего в Рефале
 class RefObject {
     public:
+        unistring sss;
+
         //static long ocount;
         RefObject();
         static long getCout();
@@ -47,7 +49,6 @@ class RefObject {
 // Абстрактный класс - предок всех термов языка
 class RefData : public RefObject {
     public:
-    std::string sss;
     	RefData*  next;
         RefData*  pred;
     public:
@@ -195,6 +196,7 @@ class RefBracketBase : public RefData {
 
 
 class RefChain : public std::pair<RefData*, RefData*> {
+    unistring sss;
   public:
 
 	void clear(); // уничтожение всего что ммежду first и second включительно

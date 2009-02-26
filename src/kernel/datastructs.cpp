@@ -42,7 +42,7 @@ TResult RefData_DOT::back(Session* sess, RefData *&l, RefData *&r){
         std::ostringstream s;
         s << (is_opened?" [":" ]"); /*<< ")." << (long)this << ":other=" << (long)this->other << " ";*/
 //        s << "." << (long)this << ' ';
-        return s.str();
+        return sss = s.str();
     };
 	RefData* RefData_DOT::next_term( ThisId var_id, Session *s ) { return next; };
 	RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) { return pred; };

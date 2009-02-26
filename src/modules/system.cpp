@@ -127,6 +127,12 @@ RefChain* Card (RefData* beg, RefData* end, Session* s){
     for (size_t i=0; i<text.length(); i++){
         *rch += new RefAlpha(text[i]);
     }
+
+    // конец файла
+    if (std::cin.eof()){
+        *rch += new RefInteger((infint)0);
+    }
+
     return rch;
 }
 

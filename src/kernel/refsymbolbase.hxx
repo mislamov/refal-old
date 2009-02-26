@@ -52,6 +52,7 @@ template <class T>
 class RefSymbol : public RefSymbolBase<T>{
             T value;
         public:
+            unistring sss;
             RefSymbol(T i, RefData *rp = 0);
             RefSymbol(RefData *rp = 0);
             virtual T getValue();

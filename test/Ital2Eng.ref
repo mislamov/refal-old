@@ -1,0 +1,29 @@
+$ENTRY Go { = <Job <Card>>  }
+   
+
+Job {
+     0 = ;                  /* end of file */
+     eX = <Prout <Trans-line eX>>
+          <Job <Card>>; }
+   
+
+Trans-line {
+     ' 'eX = <Trans-line eX>;
+     e.Word' 'e.Rest =
+                 <Trans (e.Word) <Table>>' '
+                 <Trans-line e.Rest>;
+      = ;
+     e.Word = <Trans (e.Word) <Table>>' '; }
+
+
+Table { = (('cane') 'dog')
+            (('gatto') 'cat')
+            (('cavallo') 'horse')
+            (('rana') 'frog')
+            (('porco') 'pig')
+         }
+
+Trans {
+     (e.It)e1((e.It)e.Eng)e2 = e.Eng;
+     (e.It)e1 = '***'; /* word not in table */
+        }

@@ -55,35 +55,37 @@ void SAXPrintHandlers::startDocument(){
 void SAXPrintHandlers::startElement(const   XMLCh* const  name,  AttributeList&  attributes){
     RefObject *tmp = 0;
 
-    unistring command = toWstring(name);
-    //LOG( _L("SAXPrintHandlers::startElement::[") << command << "] (attr: "<< attributes.getLength() << " )" );
-    loader->activeTag.push(command);
+    unistring theCommand = toWstring(name);
+    //LOG( _L("SAXPrintHandlers::startElement::[") << theCommand << "] (attr: "<< attributes.getLength() << " )" );
+    loader->activeTag.push(theCommand);
 
 #ifdef DEBUG
 try {
 #endif
-    if ( command.compare(_L("BEGIN")) == 0 ) {
+    loader->currentchars = _L("");  // поскольку чтение строк, содержащих перенос - разделено в этом SAX, то строки набираются накоплением (конкатенациями) и обнуляются для новых тегов
+
+    if ( theCommand.compare(_L("BEGIN")) == 0 ) {
     } else
-    if ( command.compare(_L("FUNCTION")) == 0) {
+    if ( theCommand.compare(_L("FUNCTION")) == 0) {
             if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("FUNCTION WITHOUT name");
-            loader->putValueToStack(command, new RefUserFunction(toWstring(attributes.getValue("name"))));
+            loader->putValueToStack(theCommand, new RefUserFunction(toWstring(attributes.getValue("name"))));
     } else
-    if ( command.compare(_L("TEMPLATE")) == 0) {
+    if ( theCommand.compare(_L("TEMPLATE")) == 0) {
             SYSTEMERROR("Templates are switched off! (testing)");
             if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("TEMPLATE WITHOUT name");
-            loader->putValueToStack(command, new RefUserTemplate(toWstring(attributes.getValue("name"))));
+            loader->putValueToStack(theCommand, new RefUserTemplate(toWstring(attributes.getValue("name"))));
     } else
-    if ( command.compare(_L("SENTENCE")) == 0) {
-            loader->putValueToStack(command, new RefSentence());
+    if ( theCommand.compare(_L("SENTENCE")) == 0) {
+            loader->putValueToStack(theCommand, new RefSentence());
     } else
-    if ( command.compare(_L("LEFT-PART")) == 0) {
+    if ( theCommand.compare(_L("LEFT-PART")) == 0) {
             loader->createChainToStack();
-            loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
+            //перенесено в endElement: loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
     } else
-    if ( command.compare(_L("RIGHT-PART")) == 0) {
+    if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
             loader->createChainToStack();
     } else
-    if ( command.compare(_L("EXEC")) == 0) {  //     <
+    if ( theCommand.compare(_L("EXEC")) == 0) {  //     <
             RefExecBracket *t = new RefExecBracket();
             loader->putValueToStack("BRACKET", t);
             *(loader->getCurrChain()) += t;
@@ -91,32 +93,32 @@ try {
 
             //std::cout << "\n\n" << loader->getCurrChain()->toString() << "\n\n";
     } else
-    if ( command.compare(_L("VAR")) == 0) {  //
+    if ( theCommand.compare(_L("VAR")) == 0) {  //
         // ничего не делаем, так как при закрытии тега воспользуемся менеджером переменных и текущим тексом=описателем переменной
     } else
-    if ( command.compare(_L("LNK")) == 0) {  // ссылка на переменную
+    if ( theCommand.compare(_L("LNK")) == 0) {  // ссылка на переменную
         // ничего не делаем, так как при закрытии тега воспользуемся менеджером переменных и текущим тексом=описателем переменной
     } else
-    if ( command.compare(_L("TEXT")) == 0) {  //
+    if ( theCommand.compare(_L("TEXT")) == 0) {  //
         // ничего не делаем, так как при закрытии тега все сделаем
     } else
-    if ( command.compare(_L("BRACKET")) == 0 ) {
+    if ( theCommand.compare(_L("BRACKET")) == 0 ) {
             RefStructBracket *t = new RefStructBracket();
             loader->putValueToStack("BRACKET", t);
             *(loader->getCurrChain()) += t;
             *(loader->getCurrChain()) += new RefNULL();
     } else
-    if ( command.compare(_L("IF")) == 0 ) {
+    if ( theCommand.compare(_L("IF")) == 0 ) {
             loader->currentCondition = new RefCondition();
     } else
-    if ( command.compare(_L("ERROR")) == 0 ) {
+    if ( theCommand.compare(_L("ERROR")) == 0 ) {
     } else
     /*****************   выделить в менеджер для простого добавления пользовательских типов  *****************/
-    if (tmp = getNewEmptyRefSymbolByTypeName(command)){ // рефал-символ
-        loader->putValueToStack(command, tmp);
+    if (tmp = getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ
+        loader->putValueToStack(theCommand, tmp);
     } else
 
-    SYSTEMERROR("unknown tag name: " << command);
+    SYSTEMERROR("unknown tag name: " << theCommand);
 #ifdef DEBUG
 } catch(int i) {
     SYSTEMERROR("excepion!");
@@ -128,10 +130,10 @@ void SAXPrintHandlers::characters(const     XMLCh* const    chars
                                   , const   unsigned int       length)
 {
     //std::setlocale(LC_ALL, "ru_RU.UTF-8");
-    loader->currentchars = toWstring(chars, length);
+    loader->currentchars += toWstring(chars, length);
     #ifdef DEBUG
-    unistring ss = toWstring(chars);
-    //LOG( "SAXPrintHandlers::characters:: " << ss.c_str() );
+    unistring ss = loader->currentchars;
+    //LOG( "SAXPrintHandlers::characters:: " << ss.c_str() << "\n");
     #endif
     //fFormatter.formatBuf(chars, length, XMLFormatter::CharEscapes);
 }
@@ -166,25 +168,25 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     //LOG( _L("SAXPrintHandlers::endElement:: [") << toWstring(name) << "]" );
     RefObject *tmpobj = 0;
     RefValuedData *tmpvdata = 0;
-    unistring command = toWstring(name);
+    unistring theCommand = toWstring(name);
 
     #ifdef DEBUG
     try {
     #endif
-    if (! command.compare(_L("ERROR"))) {
+    if (! theCommand.compare(_L("ERROR"))) {
         SYSTEMERROR(loader->currentchars);
     } else
-    if (! command.compare(_L("BEGIN"))) {
+    if (! theCommand.compare(_L("BEGIN"))) {
         // модуль прочитан полностью
     } else
-    if ( command.compare(_L("FUNCTION")) == 0) {
+    if ( theCommand.compare(_L("FUNCTION")) == 0) {
             #ifdef DEBUG
             if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
             #endif
             RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
             loader->currentModule->objects[f->getName()] = f;
     } else
-    if ( command.compare(_L("TEMPLATE")) == 0) {
+    if ( theCommand.compare(_L("TEMPLATE")) == 0) {
             #ifdef DEBUG
             if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERROR("not TEMPLATE in TEMPLATE-stack !!!");
             #endif
@@ -193,7 +195,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             t->setLeftPart( loader->extractCurrChainFromStack() );
             loader->currentModule->objects[t->getName()] = t;
     } else
-    if ( command.compare(_L("SENTENCE")) == 0) {
+    if ( theCommand.compare(_L("SENTENCE")) == 0) {
             #ifdef DEBUG
             if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
             if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not FUNCTION in FUNCTION-stack !!!");
@@ -204,7 +206,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefUserFunction *f =  (RefUserFunction*)loader->getValueFromStack("FUNCTION");
             (f->body).push_back(s);
     } else
-    if ( command.compare(_L("LEFT-PART")) == 0) {
+    if ( theCommand.compare(_L("LEFT-PART")) == 0) {
+            loader->getCurrChain()->toString();
             loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
 
         /*
@@ -215,7 +218,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             s->leftPart = loader->extractCurrChainFromStack();
         */
     } else
-    if ( command.compare(_L("RIGHT-PART")) == 0) {
+    if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
         /*
             #ifdef DEBUG
             if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
@@ -224,8 +227,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             s->rightPart = loader->extractCurrChainFromStack();
         */
     } else
-    if ( command.compare(_L("EXEC")) == 0) {  //     <
-            //std::cout << "EndElement:" << command;
+    if ( theCommand.compare(_L("EXEC")) == 0) {  //     <
+            //std::cout << "EndElement:" << theCommand;
             //std::cout << " stack["<<"BRACKET"<<"]:" << loader->getValueFromStack("BRACKET")->toString();
 
             RefExecBracket *br = dynamic_cast<RefExecBracket *>(loader->extractValueFromStack("BRACKET"));
@@ -235,25 +238,25 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefExecBracket *brclose = new RefExecBracket(br, 0);
             *(loader->getCurrChain()) += brclose;
     } else
-    if ( command.compare(_L("VAR")) == 0) {  //
+    if ( theCommand.compare(_L("VAR")) == 0) {  //
         // берем по текущему тексту и получаем ссылку на переменную
         unistring vardescr = loader->currentchars;
         unistring vname = getVarName(vardescr); // теперь vname - имя vardescr - тип
         *(loader->getCurrChain()) += getVariableByTypename(vardescr, vname);
         //std::cout << loader->getCurrChain()->second->toString();
     } else
-    if ( command.compare(_L("LNK")) == 0) {  //
+    if ( theCommand.compare(_L("LNK")) == 0) {  //
         // берем по текущему тексту и получаем ссылку на переменную
         *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars);
         //std::cout << loader->getCurrChain()->second->toString();
     } else
-    if ( command.compare(_L("TEXT")) == 0) {  //
+    if ( theCommand.compare(_L("TEXT")) == 0) {  //
         unistring text = loader->currentchars;
         for (int i=0; i<text.length(); i++){
             *(loader->getCurrChain()) += new RefAlpha(text[i]);
         }
     } else
-    if ( command.compare(_L("BRACKET")) == 0 ) {
+    if ( theCommand.compare(_L("BRACKET")) == 0 ) {
             RefStructBracket *br = dynamic_cast<RefStructBracket *>(loader->extractValueFromStack("BRACKET"));
             #ifdef DEBUG
             if (! br) SYSTEMERROR("not STRUCT BRACKET in BRACKET-stack !!!");
@@ -261,27 +264,27 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefStructBracket *brclose = new RefStructBracket(br, 0);
             *(loader->getCurrChain()) += brclose;
     } else
-    if ( command.compare(_L("IF")) == 0 ) {
+    if ( theCommand.compare(_L("IF")) == 0 ) {
             RefCondition* cond = loader->currentCondition;
             cond->setLeftPart (loader->extractCurrChainFromStack());
             cond->setRightPart(loader->extractCurrChainFromStack());
             *(loader->getCurrChain()) += cond;
     } else
-    if ( command.compare(_L("ERROR")) == 0 ) {
+    if ( theCommand.compare(_L("ERROR")) == 0 ) {
         std::cout << "\n##########################################################################################";
-        std::cout << "\n\t" << loader->currentchars;
+        std::cout << "\n####:ERROR: \t" << loader->currentchars;
         std::cout << "\n##########################################################################################\n";
     } else
     /*****************   выделить в менеджер для простого добавления пользовательских типов  *****************/
-    //if (tmp = getNewEmptyRefSymbolByTypeName(command)){ // рефал-символ
-    //    loader->putValueToStack(command, tmp);
+    //if (tmp = getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ
+    //    loader->putValueToStack(theCommand, tmp);
     //} else
-    if (tmpvdata = dynamic_cast<RefValuedData *> (loader->extractValueFromStack(command))){
+    if (tmpvdata = dynamic_cast<RefValuedData *> (loader->extractValueFromStack(theCommand))){
         tmpvdata->setValueFromString(loader->currentchars);
         *(loader->getCurrChain()) += tmpvdata;
     } else
 
-    SYSTEMERROR("unknown tag name: " << command);
+    SYSTEMERROR("unknown tag name: " << theCommand);
     #ifdef DEBUG
     } catch(int i) {
         SYSTEMERROR("excepion!");

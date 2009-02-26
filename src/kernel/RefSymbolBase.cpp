@@ -77,13 +77,8 @@ template <class T>
 template <class T>
     unistring RefSymbol<T>::toString(){
         std::ostringstream s;
-        s
-        //   << "RefSymbol("
-        << this->getValue()
-        //   << ") "
-        ;
-        //return s.string();
-        return s.str();
+        s << this->getValue();
+        return sss = s.str();
 };
 
 
@@ -173,20 +168,20 @@ unistring RefSymbol<infint>::toString(){
 //    return getValue() + " ";
     std::ostringstream s;
     s << getValue() << " ";
-    return s.str();
+    return sss = s.str();
 
 }
 
 unistring RefSymbol<infreal>::toString(){
     std::ostringstream s;
     s << getValue() << " ";
-    return s.str();
+    return sss = s.str();
 }
 
 unistring RefSymbol<char>::toString(){
     std::ostringstream s;
     s << "\\x" << std::hex << (int)getValue();
-    return s.str();
+    return sss = s.str();
 }
 
 #endif // REFSYMBOLBASE_HPP_INCLUDED

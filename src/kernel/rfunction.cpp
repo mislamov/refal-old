@@ -20,7 +20,7 @@ RefSentence::RefSentence(RefChain *l, RefChain *r) : RefObject() {
 };
 unistring RefSentence::toString(){
     //return "$RefSentence: Lp="+(leftPart?leftPart->toString():"$notset")+"   Rp="+(rightPart?rightPart->toString():"$noset");
-    return "\t\t\t"+(leftPart?leftPart->toString():"$notset")+"   ::==   "+(rightPart?rightPart->toString():"$noset");
+    return sss = "\t\t\t"+(leftPart?leftPart->toString():"$notset")+"   ::==   "+(rightPart?rightPart->toString():"$noset");
 };
 
 
@@ -52,7 +52,7 @@ unistring RefUserModule::toString(){
                 }
 
             };
-            return result;
+            return sss = result;
 };
 
 
@@ -72,7 +72,7 @@ unistring RefUserFunction::toString() {
         };
         result += "}\n\n";
 
-        return "RefUserFunction::" + name + result;
+        return sss = "RefUserFunction::" + name + result;
 
 };
 
@@ -176,7 +176,7 @@ void RefDllModule::setObjectByName(unistring name, RefObject* o){
 unistring RefDllModule::toString(){
         std::ostringstream s;
         s << "RefDllModule[ objects: " << (objects.size()) << " ]" ;
-        return s.str();
+        return sss = s.str();
 };
 
 RefBuildInFunction::RefBuildInFunction(unistring name, RefDllModule *m) : RefFunctionBase() {

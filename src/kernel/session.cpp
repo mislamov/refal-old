@@ -501,7 +501,7 @@ unistring TVarBody::toString(){
         s+=owner->toString();
         s+=" with ";
         s+=vectorToString(first,second);
-        return s;
+        return sss = s;
 };
 
 

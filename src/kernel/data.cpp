@@ -426,7 +426,7 @@ bool RefNULL::operator==(RefData&) {
 unistring RefLinkToVariable::toString(){
     std::ostringstream s;
     s << "[LNK::name=" << getName() << "]." << (long)this ;
-    return s.str();
+    return RefData::sss = s.str();
 };
 
 bool RefLinkToVariable::operator==(RefData&){
@@ -497,7 +497,7 @@ RefLinkToVariable::RefLinkToVariable(unistring path, RefData *rp) : RefData(rp),
 
 unistring RefUserVar::toString(){
     //return _L("[Var::name="+getName()+", type="+typeDescription+"]");
-    return "USERVAR::type=" + typeDescription + ", name=" + getName() + ", body=" + body->toString() ;
+    return RefData::sss = "USERVAR::type=" + typeDescription + ", name=" + getName() + ", body=" + body->toString() ;
 };
 bool RefUserVar::operator==(RefData&){
     return false;
@@ -525,7 +525,7 @@ RefUserVar::RefUserVar(unistring typeName, unistring name, RefData *rp) : RefVar
 
 
 
-unistring RefChain::toString(){ return vectorToString(first, second); };
+unistring RefChain::toString(){ return sss = vectorToString(first, second); };
 
 
 void delChain(RefData*a, RefData*b){

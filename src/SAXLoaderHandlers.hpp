@@ -187,12 +187,13 @@ class LoaderHeap {
             return stckChains.top();
         }
         void putValueToStack(unistring name, RefObject* o){
-            /*std::cout<<"\n++putValueToStack(";
+            /** /
+            std::cout<<"\n++putValueToStack(";
             std::cout<<name;
             std::cout<<", ";
             std::cout<<(long)o;
             std::cout << o->toString();
-            std::cout << ")";*/
+            std::cout << ")";/**/
             stackstags[name].push(o);
             //std::cout << "\n"<< "++stackstags["<<name<<"].count="<< (stackstags[name].size()) <<"\n";
         }
