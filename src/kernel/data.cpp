@@ -527,11 +527,15 @@ RefLinkToVariable::RefLinkToVariable(unistring path, RefData *rp) : RefData(rp),
 
 unistring RefUserVar::toString(){
     //return _L("[Var::name="+getName()+", type="+typeDescription+"]");
-    return RefData::sss = "USERVAR::type=" + typeDescription + ", name=" + getName() + ", body=" + body->toString() ;
+    return RefData::sss = "USERVAR::type=" + typeDescription + ", name=" + getName() + ", body=" + (body?body->toString():"null") ;
 };
 bool RefUserVar::operator==(RefData&){
     return false;
 };
+
+
+
+
 TResult RefUserVar::init(Session* s, RefData *&currentPoint){
     SYSTEMERROR("user templates not yet realised!");
 };
@@ -539,13 +543,19 @@ TResult RefUserVar::back(Session* s, RefData *&currentRight, RefData *&currentLe
     SYSTEMERROR("user templates not yet realised!");
 };
 
+
+
+
+
 RefData*  RefUserVar::Copy(RefData* where){
+    SYSTEMERROR("zagluska!"); // определить в каких случаях используется и что именно возвращать в качестве копии
     RefUserVar *v = new RefUserVar(typeDescription, getName(), where);
-    v->body = body->Copy();
+    /*v->body = body->Copy();*/
     return v;
 };
 
 RefUserVar::RefUserVar(unistring typeName, unistring name, RefData *rp) : RefVariable(name, rp){
+    body = 0;
     typeDescription = typeName;
 };
 

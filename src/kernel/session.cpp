@@ -413,9 +413,8 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     //getCurrentSopostStack().push( varTable.top()->vars[vname] = new TVarSaver(l, r) );
 
     RefVariable* vart = dynamic_cast <RefVariable *>(v);
-    /*#ifdef DEBUG
-    if (StacksOfSopost.empty()) SYSTEMERROR("emplty stacks!");
-    #endif*/
+
+    // сохраняется состояние только переменных
     if (vart && vart->getName() != EmptyUniString){
         getCurrentSopostStack()->push( setVarBody(vart->getName(), new TVarBody(l, r, v)) );
     } else {
@@ -463,6 +462,7 @@ void Session::regModule(RefModuleBase *m){
     //std::cout << "\n\n\n\nSession::regModule [" << m->getName() << "]  :: " << m->toString() << "\n\n\n\n";
     if (!m) SYSTEMERROR("Tring to load $null module!");
     modules[m->getName()] = m;
+    /// todo: связывание у пользовательских переменных ссылок на шаблоны с шаблонми по описаням/именам, указаным в конструкторе
 };
 
 

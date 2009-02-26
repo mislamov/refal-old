@@ -149,10 +149,11 @@ class RefLinkToVariable : public RefData, public RefalNameSpace {
 
 };
 
+class RefUserTemplate;
 class RefUserVar: public RefVariable {
     private:
-        RefChain *body;
-        unistring typeDescription;
+        RefUserTemplate *body;      // ссылка на описание шаблона
+        unistring typeDescription;  // изначально имя на описание шаблона. Используется для поддержки позднего связывания с телом
     public:
         unistring toString();
         bool operator==(RefData&);
@@ -160,7 +161,9 @@ class RefUserVar: public RefVariable {
         virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
         virtual RefData*  Copy(RefData* where=0);
 
-        RefUserVar(unistring typeName, unistring name = EmptyUniString, RefData *rp = 0);
+        RefUserTemplate *getBody(); // возвращает тело. Если нужно - ищет его (todo: стоит сделать поиск сразу после загрузки модуля)
+
+        RefUserVar(unistring typeDescription, unistring name = EmptyUniString, RefData *rp = 0);
 };
 
 class RefSmplVarType : public RefVariable {

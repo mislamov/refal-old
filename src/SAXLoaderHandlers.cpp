@@ -71,7 +71,7 @@ try {
             loader->putValueToStack(theCommand, new RefUserFunction(toWstring(attributes.getValue("name"))));
     } else
     if ( theCommand.compare(_L("TEMPLATE")) == 0) {
-            SYSTEMERROR("Templates are switched off! (testing)");
+            //SYSTEMERROR("Templates are switched off! (testing)");
             if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("TEMPLATE WITHOUT name");
             loader->putValueToStack(theCommand, new RefUserTemplate(toWstring(attributes.getValue("name"))));
     } else
@@ -192,8 +192,9 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             #endif
             RefUserTemplate *t =  (RefUserTemplate*)loader->extractValueFromStack("TEMPLATE");
             //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
+            //loader->getCurrChain()->aroundByDots(); - не надо. уже в left-part
             t->setLeftPart( loader->extractCurrChainFromStack() );
-            loader->currentModule->objects[t->getName()] = t;
+            loader->currentModule->objects[ t->getName() ] = t;
     } else
     if ( theCommand.compare(_L("SENTENCE")) == 0) {
             #ifdef DEBUG

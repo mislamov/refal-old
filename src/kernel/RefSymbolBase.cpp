@@ -128,7 +128,8 @@ RefData *getNewEmptyRefSymbolByTypeName(unistring nametype){
     if (nametype == "REAL") return new RefReal();
     if (nametype == "ALPHA") return new RefAlpha();
     if (nametype == "BYTE") return new RefByte();
-    return 0;
+
+    return new RefUserVar(nametype);
 }
 
 
