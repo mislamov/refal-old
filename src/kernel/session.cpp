@@ -24,40 +24,47 @@ Session::~Session(){
 
 TVarBody* Session::getVarBody( unistring vname ){
 
-    std::list<SessionOfMaching *>::iterator som = this->matchSessions.end();
+    std::list<SessionOfMaching *>::reverse_iterator som = this->matchSessions.rbegin();
     TVarBody* result = 0;
 
-    while( *som ){  // ?  som != mylist.end()
-        TVarBody* result = (* (*som)->varTable)[vname];
+    while( som != this->matchSessions.rend() ){
+        TVarBody* result =  ((*som)->varTable)[vname];
         if (result){
             return result;
         }
-        som--;
+        ++som;
     }
     return 0;
 };
 
 TVarBody* Session::setVarBody( unistring vname, TVarBody* vb){
-    (* matchSessions.back()->varTable )[ vname ] = vb;
+    //(* matchSessions.back()->varTable )[ vname ] = vb;
+    ( matchSessions.back()->varTable )[ vname ] = vb;
 };
 
 unistring Session::varTableToText(){
         //std::string result = "";
         std::ostringstream s;
-        s << "\n\nVARTABLES\t:" << "\n";
+        s << "\n\nVARTABLES\t:[subsessions: " << this->matchSessions.size() << "]"<< "\n";
+        //std::cout << "\n\nVARTABLES\t:[subsessions: " << this->matchSessions.size() << "]"<< "\n";
 
-        std::list<SessionOfMaching *>::iterator som = this->matchSessions.end();
-        while( *som ){  // ?  som != mylist.end()
-            TVarBodyTable* tbl = (*som)->varTable;
+        std::list<SessionOfMaching *>::reverse_iterator som;
+        for (som = matchSessions.rbegin(); som != matchSessions.rend(); ++som ){
+            TVarBodyTable tbl = (*som)->varTable;
+
+
+
+
+
+
+
             TVarBodyTable::iterator it;
-            for (it = tbl->begin(); it != tbl->end(); it++){
-               if ((*it).second){
-                   s << (*it).first << '\t' << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n';
-               }
+            for (it = tbl.begin(); it != tbl.end(); it++){
+                s << (*it).first << '\t' ;
+                try        { s << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n'; }
+                catch (...){ s << "error: vectorToString(((*it).second)->first, ((*it).second)->second)" << '\n'; }
             }
-
             s << "=============================\n";
-            som--;
         }
 
         return s.str();
@@ -111,13 +118,14 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, b
 
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
-    /*std::cout << "\n\n#######################################################\n";
-    std::cout << s->pole_zrenija.top()->toString() << "\n";
+    /**/
+    std::cout << "\n\n#######################################################\n";
+    std::cout << s->getPole_zrenija()->toString() << "\n";
     std::cout << "~\n";
     std::cout << tmplate->toString() << "\n";
     std::cout << "\n#######################################################\n";
     std::cout << "\n" << s->varTableToText();
-    */
+    /**/
 //    std::cout << "\n\nMATCHING:\ntmpl: " << tmplate->toString();
 //    std::cout << "\nargs: " << s->pole_zrenija.top()->toString();
 
@@ -130,7 +138,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
     // запускается вне матчинга: initialization(args->first, args->second);
     RefData *l=0, *r=0,
-        *activeTemplate = isdemaching?tmplate->second->pred:tmplate->first, // tmplate->second->pred - это потому что последний датадот
+        *activeTemplate = isdemaching?tmplate->second:tmplate->first, // было: tmplate->second->pred - это потому что последний датадот. сделал tmplate->second чтоб откат обработал скобки
         *preCurrentPoint=0;
 
     RefVariable * ifvar=0;

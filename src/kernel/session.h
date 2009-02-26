@@ -52,12 +52,13 @@ class SessionOfMaching  : public RefObject {
                 std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
                 //std::stack<ref_variant_vert*> StackOfVariants;	    //
                 std::stack<TVarBody*> StackOfSopost;	                // Стек хранителей состояний шаблонов
-                TVarBodyTable *varTable;		        // Таблица переменных  имя -> ссылка на элемент стека
+                TVarBodyTable varTable;		        // Таблица переменных  имя -> ссылка на элемент стека
 
                 RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
 
                 // создает и возвращает точку восстановления
                 SessionOfMaching(RefData *argLeft, RefData *argRight){
+                    //varTable = new TVarBodyTable();
                     pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
                     StackOfDataSkob.push((RefData_DOT *)pole_zrenija->second);
                     StopBrackForceVar = 0;
@@ -104,10 +105,10 @@ class Session : public RefObject {
     bool  matching(RefChain *tmplate, RefData*l, RefData*r, bool isdemaching=false); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 
     std::stack<TVarBody*> *getCurrentSopostStack(){
-        #ifdef DEBUG
-        if (matchSessions.back()->StackOfSopost.empty()) SYSTEMERROR("Tring to get from empty sopost-stack!");
-        #endif
         return &(matchSessions.back()->StackOfSopost);
+
+
+
     }
 
     inline std::stack<RefBracketBase  *>  *getStackOfDataSkob(){ return &(matchSessions.back()->StackOfDataSkob); }

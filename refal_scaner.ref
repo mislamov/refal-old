@@ -436,6 +436,7 @@ PreprocPragma{
 	'\''e.next = '&apos;' <PreprocPragma e.next>;
 	'"' e.next = '&quot;' <PreprocPragma e.next>;
 	'\n'e.next = '&#xA;' <PreprocPragma e.next>;
+	'-' e.next = '&#x2D;' <PreprocPragma e.next>;
 
 
 	s.1 e.next = s.1 <PreprocPragma e.next>;

@@ -8,14 +8,14 @@
 // вычисляет цепочку до тех пор, пока в ней есть функциональные вызовы <>
 RefChain* evalutor(RefChain *argline, Session *s){
 
-/*
+        /*
         #ifdef DEBUG
         if (! (argline->first)  ||  (argline->first->pred))
             SYSTEMERROR("evalutor( ! (argline->first)  ||  (argline->first->pred), ...) !\nevalutor( " << argline->toString() << " )");
         if (! (argline->second)  ||  (argline->second->next))
             SYSTEMERROR("evalutor(..., ! (argline->second)  ||  (argline->second->next) !\nevalutor( " << argline->toString() << " )");
         #endif
-*/
+        */
 
         #ifdef DEBUG
         if (! dynamic_cast<RefData_DOT *>(argline->first) )

@@ -205,6 +205,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             (f->body).push_back(s);
     } else
     if ( command.compare(_L("LEFT-PART")) == 0) {
+            loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
+
         /*
             #ifdef DEBUG
             if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");

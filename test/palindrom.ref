@@ -1,0 +1,11 @@
+$Entry Go {
+	= <Prout 'word:'><Prout <Palindrom <Card>>><Go>;
+}
+
+Palindrom {
+     s.1 e.2 s.1 = <Palindrom e.2> ;
+     s.1 = True ;
+     = True;
+     e.1 = False ;
+ }
+

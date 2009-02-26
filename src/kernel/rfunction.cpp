@@ -76,6 +76,8 @@ unistring RefUserFunction::toString() {
 
 };
 
+
+
 /// аргументы - концы чистого ОВ
 bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s){
         RefData *ldot;
@@ -147,10 +149,13 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
             #endif
             sent++;
         }
-    } while (!reslt && sent != body.end());
+    } while (!reslt && sent != body.end());  // std: body.end() - элемент после последнего
 
     return reslt;
 };
+
+
+
 
 
 RefDllModule::RefDllModule() : RefModuleBase() {
