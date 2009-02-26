@@ -207,7 +207,6 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             (f->body).push_back(s);
     } else
     if ( theCommand.compare(_L("LEFT-PART")) == 0) {
-            loader->getCurrChain()->toString();
             loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
 
         /*

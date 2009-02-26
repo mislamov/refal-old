@@ -514,7 +514,7 @@ DataForRepeater::DataForRepeater(RefData *o) {
 
 void Session::showStatus(){
     std::cout << "\n\n";
-    std::cout << "\nZAGL !!!!";
+    std::cout << "\nshowStatus_ZAGL !!!!";
     /*
     std::cout << "\n    pole_zrenija: size=" << pole_zrenija.size() << "  " << (pole_zrenija.empty() ? "" : pole_zrenija.top()->toString());
     std::cout << "\n    StopBrackForceVar: " << (StopBrackForceVar?StopBrackForceVar->toString():"null");

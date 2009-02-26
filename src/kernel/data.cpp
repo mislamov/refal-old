@@ -409,6 +409,36 @@ RefChain* RefChain::aroundByDots(){
 }
 
 
+RefChain* RefChain::dearoundByDots(){
+
+    #ifdef DEBUG
+    if (! first || ! second || !dynamic_cast<RefData_DOT *>(first) || !dynamic_cast<RefData_DOT *>(second) || !(first->next) || !(second->pred)) {
+        SYSTEMERROR("polezrenija ne emeet vida  DOT[ - ... - ]DOT libo narusheni ssilki next-pred!!!");
+    }
+    #endif
+
+    RefData *d1 = first, *d2=second; // сохраняем доты для удаления
+
+    if (first->next == second){ // если пустое поле зрения  dot[ <-> dot]
+        if (first  ->pred) first  ->pred->next = second ->next;
+        if (second ->next) second ->next->pred = first  ->pred;
+        second = first->pred;
+        first = 0;
+    } else {    // не пустое поле зрения  dot[ - ... - ]dot
+        /*if (first  ->next) */ first  ->next->pred = first  ->pred;
+        /*if (second ->pred) */ second ->pred->next = second ->next;
+        if (first  ->pred) first  ->pred->next = first  ->next;
+        if (second ->next) second ->next->pred = second ->pred;
+        first  = first->next;
+        second = second->pred;
+    }
+
+    d1  ->next = d1  ->pred = d2 ->next = d2 ->pred = 0; // обрубаем ссылки дот чтоб безопасно их удалить, иначе ссылки выровняются
+    delete d1;
+    delete d2;
+
+    return this;
+}
 ////////////////////////////////////////////
 //
 

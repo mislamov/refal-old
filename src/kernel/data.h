@@ -211,6 +211,7 @@ class RefChain : public std::pair<RefData*, RefData*> {
         RefChain* Copy( ){ return this->Copy(0); }; // Только для объектных выражений!!!
 
         RefChain* aroundByDots();            //  окружает цепочку датадотами
+        RefChain* dearoundByDots();          //  удаляет в цепочке крайние датадоты
         inline void set(RefData *&l, RefData *&r){l=first; r=second;};  //  присваивает концы цепочки аргументам
 
         unistring toString();

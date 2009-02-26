@@ -34,19 +34,20 @@ int main(int argv, char **argc){
         std::cout << mod->toString() << "\n";
         s->regModule(mod);
 
-        RefData_DOT
+/*        RefData_DOT
             *l = new RefData_DOT(),
             *r = new RefData_DOT(l,0);
+*/
         RefExecBracket
             *lb = new RefExecBracket(),
             *rb = new RefExecBracket(lb);
         RefChain *polez = new RefChain();
-        *polez += l;
+        //*polez += l;
         *polez += lb;
         *polez += new RefNULL();
         *polez += new RefWord("Go");
         *polez += rb;
-        *polez += r;
+        //*polez += r;
 
         //s->pole_zrenija.push( polez );
         RefChain *result = evalutor(polez, s);

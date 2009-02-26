@@ -6,25 +6,27 @@
 #include "kernel.h"
 
 // вычисляет цепочку до тех пор, пока в ней есть функциональные вызовы <>
+// концами цепочки не могут быть датадоты
 RefChain* evalutor(RefChain *argline, Session *s){
-
         /*
-        #ifdef DEBUG
-        if (! (argline->first)  ||  (argline->first->pred))
-            SYSTEMERROR("evalutor( ! (argline->first)  ||  (argline->first->pred), ...) !\nevalutor( " << argline->toString() << " )");
-        if (! (argline->second)  ||  (argline->second->next))
-            SYSTEMERROR("evalutor(..., ! (argline->second)  ||  (argline->second->next) !\nevalutor( " << argline->toString() << " )");
-        #endif
-        */
-
         #ifdef DEBUG
         if (! dynamic_cast<RefData_DOT *>(argline->first) )
             SYSTEMERROR("evalutor( argline->first != RefDATA_DOT, ...) !\nevalutor( " << argline->toString() << " )");
         if (! dynamic_cast<RefData_DOT *>(argline->second) )
             SYSTEMERROR("evalutor(..., argline->second != RefDATA_DOT) !\nevalutor( " << argline->toString() << " )");
         #endif
+        */
+        /*
+        if ( dynamic_cast<RefExecBracket *>(argline->first) )
+            SYSTEMERROR("evalutor( argline->first is RefExecBracket ) !\nevalutor( " << argline->toString() << " )");
+        if ( dynamic_cast<RefExecBracket *>(argline->second) )
+            SYSTEMERROR("evalutor( argline->second is RefExecBracket ) !\nevalutor( " << argline->toString() << " )");
+        */
+
 
 std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second->next)?(argline->second->next->toString()):"$null") << "\n";
+
+        argline->aroundByDots(); // окружаем дотами чтоб не потерять концы при удалении угловых скобок
 
         // вычисление поля зрения
         RefExecBracket *exec    = 0;
@@ -80,7 +82,8 @@ std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pre
         }
 
 
-std::cout << "\n\n\n\n#### RETURN EVAL  " << ((argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second->next)?(argline->second->next->toString()):"$null") << "\n\n\n\n";
+        argline->dearoundByDots(); // удаляем доты, поставленные изначально
+        std::cout << "\n\n\n\n#### RETURN EVAL  " << ((argline->first && argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second && argline->second->next)?(argline->second->next->toString()):"$null") << "\n\n\n\n";
 
         return argline;
 

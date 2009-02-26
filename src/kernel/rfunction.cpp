@@ -232,7 +232,7 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
 
 
 TResult  RefCondition::init(Session* s, RefData *&l){
-    /*
+    // условие может быть только в конце шаблона и сопоставляться с пустым выражением в конце
     RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
     if (!d){
         return BACK;
@@ -240,57 +240,39 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 
     s->showStatus();
 
-    RefChain *newpz = s->RightPartToObjectExpression(this->rightPart);  /// todo: тут создается - тут же и кильнуть
-    //s->initializationArg(newpz->first, newpz->second); // это уже копия с дотами
+    RefChain *newpz = s->RightPartToObjectExpression(this->rightPart);  /// todo: тут создается - где-то тут же и кильнуть
     std::cout << "\nCOND-EVALUTE:::\t" << newpz->toString() << " : " << this->leftPart->toString();
 
-    evalutor(newpz, s);
+    newpz = evalutor(newpz, s);
 
     std::cout << "\nCOND-EVALUTE-OO:\t" << newpz->toString() << " : " << this->leftPart->toString();
-    //newpz =
-    s->initializationTemplate(this->leftPart);
-    if (s->matching( this->leftPart, 0, 0 )){ /// todo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // s->deinitializationArg(); - не надо удалять! а если вернется откат?
-        // возможно надо убрать доты
-        s->deinitializationTemplate(this->leftPart);
+
+    if (s->matching( this->leftPart, newpz->first, newpz->second, false )){
         std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
         return GO;
     } else {
-        //newpz = s->deinitializationArg();
-        s->deinitializationTemplate(this->leftPart);
         newpz->clear(); // сопоставление неуспешно - удаляем
         delete newpz;
 
         std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";
 
-    s->showStatus();
-
+        s->showStatus();
 
         return BACK;
     }
-    */
+
 };
 
 TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
-/*
-    s->initializationTemplate(this->leftPart);
 
-    /// todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if (s->matching( this->leftPart, 0, 0, true )){ // продолжаем поиск вариантов
-        //s->deinitializationArg(); - не удалять Арг - вдруг снова откат
-        s->deinitializationTemplate(this->leftPart);
-
         std::cout << "\n\nCOND-RETURN:::\tback-> GO" << std::flush << "\n\n\n";
         return GO;
     } else {
-        RefChain *pz = s->deinitializationArg();
-        s->deinitializationTemplate(this->leftPart);
-        pz->clear();
-        delete pz;
         std::cout << "\n\nCOND-RETURN:::\tback-> BACK" << std::flush << "\n\n\n";
         return BACK;
     }
-*/
+
 };
 
 
