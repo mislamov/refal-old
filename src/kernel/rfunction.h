@@ -52,14 +52,32 @@ class RefModuleBase : public RefalNameSpace {
 
     RefModuleBase(unistring nname = EmptyUniString) : RefalNameSpace(nname){};
     virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
+    virtual void initilizeAll(Session *){ LOG("not realized!"); };
 };
 
-/*
 
-        virtual RefObject* getObjectByName(unistring name){ return 0; };
-        RefalNameSpace(unistring name = EmptyUniString) : RefObject(){ setName(name); };
 
-*/
+// интерфейс для элементов, которые необходимо проинициализировать после загрузки модуля
+class NeedInitilize {
+    public:
+        virtual bool initize(Session *) = 0;
+};
+
+// класс - непроинициализированная переменная внешнего типа. После инициализации заменяется на пару {RefTemplateBridgeVar RefTemplateBridgeVar}
+class RefUserVarNotInit : public RefVariable, public NeedInitilize {
+        unistring type;
+    public:
+        bool initize(Session *); // замещается на пару
+        void setType(unistring ttype){ type = ttype; };
+        unistring getType(){ return type; };
+
+        unistring toString() { return "@RefUserVarNotInit.toString()"; }
+        bool operator ==(RefData &rd) { return false; };
+        TResult init(Session*, RefData *&);
+        TResult back(Session*, RefData *&, RefData *&);
+        RefData*  Copy(RefData* where=0){ return 0; };
+};
+
 
 class RefUserModule : public RefModuleBase {
 public:
@@ -68,6 +86,9 @@ public:
     RefUserModule() : RefModuleBase(){}
     unistring toString();
     RefObject* getObjectByName(unistring name, Session *s=0);
+
+    std::stack<NeedInitilize *> initItems; // стек ссылок на неинициализированные данные (внешние переменные)
+    void initilizeAll(Session *);
 /*  void print_inf(){
         std::cout << this->toString();
     }
@@ -136,8 +157,9 @@ public:
 class RefUserTemplate : public RefTemplateBase {
         RefChain *leftPart;
     public:
-        unistring getName(){ return name; };
+        inline unistring getName(){ return name; };
         RefUserTemplate(unistring name, RefChain *lp=0);
+        inline RefChain* getLeftPart(){return leftPart;};
         void setLeftPart(RefChain *);
         RefObject* getObjectByName(unistring name, Session *s){ SYSTEMERROR("--== ZAGLUSHKA ==--"); };
         unistring toString(){
@@ -151,9 +173,9 @@ class RefTemplateBridgeTmpl;
 // мосты между лев.частью и внешним шаблоном. Со стороны левой части
 class RefTemplateBridgeVar : public RefBracketBase, public IRefVar {
         unistring name;
-        RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
-        RefTemplateBridgeTmpl* getBridge(){ return bridge; };
     public:
+        RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
+
         RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
         RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ bridge=0;  name="NOT SET";};
         unistring toString() { if (isOpen()) return sss = "[{]"; else return sss = "[}]"; };

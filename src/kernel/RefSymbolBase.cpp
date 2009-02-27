@@ -108,32 +108,6 @@ template <class T>
 
 
 
-RefVariable *getVariableByTypename(unistring nametype, unistring vn){
-    if (nametype == "word") return new RefVarWord(vn);
-    if (nametype == "int") return new RefVarInteger(vn);
-    if (nametype == "real") return new RefVarReal(vn);
-    if (nametype == "char") return new RefVarAlpha(vn);
-    if (nametype == "byte") return new RefVarByte(vn);
-    if (nametype == "e") return new RefVariable_e(vn);
-    if (nametype == "E") return new RefVariable_E(vn);
-    if (nametype == "s") return new RefVariable_s(vn);
-    if (nametype == "t") return new RefVariable_t(vn);
-    return new RefUserVar(nametype, vn);
-};
-
-
-RefData *getNewEmptyRefSymbolByTypeName(unistring nametype){
-    if (nametype == "WORD") return new RefWord();
-    if (nametype == "INT") return new RefInteger();
-    if (nametype == "REAL") return new RefReal();
-    if (nametype == "ALPHA") return new RefAlpha();
-    if (nametype == "BYTE") return new RefByte();
-
-    return new RefUserVar(nametype);
-}
-
-
-
 
 ///     ПЕРЕГРУЖЕННЫЕ МЕТОДЫ
 void RefSymbol<unichar>::setValueFromString(unistring s){
@@ -183,6 +157,40 @@ unistring RefSymbol<char>::toString(){
     std::ostringstream s;
     s << "\\x" << std::hex << (int)getValue();
     return sss = s.str();
+}
+
+
+
+
+
+
+
+// возвращает переменную
+RefVariable* createVariableByTypename(unistring nametype, unistring vn){
+    if (nametype == "word") return new RefVarWord(vn);
+    if (nametype == "int") return new RefVarInteger(vn);
+    if (nametype == "real") return new RefVarReal(vn);
+    if (nametype == "char") return new RefVarAlpha(vn);
+    if (nametype == "byte") return new RefVarByte(vn);
+    if (nametype == "e") return new RefVariable_e(vn);
+    if (nametype == "E") return new RefVariable_E(vn);
+    if (nametype == "s") return new RefVariable_s(vn);
+    if (nametype == "t") return new RefVariable_t(vn);
+    //return new RefUserVar(nametype, vn);
+    // переменная пользовательского типа
+    return 0;
+};
+
+
+// возвращает рефал-символ
+RefData* createNewEmptyRefSymbolByTypeName(unistring nametype){
+    if (nametype == "WORD") return new RefWord();
+    if (nametype == "INT") return new RefInteger();
+    if (nametype == "REAL") return new RefReal();
+    if (nametype == "ALPHA") return new RefAlpha();
+    if (nametype == "BYTE") return new RefByte();
+
+    return 0;
 }
 
 #endif // REFSYMBOLBASE_HPP_INCLUDED

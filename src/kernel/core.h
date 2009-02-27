@@ -18,7 +18,7 @@
     };
 
 #define LOG(msg) { \
-    std::cout << "\n####### LOG::" << __FUNCTION__ << "():: " << msg << std::flush; \
+    std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
     };
 
 #define RUNTIMEERROR(fname, msg) { \

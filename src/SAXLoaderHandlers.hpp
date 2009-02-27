@@ -134,6 +134,7 @@ private :
 };
 
 
+
 class LoaderHeap {
         std::map<unistring, std::stack<RefObject*> > stackstags;
         std::stack<RefChain *>  stckChains;
@@ -143,8 +144,6 @@ class LoaderHeap {
         RefCondition*  currentCondition;
         std::stack<unistring >  activeTag;
         unistring currentchars;
-
-        RefUserModule *resultmodule;
 
         RefObject *extractValueFromStack(unistring name){
             std::stack<RefObject*>  &svalue   = stackstags[name];
@@ -203,6 +202,10 @@ class LoaderHeap {
         unistring getChars(){
             return currentchars + (currentchars="");
         }
+
+
+        RefData *getNewEmptyRefSymbolByTypeName(unistring);
+        RefVariable *getVariableByTypename(unistring vtype, unistring vname);
 
 
         LoaderHeap(RefUserModule *m){

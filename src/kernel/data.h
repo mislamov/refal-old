@@ -6,8 +6,6 @@
 #include <strings.h>
 #include <map>
 
-//#include "kernel.h"
-//#include "session.h"
 #include "core.h"
 
 
@@ -157,6 +155,7 @@ class RefLinkToVariable : public RefData, public RefalNameSpace {
 
 class RefUserTemplate;
 
+/*
 class RefUserVar: public RefVariable {
     private:
         RefUserTemplate *body;      // ссылка на описание шаблона
@@ -172,7 +171,7 @@ class RefUserVar: public RefVariable {
 
         RefUserVar(unistring typeDescription, unistring name = EmptyUniString, RefData *rp = 0);
 };
-
+*/
 class RefSmplVarType : public RefVariable {
     public:
         RefSmplVarType(unistring name = EmptyUniString, RefData *rp = 0) : RefVariable(name, rp){};

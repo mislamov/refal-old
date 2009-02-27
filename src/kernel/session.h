@@ -106,6 +106,7 @@ class Session : public RefObject {
     // методы
     TVarBody*   getVarBody( unistring vname );
     TVarBody*   setVarBody( unistring vname, TVarBody* );
+    RefObject*  getObjectByName(unistring name, Session *s=0); // ищет объект (функция/шаблон) во всех модулях
 
     unistring varTableToText();
 

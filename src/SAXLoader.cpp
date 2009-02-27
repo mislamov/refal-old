@@ -97,7 +97,7 @@ static void usage()
              "    UTF-8, USASCII, ISO8859-1, UTF-16[BL]E, UCS-4[BL]E,\n"
              "    WINDOWS-1252, IBM1140, IBM037, IBM1047.\n"
          <<  XERCES_STD_QUALIFIER endl;
-}
+};
 
 
 
@@ -111,7 +111,7 @@ RefChain *str2chain(std::wstring s){
         };
 
         return new RefChain(beg, end);
-}
+};
 
 
 unistring getModuleNameFromFileName(unistring fname){
@@ -135,7 +135,8 @@ unistring getModuleNameFromFileName(unistring fname){
     }
 
     return newname;
-}
+};
+
 // ---------------------------------------------------------------------------
 //  Program entry point
 // ---------------------------------------------------------------------------

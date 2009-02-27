@@ -109,8 +109,10 @@ typedef RefVarForSymbol<RefAlphaBase>    RefVarAlpha;
 typedef RefVarForSymbol<RefByteBase>     RefVarByte;
 
 
-RefData *getNewEmptyRefSymbolByTypeName(unistring);
-RefVariable *getVariableByTypename(unistring vtype, unistring vname);
+RefData     *createNewEmptyRefSymbolByTypeName(unistring);
+RefVariable *createVariableByTypename(unistring vtype, unistring vname);
+
+
 
 /*
 void RefVarForSymbol<unichar>::setValueFromString(unistring s);

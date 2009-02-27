@@ -22,6 +22,11 @@ Session::Session() {
 Session::~Session(){
 };
 
+TVarBody* Session::setVarBody( unistring vname, TVarBody* vb){
+    //(* matchSessions.back()->varTable )[ vname ] = vb;
+    ( matchSessions.back()->varTable )[ vname ] = vb;
+};
+
 TVarBody* Session::getVarBody( unistring vname ){
 
     std::list<SessionOfMaching *>::reverse_iterator som = this->matchSessions.rbegin();
@@ -37,10 +42,22 @@ TVarBody* Session::getVarBody( unistring vname ){
     return 0;
 };
 
-TVarBody* Session::setVarBody( unistring vname, TVarBody* vb){
-    //(* matchSessions.back()->varTable )[ vname ] = vb;
-    ( matchSessions.back()->varTable )[ vname ] = vb;
+// ищет по всем модулям
+RefObject*  Session::getObjectByName(unistring name, Session *s){
+    ///todo: проверить указан ли модуль явно и если указан, то искать только в нем
+    std::map<unistring, RefModuleBase*>::reverse_iterator mod = this->modules.rbegin();
+    RefObject* result = 0;
+
+
+    for ( mod=this->modules.rbegin() ; mod != this->modules.rend(); ++mod )
+        std::cout << "\n\n" << mod->second->getName() << flush << "\n\n";
+
+        if (result = mod->second->getObjectByName(name, s)){
+            return result;
+        }
+    return 0;
 };
+
 
 unistring Session::varTableToText(){
         //std::string result = "";
@@ -463,6 +480,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
 void Session::regModule(RefModuleBase *m){
     //std::cout << "\n\n\n\nSession::regModule [" << m->getName() << "]  :: " << m->toString() << "\n\n\n\n";
     if (!m) SYSTEMERROR("Tring to load $null module!");
+    m->initilizeAll(this);
     modules[m->getName()] = m;
     /// todo: связывание у пользовательских переменных ссылок на шаблоны с шаблонми по описаням/именам, указаным в конструкторе
 };

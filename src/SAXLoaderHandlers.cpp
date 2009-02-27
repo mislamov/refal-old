@@ -114,7 +114,7 @@ try {
     if ( theCommand.compare(_L("ERROR")) == 0 ) {
     } else
     /*****************   выделить в менеджер для простого добавления пользовательских типов  *****************/
-    if (tmp = getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ
+    if (tmp = loader->getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ
         loader->putValueToStack(theCommand, tmp);
     } else
 
@@ -242,7 +242,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
         // берем по текущему тексту и получаем ссылку на переменную
         unistring vardescr = loader->currentchars;
         unistring vname = getVarName(vardescr); // теперь vname - имя vardescr - тип
-        *(loader->getCurrChain()) += getVariableByTypename(vardescr, vname);
+        *(loader->getCurrChain()) += loader->getVariableByTypename(vardescr, vname);
         //std::cout << loader->getCurrChain()->second->toString();
     } else
     if ( theCommand.compare(_L("LNK")) == 0) {  //
@@ -459,4 +459,35 @@ void SAXPrintHandlers::processingInstruction(const  XMLCh* const target
 
 
 
+
+
+
+// возвращает переменную
+RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn){
+    // поиск среди встроенных типов переменных
+    RefVariable* result = createVariableByTypename(nametype, vn);
+    if (result) {
+        return result;
+    }
+
+    // создаем пользовательскую переменную
+    RefUserVarNotInit *v = new RefUserVarNotInit();
+    v->setName(vn);
+    v->setType(nametype);
+    currentModule->initItems.push(v);
+    return v;
+};
+
+
+// возвращает рефал-символ
+RefData* LoaderHeap::getNewEmptyRefSymbolByTypeName(unistring nametype){
+    // поиск среди встроенных типов символов
+    RefData* result = createNewEmptyRefSymbolByTypeName(nametype);
+    if (result) {
+        return result;
+    }
+
+    SYSTEMERROR("Unknown Refal-symbol: " << nametype );
+    //return new RefUserVar(nametype);
+}
 

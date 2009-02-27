@@ -524,7 +524,7 @@ RefLinkToVariable::RefLinkToVariable(unistring path, RefData *rp) : RefData(rp),
 };
 
 
-
+/*
 unistring RefUserVar::toString(){
     //return _L("[Var::name="+getName()+", type="+typeDescription+"]");
     return RefData::sss = "USERVAR::type=" + typeDescription + ", name=" + getName() + ", body=" + (body?body->toString():"null") ;
@@ -552,7 +552,7 @@ TResult RefUserVar::back(Session* s, RefData *&currentRight, RefData *&currentLe
 RefData*  RefUserVar::Copy(RefData* where){
     SYSTEMERROR("zagluska!"); // определить в каких случаях используется и что именно возвращать в качестве копии
     RefUserVar *v = new RefUserVar(typeDescription, getName(), where);
-    /*v->body = body->Copy();*/
+    /*v->body = body->Copy();* /
     return v;
 };
 
@@ -560,7 +560,7 @@ RefUserVar::RefUserVar(unistring typeName, unistring name, RefData *rp) : RefVar
     body = 0;
     typeDescription = typeName;
 };
-
+*/
 
 
 

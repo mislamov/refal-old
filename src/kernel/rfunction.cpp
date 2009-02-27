@@ -57,6 +57,12 @@ unistring RefUserModule::toString(){
 
 
 
+void RefUserModule::initilizeAll(Session *s){
+    while (! initItems.empty()){
+        initItems.top()->initize(s);
+        initItems.pop();
+    };
+};
 
 
 
@@ -337,7 +343,7 @@ RefData*  RefTemplateBridgeVar::next_point( ThisId var_id, Session *s){
     if (this->isOpen()){
         // указывает на открывающую скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
-        return this->getBridge();
+        return this->bridge;
     } else {
         return next; //?
     }
@@ -375,7 +381,7 @@ RefData*  RefTemplateBridgeVar::pred_point( ThisId var_id, Session *s){
     } else {
         // указывает на закр скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
-        return this->getBridge();
+        return this->bridge;
     }
 };
 
@@ -424,4 +430,44 @@ RefData*  RefTemplateBridgeTmpl::pred_point( ThisId var_id, Session *s){
         return pred;
     }
 };
+
+
+
+
+
+
+// класс - непроинициализированная переменная внешнего типа.
+// После инициализации заменяется на пару   {RefTemplateBridgeVar   RefTemplateBridgeVar}
+bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
+    RefUserTemplate *utempl =  dynamic_cast<RefUserTemplate *>( s->getObjectByName(this->getType()) );
+    if (! utempl) SYSTEMERROR("User $Template '" << getType() << "' not defined!"); //     return false;
+    // шаблон найден
+    RefTemplateBridgeVar
+        *leftBridge  = new RefTemplateBridgeVar(),
+        *rightBridge = new RefTemplateBridgeVar(leftBridge);
+    #ifdef DEBUG
+    if (! (this->pred && this->next) ) SYSTEMERROR("@RefUserVarNotInit around by $null !");
+    #endif
+    // встраиваем переменную
+    this->pred->next = leftBridge;
+    leftBridge->pred = this->pred;
+    this->next->pred = rightBridge;
+    rightBridge->next = this->next;
+    this->pred = this->next = 0;
+    // назначаем имя
+    /// todo: сделать именование только в одном месте - для одной скобки
+    leftBridge->setName(this->getName());
+    rightBridge->setName(this->getName());
+    // нацеливаем на тело шаблона
+    #ifdef DEBUG
+    if (! dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->first) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the first");
+    if (! dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->second) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the second");
+    #endif
+    leftBridge ->bridge = (RefTemplateBridgeTmpl *) utempl->getLeftPart()->first;  // должно быть уже RefTemplateBridgeTmpl
+    rightBridge->bridge = (RefTemplateBridgeTmpl *) utempl->getLeftPart()->second; // должно быть уже RefTemplateBridgeTmpl
+
+    return true;
+}
+TResult RefUserVarNotInit::init(Session*, RefData *&){ SYSTEMERROR("ALARM!"); };
+TResult RefUserVarNotInit::back(Session*, RefData *&, RefData *&){ SYSTEMERROR("ALARM!"); };
 
