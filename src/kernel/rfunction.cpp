@@ -230,7 +230,8 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
 };
 
 
-
+// matching  в случае неуспеха сам восстанавливает состояние. В случае успеха - оставляет изменения
+// по идее рефал-условие не должно контроллировать точки состояний. Главное правильно вызывать дизмачинг (домачинг)
 TResult  RefCondition::init(Session* s, RefData *&l){
     // условие может быть только в конце шаблона и сопоставляться с пустым выражением в конце
     RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
