@@ -125,6 +125,12 @@ class RefalNameSpace : public RefObject {
 
 };
 
+// Абстрактный интерфейс-класс - для всего, что в матчинге считается переменной
+class IRefVar {
+    public:
+        virtual unistring getName() = 0;
+};
+
 // Абстрактный класс - предок всех переменных языка
 class RefVariable : public RefData, public RefalNameSpace {
     public:
@@ -150,6 +156,7 @@ class RefLinkToVariable : public RefData, public RefalNameSpace {
 };
 
 class RefUserTemplate;
+
 class RefUserVar: public RefVariable {
     private:
         RefUserTemplate *body;      // ссылка на описание шаблона

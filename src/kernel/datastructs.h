@@ -104,20 +104,18 @@ class ref_REPEATER : public RefBracketBase {
 	virtual RefData*  pred_point( ThisId var_id, Session *);
 };
 
-////////////////  {o   | => o   | => o   | => x ?} ///////////////////
-//---------- {  } ------
-class ref_GROUP_BR : public RefBracketBase {
+////////////////  {o   | => o   | => o   | => x   ?} ///////////////////
+//---------- {  } ----------
+class ref_GROUP_BR : public RefBracketBase, public IRefVar {
     public:
-	virtual ~ref_GROUP_BR(){};
-	ref_GROUP_BR( RefData *rp);
-	ref_GROUP_BR( ref_GROUP_BR *br, RefData *rp, std::string nn);
-	bool operator==(RefData&rd);
+        virtual ~ref_GROUP_BR(){};
+        ref_GROUP_BR( RefData *rp);
+        ref_GROUP_BR( ref_GROUP_BR *br, RefData *rp, std::string nn);
+        bool operator==(RefData&rd);
 
-	//void print_inf();
-
-	TResult  init(Session *, RefData *&l);
-	TResult  back(Session *, RefData *&l, RefData *&r);
-	void     dropall(Session *);
+        TResult  init(Session *, RefData *&l);
+        TResult  back(Session *, RefData *&l, RefData *&r);
+        void     dropall(Session *);
 };
 
 

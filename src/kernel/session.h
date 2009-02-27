@@ -18,6 +18,7 @@ class Session;
 class DataForRepeater;
 class RefModuleBase;
 class RefFunctionBase;
+class RefTemplateBridgeVar;
 
 
 class TVarBodyTable : public std::map<unistring, TVarBody*>{};
@@ -53,17 +54,28 @@ class SessionOfMaching  : public RefObject {
                 std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
                 //std::stack<ref_variant_vert*> StackOfVariants;	    //
                 std::stack<TVarBody*> StackOfSopost;	                // Стек хранителей состояний шаблонов
+                //std::stack<RefTemplateBridgeVar *> templReturnBackPoint;// Стек точек возврата при сопоставлении внешних шаблонов
+                RefTemplateBridgeVar * templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
                 TVarBodyTable varTable;		        // Таблица переменных  имя -> ссылка на элемент стека
 
                 RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
 
-                // создает и возвращает точку восстановления
+                // создает и возвращает субсессию (точку восстановления)
                 SessionOfMaching(RefData *argLeft, RefData *argRight){
                     //varTable = new TVarBodyTable();
                     pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
                     StackOfDataSkob.push((RefData_DOT *)pole_zrenija->second);
                     StopBrackForceVar = 0;
                 }
+
+                // создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов
+                SessionOfMaching(RefChain *pz){
+                    //varTable = new TVarBodyTable();
+                    pole_zrenija = pz;
+                    StopBrackForceVar = 0;
+                }
+
+
 
                 // очищает точку восстановления с удалением мусора
                 ~SessionOfMaching(){

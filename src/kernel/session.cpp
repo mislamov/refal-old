@@ -61,8 +61,9 @@ unistring Session::varTableToText(){
             TVarBodyTable::iterator it;
             for (it = tbl.begin(); it != tbl.end(); it++){
                 s << (*it).first << '\t' ;
-                try        { s << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n'; }
-                catch (...){ s << "error: vectorToString(((*it).second)->first, ((*it).second)->second)" << '\n'; }
+                std::cout << s.str() << flush;
+                if ((*it).second) { s << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n'; }
+                else { s << "error: vectorToString(((*it).second)->first, ((*it).second)->second)" << '\n'; }
             }
             s << "=============================\n";
         }
@@ -412,9 +413,10 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     //unistring vname = vart->getName();
     //getCurrentSopostStack().push( varTable.top()->vars[vname] = new TVarSaver(l, r) );
 
-    RefVariable* vart = dynamic_cast <RefVariable *>(v);
+    // если элемент является переменной (наследуется от соотв интерфейса - эти признак), то ...
+    IRefVar* vart = dynamic_cast <IRefVar *>(v);
 
-    // сохраняется состояние только переменных
+    // ... сохраняется состояние только переменных
     if (vart && vart->getName() != EmptyUniString){
         getCurrentSopostStack()->push( setVarBody(vart->getName(), new TVarBody(l, r, v)) );
     } else {
@@ -525,6 +527,7 @@ void Session::showStatus(){
     std::cout << "\n    StackOfRepeatSkob : size=" << StackOfRepeatSkob.size() << "  " << (StackOfRepeatSkob.empty() ? "" : StackOfRepeatSkob.top()->toString());
     std::cout << "\n    StackOfRepeatSkobDoned : size=" << StackOfRepeatSkobDoned.size() << "  " << (StackOfRepeatSkobDoned.empty() ? "" : StackOfRepeatSkobDoned.top()->toString());
     std::cout << "\n    StackOfGroupSkob : size=" << StackOfGroupSkob.size() << "  " << (StackOfGroupSkob.empty() ? "" : StackOfGroupSkob.top()->toString());
+    RefTemplateBridgeVar
     */
     std::cout << "\n\n";
 

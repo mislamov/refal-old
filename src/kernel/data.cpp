@@ -537,10 +537,12 @@ bool RefUserVar::operator==(RefData&){
 
 
 TResult RefUserVar::init(Session* s, RefData *&currentPoint){
-    SYSTEMERROR("user templates not yet realised!");
+    //SYSTEMERROR("user templates not yet realised!");
+    return GO;
 };
 TResult RefUserVar::back(Session* s, RefData *&currentRight, RefData *&currentLeft){
-    SYSTEMERROR("user templates not yet realised!");
+    //SYSTEMERROR("user templates not yet realised!");
+    return BACK;
 };
 
 

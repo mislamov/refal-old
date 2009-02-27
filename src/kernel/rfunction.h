@@ -145,12 +145,67 @@ class RefUserTemplate : public RefTemplateBase {
         }
 };
 
+class RefTemplateBridgeTmpl;
 
-// мосты через session между экземплярами пользовательских переменных и телами шаблонов
-class RefTemplateBridge : public RefData_DOT {
+
+// мосты между лев.частью и внешним шаблоном. Со стороны левой части
+class RefTemplateBridgeVar : public RefBracketBase, public IRefVar {
+        unistring name;
+        RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
+        RefTemplateBridgeTmpl* getBridge(){ return bridge; };
     public:
-        RefTemplateBridge (RefData *d=0) : RefData_DOT(d){};
-        RefTemplateBridge(RefTemplateBridge *nd, RefData* rp = 0) : RefData_DOT(nd, rp){};
+        RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
+        RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ bridge=0;  name="NOT SET";};
+        unistring toString() { if (isOpen()) return sss = "[{]"; else return sss = "[}]"; };
+
+        TResult init(Session* s, RefData *&currentPoint);
+        TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+        RefData*  next_point( ThisId var_id, Session *s);
+        RefData*  pred_point( ThisId var_id, Session *s);
+
+        unistring getName(){ return name; }
+        void setName(unistring nname){ name = nname; }
+
+        RefData* Copy(RefBracketBase *bb, RefData *rp=0){
+            RefTemplateBridgeVar *b = dynamic_cast<RefTemplateBridgeVar *>(bb);
+            #ifdef DEBUG
+            if (!b) SYSTEMERROR("not RefTemplateBridgeVar !");
+            #endif
+            RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(b, rp);
+            cp->setName(this->getName());
+            RUNTIMEERROR("RefTemplateBridgeVar::Copy", "zaglushka!");
+            /// ??? нужно ли копировать тело сопоставления с таблицей переменных
+            return cp;
+        };
+
+        RefData* Copy(RefData *rp=0){
+            RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(rp);
+            cp->setName(this->getName());
+            RUNTIMEERROR("RefTemplateBridgeVar::Copy", "zaglushka!");
+            /// ??? нужно ли копировать тело сопоставления с таблицей переменных
+            return cp;
+        };
+
+};
+
+// мосты между лев.частью и внешним шаблоном. Со стороны внешнего шаблона
+class RefTemplateBridgeTmpl : public RefBracketBase {
+    public:
+        RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){};
+        RefTemplateBridgeTmpl(RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){};
+        unistring toString() { if (isOpen()) return sss = "{[}"; else return sss = "{]}"; };
+
+        TResult init(Session* s, RefData *&currentPoint);
+        TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+        RefData*  next_point( ThisId var_id, Session *s);
+        RefData*  pred_point( ThisId var_id, Session *s);
+
+        RefData* Copy(RefBracketBase *b, RefData *rp=0){
+            SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");
+        };
+        RefData* Copy(RefData *rp=0){
+            SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");
+        };
 
 };
 

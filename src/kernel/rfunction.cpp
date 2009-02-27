@@ -291,7 +291,7 @@ RefUserTemplate::RefUserTemplate(unistring name, RefChain *lp) : RefTemplateBase
 
 void RefUserTemplate::setLeftPart(RefChain *lp){
     // добавляем мосты к концам тела шаблона
-    RefTemplateBridge *lbr = new RefTemplateBridge(), *rbr = new RefTemplateBridge(lbr, 0);
+    RefTemplateBridgeTmpl *lbr = new RefTemplateBridgeTmpl(), *rbr = new RefTemplateBridgeTmpl(lbr, 0);
     lp->first = lp->first->predInsert(lbr);
     lp->second = lp->second->afterInsert(rbr);
 
@@ -299,4 +299,129 @@ void RefUserTemplate::setLeftPart(RefChain *lp){
     leftPart = lp;
 };
 
+
+
+
+
+/****************  вызывающие ( переменная )  *****************
+**************************************************************/
+TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
+    if (this->isOpen()){  //  {
+        #ifdef DEBUG
+        if (! dynamic_cast<RefTemplateBridgeVar*>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
+        #endif
+        /// начало сопоставления переменной
+        //  переменная: создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
+        SessionOfMaching *sess = new SessionOfMaching(s->getPole_zrenija());
+        s->matchSessions.push_back(sess);
+        //  переменная: сохраняем конец ссылки на шаблон для возврата  }
+        //sess->templReturnBackPoint.push( (RefTemplateBridgeVar *)this->other );  //  }
+        sess->templReturnBackPoint =  (RefTemplateBridgeVar *)this->other ;  //  }
+
+        return GO;
+    } else {             //  }
+        /// успешное сопоставление переменной
+        SessionOfMaching *sess = s->matchSessions.back();
+        //  переменная: забываем точку возврата шаблона в левую часть   } (this)
+        //sess->templReturnBackPoint.pop();
+        sess->templReturnBackPoint = 0;
+        //  переменная: перемещаем подсессию в тело пользовательской переменной
+        s->matchSessions.pop_back();
+        //??? = sess;
+        RUNTIMEERROR("RefTemplateBridgeVar::init", "not realized line upper");
+        return GO;
+    }
+};
+
+RefData*  RefTemplateBridgeVar::next_point( ThisId var_id, Session *s){
+    if (this->isOpen()){
+        // указывает на открывающую скобку-мост своего шаблона
+        // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
+        return this->getBridge();
+    } else {
+        return next; //?
+    }
+};
+
+
+TResult  RefTemplateBridgeVar::back(Session* s, RefData *&l, RefData *&r){
+    if (this->isOpen()){  //  {
+        /// неудачное сопоставление переменной внешнего типа
+        //  переменная: удаляем подсессию для переменной с очисткой мусора
+        delete s->matchSessions.back();
+        s->matchSessions.pop_back();
+        //  переменная: забываем точку возврата
+        //sess->templReturnBackPoint.pop();
+        s->matchSessions.back()->templReturnBackPoint = 0;
+
+        return BACK;
+    } else {              //  }
+        /// откат к ранее успешной сопоставленной переменной пользовательского типа
+        //  переменная: извлекаем из тела переменной подсессию сопоставления и делаем ее акивной
+        SessionOfMaching *sess /*= ???*/;
+        RUNTIMEERROR("RefTemplateBridgeVar::back", "not realized line upper");
+        s->matchSessions.push_back(sess);
+        //  переменная: вспоминаем точку возврата   } (this)
+        //sess->templReturnBackPoint.push( this );
+        sess->templReturnBackPoint = this ;
+
+        return BACK;
+    }
+};
+
+RefData*  RefTemplateBridgeVar::pred_point( ThisId var_id, Session *s){
+    if (this->isOpen()){
+        return pred; //?
+    } else {
+        // указывает на закр скобку-мост своего шаблона
+        // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
+        return this->getBridge();
+    }
+};
+
+
+/**************  вызываемые ( $Template ) ********************
+**************************************************************/
+TResult  RefTemplateBridgeTmpl::init(Session* s, RefData *&l){
+    if (this->isOpen()){  //  {
+        /// начало сопоставления внешнего шаблона
+        //  шаблон:  в переменной была создана подсессия и точка возврата
+        return GO;
+    } else {              //  }
+        /// успешное сопоставление внешнего шаблона
+        //  шаблон:  в переменной будет забыта точка возврата, подсессия будет перемещена в тело переменной
+        return GO;
+    }
+};
+
+RefData*  RefTemplateBridgeTmpl::next_point( ThisId var_id, Session *s){
+    if (this->isOpen()){  //  {
+        return next;
+    } else {              //  }
+        //return sess->templReturnBackPoint.top();
+        return s->matchSessions.back()->templReturnBackPoint;
+    }
+};
+
+
+TResult  RefTemplateBridgeTmpl::back(Session* s, RefData *&l, RefData *&r){
+    if (this->isOpen()){  //  {
+        /// неудачное сопоставление внешнего шаблона
+        //  в переменной будет удалена подсессия и точка возврата
+        return BACK;
+    } else {              //  }
+        /// откат к ранее успешному сопоставленному пользовательскому шаблону
+        //  шаблон: в переменной была возвращена и активирована подсессия, восстановлена точка возврата
+        return BACK;
+    }
+};
+
+RefData*  RefTemplateBridgeTmpl::pred_point( ThisId var_id, Session *s){
+    if (this->isOpen()){
+        //return sess->templReturnBackPoint.top()->other;
+        return s->matchSessions.back()->templReturnBackPoint->other;
+    } else {
+        return pred;
+    }
+};
 
