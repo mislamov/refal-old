@@ -199,6 +199,10 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
     }
 
     //std::cout << "\ns->getStackOfDataSkob()->top() = " << s->getStackOfDataSkob()->top()->toString();
+    std::cout << "\n\n" << s->getStackOfDataSkob()->size() << "\n\n" << flush;
+    #ifdef DEBUG
+    if (! s->getStackOfDataSkob()->size()) SYSTEMERROR("empty stack!");
+    #endif
     if (r==s->getStackOfDataSkob()->top()) {
         return BACK;
     };

@@ -22,7 +22,7 @@
     };
 
 #define RUNTIMEERROR(fname, msg) { \
-    std::cout << "\n######## RUNTIMEERROR : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
+    std::cout << "\n######## RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
     abort(); \
     };
 

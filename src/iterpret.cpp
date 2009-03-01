@@ -27,12 +27,13 @@ int main(int argv, char **argc){
         Session *s = new Session();
 
         // загрузили модули
-        std::cout << msystem.toString() << "\n";
+        //std::cout << msystem.toString() << "\n";
         s->regModule(&msystem);
         mod = new RefUserModule();
         loadModuleFromXmlFile(mod, xmlFile);
         std::cout << mod->toString() << "\n";
         s->regModule(mod);
+        std::cout << mod->toString() << "\n";
 
 /*        RefData_DOT
             *l = new RefData_DOT(),

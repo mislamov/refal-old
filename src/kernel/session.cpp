@@ -12,6 +12,7 @@ TVarBody::TVarBody(RefData* l, RefData* r, RefObject* o, TVarBodyTable *themap) 
     second=r;
     owner = o;
     subv = themap;
+    sess = 0;
 };
 
 
@@ -45,16 +46,18 @@ TVarBody* Session::getVarBody( unistring vname ){
 // ищет по всем модулям
 RefObject*  Session::getObjectByName(unistring name, Session *s){
     ///todo: проверить указан ли модуль явно и если указан, то искать только в нем
-    std::map<unistring, RefModuleBase*>::reverse_iterator mod = this->modules.rbegin();
+    std::map<unistring, RefModuleBase*>::reverse_iterator mod;
     RefObject* result = 0;
+    std::cout << "\n\n" << modules.size() << flush << "\n\n";
 
 
-    for ( mod=this->modules.rbegin() ; mod != this->modules.rend(); ++mod )
+    for ( mod=this->modules.rbegin() ; mod != this->modules.rend(); ++mod ){
         std::cout << "\n\n" << mod->second->getName() << flush << "\n\n";
 
         if (result = mod->second->getObjectByName(name, s)){
             return result;
         }
+    }
     return 0;
 };
 
@@ -164,9 +167,17 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
     while (activeTemplate) {
         /* */
+        std::cout << "\n>>   ";
+        switch(result_sost){
+            case GO : std::cout << "GO"; break;
+            case BACK : std::cout << "BACK"; break;
+            case ERROR : std::cout << "ERROR"; break;
+            default: std::cout << "????";
+        }
+        std::cout << " [s:"<< s->matchSessions.size() <<"] ";
         //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
-        //std::cout << "\t" << activeTemplate->toString() << " ~ " /*<< getCurrentSopostStack().size()*/ << std::flush;
-        //std::cout << "\t";  print_vector(r);
+        std::cout << "\t" << activeTemplate->toString() << " ~ " /*<< getCurrentSopostStack().size()*/ << std::flush;
+        std::cout << "\t";  print_vector(r);
         //*/
         pre_sost = result_sost;
         // даны l и r  (l=r=pred)
@@ -418,7 +429,7 @@ void Session::deinitializationTemplate(RefChain *&tpl) { //  удаление д
 
 
 
-
+// сохраняет состояние переменной во время сопоставленияЫ
 void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     //std::cout << "\nSaveTempl::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
     RefBracketBase *rb;
@@ -433,11 +444,25 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     // если элемент является переменной (наследуется от соотв интерфейса - эти признак), то ...
     IRefVar* vart = dynamic_cast <IRefVar *>(v);
 
-    // ... сохраняется состояние только переменных
+    ///todo ... сохранять состояние только переменных
+    TVarBody *varBody = new TVarBody(l, r, v);
+
+    RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(v);
+    if (bridge && !bridge->isOpen()){
+        /// случай когда удачно сопоставлена переменная внешнего типа
+        SessionOfMaching *sess = this->matchSessions.back();
+        // сохраняем состояние сопоставления в тело переменной
+        varBody->sess = sess;
+        sess->templReturnBackPoint = 0;
+        // завершаем подсессию сопоставления внешней переменнрй
+        this->matchSessions.pop_back();
+    }
+
     if (vart && vart->getName() != EmptyUniString){
-        getCurrentSopostStack()->push( setVarBody(vart->getName(), new TVarBody(l, r, v)) );
+        // сохр в карте переменных
+        getCurrentSopostStack()->push( setVarBody(vart->getName(), varBody) );
     } else {
-        getCurrentSopostStack()->push( new TVarBody(l, r, v) );
+        getCurrentSopostStack()->push( varBody );
     }
 
 };
@@ -467,6 +492,19 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     if (vart) setVarBody( vart->getName(), 0 );
     #endif
     //( varTable[vart->getName()] = new TVarBody(l, r, v) );
+
+    RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(owner);
+    if (bridge && !bridge->isOpen()){  //  }
+        /// случай когда откат вернулся к переменной внешнего типа
+        //  переменная: извлекаем из тела переменной подсессию сопоставления и делаем ее акивной
+        SessionOfMaching *sess = tmp->sess;
+        this->matchSessions.push_back(sess);
+        //  переменная: вспоминаем точку возврата   } (this)
+        //sess->templReturnBackPoint.push( this );
+        sess->templReturnBackPoint = bridge ;
+
+    }
+
     delete tmp;
     //std::cout << "\nRestoreTemplItem::\t" << owner->toString() << "\t->\t" << vectorToString(l, r);
     return;
@@ -480,8 +518,8 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
 void Session::regModule(RefModuleBase *m){
     //std::cout << "\n\n\n\nSession::regModule [" << m->getName() << "]  :: " << m->toString() << "\n\n\n\n";
     if (!m) SYSTEMERROR("Tring to load $null module!");
+    modules[m->getName()] = m; // сначала модуль присвоим - потом инициализация. Чтоб модулю бы доступен сам модуль через сессию
     m->initilizeAll(this);
-    modules[m->getName()] = m;
     /// todo: связывание у пользовательских переменных ссылок на шаблоны с шаблонми по описаням/именам, указаным в конструкторе
 };
 

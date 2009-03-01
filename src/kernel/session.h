@@ -15,6 +15,7 @@
 class DataForRepeater;
 class TVarBody;
 class Session;
+class SessionOfMaching;
 class DataForRepeater;
 class RefModuleBase;
 class RefFunctionBase;
@@ -27,8 +28,9 @@ class TVarBodyTable : public std::map<unistring, TVarBody*>{};
 class TVarBody : public pair<RefData *, RefData *>{
     unistring sss;
 public:
-    RefObject *owner; // ссылка на описание типа переменной
-    TVarBodyTable *subv;  // подпеременные - для пользовательских шаблонов
+    RefObject *owner;        // ссылка на переменную-владельца данного тела
+    TVarBodyTable *subv;     // подпеременные - для пользовательских шаблонов
+    SessionOfMaching* sess;  // состояние внешней переменной во время сопоставления
     TVarBody(RefData* l, RefData* r, RefObject* o, TVarBodyTable *themap=0);
     unistring toString();
 };

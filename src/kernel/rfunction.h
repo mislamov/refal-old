@@ -76,6 +76,10 @@ class RefUserVarNotInit : public RefVariable, public NeedInitilize {
         TResult init(Session*, RefData *&);
         TResult back(Session*, RefData *&, RefData *&);
         RefData*  Copy(RefData* where=0){ return 0; };
+
+        ~RefUserVarNotInit(){
+            int i=0;
+        };
 };
 
 

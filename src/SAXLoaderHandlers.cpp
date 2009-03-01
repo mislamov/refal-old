@@ -192,7 +192,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             #endif
             RefUserTemplate *t =  (RefUserTemplate*)loader->extractValueFromStack("TEMPLATE");
             //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
-            //loader->getCurrChain()->aroundByDots(); - не надо. уже в left-part
+            loader->getCurrChain()->dearoundByDots(); // шаблону доты не нужны
             t->setLeftPart( loader->extractCurrChainFromStack() );
             loader->currentModule->objects[ t->getName() ] = t;
     } else

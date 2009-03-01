@@ -327,6 +327,8 @@ TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
         return GO;
     } else {             //  }
         /// успешное сопоставление переменной
+
+        /*  --== действия перенесены в Session::SaveTemplItem для сохранения подсессии в теле переменной
         SessionOfMaching *sess = s->matchSessions.back();
         //  переменная: забываем точку возврата шаблона в левую часть   } (this)
         //sess->templReturnBackPoint.pop();
@@ -335,6 +337,8 @@ TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
         s->matchSessions.pop_back();
         //??? = sess;
         RUNTIMEERROR("RefTemplateBridgeVar::init", "not realized line upper");
+        */
+
         return GO;
     }
 };
@@ -358,19 +362,20 @@ TResult  RefTemplateBridgeVar::back(Session* s, RefData *&l, RefData *&r){
         s->matchSessions.pop_back();
         //  переменная: забываем точку возврата
         //sess->templReturnBackPoint.pop();
-        s->matchSessions.back()->templReturnBackPoint = 0;
+        //s->matchSessions.back()->templReturnBackPoint = 0;
 
         return BACK;
     } else {              //  }
         /// откат к ранее успешной сопоставленной переменной пользовательского типа
+        /* --== перенесено в Session::RestoreTemplItem
         //  переменная: извлекаем из тела переменной подсессию сопоставления и делаем ее акивной
-        SessionOfMaching *sess /*= ???*/;
+        SessionOfMaching *sess = ???;
         RUNTIMEERROR("RefTemplateBridgeVar::back", "not realized line upper");
         s->matchSessions.push_back(sess);
         //  переменная: вспоминаем точку возврата   } (this)
         //sess->templReturnBackPoint.push( this );
         sess->templReturnBackPoint = this ;
-
+        */
         return BACK;
     }
 };
@@ -444,7 +449,7 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     // шаблон найден
     RefTemplateBridgeVar
         *leftBridge  = new RefTemplateBridgeVar(),
-        *rightBridge = new RefTemplateBridgeVar(leftBridge);
+        *rightBridge = new RefTemplateBridgeVar(leftBridge, leftBridge);
     #ifdef DEBUG
     if (! (this->pred && this->next) ) SYSTEMERROR("@RefUserVarNotInit around by $null !");
     #endif
@@ -466,6 +471,7 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     leftBridge ->bridge = (RefTemplateBridgeTmpl *) utempl->getLeftPart()->first;  // должно быть уже RefTemplateBridgeTmpl
     rightBridge->bridge = (RefTemplateBridgeTmpl *) utempl->getLeftPart()->second; // должно быть уже RefTemplateBridgeTmpl
 
+    delete this;
     return true;
 }
 TResult RefUserVarNotInit::init(Session*, RefData *&){ SYSTEMERROR("ALARM!"); };
