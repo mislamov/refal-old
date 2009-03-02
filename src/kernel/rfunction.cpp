@@ -239,6 +239,10 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
 // matching  в случае неуспеха сам восстанавливает состояние. В случае успеха - оставляет изменения
 // по идее рефал-условие не должно контроллировать точки состояний. Главное правильно вызывать дизмачинг (домачинг)
 TResult  RefCondition::init(Session* s, RefData *&l){
+
+    /// todo: ниже не верно. условие может быть внутри внешнего шаблона и сопоставляться с пустым выражением не в конце
+    /// однако для условия в предложении очень важно проверять, что оно сопост-ся с концом аргумента
+    /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
     // условие может быть только в конце шаблона и сопоставляться с пустым выражением в конце
     RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
     if (!d){
@@ -246,8 +250,8 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     }
 
     s->showStatus();
-
     RefChain *newpz = s->RightPartToObjectExpression(this->rightPart);  /// todo: тут создается - где-то тут же и кильнуть
+
     std::cout << "\nCOND-EVALUTE:::\t" << newpz->toString() << " : " << this->leftPart->toString();
 
     newpz = evalutor(newpz, s);
@@ -319,6 +323,8 @@ TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
         /// начало сопоставления переменной
         //  переменная: создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
         SessionOfMaching *sess = new SessionOfMaching(s->getPole_zrenija());
+        //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
+        sess->StackOfDataSkob.push( s->matchSessions.back()->StackOfDataSkob.top()  );
         s->matchSessions.push_back(sess);
         //  переменная: сохраняем конец ссылки на шаблон для возврата  }
         //sess->templReturnBackPoint.push( (RefTemplateBridgeVar *)this->other );  //  }
