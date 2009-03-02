@@ -130,10 +130,11 @@ class IRefVar {
 };
 
 // Абстрактный класс - предок всех переменных языка
-class RefVariable : public RefData, public RefalNameSpace {
+class RefVariable : public virtual IRefVar, public RefData, public RefalNameSpace {
     public:
         RefVariable(unistring name = EmptyUniString, RefData *rp = 0);
         void forceback(Session *){};
+        virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo очень грязное решение. исправить
 };
 
 class RefLinkToVariable : public RefData, public RefalNameSpace {

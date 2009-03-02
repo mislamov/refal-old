@@ -26,7 +26,9 @@ class TVarBodyTable : public std::map<unistring, TVarBody*>{};
 
 // тело сопоставленной переменной
 class TVarBody : public pair<RefData *, RefData *>{
+
     unistring sss;
+
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
     TVarBodyTable *subv;     // подпеременные - для пользовательских шаблонов
@@ -47,6 +49,7 @@ public:
     Пользовательский шаблон: это будет TemplateItem c сылками на концы тела. В сессии сделать специальный стек/мап указателей на точки возврата пользовательскоо шаблона при сопоставлении.
 */
 class SessionOfMaching  : public RefObject {
+                bool isfar; // признак того, что субсессия создается для внешнего сопоставления (чужое поле зрения)
         public:
                 RefChain *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
 
@@ -55,16 +58,18 @@ class SessionOfMaching  : public RefObject {
                 std::stack<DataForRepeater *>	StackOfRepeatSkob;	    // Стек итераций повторителей
                 std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
                 //std::stack<ref_variant_vert*> StackOfVariants;	    //
-                std::stack<TVarBody*> StackOfSopost;	                // Стек хранителей состояний шаблонов
+
                 //std::stack<RefTemplateBridgeVar *> templReturnBackPoint;// Стек точек возврата при сопоставлении внешних шаблонов
                 RefTemplateBridgeVar * templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
-                TVarBodyTable varTable;		        // Таблица переменных  имя -> ссылка на элемент стека
-
+                TVarBodyTable varTable;		          // Таблица переменных  имя -> ссылка на элемент стека
+                std::stack<TVarBody*> StackOfSopost; // Стек хранителей состояний шаблонов
                 RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
 
                 // создает и возвращает субсессию (точку восстановления)
                 SessionOfMaching(RefData *argLeft, RefData *argRight){
                     //varTable = new TVarBodyTable();
+
+                    isfar = false;
                     pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
                     StackOfDataSkob.push((RefData_DOT *)pole_zrenija->second);
                     StopBrackForceVar = 0;
@@ -72,20 +77,23 @@ class SessionOfMaching  : public RefObject {
 
                 // создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов
                 SessionOfMaching(RefChain *pz){
-                    //varTable = new TVarBodyTable();
+
+                    isfar = true;
+
                     pole_zrenija = pz;
                     StopBrackForceVar = 0;
                 }
 
-
-
                 // очищает точку восстановления с удалением мусора
-                ~SessionOfMaching(){
-                    // удаление  датадот
-                    delete pole_zrenija->first;  // в деструкторе ссылки боковых точек выравниваются
-                    delete pole_zrenija->second; // в деструкторе ссылки боковых точек выравниваются
+                virtual ~SessionOfMaching(){
+                    if (! isfar){
+                        // удаление  датадот
+                        delete pole_zrenija->first;  // в деструкторе ссылки боковых точек выравниваются
+                        delete pole_zrenija->second; // в деструкторе ссылки боковых точек выравниваются
+                    }
                     // сборка мусора
                     LOG(" garbage collector nema!");
+
                 }
 
                 unistring toString() { return "SessionOfMaching"; };

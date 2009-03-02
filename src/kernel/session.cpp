@@ -70,23 +70,18 @@ unistring Session::varTableToText(){
 
         std::list<SessionOfMaching *>::reverse_iterator som;
         for (som = matchSessions.rbegin(); som != matchSessions.rend(); ++som ){
+            s << "--=== Subsession: " << (*som) << "\n";
             TVarBodyTable tbl = (*som)->varTable;
-
-
-
-
-
-
 
             TVarBodyTable::iterator it;
             for (it = tbl.begin(); it != tbl.end(); it++){
                 s << (*it).first << '\t' ;
-                std::cout << s.str() << flush;
                 if ((*it).second) { s << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n'; }
-                else { s << "error: vectorToString(((*it).second)->first, ((*it).second)->second)" << '\n'; }
+                else { s << "$NULL" << '\n'; }
             }
-            s << "=============================\n";
+            s << "----------------------\n";
         }
+        s << "======================\n";
 
         return s.str();
 };
@@ -128,6 +123,9 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, b
         return succmatch;
     }//else {
         // если провал, то очистить все последствия (откатиться до точки, очистить созданное после точки и саму точку)
+        #ifdef DEBUG
+        if (! this->matchSessions.size()) SYSTEMERROR("alarm");
+        #endif
         delete this->matchSessions.back();
         this->matchSessions.pop_back();
         return succmatch;
@@ -145,8 +143,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
     std::cout << "~\n";
     std::cout << tmplate->toString() << "\n";
     std::cout << "\n#######################################################\n";
-    std::cout << "\n" << s->varTableToText();
+    //std::cout << s->varTableToText();
+    s->showStatus();
     /**/
+
 //    std::cout << "\n\nMATCHING:\ntmpl: " << tmplate->toString();
 //    std::cout << "\nargs: " << s->pole_zrenija.top()->toString();
 
@@ -169,12 +169,12 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
         /* */
         std::cout << "\n>>   ";
         switch(result_sost){
-            case GO : std::cout << "GO"; break;
-            case BACK : std::cout << "BACK"; break;
-            case ERROR : std::cout << "ERROR"; break;
-            default: std::cout << "????";
+            case GO :       std::cout << "GO   "; break;
+            case BACK :     std::cout << "BACK "; break;
+            case ERROR :    std::cout << "ERROR"; break;
+            default:        std::cout << "???? ";
         }
-        std::cout << " [s:"<< s->matchSessions.size() <<"] ";
+        std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
         //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
         std::cout << "\t" << activeTemplate->toString() << " ~ " /*<< getCurrentSopostStack().size()*/ << std::flush;
         std::cout << "\t";  print_vector(r);
@@ -307,6 +307,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
 RefChain* Session::RightPartToObjectExpression(RefChain *src){  // готовит правую часть для сопоставления - подстановка переменных
     //std::cout << "\n\nRightPartToObjectExpression( " << src->toString() << " )\n\n";
+    showStatus();
     RefChain* tmp = src->Copy( this );
     //std::cout << "RESULT RightPartToObjectExpression: " << tmp->toString()  << "\n" << std::flush;
     return tmp; ///todo: сократить
@@ -432,9 +433,9 @@ void Session::deinitializationTemplate(RefChain *&tpl) { //  удаление д
 // сохраняет состояние переменной во время сопоставленияЫ
 void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     //std::cout << "\nSaveTempl::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
+
+
     RefBracketBase *rb;
-    //RefVariable* vart = dynamic_cast <RefVariable *>(v);
-    //if (!vart) return;
     if ((rb = dynamic_cast<RefBracketBase *>(r)) && (rb->isOpen()) && (!dynamic_cast<RefData_DOT *>(r))) {
         r = rb->getOther();
     }
@@ -444,8 +445,8 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     // если элемент является переменной (наследуется от соотв интерфейса - эти признак), то ...
     IRefVar* vart = dynamic_cast <IRefVar *>(v);
 
-    ///todo ... сохранять состояние только переменных
-    TVarBody *varBody = new TVarBody(l, r, v);
+
+    TVarBody *varBody = new TVarBody(l, r, v);      /// todo ... сохранять состояние только переменных
 
     RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(v);
     if (bridge && !bridge->isOpen()){
@@ -454,18 +455,32 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
         // сохраняем состояние сопоставления в тело переменной
         varBody->sess = sess;
         sess->templReturnBackPoint = 0;
+        // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
+        // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second
+        RefData *leftSecond = getVarBody(bridge->getName())->second;
+        #ifdef DEBUG
+        if (getVarBody(bridge->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа завязано на том, что скобки внешней переменной сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
+        #endif
+        if (leftSecond != r){ // взор на НЕ пустое выражение
+            varBody->first  = leftSecond;
+            //varBody->second = уже какое надо
+        } /*else {
+            varBody уже какое надо
+        }*/
+
         // завершаем подсессию сопоставления внешней переменнрй
         this->matchSessions.pop_back();
     }
 
     if (vart && vart->getName() != EmptyUniString){
-        // сохр в карте переменных
+        // если переменная с именем, то сохр в карте переменных и в стеке
         getCurrentSopostStack()->push( setVarBody(vart->getName(), varBody) );
     } else {
+        // все остальное - только в стеке
         getCurrentSopostStack()->push( varBody );
     }
-
 };
+
 
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     #ifdef DEBUG
@@ -474,9 +489,8 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     TVarBody  *pd = getCurrentSopostStack()->top();
     #ifdef DEBUG
     if (pd->owner != owner) {
-        std::cout << "\nowner=" << owner->toString() << std::flush;
-        std::cout << "\npd->owner=" << pd->owner << "\n\n\n\n\n\n\n\n" << std::flush;
-        std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;std::cout << "\npd->owner=" << pd->owner << "  " << std::flush;
+        std::cout << "\n\n\nowner=" << owner << flush << owner->toString() << std::flush;
+        std::cout << "\npd->owner=" << pd->owner << flush << pd->owner->toString() << "\n\n\n\n" << std::flush;
         printf("\n");
         SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << pd->owner->toString() << "[" << pd->owner << "] expected!");
     }
@@ -573,6 +587,7 @@ DataForRepeater::DataForRepeater(RefData *o) {
 void Session::showStatus(){
     std::cout << "\n\n";
     std::cout << "\nshowStatus_ZAGL !!!!";
+    std::cout << this->varTableToText() << flush;
     /*
     std::cout << "\n    pole_zrenija: size=" << pole_zrenija.size() << "  " << (pole_zrenija.empty() ? "" : pole_zrenija.top()->toString());
     std::cout << "\n    StopBrackForceVar: " << (StopBrackForceVar?StopBrackForceVar->toString():"null");
