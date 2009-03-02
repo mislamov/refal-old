@@ -1,4 +1,4 @@
-$Entry Go {
+$ENTRY Go {
 	= <Prout 'word:'><Prout <Palindrom <Card>>><Go>;
 }
 

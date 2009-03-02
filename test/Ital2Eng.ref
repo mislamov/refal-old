@@ -3,12 +3,12 @@ $ENTRY Go { = <Job <Card>>  }
 
 Job {
      0 = ;                  /* end of file */
-     eX = <Prout <Trans-line eX>>
+     e.X = <Prout <Trans-line e.X>>
           <Job <Card>>; }
    
 
 Trans-line {
-     ' 'eX = <Trans-line eX>;
+     ' 'e.X = <Trans-line e.X>;
      e.Word' 'e.Rest =
                  <Trans (e.Word) <Table>>' '
                  <Trans-line e.Rest>;
@@ -24,6 +24,6 @@ Table { = (('cane') 'dog')
          }
 
 Trans {
-     (e.It)e1((e.It)e.Eng)e2 = e.Eng;
-     (e.It)e1 = '***'; /* word not in table */
+     (e.It)e.1((e.It)e.Eng)e.2 = e.Eng;
+     (e.It)e.1 = '***'; /* word not in table */
         }
