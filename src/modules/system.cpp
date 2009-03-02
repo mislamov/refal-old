@@ -131,6 +131,7 @@ RefChain* Card (RefData* beg, RefData* end, Session* s){
     // конец файла
     if (std::cin.eof()){
         *rch += new RefInteger((infint)0);
+        std::cin.clear();
     }
 
     return rch;
@@ -183,5 +184,14 @@ bool system_PROUT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* 
     std::cout << "\n############################### STDOUT ###############################\n"
             << ":####\t\t" << vectorToString(lft, rht)
             << "\n######################################################################\n";
+    return true;
+};
+
+
+bool system_PRINT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    std::cout << "\n############################### STDOUT ###############################\n"
+            << ":####\t\t" << vectorToString(lft, rht)
+            << "\n######################################################################\n";
+    result = new RefChain(lft, rht); //todo: подобрать сборкой мусора или продумать эффективнее
     return true;
 };

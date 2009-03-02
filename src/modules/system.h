@@ -70,6 +70,14 @@ public:
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
 };
 
+class system_PRINT : public RefBuildInFunction {
+public:
+    system_PRINT(RefDllModule *m) : RefBuildInFunction("Print", m) {}
+    unistring toString(){ return "PRINT"; };
+    unistring getName() { return "Print"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
 
 
 
@@ -90,6 +98,7 @@ public:
 
         setObjectByName("Card", new system_CARD(this));
         setObjectByName("Prout", new system_PROUT(this));
+        setObjectByName("Print", new system_PRINT(this));
     };
 };
 
