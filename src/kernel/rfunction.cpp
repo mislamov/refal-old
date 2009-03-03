@@ -330,24 +330,13 @@ TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
         sess->StackOfDataSkob.push( s->matchSessions.back()->StackOfDataSkob.top()  );
         s->matchSessions.push_back(sess);
         //  переменная: сохраняем конец ссылки на шаблон для возврата  }
-        //sess->templReturnBackPoint.push( (RefTemplateBridgeVar *)this->other );  //  }
         sess->templReturnBackPoint =  (RefTemplateBridgeVar *)this->other ;  //  }
 
+        s->showStatus();
         return GO;
     } else {             //  }
         /// успешное сопоставление переменной
-
-        /*  --== действия перенесены в Session::SaveTemplItem для сохранения подсессии в теле переменной
-        SessionOfMaching *sess = s->matchSessions.back();
-        //  переменная: забываем точку возврата шаблона в левую часть   } (this)
-        //sess->templReturnBackPoint.pop();
-        sess->templReturnBackPoint = 0;
-        //  переменная: перемещаем подсессию в тело пользовательской переменной
-        s->matchSessions.pop_back();
-        //??? = sess;
-        RUNTIMEERROR("RefTemplateBridgeVar::init", "not realized line upper");
-        */
-
+        /*  --== действия перенесены в Session::SaveTemplItem для сохранения подсессии в теле переменной */
         return GO;
     }
 };
@@ -356,6 +345,9 @@ RefData*  RefTemplateBridgeVar::next_point( ThisId var_id, Session *s){
     if (this->isOpen()){
         // указывает на открывающую скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
+        #ifdef DEBUG
+        if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
+        #endif
         return this->bridge;
     } else {
         return next; //?
@@ -377,13 +369,6 @@ TResult  RefTemplateBridgeVar::back(Session* s, RefData *&l, RefData *&r){
     } else {              //  }
         /// откат к ранее успешной сопоставленной переменной пользовательского типа
         /* --== перенесено в Session::RestoreTemplItem
-        //  переменная: извлекаем из тела переменной подсессию сопоставления и делаем ее акивной
-        SessionOfMaching *sess = ???;
-        RUNTIMEERROR("RefTemplateBridgeVar::back", "not realized line upper");
-        s->matchSessions.push_back(sess);
-        //  переменная: вспоминаем точку возврата   } (this)
-        //sess->templReturnBackPoint.push( this );
-        sess->templReturnBackPoint = this ;
         */
         return BACK;
     }
@@ -395,6 +380,9 @@ RefData*  RefTemplateBridgeVar::pred_point( ThisId var_id, Session *s){
     } else {
         // указывает на закр скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
+        #ifdef DEBUG
+        if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
+        #endif
         return this->bridge;
     }
 };
@@ -418,11 +406,15 @@ RefData*  RefTemplateBridgeTmpl::next_point( ThisId var_id, Session *s){
     if (this->isOpen()){  //  {
         return next;
     } else {              //  }
-        //return sess->templReturnBackPoint.top();
         #ifdef DEBUG
         if (s->matchSessions.empty()) SYSTEMERROR("no sessions!");
+        if (! s->getTemplReturnBackPoint()) {
+            s->showStatus();
+            SYSTEMERROR("bridge back-dot not found!");
+        }
         #endif
-        return s->matchSessions.back()->templReturnBackPoint;
+
+        return s->getTemplReturnBackPoint();
     }
 };
 
@@ -441,7 +433,9 @@ TResult  RefTemplateBridgeTmpl::back(Session* s, RefData *&l, RefData *&r){
 
 RefData*  RefTemplateBridgeTmpl::pred_point( ThisId var_id, Session *s){
     if (this->isOpen()){
-        //return sess->templReturnBackPoint.top()->other;
+        #ifdef DEBUG
+        if (! s->matchSessions.back()->templReturnBackPoint) SYSTEMERROR("bridge back-dot not found!");
+        #endif
         return s->matchSessions.back()->templReturnBackPoint->other;
     } else {
         return pred;

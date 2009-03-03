@@ -32,7 +32,11 @@ class TVarBody : public pair<RefData *, RefData *>{
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
     TVarBodyTable *subv;     // подпеременные - для пользовательских шаблонов
-    SessionOfMaching* sess;  // состояние внешней переменной во время сопоставления
+
+    // сделал стек, так как у внешнего шаблона могут быть условия, а значит несколько субсессий при сопоставлении
+    // SessionOfMaching* sess;  // состояние внешней переменной во время сопоставления
+    std::stack<SessionOfMaching*> sessStack;  // состояние внешней переменной во время сопоставления
+
     TVarBody(RefData* l, RefData* r, RefObject* o, TVarBodyTable *themap=0);
     unistring toString();
 };
@@ -49,6 +53,7 @@ public:
     Пользовательский шаблон: это будет TemplateItem c сылками на концы тела. В сессии сделать специальный стек/мап указателей на точки возврата пользовательскоо шаблона при сопоставлении.
 */
 class SessionOfMaching  : public RefObject {
+        public:
                 bool isfar; // признак того, что субсессия создается для внешнего сопоставления (чужое поле зрения)
         public:
                 RefChain *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
@@ -59,8 +64,9 @@ class SessionOfMaching  : public RefObject {
                 std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
                 //std::stack<ref_variant_vert*> StackOfVariants;	    //
 
-                //std::stack<RefTemplateBridgeVar *> templReturnBackPoint;// Стек точек возврата при сопоставлении внешних шаблонов
-                RefTemplateBridgeVar * templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
+                RefTemplateBridgeVar *templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
+
+
                 TVarBodyTable varTable;		          // Таблица переменных  имя -> ссылка на элемент стека
                 std::stack<TVarBody*> StackOfSopost; // Стек хранителей состояний шаблонов
                 RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
@@ -73,13 +79,14 @@ class SessionOfMaching  : public RefObject {
                     pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
                     StackOfDataSkob.push((RefData_DOT *)pole_zrenija->second);
                     StopBrackForceVar = 0;
+                    templReturnBackPoint = 0;
                 }
 
                 // создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов
                 SessionOfMaching(RefChain *pz){
 
                     isfar = true;
-
+                    templReturnBackPoint = 0;
                     pole_zrenija = pz;
                     StopBrackForceVar = 0;
                 }
@@ -117,6 +124,7 @@ class Session : public RefObject {
     TVarBody*   getVarBody( unistring vname );
     TVarBody*   setVarBody( unistring vname, TVarBody* );
     RefObject*  getObjectByName(unistring name, Session *s=0); // ищет объект (функция/шаблон) во всех модулях
+    RefTemplateBridgeVar * getTemplReturnBackPoint();  // ищет и возвращает последнюю точку возврата внешней переменной
 
     unistring varTableToText();
 

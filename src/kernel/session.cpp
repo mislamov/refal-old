@@ -12,7 +12,7 @@ TVarBody::TVarBody(RefData* l, RefData* r, RefObject* o, TVarBodyTable *themap) 
     second=r;
     owner = o;
     subv = themap;
-    sess = 0;
+    //sess = 0;
 };
 
 
@@ -65,6 +65,16 @@ RefObject*  Session::getObjectByName(unistring name, Session *s){
     return 0;
 };
 
+// ищет последнюю точку возврата
+RefTemplateBridgeVar * Session::getTemplReturnBackPoint(){
+     std::list<SessionOfMaching *>::reverse_iterator som;
+     for (som = matchSessions.rbegin(); som != matchSessions.rend(); ++som ){
+            if ((*som)->templReturnBackPoint){
+                return (*som)->templReturnBackPoint;
+            }
+     }
+     SYSTEMERROR("templReturnBackPoint NOT EXISTS");
+};
 
 unistring Session::varTableToText(){
         //std::string result = "";
@@ -113,6 +123,7 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, b
         //  поместить новое поле зрения в стек
         //  создать точку восстановления
         this->matchSessions.push_back( new SessionOfMaching(argleft, argrigh) );
+        //  showStatus();
         //  запустиь матчинг
         succmatch = matchingBySession(this, tmplate, isdemaching);
     } else {
@@ -295,9 +306,6 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             //move_to_pred_point(activeTemplate, 0, this);
             result_sost = BACK;
         };
-
-
-
     };
 
 /*
@@ -306,7 +314,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
     std::cout << "\n>>  vars:" << r; if(r) r->print_inf();
     std::cout << "\n>>> pre_sost:" << pre_sost << std::flush;
 */
-    SYSTEMERROR("ActiveTemplate is NULL while matching: [" << pre_sost << "]  ");
+    ///todo: ниже экспериментальное: тоключил наобум, когда тестировал сопоставление внешнего шаблона с условиями -
+    //SYSTEMERROR("ActiveTemplate is NULL while matching: [" << pre_sost << "]  ");
+    //if (pre_sost == GO) return true; /// ?? может result_sost == GO ?
+    if (result_sost == GO) return true; /// ?? может pre_sost == GO ?
     return false;
 
 };
@@ -455,12 +466,21 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     TVarBody *varBody = new TVarBody(l, r, v);      /// todo ... сохранять состояние только переменных
 
     RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(v);
-    if (bridge && !bridge->isOpen()){
+    if (bridge && !bridge->isOpen()){       //  [}]
         /// случай когда удачно сопоставлена переменная внешнего типа
-        SessionOfMaching *sess = this->matchSessions.back();
-        // сохраняем состояние сопоставления в тело переменной
-        varBody->sess = sess;
-        sess->templReturnBackPoint = 0;
+
+        // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
+        SessionOfMaching *sess;
+        do {
+            sess = this->matchSessions.back();
+            #ifdef DEBUG
+            if (! sess){ SYSTEMERROR("alarm!"); }
+            #endif
+            varBody->sessStack.push(sess);
+            this->matchSessions.pop_back();
+        } while(! sess->templReturnBackPoint);
+        //sess->templReturnBackPoint = 0; //??? зачем?
+
         // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
         // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second
         RefData *leftSecond = getVarBody(bridge->getName())->second;
@@ -513,29 +533,32 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     #endif
     l = pd->first;
     r = pd->second;
-    //getCurrentSopostStack().show()->eexport(l, r);
-    //delete getCurrentSopostStack().extract();
-    TVarBody *tmp = getCurrentSopostStack()->top();
+
+    TVarBody *varBody = getCurrentSopostStack()->top();
     getCurrentSopostStack()->pop();
-    #ifdef DEBUG
-    RefVariable* vart = dynamic_cast <RefVariable *>(tmp->owner);
-    //if (vart) setVarBody( vart->getName(), 0 );
-    #endif
-    //( varTable[vart->getName()] = new TVarBody(l, r, v) );
 
     RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(owner);
     if (bridge && !bridge->isOpen()){  //  }
         /// случай когда откат вернулся к переменной внешнего типа
-        //  переменная: извлекаем из тела переменной подсессию сопоставления и делаем ее акивной
-        SessionOfMaching *sess = tmp->sess;
-        this->matchSessions.push_back(sess);
-        //  переменная: вспоминаем точку возврата   } (this)
-        //sess->templReturnBackPoint.push( this );
-        sess->templReturnBackPoint = bridge ;
+        //  переменная: извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
+        SessionOfMaching *sess;
+        while(! varBody->sessStack.empty()){
+            sess = varBody->sessStack.top();
+            this->matchSessions.push_back(sess);
+            varBody->sessStack.pop();
+        };
+        //sess->templReturnBackPoint = bridge ;
+        /// todo: откат до последнего условия может привести к ненужным сопоставлениям и продолжениям, так как если условие при откате снова выполнится,
+        /// то ничего по сути не изменится на данном этапе, но произойдет повторная попытка продолжить сопоставление.
+        /// откатываться до последнего условия разумно, если в нем инициализируется переменная, используемая далее за пределами
+        /// сопоставления шаблона (в объекте) - например в следующем условии внешнего уровня
+        /// пока оставил неэффективно - откат к последнему условию шаблона
+
+
 
     }
 
-    delete tmp;
+    delete varBody;
     //std::cout << "\nRestoreTemplItem::\t" << owner->toString() << "\t->\t" << vectorToString(l, r);
     return;
 };
@@ -602,8 +625,34 @@ DataForRepeater::DataForRepeater(RefData *o) {
 
 void Session::showStatus(){
     std::cout << "\n\n";
-    std::cout << "\nshowStatus_ZAGL !!!!";
-    std::cout << this->varTableToText() << flush;
+    std::cout << "************************************************************************\n";
+    std::cout  << "[subsessions: " << this->matchSessions.size() << "]"<< "\n";
+
+    std::list<SessionOfMaching *>::reverse_iterator som;
+    for (som = matchSessions.rbegin(); som != matchSessions.rend(); ++som ){
+        std::cout << "\n--=== Subsession: " << (*som) << "\n";
+        TVarBodyTable tbl = (*som)->varTable;
+
+        std::cout << " varTable:\n";
+        TVarBodyTable::iterator it;
+        for (it = tbl.begin(); it != tbl.end(); ++it){
+                    std::cout << '\t' << (*it).first << '\t' ;
+                    if ((*it).second) { std::cout << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n'; }
+                    else { std::cout << "$NULL" << '\n'; }
+        }
+
+        std::cout << " : StackOfSopost : size=" << (*som)->StackOfSopost.size() << "\n";
+        std::cout << " : isfar=" << (*som)->isfar << "\n";
+        std::cout << " : pole_zrenija=" << (*som)->pole_zrenija->toString()    << "\n";
+        //std::cout << " : StackOfDataSkob=" << (*som)->StackOfDataSkob.size()    << "\n";
+        std::cout << " : templReturnBackPoint=" << ((*som)&&(*som)->templReturnBackPoint ? (*som)->templReturnBackPoint->toString() : "$NULL")   << "\n";
+        std::cout << " : StackOfSopost=" << (*som)->StackOfSopost.size()    << "\n";
+        //std::cout << " : StopBrackForceVar=" << ((*som)->StopBrackForceVar ? (*som)->StopBrackForceVar->toString() : "$NULL")   << "\n";
+
+
+    }
+
+
     /*
     std::cout << "\n    pole_zrenija: size=" << pole_zrenija.size() << "  " << (pole_zrenija.empty() ? "" : pole_zrenija.top()->toString());
     std::cout << "\n    StopBrackForceVar: " << (StopBrackForceVar?StopBrackForceVar->toString():"null");
@@ -616,6 +665,7 @@ void Session::showStatus(){
     std::cout << "\n    StackOfGroupSkob : size=" << StackOfGroupSkob.size() << "  " << (StackOfGroupSkob.empty() ? "" : StackOfGroupSkob.top()->toString());
     RefTemplateBridgeVar
     */
+    std::cout << "************************************************************************\n";
     std::cout << "\n\n";
 
 }
