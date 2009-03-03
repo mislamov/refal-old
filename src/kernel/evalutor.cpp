@@ -23,6 +23,8 @@ RefChain* evalutor(RefChain *argline, Session *s){
             SYSTEMERROR("evalutor( argline->second is RefExecBracket ) !\nevalutor( " << argline->toString() << " )");
         */
 
+///todo: следующая строка экспериментальная - когда игрался с уловиями (отключил откат если сопоствление не с концом аргумента)
+if (! argline->first) return argline;
 
 std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second->next)?(argline->second->next->toString()):"$null") << "\n";
 

@@ -119,6 +119,8 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
 
         if (s->matching( (*sent)->leftPart, argfirst, argsecond, false)){
             LOG("\tsucessfull!");
+            s->showStatus();
+
             RefChain *newoe = s->RightPartToObjectExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
 
             /// todo: откатиться до созданной точки, оставив только newoe и глобальные данные. Созданные переменные удалить.
@@ -243,13 +245,13 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     /// todo: ниже не верно. условие может быть внутри внешнего шаблона и сопоставляться с пустым выражением не в конце
     /// однако для условия в предложении очень важно проверять, что оно сопост-ся с концом аргумента
     /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
-    // условие может быть только в конце шаблона и сопоставляться с пустым выражением в конце
+    /*// условие может быть только в конце шаблона и сопоставляться с пустым выражением в конце
     RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
     if (!d){
         return BACK;
-    }
+    }*/
 
-    s->showStatus();
+    //s->showStatus();
     RefChain *newpz = s->RightPartToObjectExpression(this->rightPart);  /// todo: тут создается - где-то тут же и кильнуть
 
     std::cout << "\nCOND-EVALUTE:::\t" << newpz->toString() << " : " << this->leftPart->toString();
@@ -260,6 +262,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 
     if (s->matching( this->leftPart, newpz->first, newpz->second, false )){
         std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
+        //std::cout << "s.sopost.top: " << s->getCurrentSopostStack()->top()->toString() << flush;
         return GO;
     } else {
         newpz->clear(); // сопоставление неуспешно - удаляем
@@ -267,7 +270,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 
         std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";
 
-        s->showStatus();
+        //s->showStatus();
 
         return BACK;
     }
@@ -416,6 +419,9 @@ RefData*  RefTemplateBridgeTmpl::next_point( ThisId var_id, Session *s){
         return next;
     } else {              //  }
         //return sess->templReturnBackPoint.top();
+        #ifdef DEBUG
+        if (s->matchSessions.empty()) SYSTEMERROR("no sessions!");
+        #endif
         return s->matchSessions.back()->templReturnBackPoint;
     }
 };

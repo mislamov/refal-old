@@ -24,20 +24,24 @@ Session::~Session(){
 };
 
 TVarBody* Session::setVarBody( unistring vname, TVarBody* vb){
-    //(* matchSessions.back()->varTable )[ vname ] = vb;
+
     ( matchSessions.back()->varTable )[ vname ] = vb;
 };
 
 TVarBody* Session::getVarBody( unistring vname ){
 
     std::list<SessionOfMaching *>::reverse_iterator som = this->matchSessions.rbegin();
+    TVarBodyTable::iterator fnded;
     TVarBody* result = 0;
 
-    while( som != this->matchSessions.rend() ){
-        TVarBody* result =  ((*som)->varTable)[vname];
-        if (result){
-            return result;
+    while( som != this->matchSessions.rend()){
+
+        TVarBodyTable varTable = ((*som)->varTable);
+        fnded = varTable.find(vname);
+        if (fnded != varTable.end()){
+            return  (*fnded).second;
         }
+
         ++som;
     }
     return 0;
@@ -74,7 +78,7 @@ unistring Session::varTableToText(){
             TVarBodyTable tbl = (*som)->varTable;
 
             TVarBodyTable::iterator it;
-            for (it = tbl.begin(); it != tbl.end(); it++){
+            for (it = tbl.begin(); it != tbl.end(); ++it){
                 s << (*it).first << '\t' ;
                 if ((*it).second) { s << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n'; }
                 else { s << "$NULL" << '\n'; }
@@ -195,13 +199,15 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             #endif
 
                     result_sost = activeTemplate->init(s, r);
-                    if (result_sost == GO){
+                    if (result_sost == GO || result_sost == SUCCESS){  // сохранять сотояние для элемента с SUCCESS нужно для дематчинга
                         if (l==r){ // r не изменилось => пустое
                             s->SaveTemplItem(activeTemplate, 0, l);
                         } else {
                             move_to_next_point(l, 0, s);  ///
                             s->SaveTemplItem(activeTemplate, l, r);
                         }
+                        //std::cout << "A: " << activeTemplate->toString() << "\n" << flush;
+                        //std::cout << "B: " << activeTemplate->next << "\n" << flush;
                         move_to_next_point(activeTemplate, 0, s);
                     } else
                     if (result_sost == BACK){
@@ -306,8 +312,8 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 };
 
 RefChain* Session::RightPartToObjectExpression(RefChain *src){  // готовит правую часть для сопоставления - подстановка переменных
-    //std::cout << "\n\nRightPartToObjectExpression( " << src->toString() << " )\n\n";
-    showStatus();
+    std::cout << "\n\nRightPartToObjectExpression( " << src->toString() << " )\n\n";
+    //showStatus();
     RefChain* tmp = src->Copy( this );
     //std::cout << "RESULT RightPartToObjectExpression: " << tmp->toString()  << "\n" << std::flush;
     return tmp; ///todo: сократить
@@ -462,7 +468,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
         if (getVarBody(bridge->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа завязано на том, что скобки внешней переменной сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
         #endif
         if (leftSecond != r){ // взор на НЕ пустое выражение
-            varBody->first  = leftSecond;
+            varBody->first  = leftSecond->next;
             //varBody->second = уже какое надо
         } /*else {
             varBody уже какое надо
@@ -489,9 +495,19 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     TVarBody  *pd = getCurrentSopostStack()->top();
     #ifdef DEBUG
     if (pd->owner != owner) {
-        std::cout << "\n\n\nowner=" << owner << flush << owner->toString() << std::flush;
-        std::cout << "\npd->owner=" << pd->owner << flush << pd->owner->toString() << "\n\n\n\n" << std::flush;
+        std::cout << "\n\n\size=" << getCurrentSopostStack()->size() << flush ;
+        std::cout << "\ncall owner=" << owner << flush << owner->toString() << std::flush;
+        std::cout << "\ntop  owner=" << pd->owner << flush << pd->owner->toString() << "\n\n" << std::flush;
         printf("\n");
+
+
+        std::cout << "\n=======\nGetCurrentSopostStack::\n";
+        while (! getCurrentSopostStack()->empty()){
+            std::cout << getCurrentSopostStack()->top()->toString() << "\n";
+            getCurrentSopostStack()->pop();
+        }
+        std::cout << flush;
+
         SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << pd->owner->toString() << "[" << pd->owner << "] expected!");
     }
     #endif
@@ -503,7 +519,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     getCurrentSopostStack()->pop();
     #ifdef DEBUG
     RefVariable* vart = dynamic_cast <RefVariable *>(tmp->owner);
-    if (vart) setVarBody( vart->getName(), 0 );
+    //if (vart) setVarBody( vart->getName(), 0 );
     #endif
     //( varTable[vart->getName()] = new TVarBody(l, r, v) );
 

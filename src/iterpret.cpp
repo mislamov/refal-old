@@ -31,7 +31,6 @@ int main(int argv, char **argc){
         s->regModule(&msystem);
         mod = new RefUserModule();
         loadModuleFromXmlFile(mod, xmlFile);
-        std::cout << mod->toString() << "\n";
         s->regModule(mod);
         std::cout << mod->toString() << "\n";
 
