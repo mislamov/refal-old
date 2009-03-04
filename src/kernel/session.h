@@ -21,24 +21,21 @@ class RefModuleBase;
 class RefFunctionBase;
 class RefTemplateBridgeVar;
 
-
 class TVarBodyTable : public std::map<unistring, TVarBody*>{};
 
 // тело сопоставленной переменной
 class TVarBody : public pair<RefData *, RefData *>{
-
     unistring sss;
 
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
-    TVarBodyTable *subv;     // подпеременные - для пользовательских шаблонов
 
     // сделал стек, так как у внешнего шаблона могут быть условия, а значит несколько субсессий при сопоставлении
-    // SessionOfMaching* sess;  // состояние внешней переменной во время сопоставления
     std::stack<SessionOfMaching*> sessStack;  // состояние внешней переменной во время сопоставления
 
-    TVarBody(RefData* l, RefData* r, RefObject* o, TVarBodyTable *themap=0);
+    TVarBody(RefData* l, RefData* r, RefObject* o);
     unistring toString();
+    TVarBody * folowByWay(unistring path);
 };
 
 

@@ -471,7 +471,12 @@ bool RefLinkToVariable::operator==(RefData&){
 
 TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
 
-    TVarBody *pd =  s->getVarBody( getName() ) ; /// todo: если делать ссылки через имена а не через адреса то добавить и вызывать тут менеджер адресов по именам
+
+    TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: если делать ссылки через имена а не через адреса то добавить и вызывать тут менеджер адресов по именам
+    if (getPath() != EmptyUniString){
+        // поиск подпути
+        pd = pd->folowByWay(getPath());
+    }
 
     if ( !pd ) {
         SYSTEMERROR("INTERNAL ERROR: link to not exists variable: " << getName());
@@ -524,7 +529,7 @@ RefData*  RefLinkToVariable::Copy(RefData* where){
     return new RefLinkToVariable(getName(), where);
 };
 
-RefLinkToVariable::RefLinkToVariable(unistring path, RefData *rp) : RefData(rp), RefalNameSpace(path) {
+RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp), RefalNameSpace(name) {
     is_system = false;
 };
 

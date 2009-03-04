@@ -7,14 +7,56 @@
 #include "session.h"
 #include "datastructs.h"
 
-TVarBody::TVarBody(RefData* l, RefData* r, RefObject* o, TVarBodyTable *themap)  {
+TVarBody::TVarBody(RefData* l, RefData* r, RefObject* o)  {
     first=l;
     second=r;
     owner = o;
-    subv = themap;
     //sess = 0;
 };
 
+TVarBody * TVarBody::folowByWay(unistring path){
+    #ifdef DEBUG
+    if (path == EmptyUniString) SYSTEMERROR("mpty subVar path : " + toString());
+    #endif
+
+    size_t t_from  = 0;
+    size_t t_to    = 0;
+    unistring vname;
+    TVarBody * varItem = this;
+    do {
+        t_from = t_to;
+        t_to   = path.find( varPathSeparator, t_to+1 );
+        #ifdef DEBUG
+        std::cout << "\n\n" << path.substr(t_from, t_to) << "\n\n" << flush;
+        #endif
+
+        vname = path.substr(t_from, t_to);
+
+        // пробегаемся по подсессиям сопоставлений
+        std::list<SessionOfMaching *>::reverse_iterator som = varItem->sessStack.rbegin();
+        TVarBodyTable::iterator fnded;
+
+        while( som != varItem->sessStack.rend()){
+
+            TVarBodyTable varTable = ((*som)->varTable);
+            fnded = varTable.find(vname);
+            if (fnded != varTable.end()){
+                varItem  = (*fnded).second;
+                break;
+            }
+
+            ++som;
+        }
+
+        if (som == varItem->sessStack.rend()) {
+            SYSTEMERROR("subVariable not found : " << path << "  for  " << toString());
+        }
+
+    } while (t_to != string::npos);
+
+    return varItem;
+
+};
 
 
 Session::Session() {
@@ -40,7 +82,7 @@ TVarBody* Session::getVarBody( unistring vname ){
 
     std::list<SessionOfMaching *>::reverse_iterator som = this->matchSessions.rbegin();
     TVarBodyTable::iterator fnded;
-    TVarBody* result = 0;
+    //TVarBody* result = 0;
 
     while( som != this->matchSessions.rend()){
 

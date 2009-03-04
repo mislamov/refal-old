@@ -94,7 +94,7 @@ try {
             //std::cout << "\n\n" << loader->getCurrChain()->toString() << "\n\n";
     } else
     if ( theCommand.compare(_L("VAR")) == 0) {  //
-        // ничего не делаем, так как при закрытии тега воспользуемся менеджером переменных и текущим тексом=описателем переменной
+        // ничего не делаем, так как при закрытии тега воспользуемся менеджером переменных и текущим текстом=описателем переменной
     } else
     if ( theCommand.compare(_L("LNK")) == 0) {  // ссылка на переменную
         // ничего не делаем, так как при закрытии тега воспользуемся менеджером переменных и текущим тексом=описателем переменной
@@ -247,8 +247,18 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("LNK")) == 0) {  //
         // берем по текущему тексту и получаем ссылку на переменную
-        *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars);
-        //std::cout << loader->getCurrChain()->second->toString();
+        // ссылка на часть внешней ли переменной?
+        int i;
+        if ((i = loader->currentchars.find( varPathSeparator ))!=unistring::npos){
+            // ссылка на часть внешней переменной
+            unistring name = loader->currentchars.substr(0, i);
+            unistring path = loader->currentchars.substr(i+1);
+            *(loader->getCurrChain()) += new RefLinkToPartOfVariable(name, path);
+        } else {
+            // ссылка на целую переменную
+            *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars);
+            //std::cout << loader->getCurrChain()->second->toString();
+        }
     } else
     if ( theCommand.compare(_L("TEXT")) == 0) {  //
         unistring text = loader->currentchars;

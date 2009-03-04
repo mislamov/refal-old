@@ -31,6 +31,10 @@ class TVarBodyTable;  // таблица сопоставленных перем�
 
 class Session;
 
+
+const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
+
+
 // Родитель всего в Рефале
 class RefObject {
     public:
@@ -137,6 +141,7 @@ class RefVariable : public virtual IRefVar, public RefData, public RefalNameSpac
         virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo очень грязное решение. исправить
 };
 
+// Ссылка на переменную
 class RefLinkToVariable : public RefData, public RefalNameSpace {
         //RefVariable *lnkData;
         // в name хранится адрес ссылочной переменной в виде varname:varname:varname
@@ -148,10 +153,19 @@ class RefLinkToVariable : public RefData, public RefalNameSpace {
         virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
         virtual RefData*  Copy(RefData* where=0);
 
-        RefLinkToVariable(unistring pathname, RefData *rp = 0);
+        RefLinkToVariable(unistring name, RefData *rp = 0);
         void forceback(Session *){};
 
+        unistring getPath(){ return EmptyUniString; }; // для наследников класса - путь к подпеременной относитльно основной переменной
+};
 
+class RefLinkToPartOfVariable : public RefLinkToVariable {
+        unistring path; // путь к подпеременной относитльно основной переменной
+    public:
+        unistring getPath(){ return EmptyUniString; };
+        RefLinkToPartOfVariable(unistring name, unistring tpath, RefData *rp = 0) : RefLinkToVariable(name, rp){
+            this->path = tpath;
+        };
 };
 
 class RefUserTemplate;
