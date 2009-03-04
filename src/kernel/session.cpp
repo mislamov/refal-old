@@ -24,11 +24,19 @@ Session::~Session(){
 };
 
 TVarBody* Session::setVarBody( unistring vname, TVarBody* vb){
-
+    #ifdef DEBUG
+    if (! matchSessions.size()) {
+        showStatus(); SYSTEMERROR("matchSessions is EMPTY!");
+    }
+    #endif
     ( matchSessions.back()->varTable )[ vname ] = vb;
+    return vb;
 };
 
 TVarBody* Session::getVarBody( unistring vname ){
+    #ifdef DEBUG
+    if (this->matchSessions.empty()) SYSTEMERROR("matchSessions is EMPTY!");
+    #endif
 
     std::list<SessionOfMaching *>::reverse_iterator som = this->matchSessions.rbegin();
     TVarBodyTable::iterator fnded;
@@ -44,6 +52,9 @@ TVarBody* Session::getVarBody( unistring vname ){
 
         ++som;
     }
+    #ifdef DEBUG
+    SYSTEMERROR("varieble not found in maps: " << vname);
+    #endif
     return 0;
 };
 
@@ -159,7 +170,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
     std::cout << tmplate->toString() << "\n";
     std::cout << "\n#######################################################\n";
     //std::cout << s->varTableToText();
-    s->showStatus();
+    //s->showStatus();
     /**/
 
 //    std::cout << "\n\nMATCHING:\ntmpl: " << tmplate->toString();
@@ -191,7 +202,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
         }
         std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
         //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
-        std::cout << "\t" << activeTemplate->toString() << " ~ " /*<< getCurrentSopostStack().size()*/ << std::flush;
+        std::cout << "\t" << activeTemplate->toString() << "\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
         std::cout << "\t";  print_vector(r);
         //*/
         pre_sost = result_sost;
@@ -237,27 +248,38 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                         //std::cout << "\n" << "{{{{{{ " << lastowner << std::flush << ": " ;
                         //std::cout << ((RefData *)(lastowner))->toString() << std::flush;
                         //std::cout << "\n" << "{{{{{{ " << newowner  << std::flush << ": " ;
-                        RefData * tmpd = dynamic_cast<RefData *>(newowner);
+                        //RefData * tmpd = dynamic_cast<RefData *>(newowner);
                         //std::cout << tmpd->toString() << std::flush << "\n\n";
                         #endif
+
                         r = 0;
                         move_to_pred_point(activeTemplate, 0, s);
                     }
 
         } else
         if (pre_sost==BACK){
+//s->showStatus();
             s->RestoreTemplItem(activeTemplate, l, r);
+//s->showStatus();
             result_sost = activeTemplate->back(s, l, r);
             if (result_sost == GO){
                 #ifdef DEBUG
                 if (!l) SYSTEMERROR("Unexpected situation: after back(l,r) method, l==null ! For simple variable it is mistake! Marat, prover - eli peremennaja ne prostaja, to vozmozhno nado ubrat etu proverku. Peremennaja: "+activeTemplate->toString() << "[" << activeTemplate << "]  BACK -> back() -> GO");
                 #endif
                 s->SaveTemplItem(activeTemplate, l, r);
+                s->showStatus();
                 move_to_next_point(activeTemplate, 0, s);
             } else
             if (result_sost == BACK){
                 // не сохраняем ничего
                 r = 0;
+                        // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
+                        // Может создать ошибки для varBridge
+                        IRefVar* vart = dynamic_cast <IRefVar *>(activeTemplate);
+                        if (vart && vart->getName() != EmptyUniString){
+                            std::cout << "\n::::: del map for : " << vart->getName() << flush << "\n";
+                            s->setVarBody(vart->getName(), 0);
+                        }
                 move_to_pred_point(activeTemplate, 0, s);
             }
         }
@@ -447,7 +469,7 @@ void Session::deinitializationTemplate(RefChain *&tpl) { //  удаление д
 
 
 
-// сохраняет состояние переменной во время сопоставленияЫ
+// сохраняет состояние переменной во время сопоставления
 void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     //std::cout << "\nSaveTempl::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
 
@@ -456,68 +478,132 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     if ((rb = dynamic_cast<RefBracketBase *>(r)) && (rb->isOpen()) && (!dynamic_cast<RefData_DOT *>(r))) {
         r = rb->getOther();
     }
-    //unistring vname = vart->getName();
-    //getCurrentSopostStack().push( varTable.top()->vars[vname] = new TVarSaver(l, r) );
-
-    // если элемент является переменной (наследуется от соотв интерфейса - эти признак), то ...
-    IRefVar* vart = dynamic_cast <IRefVar *>(v);
-
 
     TVarBody *varBody = new TVarBody(l, r, v);      /// todo ... сохранять состояние только переменных
 
+    // переменные внешнего типа обрабатываются персонально
     RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(v);
-    if (bridge && !bridge->isOpen()){       //  [}]
+    if (bridge){
         /// случай когда удачно сопоставлена переменная внешнего типа
 
-        // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
-        SessionOfMaching *sess;
-        do {
-            sess = this->matchSessions.back();
+        if (! bridge->isOpen()){       ///  [}]
+            // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
+            SessionOfMaching *sess;
+            do {
+                sess = this->matchSessions.back();
+                #ifdef DEBUG
+                if (! sess){ SYSTEMERROR("alarm!"); }
+                #endif
+                varBody->sessStack.push(sess);
+                this->matchSessions.pop_back();
+            } while(! sess->templReturnBackPoint);
+            //sess->templReturnBackPoint = 0; //??? зачем?
+
+            // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
+            // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second
+            RefData *leftSecond = getVarBody(bridge->getName())->second; /// todo сделать эффективнее. Без использования промежуточного сохранения в map
             #ifdef DEBUG
-            if (! sess){ SYSTEMERROR("alarm!"); }
+            if (getVarBody(bridge->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа завязано на том, что скобки внешней переменной сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
             #endif
-            varBody->sessStack.push(sess);
-            this->matchSessions.pop_back();
-        } while(! sess->templReturnBackPoint);
-        //sess->templReturnBackPoint = 0; //??? зачем?
+            if (leftSecond != r){ // взор на НЕ пустое выражение
+                varBody->first  = leftSecond->next;
+                //varBody->second = уже какое надо
+            } /*else {
+                varBody уже какое надо
+            }*/
+            getCurrentSopostStack()->push( setVarBody(bridge->getName(), varBody) );
 
-        // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
-        // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second
-        RefData *leftSecond = getVarBody(bridge->getName())->second;
-        #ifdef DEBUG
-        if (getVarBody(bridge->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа завязано на том, что скобки внешней переменной сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
-        #endif
-        if (leftSecond != r){ // взор на НЕ пустое выражение
-            varBody->first  = leftSecond->next;
-            //varBody->second = уже какое надо
-        } /*else {
-            varBody уже какое надо
-        }*/
+        } else {        ///  [{]
+            //  сохраняем сопоставление в вызывающей субсессии
+            getCurrentSopostStack()->push( setVarBody(bridge->getName(), varBody) );
+            //  создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
+            SessionOfMaching *sess = new SessionOfMaching(getPole_zrenija());
+            //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
+            sess->StackOfDataSkob.push( matchSessions.back()->StackOfDataSkob.top()  );
+            matchSessions.push_back(sess);
+            //  сохраняем конец ссылки на шаблон для возврата  }
+            sess->templReturnBackPoint =  (RefTemplateBridgeVar *)bridge->other ;  //  }
 
-        // завершаем подсессию сопоставления внешней переменнрй
-        this->matchSessions.pop_back();
-    }
+        }
 
-    if (vart && vart->getName() != EmptyUniString){
-        // если переменная с именем, то сохр в карте переменных и в стеке
-        getCurrentSopostStack()->push( setVarBody(vart->getName(), varBody) );
+        //showStatus();
     } else {
-        // все остальное - только в стеке
-        getCurrentSopostStack()->push( varBody );
+        /// не внешняя переменная
+        // если элемент является переменной (наследуется от соотв интерфейса - это признак), то ...
+        IRefVar* vart = dynamic_cast <IRefVar *>(v);
+
+        if (vart && vart->getName() != EmptyUniString){
+            // если переменная с именем, то сохр. в карте переменных и в стеке
+            getCurrentSopostStack()->push( setVarBody(vart->getName(), varBody) );
+        } else {
+            // все остальное - только в стеке
+            getCurrentSopostStack()->push( varBody );
+        }
+
     }
+
 };
 
 
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
+    RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(owner);
+
+    if (bridge && bridge->isOpen()){   ///  [{]
+        delete matchSessions.back();   // удаление субсессии для внешней переменной
+        matchSessions.pop_back();
+
+        #ifdef DEBUG
+        if (getCurrentSopostStack()->empty()) SYSTEMERROR("empty sopost stack!");
+        if (getCurrentSopostStack()->top()->owner != owner) SYSTEMERROR("wrong owner for " << owner->toString() << " : " << getCurrentSopostStack()->top()->owner->toString() );
+        #endif
+        getCurrentSopostStack()->pop();
+
+        return;
+    }
+
     #ifdef DEBUG
-    if (! getCurrentSopostStack()->size() ) SYSTEMERROR("empty stak!!!  " );
+    if ( getCurrentSopostStack()->empty() ) {
+        showStatus();  SYSTEMERROR("empty stak!!!  " );
+    }
     #endif
-    TVarBody  *pd = getCurrentSopostStack()->top();
+
+    TVarBody *varBody = getCurrentSopostStack()->top();
+    getCurrentSopostStack()->pop();
+
+    if (bridge && !bridge->isOpen()){  //  }
+        /// случай когда откат вернулся к переменной внешнего типа
+        // восстанавливаем значение левой var-скобки моста
+        if (varBody->first){
+            // непустое значение
+            setVarBody(bridge->getName(), new TVarBody(0, varBody->first->pred, bridge->getOther()));
+        } else {
+            // пустое значение
+            setVarBody(bridge->getName(), new TVarBody(0, varBody->second, bridge->getOther()));
+        }
+
+        //  переменная: извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
+        SessionOfMaching *sess;
+        while(! varBody->sessStack.empty()){
+            sess = varBody->sessStack.top();
+            this->matchSessions.push_back(sess);
+            varBody->sessStack.pop();
+        };
+
+        //sess->templReturnBackPoint = bridge ;
+        /// todo: откат до последнего условия может привести к ненужным сопоставлениям и продолжениям, так как если условие при откате снова выполнится,
+        /// то ничего по сути не изменится на данном этапе, но произойдет повторная попытка продолжить сопоставление.
+        /// откатываться до последнего условия разумно, если в нем инициализируется переменная, используемая далее за пределами
+        /// сопоставления шаблона (в объекте) - например в следующем условии внешнего уровня
+        /// пока оставил неэффективно - откат к последнему условию шаблона
+
+        //showStatus();
+    }
+
     #ifdef DEBUG
-    if (pd->owner != owner) {
+    if (varBody->owner != owner) {
         std::cout << "\n\n\size=" << getCurrentSopostStack()->size() << flush ;
         std::cout << "\ncall owner=" << owner << flush << owner->toString() << std::flush;
-        std::cout << "\ntop  owner=" << pd->owner << flush << pd->owner->toString() << "\n\n" << std::flush;
+        std::cout << "\ntop  owner=" << varBody->owner << flush << varBody->owner->toString() << "\n\n" << std::flush;
         printf("\n");
 
 
@@ -528,37 +614,15 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
         }
         std::cout << flush;
 
-        SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << pd->owner->toString() << "[" << pd->owner << "] expected!");
+        showStatus(); SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << varBody->owner->toString() << "[" << varBody->owner << "] expected!");
     }
     #endif
-    l = pd->first;
-    r = pd->second;
+    l = varBody->first;
+    r = varBody->second;
 
-    TVarBody *varBody = getCurrentSopostStack()->top();
-    getCurrentSopostStack()->pop();
-
-    RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(owner);
-    if (bridge && !bridge->isOpen()){  //  }
-        /// случай когда откат вернулся к переменной внешнего типа
-        //  переменная: извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
-        SessionOfMaching *sess;
-        while(! varBody->sessStack.empty()){
-            sess = varBody->sessStack.top();
-            this->matchSessions.push_back(sess);
-            varBody->sessStack.pop();
-        };
-        //sess->templReturnBackPoint = bridge ;
-        /// todo: откат до последнего условия может привести к ненужным сопоставлениям и продолжениям, так как если условие при откате снова выполнится,
-        /// то ничего по сути не изменится на данном этапе, но произойдет повторная попытка продолжить сопоставление.
-        /// откатываться до последнего условия разумно, если в нем инициализируется переменная, используемая далее за пределами
-        /// сопоставления шаблона (в объекте) - например в следующем условии внешнего уровня
-        /// пока оставил неэффективно - откат к последнему условию шаблона
-
-
-
-    }
-
+//showStatus();
     delete varBody;
+//showStatus();
     //std::cout << "\nRestoreTemplItem::\t" << owner->toString() << "\t->\t" << vectorToString(l, r);
     return;
 };
@@ -641,12 +705,11 @@ void Session::showStatus(){
                     else { std::cout << "$NULL" << '\n'; }
         }
 
-        std::cout << " : StackOfSopost : size=" << (*som)->StackOfSopost.size() << "\n";
         std::cout << " : isfar=" << (*som)->isfar << "\n";
         std::cout << " : pole_zrenija=" << (*som)->pole_zrenija->toString()    << "\n";
         //std::cout << " : StackOfDataSkob=" << (*som)->StackOfDataSkob.size()    << "\n";
         std::cout << " : templReturnBackPoint=" << ((*som)&&(*som)->templReturnBackPoint ? (*som)->templReturnBackPoint->toString() : "$NULL")   << "\n";
-        std::cout << " : StackOfSopost=" << (*som)->StackOfSopost.size()    << "\n";
+        std::cout << " : StackOfSopost=" << (*som)->StackOfSopost.size()  << "  " << ((*som)->StackOfSopost.size() ? (*som)->StackOfSopost.top()->toString() : "") << "\n";
         //std::cout << " : StopBrackForceVar=" << ((*som)->StopBrackForceVar ? (*som)->StopBrackForceVar->toString() : "$NULL")   << "\n";
 
 

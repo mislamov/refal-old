@@ -113,13 +113,14 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
 
     do {
         LOG("\ttring this: " << (*sent)->toString() );
+        s->showStatus();
 
         /// todo: создать тут точку отката сессии для очистки последствий функции
         SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
 
         if (s->matching( (*sent)->leftPart, argfirst, argsecond, false)){
             LOG("\tsucessfull!");
-            s->showStatus();
+            //s->showStatus();
 
             RefChain *newoe = s->RightPartToObjectExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
 
@@ -324,6 +325,7 @@ TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
         if (! dynamic_cast<RefTemplateBridgeVar*>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
         #endif
         /// начало сопоставления переменной
+        /* --== перенесено в Session::SaveTemplItem, т.к. там изменяется varMap, которую надо делать еще для преждней субсесии а не для новой
         //  переменная: создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
         SessionOfMaching *sess = new SessionOfMaching(s->getPole_zrenija());
         //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
@@ -331,8 +333,8 @@ TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
         s->matchSessions.push_back(sess);
         //  переменная: сохраняем конец ссылки на шаблон для возврата  }
         sess->templReturnBackPoint =  (RefTemplateBridgeVar *)this->other ;  //  }
+        */
 
-        s->showStatus();
         return GO;
     } else {             //  }
         /// успешное сопоставление переменной
@@ -356,20 +358,22 @@ RefData*  RefTemplateBridgeVar::next_point( ThisId var_id, Session *s){
 
 
 TResult  RefTemplateBridgeVar::back(Session* s, RefData *&l, RefData *&r){
-    if (this->isOpen()){  //  {
+    if (this->isOpen()){  //  [{]
         /// неудачное сопоставление переменной внешнего типа
         //  переменная: удаляем подсессию для переменной с очисткой мусора
-        delete s->matchSessions.back();
-        s->matchSessions.pop_back();
+//s->showStatus();
+        //delete s->matchSessions.back();
+        //s->matchSessions.pop_back();
+//s->showStatus();
         //  переменная: забываем точку возврата
         //sess->templReturnBackPoint.pop();
         //s->matchSessions.back()->templReturnBackPoint = 0;
 
         return BACK;
-    } else {              //  }
+    } else {              //  [}]
         /// откат к ранее успешной сопоставленной переменной пользовательского типа
-        /* --== перенесено в Session::RestoreTemplItem
-        */
+        /* --== перенесено в Session::RestoreTemplItem */
+        //s->showStatus();
         return BACK;
     }
 };
@@ -409,8 +413,7 @@ RefData*  RefTemplateBridgeTmpl::next_point( ThisId var_id, Session *s){
         #ifdef DEBUG
         if (s->matchSessions.empty()) SYSTEMERROR("no sessions!");
         if (! s->getTemplReturnBackPoint()) {
-            s->showStatus();
-            SYSTEMERROR("bridge back-dot not found!");
+            s->showStatus(); SYSTEMERROR("bridge back-dot not found!");
         }
         #endif
 
@@ -420,11 +423,11 @@ RefData*  RefTemplateBridgeTmpl::next_point( ThisId var_id, Session *s){
 
 
 TResult  RefTemplateBridgeTmpl::back(Session* s, RefData *&l, RefData *&r){
-    if (this->isOpen()){  //  {
+    if (this->isOpen()){  //    {
         /// неудачное сопоставление внешнего шаблона
         //  в переменной будет удалена подсессия и точка возврата
         return BACK;
-    } else {              //  }
+    } else {              //    }
         /// откат к ранее успешному сопоставленному пользовательскому шаблону
         //  шаблон: в переменной была возвращена и активирована подсессия, восстановлена точка возврата
         return BACK;

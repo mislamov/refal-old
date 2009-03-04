@@ -250,8 +250,6 @@ unistring vectorToString(RefData *f, RefData *g){
             a+=" $null";
         }
     } else {
-//        a += (f->pred)?f->pred->toString():"$null";
-//        a += " <- ";
 
         while (f && (!g || f!=g->next)) {
         //while (f && f!=g->next) {

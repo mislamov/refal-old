@@ -210,8 +210,7 @@ RefChain* RefChain::Copy(Session *s){
             TVarBody *tbody = s->getVarBody( tmplnk->getName() );
             #ifdef DEBUG
             if (!tbody ) {
-                s->showStatus();
-                SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
+                s->showStatus(); SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
             }
             #endif
             if (!(tbody->first)){
