@@ -31,7 +31,7 @@ public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
 
     // сделал стек, так как у внешнего шаблона могут быть условия, а значит несколько субсессий при сопоставлении
-    std::stack<SessionOfMaching*> sessStack;  // состояние внешней переменной во время сопоставления
+    std::list<SessionOfMaching*> sessStack;  // состояние внешней переменной во время сопоставления
 
     TVarBody(RefData* l, RefData* r, RefObject* o);
     unistring toString();

@@ -1,0 +1,98 @@
+/*
+   Парсер главного сайта rbc.ru
+*/
+
+$ENTRY Go { = <Run <ReadAll>> ; };
+
+ReadAll {
+	e.e 0	= 	e.e;
+	e.e	= 	e.e <ReadAll <Card>>;
+}
+
+
+Template rbc  ::= e.1 HTMLdoc.doc e.2 ;
+
+Template HTMLdoc   ::=  '<html>'  e.1 HTMLhead.head  e.2  HTMLbody.body  e.3 '</html>' ;
+Template HTMLhead  ::=  '<head>'  e.1 HTMLtitle.title e.2 '</head>' ;
+Template HTMLbody  ::=  '<body>'  rbcbody.rbc '</body>' ;
+Template HTMLtitle ::=  '<title>' e.title '</title>' ;
+
+Template rbcbody  ::=  
+		e.1 DIV.fullContainer e.2 DIV.otherBlocks e.3, 
+		DIV.fullContainer::class : 'fullContainer',
+		DIV.otherBlocks::class   : 'otherBlocks',
+
+		DIV.fullContainer	 : e.4 DIV.mainNewsDiv e.5,
+		DIV.fullContainer::class : 'ulList mainNews thin';
+		
+
+
+/* тест переменной - имени переменной:
+Template DIV	::= '<div class="' $varName '">' html.body '</div>' ;	
+*/
+
+
+Template DIV	::= '<div class="' word.class '">' html.html '</div>' ;
+
+Template word	::=  
+	e.text, 
+	<OnlyLettersDig e.text> : "true";
+
+Template html	::=
+	e.text,
+	<IsHTML e.text> : "true";
+
+OnlyLettersDig {
+	s.letter, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890' : e.1 s.letter e.2 = "true";
+	s.notletter = "false";
+	s.1 e.e, <OnlyLetters s.1> : "true" = <OnlyLetters e.e>;
+	e.else = "false";
+}
+
+IsHTML {
+	'<' e.e = <ScanTag '<' e.e>;
+	'>' e.else = "false";
+	s.s e.e = s.s <IsHTML e.e>;
+	= "true";
+	e.else = "false";
+}
+
+
+
+
+
+/* проверка $not * /
+ScanTag {
+	'<' word.tag e.nobraks '>' html.tagbody '</' word.tag '>',
+		$not e.nobraks : e.1 '>' e.2,
+		$not e.nobraks : e.3 '<' e.4	=	"true";
+}/**/
+
+ScanTag {
+	'<' word.tag e.nobraks '>' html.tagbody '</' word.tag '>' html.nexttag = <NoBraks e.nobraks>;
+	e.else = "false";
+}
+
+NoBraks {
+	'>' e.2 = "false";
+	'<' e.2 = "false";
+	s.s e.2 = <NoBraks e.2>;
+	= "true";
+}
+
+/* проверка ссылки на часть шаблона * /
+
+Run {
+	rbc.site,
+		rbc.site::doc::body::rbc::mainNewsDiv::html::text  =  <Prout rbc.site>;
+	e.else = <Prout 'error'>;
+}
+/*=*/
+
+/* проверка на шаболны */
+Run {
+	rbc.site  =  <Prout rbc.site>;
+	e.else 	  =  <Prout 'error'>;
+}
+/*=*/
+

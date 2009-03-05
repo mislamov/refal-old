@@ -20,17 +20,17 @@ TVarBody * TVarBody::folowByWay(unistring path){
     #endif
 
     size_t t_from  = 0;
-    size_t t_to    = 0;
+    size_t t_to    = -1;
     unistring vname;
     TVarBody * varItem = this;
     do {
-        t_from = t_to;
-        t_to   = path.find( varPathSeparator, t_to+1 );
+        t_from = t_to+1;
+        t_to   = path.find(varPathSeparator, t_from);
         #ifdef DEBUG
-        std::cout << "\n\n" << path.substr(t_from, t_to) << "\n\n" << flush;
+        std::cout << "\n\n" << path.substr(t_from, t_to-t_from) << "\n\n" << flush;
         #endif
 
-        vname = path.substr(t_from, t_to);
+        vname = path.substr(t_from, t_to-t_from);
 
         // пробегаемся по подсессиям сопоставлений
         std::list<SessionOfMaching *>::reverse_iterator som = varItem->sessStack.rbegin();
@@ -52,7 +52,7 @@ TVarBody * TVarBody::folowByWay(unistring path){
             SYSTEMERROR("subVariable not found : " << path << "  for  " << toString());
         }
 
-    } while (t_to != string::npos);
+    } while (t_to != std::string::npos);
 
     return varItem;
 
@@ -536,7 +536,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
                 #ifdef DEBUG
                 if (! sess){ SYSTEMERROR("alarm!"); }
                 #endif
-                varBody->sessStack.push(sess);
+                varBody->sessStack.push_back(sess);
                 this->matchSessions.pop_back();
             } while(! sess->templReturnBackPoint);
             //sess->templReturnBackPoint = 0; //??? зачем?
@@ -626,9 +626,9 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
         //  переменная: извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
         SessionOfMaching *sess;
         while(! varBody->sessStack.empty()){
-            sess = varBody->sessStack.top();
+            sess = varBody->sessStack.back();
             this->matchSessions.push_back(sess);
-            varBody->sessStack.pop();
+            varBody->sessStack.back();
         };
 
         //sess->templReturnBackPoint = bridge ;
