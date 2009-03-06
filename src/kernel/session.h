@@ -96,7 +96,7 @@ class SessionOfMaching  : public RefObject {
                         delete pole_zrenija->second; // в деструкторе ссылки боковых точек выравниваются
                     }
                     // сборка мусора
-                    LOG(" garbage collector nema!");
+                    //LOG(" garbage collector nema!");
 
                 }
 

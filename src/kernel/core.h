@@ -12,8 +12,8 @@
 *     и др.
 *****************************************************************************************/
 #define SYSTEMERROR(msg) { \
-    std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
-    std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+    std::cout << "\n\n####:#### " << __FILE__ << '[' << __LINE__ << "] : "; \
+    std::cout << "\n####:#### " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
     abort(); \
     };
 
@@ -22,7 +22,7 @@
     };
 
 #define RUNTIMEERROR(fname, msg) { \
-    std::cout << "\n######## RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
+    std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
     abort(); \
     };
 

@@ -105,7 +105,7 @@ RefObject*  Session::getObjectByName(unistring name, Session *s){
     ///todo: проверить указан ли модуль явно и если указан, то искать только в нем
     std::map<unistring, RefModuleBase*>::reverse_iterator mod;
     RefObject* result = 0;
-    std::cout << "\n\n" << modules.size() << flush << "\n\n";
+    //std::cout << "\n\n" << modules.size() << flush << "\n\n";
 
 
     for ( mod=this->modules.rbegin() ; mod != this->modules.rend(); ++mod ){
@@ -206,11 +206,11 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, b
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
     /**/
-    std::cout << "\n\n#######################################################\n";
-    std::cout << s->getPole_zrenija()->toString() << "\n";
-    std::cout << "~\n";
-    std::cout << tmplate->toString() << "\n";
-    std::cout << "\n#######################################################\n";
+    std::cout << "\n\n###################################################\n";
+    std::cout << "####\t" << s->getPole_zrenija()->toString() << "\n";
+    std::cout << "####\t~\n";
+    std::cout << "####\t" << tmplate->toString() << "\n";
+    std::cout << "#######################################################\n";
     //std::cout << s->varTableToText();
     //s->showStatus();
     /**/
@@ -244,7 +244,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
         }
         std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
         //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
-        std::cout << "\t" << activeTemplate->toString() << "\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
+        std::cout << "\t" << activeTemplate->toString() << "\t\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
         std::cout << "\t";  print_vector(r);
         //*/
         pre_sost = result_sost;
@@ -306,10 +306,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             result_sost = activeTemplate->back(s, l, r);
             if (result_sost == GO){
                 #ifdef DEBUG
-                if (!l) SYSTEMERROR("Unexpected situation: after back(l,r) method, l==null ! For simple variable it is mistake! Marat, prover - eli peremennaja ne prostaja, to vozmozhno nado ubrat etu proverku. Peremennaja: "+activeTemplate->toString() << "[" << activeTemplate << "]  BACK -> back() -> GO");
+                //if (!l) SYSTEMERROR("Unexpected situation: after back(l,r) method, l==null ! For simple variable it is mistake! Marat, prover - eli peremennaja ne prostaja, to vozmozhno nado ubrat etu proverku. Peremennaja: "+activeTemplate->toString() << "[" << activeTemplate << "]  BACK -> back() -> GO");
                 #endif
                 s->SaveTemplItem(activeTemplate, l, r);
-                s->showStatus();
+                //s->showStatus();
                 move_to_next_point(activeTemplate, 0, s);
             } else
             if (result_sost == BACK){
@@ -319,7 +319,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                         // Может создать ошибки для varBridge
                         IRefVar* vart = dynamic_cast <IRefVar *>(activeTemplate);
                         if (vart && vart->getName() != EmptyUniString){
-                            std::cout << "\n::::: del map for : " << vart->getName() << flush << "\n";
+                            //std::cout << "\n::::: del map for : " << vart->getName() << flush << "\n";
                             s->setVarBody(vart->getName(), 0);
                         }
                 move_to_pred_point(activeTemplate, 0, s);
@@ -590,17 +590,21 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(owner);
 
-    if (bridge && bridge->isOpen()){   ///  [{]
-        delete matchSessions.back();   // удаление субсессии для внешней переменной
-        matchSessions.pop_back();
+    if (bridge){
+        if (bridge->isOpen()){   ///  [{]
+            delete matchSessions.back();   // удаление субсессии для внешней переменной
+            matchSessions.pop_back();
 
-        #ifdef DEBUG
-        if (getCurrentSopostStack()->empty()) SYSTEMERROR("empty sopost stack!");
-        if (getCurrentSopostStack()->top()->owner != owner) SYSTEMERROR("wrong owner for " << owner->toString() << " : " << getCurrentSopostStack()->top()->owner->toString() );
-        #endif
-        getCurrentSopostStack()->pop();
+            #ifdef DEBUG
+            if (getCurrentSopostStack()->empty()) SYSTEMERROR("empty sopost stack!");
+            if (getCurrentSopostStack()->top()->owner != owner) SYSTEMERROR("wrong owner for " << owner->toString() << " : " << getCurrentSopostStack()->top()->owner->toString() );
+            #endif
+            getCurrentSopostStack()->pop();
 
-        return;
+            return;
+        } else {            ///   [}]
+            int i=0;
+        }
     }
 
     #ifdef DEBUG
@@ -612,7 +616,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     TVarBody *varBody = getCurrentSopostStack()->top();
     getCurrentSopostStack()->pop();
 
-    if (bridge && !bridge->isOpen()){  //  }
+    if (bridge && !bridge->isOpen()){  ///  [}]
         /// случай когда откат вернулся к переменной внешнего типа
         // восстанавливаем значение левой var-скобки моста
         if (varBody->first){
@@ -628,7 +632,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
         while(! varBody->sessStack.empty()){
             sess = varBody->sessStack.back();
             this->matchSessions.push_back(sess);
-            varBody->sessStack.back();
+            varBody->sessStack.pop_back();
         };
 
         //sess->templReturnBackPoint = bridge ;
@@ -744,6 +748,8 @@ void Session::showStatus(){
         for (it = tbl.begin(); it != tbl.end(); ++it){
                     std::cout << '\t' << (*it).first << '\t' ;
                     if ((*it).second) { std::cout << vectorToString(((*it).second)->first, ((*it).second)->second) << '\n'; }
+                    //std::cout << "####:\t" << (*it).first << '\t' ;
+                    //if ((*it).second) { std::cout << ((*it).second)->toString() << '\n'; }
                     else { std::cout << "$NULL" << '\n'; }
         }
 

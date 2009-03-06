@@ -175,7 +175,8 @@ TResult  RefVariable_e::init(Session *s, RefData *&a) {
 };
 
 TResult  RefVariable_E::init(Session *s, RefData *&a) {
-    SYSTEMERROR("");
+    //SYSTEMERROR("");
+    a = s->getStackOfDataSkob()->top()->pred;
     return GO;
 };
 
@@ -199,7 +200,7 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
     }
 
     //std::cout << "\ns->getStackOfDataSkob()->top() = " << s->getStackOfDataSkob()->top()->toString();
-    std::cout << "\n\n" << s->getStackOfDataSkob()->size() << "\n\n" << flush;
+    //std::cout << "\n\n" << s->getStackOfDataSkob()->size() << "\n\n" << flush;
     #ifdef DEBUG
     if (! s->getStackOfDataSkob()->size()) SYSTEMERROR("empty stack!");
     #endif
@@ -211,7 +212,14 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
 };
 
 TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
-    SYSTEMERROR("");
+    if (!l) return BACK;
+    if (l==r){
+        l = 0;
+        r = move_to_pred_point(r, myid(), s);
+        return GO;
+    }
+    r = move_to_pred_point(r, myid(), s);
+    //SYSTEMERROR("not yet");
     return GO;
 };
 

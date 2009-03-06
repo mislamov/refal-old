@@ -129,6 +129,7 @@ ScanRigthPart {
 
 
 
+ScanObjectExprWithoutExecs_ { e.e = <PProut "\nScanObjectExprWithoutExecs: " e.e><ScanObjectExprWithoutExecs_ e.e>; }
 ScanObjectExprWithoutExecs {
 	e.1 ('<') e.2 = <MakeError ScanObjectExprWithoutExecs 'unecpected "<" in <' e.2>;
 	e.1 ('>') e.2 = <MakeError ScanObjectExprWithoutExecs 'unecpected ">" in >' e.2>;
@@ -168,6 +169,7 @@ ScanObjectExprWithExecs {
 	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
 
 
+/* старый разбор переменной. допускались var.var.var.var
 	"$var" (t.1)('.') e.next,
 		<Type t.1> : 'W' s.sub1 t.1
 		=	<Explode t.1> '.' <ScanObjectExprWithExecs  "$var" e.next>;
@@ -187,23 +189,45 @@ ScanObjectExprWithExecs {
 	(t.1)('.') e.next,
 		<Type t.1> : 'W' s.sub1 t.1
 		=	"<VAR>" <Explode t.1> '.' <ScanObjectExprWithExecs  "$var" e.next>;
+*/
 
+	/* продолжение ссылки напеременную */
+	"$path" ('/')(t.1) e.next, 
+		<Type t.1> : 'W' s.sub1 t.1
+		=	'/' <Explode t.1> <ScanObjectExprWithExecs  "$path" e.next>;
 
-	/*переменная* /
+	/* конец ссылки напеременную */
+	"$path" e.next		
+		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
+
+	/*ссылка на переменную*/
+	(t.1)('.')(t.2)('/') e.next,
+	<Type t.1> : 'W' s.sub1 t.1,
+	<Type t.2> : 'W' s.sub2 t.2
+	=	"<LNK>" <Explode t.1> '.' <Explode t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+
+	/*ссылка на переменную c числовым именем*/
+	(t.1)('.')(t.2)('/') e.next,
+	<Type t.1> : 'W' s.sub1 t.1,
+	<Type t.2> : 'N' s.sub2 t.2
+	=	"<LNK>" <Explode t.1> '.' <Symb t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+
+	/*переменная*/
 	(t.1)('.')(t.2) e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'W' s.sub2 t.2
-	=	"<VAR>" "<VARTYPE>" <Explode t.1> "</VARTYPE>" "<VARNAME>" <Explode t.2> "</VARNAME>" "</VAR>"
+	=	"<VAR>" <Explode t.1> '.' <Explode t.2> "</VAR>"
 		<ScanObjectExprWithExecs e.next>;
 
-
-	/ *переменная с числовым именем* /
+	/*переменная с числовым именем*/
 	(t.1)('.')(t.2) e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'N' s.sub2 t.2
-	=	"<VAR>" "<VARTYPE>" <Explode t.1> "</VARTYPE>" "<VARNAME>" <Symb t.2> "</VARNAME>" "</VAR>"
+	=	"<VAR>" <Explode t.1> '.' <Symb t.2> "</VAR>"
 		<ScanObjectExprWithExecs e.next>;
-	*/
+	/**/
 
 	/*просто слово или число*/
 	(t.1) e.next, <Type t.1> :
@@ -311,7 +335,7 @@ $ENTRY Go { =
 		<Open 'w' 3 <Arg 1>'.xml'>
 		<Br rand'='0>
 		<Br scanbl'='0>
-			<Put 3 <DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>>"</BEGIN>">>;
+			<Put 3 <DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Print <Scan <Mount <Arg 1> >>>>>"</BEGIN>">>;
 }
 
 /* переводит все термы в текст */
@@ -350,6 +374,8 @@ Scan{
 
 
 
+	'::=' e.all = (':')(':')('=') <Scan e.all>;
+	'::' e.all = ('/') <Scan e.all>;
 	' '  e.all = <Scan e.all>;
 	'\n' e.all = <Scan e.all>;
 	'\t' e.all = <Scan e.all>;
@@ -498,7 +524,7 @@ ScanTemplate {
 		<ScanLeftPart e.left-part>   : e.lpscaned,
 		<ExistError  e.lpscaned> : {
 			false	=  "<LEFT-PART>" e.lpscaned "</LEFT-PART>";
-			true	=  <MakeError ScanTemplate 'error left-part difinition in Template : ' e.left-part>;
+			true	=  <MakeError ScanTemplate 'error left-part difinition in Template : ' e.lpscaned>;
 		};
 
 	e.else = <MakeError  ScanTemplate 'error template definition: ' e.else >;

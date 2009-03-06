@@ -139,6 +139,16 @@ unistring RefSymbol<unistring>::toString(){
     return "\"" + getValue() + "\" ";
 }
 
+unistring RefSymbol<unichar>::toString(){
+        std::ostringstream s;
+        if ((getValue() == 10) || (getValue() == 13)){
+            s << "\\n";
+        } else {
+            s << this->getValue();
+        }
+        return sss = s.str();
+}
+
 unistring RefSymbol<infint>::toString(){
 //    return getValue() + " ";
     std::ostringstream s;

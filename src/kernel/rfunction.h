@@ -182,7 +182,7 @@ class RefTemplateBridgeVar : public RefBracketBase, public IRefVar {
 
         RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
         RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ bridge=0;  name="NOT SET";};
-        unistring toString() { if (isOpen()) return sss = "[{]"; else return sss = "[}]"; };
+        unistring toString() { if (isOpen()) return sss = ("[{]." + name); else return sss = "[}]"; };
 
         TResult init(Session* s, RefData *&currentPoint);
         TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);

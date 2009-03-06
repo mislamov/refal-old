@@ -460,7 +460,9 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
         *leftBridge  = new RefTemplateBridgeVar(),
         *rightBridge = new RefTemplateBridgeVar(leftBridge, leftBridge);
     #ifdef DEBUG
-    if (! (this->pred && this->next) ) SYSTEMERROR("@RefUserVarNotInit around by $null !");
+    if (! (this->pred && this->next) ) {
+        SYSTEMERROR("@RefUserVarNotInit around by $null !");
+    }
     #endif
     // встраиваем переменную
     this->pred->next = leftBridge;

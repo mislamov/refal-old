@@ -54,6 +54,14 @@ public:
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
 };
 
+class system_MOUNT : public RefBuildInFunction {
+public:
+    system_MOUNT(RefDllModule *m) : RefBuildInFunction("Mount", m) {}
+    unistring toString(){ return "MOUNT"; };
+    unistring getName() { return "Mount"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
 class system_CARD : public RefBuildInFunction {
 public:
     system_CARD(RefDllModule *m) : RefBuildInFunction("Card", m) {}
@@ -96,6 +104,7 @@ public:
         setObjectByName("Add",  getObjectByName("Sum"));
         setObjectByName("Sub",  getObjectByName("Dec"));
 
+        setObjectByName("Mount", new system_MOUNT(this));
         setObjectByName("Card", new system_CARD(this));
         setObjectByName("Prout", new system_PROUT(this));
         setObjectByName("Print", new system_PRINT(this));

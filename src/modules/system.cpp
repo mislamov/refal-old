@@ -1,3 +1,4 @@
+#include <fstream.h>
 
 #include "system.h"
 #include "../kernel/rfunction.h"
@@ -108,7 +109,37 @@ RefChain*  DataCompare(RefData* beg, RefData* end, Session* s){
 };
 
 
+RefChain* Mount (RefData* beg, RefData* end, Session* s){
 
+      int length;
+      char * buffer;
+      RefChain *result = new RefChain();
+
+      std::ifstream is;
+      is.open ( RefChain(beg, end).toString().c_str(), std::ios::binary );
+
+      // get length of file:
+      is.seekg (0, std::ios::end);
+      length = is.tellg();
+      is.seekg (0, std::ios::beg);
+
+      // allocate memory:
+      buffer = new char [length];
+
+      // read data as a block:
+      is.read (buffer,length);
+      is.close();
+
+        for (int i=0; i<length; i++){
+            (*result) += new RefAlpha(buffer[i]);
+        }
+
+      delete[] buffer;
+
+        return result;
+
+
+}
 
 
 RefChain* Card (RefData* beg, RefData* end, Session* s){
@@ -174,6 +205,14 @@ bool system_COMPARE::eval(RefData* lft, RefData* rht, RefChain* &result, Session
     return false;
 };
 
+
+
+bool system_MOUNT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    result = Mount(lft, rht, s);
+    if (result) return true;
+    return false;
+};
+
 bool system_CARD::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     result = Card(lft, rht, s);
     if (result) return true;
@@ -182,7 +221,7 @@ bool system_CARD::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s
 
 bool system_PROUT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     std::cout << "\n############################### STDOUT ###############################\n"
-            << ":####\t\t" << vectorToString(lft, rht)
+            << ":####:\t\t" << vectorToString(lft, rht)
             << "\n######################################################################\n";
     return true;
 };
@@ -190,7 +229,7 @@ bool system_PROUT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* 
 
 bool system_PRINT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     std::cout << "\n############################### STDOUT ###############################\n"
-            << ":####\t\t" << vectorToString(lft, rht)
+            << ":####:\t\t" << vectorToString(lft, rht)
             << "\n######################################################################\n";
     result = new RefChain(lft, rht); //todo: подобрать сборкой мусора или продумать эффективнее
     return true;

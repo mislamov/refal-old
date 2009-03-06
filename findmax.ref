@@ -1,0 +1,7 @@
+$ENTRY Go {
+	= <Prout <FindMax <Mount <Card>>>>;
+}
+
+FindMax {
+	e.1 E.A e.2 E.A e.3 = E.A;
+}
