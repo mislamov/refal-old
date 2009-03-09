@@ -208,6 +208,9 @@ RefChain* RefChain::Copy(Session *s){
         #endif
         if (s && tmplnk){
             TVarBody *tbody = s->getVarBody( tmplnk->getName() );
+            if (tmplnk->getPath() != EmptyUniString){
+                    tbody = tbody->folowByWay(tmplnk->getPath());
+            }
             #ifdef DEBUG
             if (!tbody ) {
                 s->showStatus(); SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
@@ -291,7 +294,7 @@ RefChain* RefChain::Copy(Session *s){
 }
 
 void RefChain::clear(){
-        std::cout << "\n\n---RefChain::clear() - zaglushka---: " << this->toString() << "\n\n" << std::flush;
+        //std::cout << "\n\n---RefChain::clear() - zaglushka---: " << this->toString() << "\n\n" << std::flush;
         if (first) first->pred = 0;
         if (second) second->next = 0;
         //delChain(first, second);
@@ -460,7 +463,7 @@ bool RefNULL::operator==(RefData&) {
 
 unistring RefLinkToVariable::toString(){
     std::ostringstream s;
-    s << "[LNK::name=" << getName() << "]." << (long)this ;
+    s << "[LNK::name=" << getName() << "/" << getPath() << "]." << (long)this ;
     return RefData::sss = s.str();
 };
 

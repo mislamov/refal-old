@@ -153,6 +153,9 @@ IsWordNumbDot {
 ScanObjectExprWithExecs_ { e.e = <PProut "\nScanObjectExprWithExecs: " e.e><ScanObjectExprWithExecs_ e.e>; }
 ScanObjectExprWithExecs {
 	=;
+	
+	/* отсечение */
+	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
 
 	"$separator" e.e = <ScanObjectExprWithExecs e.e>;
 
@@ -204,7 +207,7 @@ ScanObjectExprWithExecs {
 	(t.1)('.')(t.2)('/') e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'W' s.sub2 t.2
-	=	"<LNK>" <Explode t.1> '.' <Explode t.2>
+	=	"<LNK>" <Explode t.2>
 		<ScanObjectExprWithExecs "$path" ('/') e.next>;
 
 	/*ссылка на переменную c числовым именем*/

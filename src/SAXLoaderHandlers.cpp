@@ -71,11 +71,13 @@ try {
             loader->putValueToStack(theCommand, new RefUserFunction(toWstring(attributes.getValue("name"))));
     } else
     if ( theCommand.compare(_L("TEMPLATE")) == 0) {
+            loader->templateOrSent = "T";
             //SYSTEMERROR("Templates are switched off! (testing)");
             if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("TEMPLATE WITHOUT name");
             loader->putValueToStack(theCommand, new RefUserTemplate(toWstring(attributes.getValue("name"))));
     } else
     if ( theCommand.compare(_L("SENTENCE")) == 0) {
+            loader->templateOrSent = "S";
             loader->putValueToStack(theCommand, new RefSentence());
     } else
     if ( theCommand.compare(_L("LEFT-PART")) == 0) {
@@ -107,6 +109,8 @@ try {
             loader->putValueToStack("BRACKET", t);
             *(loader->getCurrChain()) += t;
             *(loader->getCurrChain()) += new RefNULL();
+    } else
+    if ( theCommand.compare(_L("CUTTER")) == 0 ) {
     } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
             loader->currentCondition = new RefCondition();
@@ -274,10 +278,18 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefStructBracket *brclose = new RefStructBracket(br, 0);
             *(loader->getCurrChain()) += brclose;
     } else
+    if ( theCommand.compare(_L("CUTTER")) == 0 ) {
+            *(loader->getCurrChain()) += new RefMatchingCutter();
+    } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
             RefCondition* cond = loader->currentCondition;
             cond->setLeftPart (loader->extractCurrChainFromStack());
             cond->setRightPart(loader->extractCurrChainFromStack());
+            if (loader->templateOrSent == "S"){ // if for sentense
+                cond->own = (RefUserFunction *) loader->getValueFromStack("FUNCTION");
+            } else {   // if for template
+                cond->own = (RefUserTemplate *)(loader->getValueFromStack("TEMPLATE"));
+            }
             *(loader->getCurrChain()) += cond;
     } else
     if ( theCommand.compare(_L("ERROR")) == 0 ) {

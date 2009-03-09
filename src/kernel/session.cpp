@@ -26,9 +26,6 @@ TVarBody * TVarBody::folowByWay(unistring path){
     do {
         t_from = t_to+1;
         t_to   = path.find(varPathSeparator, t_from);
-        #ifdef DEBUG
-        std::cout << "\n\n" << path.substr(t_from, t_to-t_from) << "\n\n" << flush;
-        #endif
 
         vname = path.substr(t_from, t_to-t_from);
 
@@ -60,6 +57,7 @@ TVarBody * TVarBody::folowByWay(unistring path){
 
 
 Session::Session() {
+    fcalls = 1;
 };
 
 Session::~Session(){
@@ -205,7 +203,7 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, b
 
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
-    /**/
+    /** /
     std::cout << "\n\n###################################################\n";
     std::cout << "####\t" << s->getPole_zrenija()->toString() << "\n";
     std::cout << "####\t~\n";
@@ -235,7 +233,12 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
     while (activeTemplate) {
         /* */
-        std::cout << "\n>>   ";
+        std::cout << "\n" << s->step++ << ":>>   ";
+        for (int i=1; i<s->fcalls; i++){
+            for (int j=1; j<i; j++){
+                std::cout << "\t";
+            }
+        }
         switch(result_sost){
             case GO :       std::cout << "GO   "; break;
             case BACK :     std::cout << "BACK "; break;
@@ -285,7 +288,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                             newowner = s->getCurrentSopostStack()->top()->owner;
                         }
                         if (!lastowner  ||  lastowner != newowner){
-                            SYSTEMERROR("!lastowner  ||  lastowner != newowner,   lastowner=" << (lastowner?lastowner->toString():"null"));
+                            SYSTEMERROR("!lastowner  ||  lastowner != newowner,   \nlastowner=" << (lastowner?lastowner->toString():"null") << "\nnewowner=" << (newowner?newowner->toString():"null") );
                         }
                         //std::cout << "\n" << "{{{{{{ " << lastowner << std::flush << ": " ;
                         //std::cout << ((RefData *)(lastowner))->toString() << std::flush;
@@ -335,7 +338,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             return false;
         case FAIL   :
             #ifdef DEBUG
-            //LOG( "FAIL signal when maching!" );
+            LOG( "FAIL signal when maching!" );
             #endif
             return false;
 
@@ -345,22 +348,42 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             #endif
             return true;
 
-        case FORCEBACK:
-            RefBracketBase* br = dynamic_cast<RefBracketBase *>(activeTemplate);
-            if (!br){
-                SYSTEMERROR("FORCEBACK not for barcket! But for : " << activeTemplate->toString());
-            }
+        case FORCEBACK: // откат правых скобок или отсечения
+            RefData *finish = 0;
 
-            while(s->getCurrentSopostStack()->top()->owner != br->getOther()){
-                #ifdef DEBUG
-                if (! s->getCurrentSopostStack()->size()) SYSTEMERROR("Empty getCurrentSopostStack() while FORCEBACKing");
-                #endif
-                LOG( ">> BACKFORSE DROP: " << s->getCurrentSopostStack()->top()->owner->toString() );
-                s->getCurrentSopostStack()->pop(); /// clean pered pop ?
+            RefMatchingCutter* cutter = dynamic_cast<RefMatchingCutter*>(activeTemplate);
+            if (cutter){
+                /// отсечение
+                s->showStatus();
+                // выгребаем стек сопоставлений субсессии
+                // в finish сохраняем последний (точнее первый) элемент сопоставления в субсессии
+                while(s->getCurrentSopostStack()->size() != 1){
+                    finish = (RefData *) s->getCurrentSopostStack()->top()->owner;
+                    LOG( ">> CUTTER BACKFORSE DROP: " << finish->toString() );
+                    s->getCurrentSopostStack()->pop(); /// clean pered pop ?
+                }
+                finish = (RefData *) s->getCurrentSopostStack()->top()->owner;
+
+
+            } else {
+                /// скобка
+                RefBracketBase* br = dynamic_cast<RefBracketBase *>(activeTemplate);
+                if (!br){
+                    SYSTEMERROR("FORCEBACK not for barcket! But for : " << activeTemplate->toString());
+                }
+                finish = br->getOther();
+
+                while( (! s->getCurrentSopostStack()->empty())  && s->getCurrentSopostStack()->top()->owner != finish){
+                    #ifdef DEBUG
+                    if ( s->getCurrentSopostStack()->empty()) SYSTEMERROR("Empty getCurrentSopostStack() while FORCEBACKing when finish<>0");
+                    #endif
+                    LOG( ">> BACKFORSE DROP: " << s->getCurrentSopostStack()->top()->owner->toString() );
+                    s->getCurrentSopostStack()->pop(); /// clean pered pop ?
+                }
             }
 
             // сейчас активна закрытая скобка
-            while (activeTemplate != br->getOther()){
+            while (activeTemplate != finish){
                 activeTemplate->forceback(s);  // принудительный откат переменной
                 LOG( ">> BACKFORSE forceback: " << activeTemplate->toString() );
                 move_to_pred_point(activeTemplate, 0, s);
@@ -387,7 +410,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 };
 
 RefChain* Session::RightPartToObjectExpression(RefChain *src){  // готовит правую часть для сопоставления - подстановка переменных
-    std::cout << "\n\nRightPartToObjectExpression( " << src->toString() << " )\n\n";
+    //std::cout << "\n\nRightPartToObjectExpression( " << src->toString() << " )\n\n";
     //showStatus();
     RefChain* tmp = src->Copy( this );
     //std::cout << "RESULT RightPartToObjectExpression: " << tmp->toString()  << "\n" << std::flush;

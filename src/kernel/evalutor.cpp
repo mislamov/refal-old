@@ -26,7 +26,7 @@ RefChain* evalutor(RefChain *argline, Session *s){
 ///todo: следующая строка экспериментальная - когда игрался с уловиями (отключил откат если сопоствление не с концом аргумента)
 if (! argline->first) return argline;
 
-std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second->next)?(argline->second->next->toString()):"$null") << "\n";
+//std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second->next)?(argline->second->next->toString()):"$null") << "\n";
 
         argline->aroundByDots(); // окружаем дотами чтоб не потерять концы при удалении угловых скобок
 
@@ -64,28 +64,18 @@ std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pre
                         SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue()+"[$null]") << " " << RefChain(fn->next, exec->pred).toString() << "\nPOLEZ: " << argline->toString());
                 }
 
-
-
-                //std::cout << "\n~~: " << argline->toString() << "\n";
-                //s->flush();
-                //std::cout << "\n";
-                //std::cout << "\n@ exec->getOther()->next->next = " << exec->getOther()->next->next->toString();
-                //std::cout << "\n@ exec->getOther()->next = " << exec->getOther()->next->toString();
-                //std::cout << "\n@ exec->getOther() = " << exec->getOther()->toString();
-                //std::cout << "\n@ exec = " << exec->toString();
-
                 delete exec->getOther()->next->next; // удаляем вызов - остается только результат вызова
                 delete exec->getOther()->next;
                 delete exec->getOther();
                 delete exec;
 
-                std::cout << "\n#### VIEWPOLE :: " << argline->toString() << std::flush;
+                //std::cout << "\n#### VIEWPOLE :: " << argline->toString() << std::flush;
             }
         }
 
 
         argline->dearoundByDots(); // удаляем доты, поставленные изначально
-        std::cout << "\n\n\n\n#### RETURN EVAL  " << ((argline->first && argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second && argline->second->next)?(argline->second->next->toString()):"$null") << "\n\n\n\n";
+        //std::cout << "\n\n\n\n#### RETURN EVAL  " << ((argline->first && argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second && argline->second->next)?(argline->second->next->toString()):"$null") << "\n\n\n\n";
 
         return argline;
 

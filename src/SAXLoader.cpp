@@ -124,7 +124,7 @@ unistring getModuleNameFromFileName(unistring fname){
         fname = "errornaME.TXT";
     }
 
-    // удаляем расширения
+    // ГіГ¤Г Г«ГїГҐГ¬ Г°Г Г±ГёГЁГ°ГҐГ­ГЁГї
     unistring newname = "";
     i=0;
     while (i<fname.length()){
@@ -142,7 +142,7 @@ unistring getModuleNameFromFileName(unistring fname){
 // ---------------------------------------------------------------------------
 int loadModuleFromXmlFile(RefUserModule *mod, char* xmlFile)
 {
-    // xmlFile - должна быть относительным именем от папки проекта
+    // xmlFile - Г¤Г®Г«Г¦Г­Г  ГЎГ»ГІГј Г®ГІГ­Г®Г±ГЁГІГҐГ«ГјГ­Г»Г¬ ГЁГ¬ГҐГ­ГҐГ¬ Г®ГІ ГЇГ ГЇГЄГЁ ГЇГ°Г®ГҐГЄГІГ 
 
     mod->setName( getModuleNameFromFileName(xmlFile) );
 

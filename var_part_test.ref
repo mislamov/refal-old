@@ -9,16 +9,16 @@ Template rbc  ::= e.rbc1 HTMLdoc.doc e.rbc2 ;
 
 Template HTMLdoc   ::=  '<html>'  e.HTMLdoc1 HTMLhead.head  e.HTMLdoc2  HTMLbody.body  e.HTMLdoc3 '</html>' ;
 Template HTMLhead  ::=  '<head>'  e.HTMLhead1 HTMLtitle.title e.HTMLhead2 '</head>' ;
-Template HTMLbody  ::=  '<body>'  E.x '</body>', E.x : rbcbody.rbc ;
-Template HTMLtitle ::=  '<title>' e.title '</title>' ;
+Template HTMLbody  ::=  '<body>'  e.b1 rbcbody.rbc e.b2 '</body>' ;
+Template HTMLtitle ::=  '<title>' e.text '</title>' ;
 
 Template rbcbody  ::=  
-		e.1 DIV.fullContainer e.2 DIV.otherBlocks e.3, 
-		DIV.fullContainer::class : 'fullContainer',
-		DIV.otherBlocks::class   : 'otherBlocks',
+		DIV.fullContainer e.2 DIV.otherBlocks, 
+		DIV.fullContainer::classname : 'fullContainer',
+		DIV.otherBlocks::classname   : 'otherBlocks',
 
-		DIV.fullContainer	 : e.4 DIV.mainNewsDiv e.5,
-		DIV.mainNewsDiv::class : 'ulList mainNews thin';
+		DIV.fullContainer	 : '<div' e.4 DIV.mainNewsDiv e.5 '</div>',
+		DIV.mainNewsDiv::classname : 'ulList mainNews thin';
 		
 
 
@@ -27,22 +27,42 @@ Template DIV	::= '<div class="' $varName '">' html.body '</div>' ;
 */
 
 
-Template DIV	::= '<div class="' Tword.class '">' html.html '</div>' ;
+
+
+
+
+Template DIV	::= '<div class="' e.uniq12344 '">' ! e.insidediv '</div>' ,
+			e.uniq12344 : Tword.classname;
 
 Template Tword	::=  
 	e.text, 
 	<OnlyLettersDig e.text> : "true";
 
+
+
+
+
+
+
 Template html	::=
 	e.text,
 	<IsHTML e.text> : "true";
 
+
 OnlyLettersDig {
-	s.letter, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890' : e.1 s.letter e.2 = "true";
+	'fullContainer' = "true";
+	'otherBlocks'   = "true";
+	'ulList mainNews thin' = "true";
+	e.e= "false";
+}
+/*
+OnlyLettersDig {
+	s.letter, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ' : e.1 s.letter e.2 = "true";
 	s.notletter = "false";
 	s.1 e.e, <OnlyLettersDig s.1> : "true" = <OnlyLettersDig e.e>;
 	e.else = "false";
 }
+*/
 
 IsHTML {
 	'<' e.e = <ScanTag '<' e.e>;
@@ -86,7 +106,7 @@ Run {
 
 /* проверка на шаболны */
 Run {
-	rbc.site  =  <Prout rbc.site>;
+	rbc.site  =  <Prout rbc.site::doc::body::rbc::mainNewsDiv>;
 	e.else 	  =  <Prout 'error'>;
 }
 /*=*/

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="refal51" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\refal51" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\refal51" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="C:\MinGW\include" />
+			<Add directory="C:\msys\1.0\include" />
+		</Compiler>
+		<Linker>
+			<Add option="-lxerces-c" />
+			<Add directory="C:\msys\1.0\lib" />
+			<Add directory="C:\MinGW\lib" />
+			<Add directory="C:\MinGW\mingw32\lib" />
+		</Linker>
+		<Unit filename="src\SAXLoader.cpp" />
+		<Unit filename="src\SAXLoader.hpp" />
+		<Unit filename="src\SAXLoaderHandlers.cpp" />
+		<Unit filename="src\SAXLoaderHandlers.hpp" />
+		<Unit filename="src\iterpret.cpp" />
+		<Unit filename="src\kernel\RefSymbolBase.cpp" />
+		<Unit filename="src\kernel\core.cpp" />
+		<Unit filename="src\kernel\core.h" />
+		<Unit filename="src\kernel\data.cpp" />
+		<Unit filename="src\kernel\data.h" />
+		<Unit filename="src\kernel\datastructs.cpp" />
+		<Unit filename="src\kernel\datastructs.h" />
+		<Unit filename="src\kernel\evalutor.cpp" />
+		<Unit filename="src\kernel\evalutor.h" />
+		<Unit filename="src\kernel\kernel.cpp" />
+		<Unit filename="src\kernel\kernel.h" />
+		<Unit filename="src\kernel\refsymbolbase.hxx" />
+		<Unit filename="src\kernel\rfunction.cpp" />
+		<Unit filename="src\kernel\rfunction.h" />
+		<Unit filename="src\kernel\session.cpp" />
+		<Unit filename="src\kernel\session.h" />
+		<Unit filename="src\modules\system.cpp" />
+		<Unit filename="src\modules\system.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

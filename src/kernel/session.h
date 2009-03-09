@@ -113,6 +113,9 @@ class Session : public RefObject {
     void  initializationArg(RefData*, RefData*);    //  регистрация ОО для сапостовления. приставка дот
 
   public:
+    int fcalls;
+    unsigned long step;
+
     // данные
     std::map <unistring, RefModuleBase*>  modules;  //  подгруженные модули
     std::list <SessionOfMaching *> matchSessions;  //  стек состояний сопоставлений

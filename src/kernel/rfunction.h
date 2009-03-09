@@ -2,6 +2,7 @@
 #define REFFUNCTION_H_INCLUDED
 
 #include <iostream.h>
+#include <sstream>
 #include <list>
 
 #include "core.h"
@@ -133,6 +134,8 @@ class RefCondition : public RefConditionBase {
         RefChain *rightPart;
         RefChain *leftPart;
     public:
+        RefObject *own;  // RefCondition or RefFunctionBase
+
         void setRightPart(RefChain *rp){ rightPart = rp; }
         void setLeftPart(RefChain *lp) { leftPart  = lp; }
 
@@ -141,14 +144,35 @@ class RefCondition : public RefConditionBase {
         virtual TResult  back(Session* , RefData *&, RefData *&); //
 
         RefCondition(RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system = false; }
+        //RefCondition(RefObject *owner, RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system = false; own = owner; }
         virtual ~RefCondition(){};
-        unistring toString(){ return sss=" @Condition$" + rightPart->toString() + "::" + leftPart->toString() + ' '; }
+        unistring toString(){
+            std::ostringstream s;
+            s << " @Condition/" <<  (dynamic_cast<RefUserFunction *>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
+            return s.str();
+        }
         RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected try to Copy REF-condition"); return 0; };
 
 
 
 };
 
+/* отсечение шаблона. его откат приводит к откату всего субмачинга */
+class RefMatchingCutter : public RefData {
+    public:
+        RefMatchingCutter(RefData *d=0) : RefData(d){ is_system = false; }
+        virtual TResult  init(Session* , RefData *&){ return GO; }
+        virtual TResult  back(Session* , RefData *&, RefData *&){ return FORCEBACK; }
+
+        virtual unistring toString() { return " $CUTTER$ "; }
+        RefData* Copy(RefData *rp=0){
+            return new RefMatchingCutter(rp);
+        }
+        virtual bool operator ==(RefData &rd){ SYSTEMERROR("alarm"); };
+        virtual void    forceback(Session* s){};
+
+
+};
 
 // абстрактный класс для всех сложных шаблонов
 class RefTemplateBase : public RefModuleBase {
@@ -167,7 +191,7 @@ class RefUserTemplate : public RefTemplateBase {
         void setLeftPart(RefChain *);
         RefObject* getObjectByName(unistring name, Session *s){ SYSTEMERROR("--== ZAGLUSHKA ==--"); };
         unistring toString(){
-            return (getName()+"$RefUserTemplate_::=_"+leftPart->toString());
+            return (getName()+"$RefUserTemplate_::=_"+(leftPart?leftPart->toString():"$void"));
         }
 };
 
@@ -182,7 +206,7 @@ class RefTemplateBridgeVar : public RefBracketBase, public IRefVar {
 
         RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
         RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ bridge=0;  name="NOT SET";};
-        unistring toString() { if (isOpen()) return sss = ("[{]." + name); else return sss = "[}]"; };
+        unistring toString() { if (isOpen()) return sss = ("[{]." + name); else return sss =  name+".[}]"; };
 
         TResult init(Session* s, RefData *&currentPoint);
         TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);

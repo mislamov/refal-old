@@ -156,13 +156,13 @@ class RefLinkToVariable : public RefData, public RefalNameSpace {
         RefLinkToVariable(unistring name, RefData *rp = 0);
         void forceback(Session *){};
 
-        unistring getPath(){ return EmptyUniString; }; // для наследников класса - путь к подпеременной относитльно основной переменной
+        virtual unistring getPath(){ return EmptyUniString; }; // для наследников класса - путь к подпеременной относитльно основной переменной
 };
 
 class RefLinkToPartOfVariable : public RefLinkToVariable {
         unistring path; // путь к подпеременной относитльно основной переменной
     public:
-        unistring getPath(){ return EmptyUniString; };
+        unistring getPath(){ return path; };
         RefLinkToPartOfVariable(unistring name, unistring tpath, RefData *rp = 0) : RefLinkToVariable(name, rp){
             this->path = tpath;
         };

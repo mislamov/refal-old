@@ -86,6 +86,7 @@ unistring RefUserFunction::toString() {
 
 /// аргументы - концы чистого ОВ
 bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s){
+s->fcalls++;
         RefData *ldot;
         RefData *rdot;
 
@@ -105,21 +106,21 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
         #endif
 
 
-    LOG("<" << getName() << " " << std::flush << RefChain(argfirst,argsecond).toString() << " >" );
+    LOG(s->step++ <<  "::  <" << getName() << " " << std::flush << RefChain(argfirst,argsecond).toString() << " >  ###############################################################" );
 
 
     std::list<RefSentence *>::iterator sent = body.begin(); // перебор предложений функции
     bool reslt = false;
 
     do {
-        LOG("\ttring this: " << (*sent)->toString() );
-        s->showStatus();
+        LOG(s->step++ <<  "::  \ttring this: " << (*sent)->toString() );
+        // s->showStatus();
 
         /// todo: создать тут точку отката сессии для очистки последствий функции
         SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
 
         if (s->matching( (*sent)->leftPart, argfirst, argsecond, false)){
-            LOG("\tsucessfull!");
+            LOG(s->step++ <<  "\tsucessfull!");
             //s->showStatus();
 
             RefChain *newoe = s->RightPartToObjectExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
@@ -160,6 +161,7 @@ bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s)
         }
     } while (!reslt && sent != body.end());  // std: body.end() - элемент после последнего
 
+s->fcalls--;
     return reslt;
 };
 
@@ -246,30 +248,33 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     /// todo: ниже не верно. условие может быть внутри внешнего шаблона и сопоставляться с пустым выражением не в конце
     /// однако для условия в предложении очень важно проверять, что оно сопост-ся с концом аргумента
     /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
-    /*// условие может быть только в конце шаблона и сопоставляться с пустым выражением в конце
-    RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
-    if (!d){
-        return BACK;
-    }*/
+
+    if (dynamic_cast<RefFunctionBase *>(own)){
+        // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце
+        RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
+        if (!d){
+            return BACK;
+        }
+    }
 
     //s->showStatus();
     RefChain *newpz = s->RightPartToObjectExpression(this->rightPart);  /// todo: тут создается - где-то тут же и кильнуть
 
-    std::cout << "\nCOND-EVALUTE:::\t" << newpz->toString() << " : " << this->leftPart->toString();
+    //std::cout << "\nCOND-EVALUTE:::\t" << newpz->toString() << " : " << this->leftPart->toString();
 
     newpz = evalutor(newpz, s);
 
-    std::cout << "\nCOND-EVALUTE-OO:\t" << newpz->toString() << " : " << this->leftPart->toString();
+    //std::cout << "\nCOND-EVALUTE-OO:\t" << newpz->toString() << " : " << this->leftPart->toString();
 
     if (s->matching( this->leftPart, newpz->first, newpz->second, false )){
-        std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
+        //std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
         //std::cout << "s.sopost.top: " << s->getCurrentSopostStack()->top()->toString() << flush;
         return GO;
     } else {
         newpz->clear(); // сопоставление неуспешно - удаляем
         delete newpz;
 
-        std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";
+        //std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";
 
         //s->showStatus();
 
@@ -300,6 +305,8 @@ RefTemplateBase::RefTemplateBase(unistring name) : RefModuleBase(name) {
 RefUserTemplate::RefUserTemplate(unistring name, RefChain *lp) : RefTemplateBase(name) {
     if (lp) {
         setLeftPart(lp);
+    } else {
+        leftPart = 0;
     }
 };
 
@@ -352,6 +359,7 @@ RefData*  RefTemplateBridgeVar::next_point( ThisId var_id, Session *s){
         #endif
         return this->bridge;
     } else {
+        s->showStatus();
         return next; //?
     }
 };

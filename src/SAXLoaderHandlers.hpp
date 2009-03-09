@@ -144,6 +144,8 @@ class LoaderHeap {
         RefCondition*  currentCondition;
         std::stack<unistring >  activeTag;
         unistring currentchars;
+        unistring templateOrSent;
+
 
         RefObject *extractValueFromStack(unistring name){
             std::stack<RefObject*>  &svalue   = stackstags[name];

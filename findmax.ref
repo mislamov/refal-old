@@ -3,5 +3,5 @@ $ENTRY Go {
 }
 
 FindMax {
-	e.1 E.A e.2 E.A e.3 = E.A;
+	e.1 E.A e.2 E.A e.3  =  E.A;
 }
