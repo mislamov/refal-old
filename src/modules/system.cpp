@@ -14,9 +14,9 @@ RefChain* Dec (RefData* beg, RefData* end, Session* s){
         RUNTIMEERROR("Dec", "error arguments");
         return 0;
     };
-    std::cout << "\n\nDec: " << a->getValue() << "-" << b->getValue() ;
+    //std::cout << "\n\nDec: " << a->getValue() << "-" << b->getValue() ;
     a = new RefInteger(a->getValue() - b->getValue());
-    std::cout << " = " << a->getValue();
+    //std::cout << " = " << a->getValue();
     return new RefChain(a, a);
 };
 
@@ -27,9 +27,9 @@ RefChain* Div (RefData* beg, RefData* end, Session* s){
         RUNTIMEERROR("Div", "error arguments");
         return 0;
     };
-    std::cout << "\n\nDiv: " << a->getValue() << " / " << b->getValue() ;
+    //std::cout << "\n\nDiv: " << a->getValue() << " / " << b->getValue() ;
     RefReal* c = new RefReal((float)a->getValue() / b->getValue());
-    std::cout << " = " << c->getValue();
+    //std::cout << " = " << c->getValue();
     return new RefChain(c, c);
 };
 
@@ -37,7 +37,7 @@ RefChain* Div (RefData* beg, RefData* end, Session* s){
 RefChain* Sum (RefData* beg, RefData* end, Session* s){
     infint thesum = 0;
     RefInteger *a;
-    std::cout << "\n\nSum: ";
+    //std::cout << "\n\nSum: ";
     while(beg != end->next){
         a = dynamic_cast<RefInteger *>(beg);
         if (! a){
@@ -45,11 +45,11 @@ RefChain* Sum (RefData* beg, RefData* end, Session* s){
             return 0;
         }
         thesum += a->getValue();
-        std::cout << a->getValue() << ", ";
+        //std::cout << a->getValue() << ", ";
         move_to_next_point(beg, 0, s);
     }
 
-    std::cout << a->getValue() << " = " << thesum ;
+    //std::cout << a->getValue() << " = " << thesum ;
     a = new RefInteger(thesum);
     return new RefChain(a, a);
 };
@@ -58,7 +58,7 @@ RefChain* Sum (RefData* beg, RefData* end, Session* s){
 RefChain* Mul (RefData* beg, RefData* end, Session* s){
     infint thesum = 1;
     RefInteger *a;
-    std::cout << "\n\nMul: ";
+    //std::cout << "\n\nMul: ";
     while(beg != end->next){
         a = dynamic_cast<RefInteger *>(beg);
         if (! a){
@@ -66,11 +66,11 @@ RefChain* Mul (RefData* beg, RefData* end, Session* s){
             return 0;
         }
         thesum *= a->getValue();
-        std::cout << a->getValue() << " * ";
+        //std::cout << a->getValue() << " * ";
         move_to_next_point(beg, 0, s);
     }
     a = new RefInteger(thesum);
-    std::cout << " = " << thesum;
+    //std::cout << " = " << thesum;
     return new RefChain(a, a);
 };
 
@@ -220,17 +220,31 @@ bool system_CARD::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s
 };
 
 bool system_PROUT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
-    std::cout << "\n############################### STDOUT ###############################\n"
-            << ":####:\t\t" << vectorToString(lft, rht)
-            << "\n######################################################################\n";
+    std::cout
+    #ifdef DEBUG
+            << "\n############################### STDOUT ###############################\n"
+            << ":####:\t\t"
+    #endif
+            << vectorToString(lft, rht) << "\n"
+    #ifdef DEBUG
+            << "\n######################################################################\n"
+    #endif
+            ;
     return true;
 };
 
 
 bool system_PRINT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
-    std::cout << "\n############################### STDOUT ###############################\n"
-            << ":####:\t\t" << vectorToString(lft, rht)
-            << "\n######################################################################\n";
+    std::cout
+    #ifdef DEBUG
+            << "\n############################### STDOUT ###############################\n"
+            << ":####:\t\t"
+    #endif
+            << vectorToString(lft, rht) << "\n"
+    #ifdef DEBUG
+            << "\n######################################################################\n"
+    #endif
+            ;
     result = new RefChain(lft, rht); //todo: подобрать сборкой мусора или продумать эффективнее
     return true;
 };

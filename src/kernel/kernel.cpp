@@ -266,11 +266,12 @@ unistring vectorToString(RefData *f, RefData *g){
                 //a += ' ';
                 f = f->next;
                 if (f && f->pred != ff){
+                    #ifdef DEBUG
                     std::cout << a << std::flush;
-
                     std::cout << "\n~f=" << (f?f->toString():"@null")  << std::flush;
                     std::cout << "\n~f->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush;
 //return a;
+                    #endif
                     SYSTEMERROR(" next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
                     //LOG("WANING!!!  next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
                 };

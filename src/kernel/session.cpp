@@ -107,7 +107,7 @@ RefObject*  Session::getObjectByName(unistring name, Session *s){
 
 
     for ( mod=this->modules.rbegin() ; mod != this->modules.rend(); ++mod ){
-        std::cout << "\n\n" << mod->second->getName() << flush << "\n\n";
+        //std::cout << "\n\n" << mod->second->getName() << flush << "\n\n";
 
         if (result = mod->second->getObjectByName(name, s)){
             return result;
@@ -233,6 +233,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 
     while (activeTemplate) {
         /* */
+        #ifdef DEBUG
         std::cout << "\n" << s->step++ << ":>>   ";
         for (int i=1; i<s->fcalls; i++){
             for (int j=1; j<i; j++){
@@ -249,6 +250,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
         //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
         std::cout << "\t" << activeTemplate->toString() << "\t\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
         std::cout << "\t";  print_vector(r);
+        #endif
         //*/
         pre_sost = result_sost;
         // даны l и r  (l=r=pred)
@@ -354,7 +356,9 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             RefMatchingCutter* cutter = dynamic_cast<RefMatchingCutter*>(activeTemplate);
             if (cutter){
                 /// отсечение
+                #ifdef DEBUG
                 s->showStatus();
+                #endif
                 // выгребаем стек сопоставлений субсессии
                 // в finish сохраняем последний (точнее первый) элемент сопоставления в субсессии
                 while(s->getCurrentSopostStack()->size() != 1){
@@ -675,7 +679,6 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
         std::cout << "\ntop  owner=" << varBody->owner << flush << varBody->owner->toString() << "\n\n" << std::flush;
         printf("\n");
 
-
         std::cout << "\n=======\nGetCurrentSopostStack::\n";
         while (! getCurrentSopostStack()->empty()){
             std::cout << getCurrentSopostStack()->top()->toString() << "\n";
@@ -683,7 +686,8 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
         }
         std::cout << flush;
 
-        showStatus(); SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << varBody->owner->toString() << "[" << varBody->owner << "] expected!");
+        showStatus();
+        SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << varBody->owner->toString() << "[" << varBody->owner << "] expected!");
     }
     #endif
     l = varBody->first;

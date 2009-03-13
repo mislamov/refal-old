@@ -505,7 +505,7 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
 
     while ((ldata!=rdata) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
         if (!(*currentPoint == *ldata)) {
-            std::cout << "\n{ " << currentPoint->toString() << " != " << ldata->toString() << " }";
+            //std::cout << "\n{ " << currentPoint->toString() << " != " << ldata->toString() << " }";
             //ldata->drop(myid);
             //rdata->drop(myid);
             //currentPoint->drop(myid);

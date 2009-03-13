@@ -1,7 +1,7 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define DEBUG
+#define NODEBUG
 
 #define _UNICODE
 /****************************************************************************************
@@ -17,9 +17,13 @@
     abort(); \
     };
 
-#define LOG(msg) { \
-    std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
-    };
+#ifdef DEBUG
+    #define LOG(msg) { \
+        std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
+        };
+#else
+    #define LOG(msg) {}
+#endif
 
 #define RUNTIMEERROR(fname, msg) { \
     std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \

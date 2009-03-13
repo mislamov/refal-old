@@ -22,39 +22,43 @@ int main ( int argv, char **argc ) {
 		} else {
 			xmlFile = argc[1];
 		}
-		
+
 	// создали сессию
 	Session *s = new Session();
-	
+
 	// загрузили модули
 	//std::cout << msystem.toString() << "\n";
 	s->regModule ( &msystem );
 	mod = new RefUserModule();
 	loadModuleFromXmlFile ( mod, xmlFile );
 	s->regModule ( mod );
+	#ifdef DEBUG
 	std::cout << mod->toString() << "\n";
-	
+    #endif
 	/*        RefData_DOT
 	            *l = new RefData_DOT(),
 	            *r = new RefData_DOT(l,0);
 	*/
+
+    std::cout << "\n============================================\n" << std::flush;
+
 	RefExecBracket
 	*lb = new RefExecBracket(),
 	*rb = new RefExecBracket ( lb );
-	
+
 	RefChain *polez = new RefChain();
-	
+
 	//*polez += l;
 	*polez += lb;
 	*polez += new RefNULL();
 	*polez += new RefWord ( "Go" );
 	*polez += rb;
 	//*polez += r;
-	
+
 	//s->pole_zrenija.push( polez );
 	RefChain *result = evalutor ( polez, s );
 	//s->flush();
-	
-	std::cout << "void main() :: RETURN: " << result->toString();
+
+	std::cout << "\n\nRETURN: " << result->toString() << "\n";
 	return 0;
 }

@@ -388,7 +388,7 @@ SAXPrintHandlers::~SAXPrintHandlers()
 // ---------------------------------------------------------------------------
 void SAXPrintHandlers::writeChars(const XMLByte* const /* toWrite */)
 {
-    std::cout << _L("SAXPrintHandlers::writeChars::. \n");
+    LOG( _L("SAXPrintHandlers::writeChars::. \n") );
     return;
 }
 
@@ -444,7 +444,7 @@ void SAXPrintHandlers::unparsedEntityDecl(const     XMLCh* const /* name */
                                           , const   XMLCh* const /* notationName */)
 {
     // Not used at this time
-    std::cout << _L("SAXPrintHandlers::unparsedEntityDecl::. \n");
+    LOG( _L("SAXPrintHandlers::unparsedEntityDecl::. \n") );
     return;
 }
 
@@ -454,7 +454,7 @@ void SAXPrintHandlers::notationDecl(const   XMLCh* const /* name */
                                     , const XMLCh* const /* systemId */)
 {
     // Not used at this time
-    std::cout << _L("SAXPrintHandlers::notationDecl::. \n");
+    LOG( _L("SAXPrintHandlers::notationDecl::. \n") );
     return;
 }
 
@@ -463,7 +463,7 @@ void SAXPrintHandlers::notationDecl(const   XMLCh* const /* name */
 void SAXPrintHandlers::ignorableWhitespace( const   XMLCh* const chars
                                             ,const  XMLSize_t    length)
 {
-    std::cout << _L("SAXPrintHandlers::ignorableWhitespace::. \n");
+    LOG( _L("SAXPrintHandlers::ignorableWhitespace::. \n") );
     fFormatter.formatBuf(chars, length, XMLFormatter::NoEscapes);
 }
 
@@ -471,7 +471,7 @@ void SAXPrintHandlers::ignorableWhitespace( const   XMLCh* const chars
 void SAXPrintHandlers::processingInstruction(const  XMLCh* const target
                                             , const XMLCh* const data)
 {
-    std::cout << _L("SAXPrintHandlers::processingInstruction::. \n");
+    LOG( _L("SAXPrintHandlers::processingInstruction::. \n") );
     fFormatter << XMLFormatter::NoEscapes << gStartPI  << target;
     if (data)
         fFormatter << chSpace << data;

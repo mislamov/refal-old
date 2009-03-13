@@ -196,7 +196,7 @@ RefBuildInFunction::RefBuildInFunction(unistring name, RefDllModule *m) : RefFun
 
 
 bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
-    std::cout << "\n====================================\n< " << this->getName() << std::flush << " " << vectorToString(lp, rp) << " >";
+    LOG( "\n====================================\n< " << this->getName() << std::flush << " " << vectorToString(lp, rp) << " >" );
     // сохраним границы
     RefData *lold, *rold;
     if (! lp){ // пустой вектор
@@ -286,10 +286,10 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
 
     if (s->matching( this->leftPart, 0, 0, true )){ // продолжаем поиск вариантов
-        std::cout << "\n\nCOND-RETURN:::\tback-> GO" << std::flush << "\n\n\n";
+        //std::cout << "\n\nCOND-RETURN:::\tback-> GO" << std::flush << "\n\n\n";
         return GO;
     } else {
-        std::cout << "\n\nCOND-RETURN:::\tback-> BACK" << std::flush << "\n\n\n";
+        //std::cout << "\n\nCOND-RETURN:::\tback-> BACK" << std::flush << "\n\n\n";
         return BACK;
     }
 
@@ -359,7 +359,9 @@ RefData*  RefTemplateBridgeVar::next_point( ThisId var_id, Session *s){
         #endif
         return this->bridge;
     } else {
+        #ifdef DEBUG
         s->showStatus();
+        #endif
         return next; //?
     }
 };

@@ -31,7 +31,8 @@ Template DIV	::= '<div class="' $varName '">' html.body '</div>' ;
 
 
 
-Template DIV	::= '<div class="' e.uniq12344 '">' ! e.insidediv '</div>' ,
+Template DIV	::= '<div class="' e.uniq12344 '"' ! '>' e.insidediv '</div>' ,
+			/*<Prout 'div: 'e.uniq12344>:,*/
 			e.uniq12344 : Tword.classname;
 
 Template Tword	::=  

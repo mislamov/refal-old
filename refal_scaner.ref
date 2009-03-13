@@ -318,7 +318,7 @@ ScanIfs {
 ExistError { e.1 "@ERROR:" (e.msg) e.2 = true; e.else = false; }
 MakeError  {
 	t.fname e.1 "@ERROR:" (e.msg) e.2 	= "@ERROR:" (e.msg);
-	t.fname e.e 	= "@ERROR:" ('value unscaned by <'t.fname'> : 'e.e) /*<PProut "----------========= @ERROR:" 'value unscaned by <'t.fname'> : '<DeScob e.e>>*/;
+	t.fname e.e 	= "@ERROR:" ('value unscaned by <'t.fname'> : 'e.e) ;
 }
 DeScob {
  (e.1) e.2 = e.1 <DeScob e.2>;
@@ -338,7 +338,7 @@ $ENTRY Go { =
 		<Open 'w' 3 <Arg 1>'.xml'>
 		<Br rand'='0>
 		<Br scanbl'='0>
-			<Put 3 <DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Print <Scan <Mount <Arg 1> >>>>>"</BEGIN>">>;
+			<Put 3 <DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>>"</BEGIN>">>;
 }
 
 /* переводит все термы в текст */
@@ -427,8 +427,8 @@ Same {
 
 
 
-FixVarLinksInSent{ e.e = <Prout '::::<FixVarLinksInSent 'e.e'>'><FixVarLinksInSent_ e.e>; }
-FixVarLinksInSent_ {
+FixVarLinksInSent_{ e.e = <Prout '::::<FixVarLinksInSent 'e.e'>'><FixVarLinksInSent_ e.e>; }
+FixVarLinksInSent {
 	(e.vn) e.1 "<VAR>" e.vt '.' e.vn "</VAR>" e.2 = e.1 "<LNK>" e.vn "</LNK>" <FixVarLinksInSent (e.vn) e.2>;
 	(e.vn) e.e = e.e;
 }
