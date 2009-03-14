@@ -541,7 +541,7 @@ RefData*  RefLinkToVariable::Copy(RefData* where){
     return new RefLinkToVariable(getName(), where);
 };
 
-RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp)/*, RefalNameSpace(name)*/ {
+RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp), RefalNameSpace(name) {
     is_system = false;
 };
 

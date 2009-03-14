@@ -18,7 +18,8 @@ TResult RefData_DOT::init(Session* s, RefData *&l){
 			return ERROR;
 		};
 
-		// )		move_to_next_term(l, this->myid(), s);
+		// )
+		move_to_next_term(l, this->myid(), s);
 		aux = dynamic_cast<RefData_DOT *>(l);
 		if ( !aux || aux->is_opened) { return BACK; }
 		return SUCCESS;
