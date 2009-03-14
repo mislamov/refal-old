@@ -199,13 +199,17 @@ RefChain* RefChain::Copy(Session *s){
 
 
     while(src != srcR->next_point(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
-        //std::cout << "\n\tfor copy: " << src->toString() << std::flush;
+        std::cout << "\n\tfor copy: " << src->toString() << std::flush;
 
         RefLinkToVariable *tmplnk = dynamic_cast<RefLinkToVariable *>(src);
-        #ifdef DEBUG
+
+        ///todo: определиться
+        //#ifdef DEBUG
         if (dynamic_cast<RefVariable *>(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
         if(!s && tmplnk) SYSTEMERROR("UNEXPECTED LINK to variable when Copy: " << tmplnk->toString());
-        #endif
+        //#endif
+
+
         if (s && tmplnk){
             TVarBody *tbody = s->getVarBody( tmplnk->getName() );
             if (tmplnk->getPath() != EmptyUniString){
@@ -258,10 +262,12 @@ RefChain* RefChain::Copy(Session *s){
                 delete hlpChain2;
 
                 if (!a){
+                    /// пустая цепь
                     /// todo проанализировать и проверить нужны ли эти 2 строки
                     dst->next = dstHlp;
                     dstHlp->pred = dst;
                 } else {
+                    /// цепь не пуста
                     a->pred = dst;
                     dst->next = a;
                     b->next = dstHlp;
@@ -282,7 +288,10 @@ RefChain* RefChain::Copy(Session *s){
         delete dst;
         newChain->first = newChain->second = 0;
     } else {
+        std::cout  << newChain->first->toString() << flush;
+        // уходим от RefNULL в начале цепочки
         newChain->first = newChain->first->next;
+        // удаляем RefNULL в начале цепочки
         delete newChain->first->pred;
         ///newChain->first->pred = 0;
     }
@@ -532,7 +541,7 @@ RefData*  RefLinkToVariable::Copy(RefData* where){
     return new RefLinkToVariable(getName(), where);
 };
 
-RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp), RefalNameSpace(name) {
+RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp)/*, RefalNameSpace(name)*/ {
     is_system = false;
 };
 

@@ -157,6 +157,18 @@ ScanObjectExprWithExecs {
 	/* отсечение */
 	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
 
+	/* групповые скобки */
+	('{')  e.oexp  ('}')('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false,
+		<Type t.varname> : {
+			'W' s.sub t.varname = "<GROUP name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP>" <ScanObjectExprWithExecs e.e>;
+			'N' s.sub t.varname = "<GROUP name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP>" <ScanObjectExprWithExecs e.e>;
+			e.else = <MakeError ScanObjectExprWithExecs 'bad varname for GROUP-brackets'>;
+		};
+	
+	
+
 	"$separator" e.e = <ScanObjectExprWithExecs e.e>;
 
 	/* Скобки */
@@ -172,27 +184,7 @@ ScanObjectExprWithExecs {
 	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
 
 
-/* старый разбор переменной. допускались var.var.var.var
-	"$var" (t.1)('.') e.next,
-		<Type t.1> : 'W' s.sub1 t.1
-		=	<Explode t.1> '.' <ScanObjectExprWithExecs  "$var" e.next>;
 
-	"$var" (t.1)('.') e.next,
-		<Type t.1> : 'N' s.sub1 t.1
-		=	<Symb t.1> '.' <ScanObjectExprWithExecs  "$var" e.next>;
-
-	"$var" (t.1) e.next,
-		<Type t.1> : 'W' s.sub1 t.1
-		=	<Explode t.1> "</VAR>" <ScanObjectExprWithExecs  e.next>;
-
-	"$var" (t.1) e.next,
-		<Type t.1> : 'N' s.sub1 t.1
-		=	<Symb t.1> "</VAR>" <ScanObjectExprWithExecs  e.next>;
-
-	(t.1)('.') e.next,
-		<Type t.1> : 'W' s.sub1 t.1
-		=	"<VAR>" <Explode t.1> '.' <ScanObjectExprWithExecs  "$var" e.next>;
-*/
 
 	/* продолжение ссылки напеременную */
 	"$path" ('/')(t.1) e.next, 
@@ -202,6 +194,8 @@ ScanObjectExprWithExecs {
 	/* конец ссылки напеременную */
 	"$path" e.next		
 		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
+
+
 
 	/*ссылка на переменную*/
 	(t.1)('.')(t.2)('/') e.next,
@@ -214,7 +208,7 @@ ScanObjectExprWithExecs {
 	(t.1)('.')(t.2)('/') e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'N' s.sub2 t.2
-	=	"<LNK>" <Explode t.1> '.' <Symb t.2>
+	=	"<LNK>" <Symb t.2>
 		<ScanObjectExprWithExecs "$path" ('/') e.next>;
 
 	/*переменная*/
@@ -229,6 +223,27 @@ ScanObjectExprWithExecs {
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'N' s.sub2 t.2
 	=	"<VAR>" <Explode t.1> '.' <Symb t.2> "</VAR>"
+		<ScanObjectExprWithExecs e.next>;
+	/**/
+
+	/*переменная без имени*/
+	(t.1)('.') "$separator" e.next,
+	<Type t.1> : 'W' s.sub1 t.1
+	=	"<VAR>" <Explode t.1> '.' "</VAR>"
+		<ScanObjectExprWithExecs e.next>;
+	/**/
+
+	/* ссылка на переменную с НЕ числовым именем*/
+	('@')('.')(t.2) e.next,
+	<Type t.2> : 'W' s.sub2 t.2
+	=	"<LNK>" <Explode t.2> "</LNK>"
+		<ScanObjectExprWithExecs e.next>;
+	/**/
+
+	/* ссылка на переменную с числовым именем*/
+	('@')('.')(t.2) e.next,
+	<Type t.2> : 'N' s.sub2 t.2
+	=	"<LNK>" <Symb t.2> "</LNK>"
 		<ScanObjectExprWithExecs e.next>;
 	/**/
 
@@ -426,12 +441,13 @@ Same {
 
 
 
-
-FixVarLinksInSent_{ e.e = <Prout '::::<FixVarLinksInSent 'e.e'>'><FixVarLinksInSent_ e.e>; }
-FixVarLinksInSent {
+/*
+FixVarLinksInSent{ e.e = <Prout '::::<FixVarLinksInSent 'e.e'>'><FixVarLinksInSent_ e.e>; }
+FixVarLinksInSent_ {
 	(e.vn) e.1 "<VAR>" e.vt '.' e.vn "</VAR>" e.2 = e.1 "<LNK>" e.vn "</LNK>" <FixVarLinksInSent (e.vn) e.2>;
 	(e.vn) e.e = e.e;
 }
+*/
 
 /* переводит закр. перем. в ссылки */
 FixVarLinks{
@@ -453,8 +469,8 @@ FixVarLinks{
 */
 FixVarLinks2{
 	e.1 "<VAR>" e.var "</VAR>" e.2 "<VAR>" e.var "</VAR>" e.3,
-	    e.var : e.vtype '.' e.vname
-		    =   <FixVarLinks2 e.1 "<VAR>" e.var "</VAR>" e.2 "<LNK>" e.vname "</LNK>" e.3 >;
+	    e.var : e.vtype '.' s.vname1 e.vname2
+		    =   <FixVarLinks2 e.1 "<VAR>" e.var "</VAR>" e.2 "<LNK>" s.vname1 e.vname2 "</LNK>" e.3 >;
 
 	e.e = e.e;
 }

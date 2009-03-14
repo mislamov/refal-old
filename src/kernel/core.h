@@ -1,7 +1,7 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define NODEBUG
+#define DEBUG
 
 #define _UNICODE
 /****************************************************************************************
@@ -11,17 +11,23 @@
 *     бесконечные целые и вещественные
 *     и др.
 *****************************************************************************************/
-#define SYSTEMERROR(msg) { \
-    std::cout << "\n\n####:#### " << __FILE__ << '[' << __LINE__ << "] : "; \
-    std::cout << "\n####:#### " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
-    abort(); \
-    };
 
 #ifdef DEBUG
+    #define SYSTEMERROR(msg) { \
+        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+        std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+        abort(); \
+        };
+
     #define LOG(msg) { \
         std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
         };
 #else
+    #define SYSTEMERROR(msg) { \
+        std::cout << "\n\n######## SYSTEM ERROR ########:: " << msg << "\n\n" << std::flush; \
+        abort(); \
+        };
+
     #define LOG(msg) {}
 #endif
 

@@ -112,7 +112,6 @@ class ref_GROUP_BR : public RefBracketBase, public IRefVar {
         ref_GROUP_BR( RefData *rp);
         ref_GROUP_BR( ref_GROUP_BR *br, RefData *rp, std::string nn);
         bool operator==(RefData&rd);
-
         TResult  init(Session *, RefData *&l);
         TResult  back(Session *, RefData *&l, RefData *&r);
         void     dropall(Session *);

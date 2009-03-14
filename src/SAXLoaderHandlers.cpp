@@ -12,6 +12,7 @@
 #include "kernel/rfunction.h"
 #include "kernel/core.h"
 #include "kernel/data.h"
+#include "kernel/datastructs.h"
 #include "kernel/kernel.h"
 #include "kernel/refsymbolbase.hxx"
 
@@ -110,6 +111,12 @@ try {
             *(loader->getCurrChain()) += t;
             *(loader->getCurrChain()) += new RefNULL();
     } else
+    if ( theCommand.compare(_L("GROUP")) == 0) {
+            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("GROUP WITHOUT name-attribute");
+            RefGroupBracket *gbropen = new RefGroupBracket(toWstring(attributes.getValue("name")), 0);
+            loader->putValueToStack( theCommand, dynamic_cast<RefObject *>(gbropen) );
+            *(loader->getCurrChain()) += gbropen;
+    } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
     } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
@@ -194,7 +201,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             #ifdef DEBUG
             if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERROR("not TEMPLATE in TEMPLATE-stack !!!");
             #endif
-            RefUserTemplate *t =  (RefUserTemplate*)loader->extractValueFromStack("TEMPLATE");
+            RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
             //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
             loader->getCurrChain()->dearoundByDots(); // шаблону доты не нужны
             t->setLeftPart( loader->extractCurrChainFromStack() );
@@ -267,7 +274,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     if ( theCommand.compare(_L("TEXT")) == 0) {  //
         unistring text = loader->currentchars;
         for (int i=0; i<text.length(); i++){
-            *(loader->getCurrChain()) += new RefAlpha(text[i]);
+            *(loader->getCurrChain()) += new RefAlpha(text[i], 0);
         }
     } else
     if ( theCommand.compare(_L("BRACKET")) == 0 ) {
@@ -278,6 +285,14 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefStructBracket *brclose = new RefStructBracket(br, 0);
             *(loader->getCurrChain()) += brclose;
     } else
+    if ( theCommand.compare(_L("GROUP")) == 0) {
+            #ifdef DEBUG
+            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
+            #endif
+            RefGroupBracket *gbrclose =  dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
+            *(loader->getCurrChain()) += new RefGroupBracket(gbrclose, 0);
+    } else
+
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
             *(loader->getCurrChain()) += new RefMatchingCutter();
     } else
@@ -288,7 +303,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             if (loader->templateOrSent == "S"){ // if for sentense
                 cond->own = (RefUserFunction *) loader->getValueFromStack("FUNCTION");
             } else {   // if for template
-                cond->own = (RefUserTemplate *)(loader->getValueFromStack("TEMPLATE"));
+                cond->own = dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"));
             }
             *(loader->getCurrChain()) += cond;
     } else

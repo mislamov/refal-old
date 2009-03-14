@@ -14,6 +14,11 @@ mSYSTEM msystem;
 
 char *xmlFile = "minitest.ref.xml";
 
+std::string stringtime(struct tm * tt){
+    std::ostringstream ss;
+    ss << ""  << tt->tm_hour << ":" << tt->tm_min << ":" << tt->tm_sec;
+    return ss.str();
+}
 
 int main ( int argv, char **argc ) {
 	if ( argv < 2 ) {
@@ -40,7 +45,10 @@ int main ( int argv, char **argc ) {
 	            *r = new RefData_DOT(l,0);
 	*/
 
-    std::cout << "\n============================================\n" << std::flush;
+    time_t starttime, stoptime;
+    time ( &starttime );
+
+    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
 
 	RefExecBracket
 	*lb = new RefExecBracket(),
@@ -60,5 +68,7 @@ int main ( int argv, char **argc ) {
 	//s->flush();
 
 	std::cout << "\n\nRETURN: " << result->toString() << "\n";
+    time ( &stoptime );
+    std::cout << "============================================\n" << stringtime(localtime (&stoptime)) << "\n" << difftime(stoptime, starttime) << " sec.\n" << std::flush;
 	return 0;
 }
