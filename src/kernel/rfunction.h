@@ -199,7 +199,7 @@ class RefTemplateBridgeTmpl;
 
 
 // мосты между лев.частью и внешним шаблоном. Со стороны левой части
-class RefTemplateBridgeVar : public RefBracketBase, public IRefVar {
+class RefTemplateBridgeVar : public RefBracketBase  {
         unistring name;
     public:
         RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля

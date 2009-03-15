@@ -26,7 +26,6 @@ TResult RefSymbolBase <T>::init(Session* s, RefData *&l) {
     //aux->drop(myid());
     if (tmpr) return GO;
     //s->get_moved_to_pred_current_term(myid);
-    move_to_next_term(l,myid(),s);
     return BACK;
 };
 

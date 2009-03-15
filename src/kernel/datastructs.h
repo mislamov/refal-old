@@ -40,7 +40,7 @@ public:
 
 
 //-----------  o  -----------
-class ref_variant_dot : public RefData {
+class ref_variant_dot : public RefData/*, public IRefVar*/ { // IRefVar чтоб срабаытвал restoreTempl и saveTempl
     public:
         ref_variant_ffwd  *nextffwd;
         ref_variant_krest *krest;
@@ -51,12 +51,17 @@ class ref_variant_dot : public RefData {
         TResult	   back	      (Session *s, RefData *&l, RefData *&r);
         bool operator==(RefData&rd);
 
-    virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
-    virtual unistring toString(){
-        std::ostringstream ss;
-        ss << " $o." << ((long)this);
-        return ss.str();
-    };
+        virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
+        virtual unistring toString(){
+            return "o ";
+            std::ostringstream ss;
+            ss << " $o." << ((long)this);
+            return ss.str();
+        };
+        /*
+        unistring getName(){ return EmptyUniString; };
+        void setName(unistring ){ SYSTEMERROR("alarm"); };
+        */
 
 };
 //----------  |  ------------
@@ -72,7 +77,7 @@ class ref_variant_vert : public RefData {
 	TResult  init(Session* s, RefData *&l); //
 	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
-    virtual unistring toString(){ return " | ";};
+    virtual unistring toString(){ return " |";};
 
 };
 //----------  =>  ------------
@@ -85,6 +90,7 @@ class ref_variant_ffwd : public RefData {
 
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
     virtual unistring toString(){
+        return "=>";
         std::ostringstream ss;
         ss << " =>." << (long)this;
         return ss.str();
@@ -101,7 +107,7 @@ class ref_variant_vopr : public RefData {
 	TResult  init(Session* s, RefData *&l); //
 	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
-    virtual unistring toString(){ return " $? ";};
+    virtual unistring toString(){ return "?";};
 
 };
 //----------  x  ------------
@@ -117,7 +123,7 @@ class ref_variant_krest : public RefData {
 	TResult  init(Session* s, RefData *&l); //
 	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
-    virtual unistring toString(){ return " $x ";};
+    virtual unistring toString(){ return "x";};
 
 };
 

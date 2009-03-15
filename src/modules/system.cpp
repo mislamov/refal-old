@@ -223,7 +223,7 @@ bool system_PROUT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* 
     std::cout
     #ifdef DEBUG
             << "\n############################### STDOUT ###############################\n"
-            << ":####:\t\t"
+            << ":####:\t"
     #endif
             << vectorToString(lft, rht) << "\n"
     #ifdef DEBUG
@@ -238,7 +238,7 @@ bool system_PRINT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* 
     std::cout
     #ifdef DEBUG
             << "\n############################### STDOUT ###############################\n"
-            << ":####:\t\t"
+            << ":####:\t"
     #endif
             << vectorToString(lft, rht) << "\n"
     #ifdef DEBUG

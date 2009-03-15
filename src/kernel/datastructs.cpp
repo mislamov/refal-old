@@ -65,7 +65,16 @@ RefData*   ref_variant_dot::pred_point (ThisId id, Session *s) {
     /// todo: обработать принудительный откат (когда forceback)
     return nextffwd;
 };
-TResult	   ref_variant_dot::init(Session *s, RefData *&l) { return GO; };
+
+TResult	   ref_variant_dot::init(Session *s, RefData *&l) {
+    #ifdef DEBUG
+    TVarBody* vb = dynamic_cast<TVarBody *>( s->matchSessions.back()->StackOfSopost.top());
+    if ((!vb) || (! dynamic_cast<RefBracketBase *>(vb->owner)))
+        SYSTEMERROR("net ozhifaemoj skobki na vershine steka sopostavlenij");
+    #endif
+    l = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()))->second;
+    return GO;
+};
 TResult	   ref_variant_dot::back(Session *s, RefData *&l, RefData *&r) { /*l = r = s->StackOfGroupSkob.top();*/ return BACK; };
 bool	   ref_variant_dot::operator==(RefData&rd){ return false; };
 

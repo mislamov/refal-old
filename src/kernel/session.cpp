@@ -255,20 +255,20 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
         pre_sost = result_sost;
         // даны l и r  (l=r=pred)
         if (pre_sost==GO){
-            l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
+                    l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
 
-            #ifdef DEBUG
-            RefObject *lastowner = 0;
-            if (s->getCurrentSopostStack()->empty()){
+                    #ifdef DEBUG
+                    RefObject *lastowner = 0;
+                    if (s->getCurrentSopostStack()->empty()){
+                        lastowner = 0;
+                    } else {
+                        lastowner = s->getCurrentSopostStack()->top()->owner;
+                    };
+                    #endif
 
-                lastowner = 0;
-            } else {
-                lastowner = s->getCurrentSopostStack()->top()->owner;
-            };
-            #endif
-
-                    result_sost = activeTemplate->init(s, r);
+                    result_sost = activeTemplate->init(s, r); /// ШАГ ВПЕРЕД
                     if (result_sost == GO || result_sost == SUCCESS){  // сохранять сотояние для элемента с SUCCESS нужно для дематчинга
+                        /// INIT -> GO
                         if (l==r){ // r не изменилось => пустое
                             s->SaveTemplItem(activeTemplate, 0, l);
                         } else {
@@ -280,6 +280,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                         move_to_next_point(activeTemplate, 0, s);
                     } else
                     if (result_sost == BACK){
+                        /// INIT -> BACK
                         // не сохраняем ничего
 
                         #ifdef DEBUG
@@ -299,7 +300,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                         //std::cout << tmpd->toString() << std::flush << "\n\n";
                         #endif
 
-                        r = 0;
+                        //r = 0;
                         move_to_pred_point(activeTemplate, 0, s);
                     }
 
@@ -308,8 +309,9 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
 //s->showStatus();
             s->RestoreTemplItem(activeTemplate, l, r);
 //s->showStatus();
-            result_sost = activeTemplate->back(s, l, r);
+            result_sost = activeTemplate->back(s, l, r); /// ШАГ НАЗАД
             if (result_sost == GO){
+                /// BACK -> GO
                 #ifdef DEBUG
                 //if (!l) SYSTEMERROR("Unexpected situation: after back(l,r) method, l==null ! For simple variable it is mistake! Marat, prover - eli peremennaja ne prostaja, to vozmozhno nado ubrat etu proverku. Peremennaja: "+activeTemplate->toString() << "[" << activeTemplate << "]  BACK -> back() -> GO");
                 #endif
@@ -318,8 +320,9 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                 move_to_next_point(activeTemplate, 0, s);
             } else
             if (result_sost == BACK){
+                /// BACK -> BACK
                 // не сохраняем ничего
-                r = 0;
+                //r = 0;
                 // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
                 // Может создать ошибки для varBridge
                 RefVariableBase* vart = dynamic_cast <RefVariableBase *>(activeTemplate);
@@ -540,8 +543,8 @@ void Session::deinitializationTemplate(RefChain *&tpl) { //  удаление д
 
 // сохраняет состояние переменной во время сопоставления
 void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
-    //std::cout << "\nSaveTempl::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
-
+    if (! dynamic_cast<IRefVar *>(v)) return; /// тест. попытка сохранять не все
+//std::cout << "\nSaveTempl::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
 
     // если входит открывающая скобка, значит вся пара
     RefBracketBase *rb = dynamic_cast<RefBracketBase *>(r);
@@ -636,6 +639,9 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
 
 
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
+    if (! dynamic_cast<IRefVar *>(owner)) return; /// тест. попытка сохранять не все
+//std::cout << "\nRestoreTemplItem::\t" << owner->toString() << "\t->\t" << vectorToString(l, r);
+
     RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(owner);
 
     if (bridge){
