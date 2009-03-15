@@ -33,14 +33,47 @@ TResult RefData_DOT::back(Session* sess, RefData *&l, RefData *&r){
 };
 
 
-    unistring  RefData_DOT::toString() {        std::ostringstream s;
+unistring  RefData_DOT::toString() {        std::ostringstream s;
         s << (is_opened?" [":" ]")
         /**/<< "." << std::hex << (unsigned short)this << ' '; /*<< ":other=" << (long)this->other << " ";/**/
 //        s << "." << (long)this << ' ';
         ;
         return sss = s.str();
-    };
-	RefData* RefData_DOT::next_term( ThisId var_id, Session *s ) { return next; };
-	RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) { return pred; };
+};
+RefData* RefData_DOT::next_term( ThisId var_id, Session *s ) { return next; };
+RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) { return pred; };
 
+
+
+
+
+
+
+TResult  RefGroupBracket::init(Session *s, RefData *&l){
+    /*
+    if (isOpen()){	//      {
+            //s->matchSessions.back()->StackOfGroupSkob.push(l); // кладем ссылку на ПЕРЕДначало аргумента группы - не надо
+    } else {		//      }
+		//s->matchSessions.back()->StackOfGroupSkob.pop();
+		//RefData* z2 = l;
+    };*/
+    return GO;
+
+};
+
+TResult  RefGroupBracket::back(Session *s, RefData *&l, RefData *&r){
+	/*if (is_opened) {	//	{
+		s->StackOfGroupSkob.top()->drop(myid);
+		s->StackOfGroupSkob.pop();
+		//s->current_point = s->StackOfGroupSkob.extract();
+	} else {		//	}
+		ref_DATA *l, *r;
+		s->RestoreTempl(l, r);
+		s->StackOfGroupSkob.push( l ? l->pred_point(other->myid, s) : r );
+//		lbl(); lbl();
+		r->drop(myid);
+	};*/
+	return BACK;
+
+};
 

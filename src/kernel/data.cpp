@@ -193,13 +193,11 @@ RefChain* RefChain::Copy(Session *s){
     #endif
 
     RefChain  *hlpChain, *hlpChain2, *newChain = new RefChain(new RefNULL());
-
     RefData *src = srcL;
     RefData *a, *b, *dstHlp, *dst = newChain->first;
 
 
     while(src != srcR->next_point(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
-        std::cout << "\n\tfor copy: " << src->toString() << std::flush;
 
         RefLinkToVariable *tmplnk = dynamic_cast<RefLinkToVariable *>(src);
 
@@ -241,7 +239,7 @@ RefChain* RefChain::Copy(Session *s){
             }
             #endif
             dst     = br->Copy(dst);      // это NULLDOT
-            dstHlp  =  (br->Copy((RefBracketBase *)(dst->pred), dst)); // other, rp    }
+            dstHlp  =  (br->Copy( dynamic_cast<RefBracketBase *>(dst->pred), dst)); // other, rp    }
 
 
             #ifdef DEBUG
@@ -288,7 +286,6 @@ RefChain* RefChain::Copy(Session *s){
         delete dst;
         newChain->first = newChain->second = 0;
     } else {
-        std::cout  << newChain->first->toString() << flush;
         // уходим от RefNULL в начале цепочки
         newChain->first = newChain->first->next;
         // удаляем RefNULL в начале цепочки
@@ -371,11 +368,6 @@ RefChain& RefChain::operator+=(RefChain &ch){
             return *this;
 };
 
-
-RefVariable::RefVariable(unistring name, RefData *rp) : RefData(rp){
-    setName(name);
-    is_system = false;
-};
 
 
 RefChain::RefChain(RefData *l, RefData *r){

@@ -54,7 +54,7 @@ class RefData : public RefObject {
     	RefData*  next;
         RefData*  pred;
     public:
-        RefData(RefData *rp = 0); // pr вставляем после себя
+        RefData(RefData *rp=0); // pr вставляем после себя
         virtual ~RefData();
         ThisId  myid(){  sss=toString(); return (ThisId)(this); };
         bool  is_system;
@@ -109,21 +109,20 @@ class RefNULL : public RefData {
         virtual TResult init(Session*, RefData *&);
         virtual TResult back(Session*, RefData *&, RefData *&);
 
-        virtual unistring toString(){ /*unistring s ="."; return s;*/ return ""; };
+        virtual unistring toString(){ /*unistring s ="."; return s;*/ return " . "; };
         void forceback(Session *){};
 };
 
 
-// Именнованое поле методов и переменных8
-class RefalNameSpace : public RefObject {
+// Именнованое поле методов и переменных
+class RefalNameSpace {
     protected:
         unistring name;
     public:
         virtual unistring getName(){ return name; }
         virtual void setName(unistring s){ name = s; }
 
-        virtual RefObject* getObjectByName(unistring name){ return 0; };
-        RefalNameSpace(unistring name = EmptyUniString) : RefObject(){ setName(name); };
+        RefalNameSpace(unistring name = EmptyUniString) { setName(name); };
 
 };
 
@@ -131,14 +130,22 @@ class RefalNameSpace : public RefObject {
 class IRefVar {
     public:
         virtual unistring getName() = 0;
+        virtual void setName(unistring name) = 0;
 };
 
-// Абстрактный класс - предок всех переменных языка
-class RefVariable : public virtual IRefVar, public RefData, public RefalNameSpace {
+
+// Абстрактный класс - предок всех открытых переменных языка (простых и скобочных)
+class RefVariableBase : public IRefVar {
     public:
-        RefVariable(unistring name = EmptyUniString, RefData *rp = 0);
-        void forceback(Session *){};
+        RefVariableBase() : IRefVar() { };
+};
+
+class RefVariable : public RefVariableBase, public RefData , public RefalNameSpace { // Простая переменная
+    public:
+        virtual void    forceback(Session* s){ }; // принудительный откат. Точка убирает из сессии свое состоян
+        RefVariable(unistring name = EmptyUniString, RefData *rp = 0) : RefVariableBase(), RefData(rp), RefalNameSpace(name){ is_system = false;  };
         virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo очень грязное решение. исправить
+        virtual void setName(unistring name){ RefalNameSpace::setName(name); }; /// todo очень грязное решение. исправить
 };
 
 // Ссылка на переменную
@@ -195,8 +202,7 @@ class RefSmplVarType : public RefVariable {
 class RefVarTable : public std::map<unistring, RefVariable*>{};
 
 
-//class RefBracketBase : public RefVariable {
-class RefBracketBase : public RefData {
+class RefBracketBase : public IRefVar, public RefData {
     protected:
         bool        is_opened; // true = begin- ; false = end-
 
@@ -215,6 +221,9 @@ class RefBracketBase : public RefData {
         virtual bool       operator ==(RefData &rd);
         virtual RefData* Copy(RefBracketBase *b, RefData *rp=0)=0;
         virtual RefData* Copy(RefData *rp=0)=0;
+
+        virtual unistring getName(){ SYSTEMERROR("alarm!"); };
+        virtual void setName(unistring ){ SYSTEMERROR("alarm!"); };
 
 };
 

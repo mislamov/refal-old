@@ -322,7 +322,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                 r = 0;
                         // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
                         // Может создать ошибки для varBridge
-                        IRefVar* vart = dynamic_cast <IRefVar *>(activeTemplate);
+                        RefVariableBase* vart = dynamic_cast <RefVariableBase *>(activeTemplate);
                         if (vart && vart->getName() != EmptyUniString){
                             //std::cout << "\n::::: del map for : " << vart->getName() << flush << "\n";
                             s->setVarBody(vart->getName(), 0);
@@ -362,11 +362,11 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
                 // выгребаем стек сопоставлений субсессии
                 // в finish сохраняем последний (точнее первый) элемент сопоставления в субсессии
                 while(s->getCurrentSopostStack()->size() != 1){
-                    finish = (RefData *) s->getCurrentSopostStack()->top()->owner;
+                    finish = dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
                     LOG( ">> CUTTER BACKFORSE DROP: " << finish->toString() );
                     s->getCurrentSopostStack()->pop(); /// clean pered pop ?
                 }
-                finish = (RefData *) s->getCurrentSopostStack()->top()->owner;
+                finish = dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
 
 
             } else {
@@ -543,8 +543,9 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     //std::cout << "\nSaveTempl::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
 
 
-    RefBracketBase *rb;
-    if ((rb = dynamic_cast<RefBracketBase *>(r)) && (rb->isOpen()) && (!dynamic_cast<RefData_DOT *>(r))) {
+    // если входит открывающая скобка, значит вся пара
+    RefBracketBase *rb = dynamic_cast<RefBracketBase *>(r);
+    if (rb && (rb->isOpen()) && (!dynamic_cast<RefData_DOT *>(r))) {
         r = rb->getOther();
     }
 
@@ -553,8 +554,8 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     // переменные внешнего типа обрабатываются персонально
     RefTemplateBridgeVar *bridge = dynamic_cast<RefTemplateBridgeVar *>(v);
     if (bridge){
-        /// случай когда удачно сопоставлена переменная внешнего типа
 
+        /// случай когда удачно сопоставлена переменная внешнего типа
         if (! bridge->isOpen()){       ///  [}]
             // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
             SessionOfMaching *sess;
@@ -596,20 +597,40 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
         }
 
         //showStatus();
-    } else {
+    }  else {
         /// не внешняя переменная
-        // если элемент является переменной (наследуется от соотв интерфейса - это признак), то ...
-        IRefVar* vart = dynamic_cast <IRefVar *>(v);
+        RefGroupBracket *group = dynamic_cast<RefGroupBracket *>(v);
+        if (group) { /// групповая скобка
+            if (group->isOpen()){ ///      {
+                getCurrentSopostStack()->push( setVarBody(group->getName(), varBody) );
+            } else {       ///      }.name
+                RefData *leftSecond = getVarBody(group->getName())->second; /// todo сделать эффективнее. Без использования промежуточного сохранения в map
+                #ifdef DEBUG
+                if (getVarBody(group->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа  и групп завязано на том, что скобки внешней переменной или группы сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
+                #endif
+                if (leftSecond != r){ // взор на НЕ пустое выражение
+                    varBody->first  = leftSecond->next;
+                    //varBody->second = уже какое надо
+                } /*else {
+                    varBody уже какое надо
+                }*/
+                getCurrentSopostStack()->push( setVarBody(group->getName(), varBody) );
 
-        if (vart && vart->getName() != EmptyUniString){
-            // если переменная с именем, то сохр. в карте переменных и в стеке
-            getCurrentSopostStack()->push( setVarBody(vart->getName(), varBody) );
+            }
         } else {
-            // все остальное - только в стеке
-            getCurrentSopostStack()->push( varBody );
+            // если элемент является переменной (наследуется от соотв интерфейса - это признак), то ...
+            //IRefVar* vart = dynamic_cast <IRefVar *>(v);
+            RefVariableBase* vart = dynamic_cast <RefVariableBase *>(v);
+            if (vart && vart->getName() != EmptyUniString){
+                // если переменная с именем, то сохр. в карте переменных и в стеке
+                getCurrentSopostStack()->push( setVarBody(vart->getName(), varBody) );
+            } else {
+                // все остальное - только в стеке
+                getCurrentSopostStack()->push( varBody );
+            }
         }
-
     }
+
 
 };
 
@@ -630,7 +651,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
 
             return;
         } else {            ///   [}]
-            int i=0;
+
         }
     }
 
@@ -670,6 +691,18 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
         /// пока оставил неэффективно - откат к последнему условию шаблона
 
         //showStatus();
+    }
+
+    /// для групповых скобок корректируем таблицу переменных
+    RefGroupBracket *group = dynamic_cast<RefGroupBracket *>(owner);
+    if (group && !group->isOpen()){  /// }
+            if (varBody->first){
+                // непустое значение
+                setVarBody(group->getName(), new TVarBody(0, varBody->first->pred, group->getOther()));
+            } else {
+                // пустое значение
+                setVarBody(group->getName(), new TVarBody(0, varBody->second, group->getOther()));
+            }
     }
 
     #ifdef DEBUG

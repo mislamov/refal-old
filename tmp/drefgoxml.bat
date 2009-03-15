@@ -1,3 +1,3 @@
-..\bin\debug\rm_loader.exe %1
+..\bin\debug\refal51.exe %1
 pause
 exit

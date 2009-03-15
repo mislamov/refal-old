@@ -45,13 +45,13 @@ public:
 };
 
 
-class RefModuleBase : public RefalNameSpace {
+class RefModuleBase : public RefalNameSpace, public RefObject {
   public:
     virtual unistring getName()=0;
     //{ return name; };
     //virtual void setName(unistring s){ name = s; };
 
-    RefModuleBase(unistring nname = EmptyUniString) : RefalNameSpace(nname){};
+    RefModuleBase(unistring nname = EmptyUniString) : RefalNameSpace(nname) {};
     virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
     virtual void initilizeAll(Session *){ LOG("not realized!"); };
 };

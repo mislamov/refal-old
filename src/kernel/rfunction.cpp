@@ -489,8 +489,8 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     if (! dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->first) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the first");
     if (! dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->second) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the second");
     #endif
-    leftBridge ->bridge = (RefTemplateBridgeTmpl *) utempl->getLeftPart()->first;  // должно быть уже RefTemplateBridgeTmpl
-    rightBridge->bridge = (RefTemplateBridgeTmpl *) utempl->getLeftPart()->second; // должно быть уже RefTemplateBridgeTmpl
+    leftBridge ->bridge = dynamic_cast<RefTemplateBridgeTmpl *>( utempl->getLeftPart()->first );  // должно быть уже RefTemplateBridgeTmpl
+    rightBridge->bridge = dynamic_cast<RefTemplateBridgeTmpl *>( utempl->getLeftPart()->second ); // должно быть уже RefTemplateBridgeTmpl
 
     delete this;
     return true;

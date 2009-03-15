@@ -1,7 +1,7 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define DEBUG
+//#define DEBUG
 
 #define _UNICODE
 /****************************************************************************************

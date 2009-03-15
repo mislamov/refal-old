@@ -60,7 +60,7 @@ TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
         SYSTEMERROR("may be unnormal situation");
     }
     #endif
-    s->getStackOfDataSkob()->push( (RefBracketBase*) r );
+    s->getStackOfDataSkob()->push( dynamic_cast<RefBracketBase*>( r ) );
     //return FORCEBACK; - не надо, т к ситуация мб такая: (e.1 e.all)
     return BACK;
 };
@@ -78,7 +78,9 @@ void RefStructBracket::forceback(Session *s){
 
 
 
-RefExecBracket::RefExecBracket(RefData* rp) : RefBracketBase(rp) { is_system = false; };
+RefExecBracket::RefExecBracket(RefData* rp) : RefBracketBase(rp) {
+    is_system = false;
+};
 
 RefExecBracket::RefExecBracket(RefExecBracket *br, RefData* rp) : RefBracketBase(br, rp) {
     is_system = false;

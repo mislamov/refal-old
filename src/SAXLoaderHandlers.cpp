@@ -287,7 +287,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
             #ifdef DEBUG
-            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
+            if (! dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefGroupBracket in GROUP-stack !!!");
             #endif
             RefGroupBracket *gbrclose =  dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
             *(loader->getCurrChain()) += new RefGroupBracket(gbrclose, 0);

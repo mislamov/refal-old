@@ -56,7 +56,7 @@ class SessionOfMaching  : public RefObject {
                 RefChain *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
 
                 std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
-                std::stack<RefData *>	        StackOfGroupSkob;	    // Стек указателей на ПЕРЕДначало группы шаблонов
+                //std::stack<RefData *>	        StackOfGroupSkob;	    // Стек указателей на ПЕРЕДначало ОВ для группы - а надо ли
                 std::stack<DataForRepeater *>	StackOfRepeatSkob;	    // Стек итераций повторителей
                 std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
                 //std::stack<ref_variant_vert*> StackOfVariants;	    //
@@ -74,7 +74,7 @@ class SessionOfMaching  : public RefObject {
 
                     isfar = false;
                     pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
-                    StackOfDataSkob.push((RefData_DOT *)pole_zrenija->second);
+                    StackOfDataSkob.push(dynamic_cast<RefData_DOT *>(pole_zrenija->second));
                     StopBrackForceVar = 0;
                     templReturnBackPoint = 0;
                 }

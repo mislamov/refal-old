@@ -119,13 +119,17 @@ class ref_GROUP_BR : public RefBracketBase, public IRefVar {
 
 
 
-class RefGroupBracket : public RefBracketBase {
+class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
     public:
         virtual ~RefGroupBracket(){};
-        RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) {};
-        RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth, rp) {};
-        TResult  init(Session *, RefData *&l){};
-        TResult  back(Session *, RefData *&l, RefData *&r){};
+        RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) { RefalNameSpace::setName(name); }; // оптимизировать
+        RefGroupBracket(RefGroupBracket *oth, RefData *rp) : RefBracketBase(oth, rp) { RefalNameSpace::setName(oth->name); };
+        //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
+        TResult  init(Session *, RefData *&l);
+        TResult  back(Session *, RefData *&l, RefData *&r);
+        bool operator==(RefData&rd){ return false; };
+
+        virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo: оптиизировать
         /*
         virtual RefData* Copy(RefData *where=0){ return new RefGroupBracket("", where); };
         virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ return new RefGroupBracket(b, where); };
@@ -133,7 +137,8 @@ class RefGroupBracket : public RefBracketBase {
         virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpectef call"); };
         virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ SYSTEMERROR("unexpectef call"); };
 
-        virtual unistring toString(){ return (isOpen() ? "{" : "}" ); };
+        virtual unistring toString(){ return (isOpen() ? "{" : ("}."+name) ); };
+        virtual void forceback(Session *){ /** todo: очищать подсессию до открывающей скобки */};
 };
 
 #endif // DATASTRUCTS_H_INCLUDED
