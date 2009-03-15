@@ -320,13 +320,13 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching){
             if (result_sost == BACK){
                 // не сохраняем ничего
                 r = 0;
-                        // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
-                        // Может создать ошибки для varBridge
-                        RefVariableBase* vart = dynamic_cast <RefVariableBase *>(activeTemplate);
-                        if (vart && vart->getName() != EmptyUniString){
-                            //std::cout << "\n::::: del map for : " << vart->getName() << flush << "\n";
-                            s->setVarBody(vart->getName(), 0);
-                        }
+                // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
+                // Может создать ошибки для varBridge
+                RefVariableBase* vart = dynamic_cast <RefVariableBase *>(activeTemplate);
+                if (vart && vart->getName() != EmptyUniString){
+                    //std::cout << "\n::::: del map for : " << vart->getName() << flush << "\n";
+                    s->setVarBody(vart->getName(), 0);
+                }
                 move_to_pred_point(activeTemplate, 0, s);
             }
         }

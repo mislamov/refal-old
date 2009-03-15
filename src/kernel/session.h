@@ -59,7 +59,7 @@ class SessionOfMaching  : public RefObject {
                 //std::stack<RefData *>	        StackOfGroupSkob;	    // Стек указателей на ПЕРЕДначало ОВ для группы - а надо ли
                 std::stack<DataForRepeater *>	StackOfRepeatSkob;	    // Стек итераций повторителей
                 std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
-                //std::stack<ref_variant_vert*> StackOfVariants;	    //
+                std::stack<ref_variant_vert*> StackOfVariants;	        // Стек удачно сопоставленных вариантов (ссылки на границы последнего варианта)
 
                 RefTemplateBridgeVar *templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
 

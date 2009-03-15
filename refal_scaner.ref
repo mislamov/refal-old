@@ -131,11 +131,73 @@ ScanRigthPart {
 
 ScanObjectExprWithoutExecs_ { e.e = <PProut "\nScanObjectExprWithoutExecs: " e.e><ScanObjectExprWithoutExecs_ e.e>; }
 ScanObjectExprWithoutExecs {
+	e.arg, 
+		<ScanObjectExprWithoutExecsFirst e.arg> : e.arg_I,
+		<ExistError e.arg_I> : { 
+			false	=	<TransformSpecificatorsInObjectExprWithoutExecs e.arg_I>;
+			true	=	e.arg_I;
+		};
+}
+
+IsVarName {
+	e.name,
+	<Type e.name> : {
+		'L' s.sub s.1 e.2 = <IsVarName e.2>;
+		'D' s.sub s.1 e.2 = <IsVarName e.2>;
+		'*' e.e = true;
+		e.else = false;
+	};
+}
+
+/* перестраивает спецификаторы для загрузки программы: 
+	варианты:	  {o   | => o   | => o   | => x   ? }
+*/
+TransformSpecificatorsInObjectExprWithoutExecs_ { e.e = <Prout "TransformSpecificatorsInObjectExprWithoutExecs:" e.e><TransformSpecificatorsInObjectExprWithoutExecs e.e>; };
+TransformSpecificatorsInObjectExprWithoutExecs {
+	e.all,
+	e.all : e.1 "<GROUP_F name=\"" e.gname "\">" e.2 "</GROUP_F>" e.3,
+		<NotHas "</GROUP_F>" e.2> : true,
+		<NotHas "<GROUP_F name=\"" e.2> : true,
+		<Print <IsVarName e.gname>> : true,
+		e.2 : e.4 "|" e.5  
+		=  	<TransformSpecificatorsInObjectExprWithoutExecs   
+				e.1 
+				"<GROUP name=\"" 
+				e.gname 
+				"\">" 
+				"<VARIANTS>" 
+				<ReplaceAll ("|") by ("<THE-VARIANT/>") in (e.2)> 
+				"</VARIANTS>" 
+				"</GROUP>" 
+				e.3 
+			>;
+
+	e.all,
+	e.all : e.1 "<GROUP_F name=\"" e.gname "\">" e.2 "</GROUP_F>" e.3,
+		<NotHas "</GROUP_F>" e.2> : true,
+		<NotHas "<GROUP_F name=\"" e.2> : true
+		=	<TransformSpecificatorsInObjectExprWithoutExecs   e.1 "<GROUP name=\"" e.gname "\">" e.2 "</GROUP>" e.3 >;
+
+	e.noOldGroups = e.noOldGroups;
+}
+
+ScanObjectExprWithoutExecsFirst {
 	e.1 ('<') e.2 = <MakeError ScanObjectExprWithoutExecs 'unecpected "<" in <' e.2>;
 	e.1 ('>') e.2 = <MakeError ScanObjectExprWithoutExecs 'unecpected ">" in >' e.2>;
 	e.e = <ScanObjectExprWithExecs e.e>; /* уже знаем, что нету вызовов */
 }
 
+ReplaceAll {
+	(e.old) by (e.new) in (e.arg),
+		e.arg : e.1 e.old e.2 = e.1 e.new <ReplaceAll  (e.old) by (e.new) in (e.2)>;
+		
+	(e.old) by (e.new) in (e.arg) = e.arg;
+}
+
+NotHas {
+	t.A e.1 t.A e.2 = false;
+	e.e = true;
+}
 
 IsWordNumbDot {
 	('.') = true;
@@ -157,15 +219,26 @@ ScanObjectExprWithExecs {
 	/* отсечение */
 	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
 
-	/* групповые скобки */
+	/* разделитель вариантов */
+	('|')  e.e = "|" <ScanObjectExprWithExecs e.e>;
+
+	/* групповые скобки c именем */
 	('{')  e.oexp  ('}')('.')(t.varname) e.e,
 		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false,
 		<Type t.varname> : {
-			'W' s.sub t.varname = "<GROUP name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP>" <ScanObjectExprWithExecs e.e>;
-			'N' s.sub t.varname = "<GROUP name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP>" <ScanObjectExprWithExecs e.e>;
+			'W' s.sub t.varname = "<GROUP_F name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
 			e.else = <MakeError ScanObjectExprWithExecs 'bad varname for GROUP-brackets'>;
 		};
+	
+	/* групповые скобки без имени */
+	('{')  e.oexp  ('}') e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\""   "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+
+		
 	
 	
 

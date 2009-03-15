@@ -117,6 +117,36 @@ try {
             loader->putValueToStack( theCommand, dynamic_cast<RefObject *>(gbropen) );
             *(loader->getCurrChain()) += gbropen;
     } else
+    if ( theCommand.compare(_L("VARIANTS")) == 0) {
+            ref_variant_krest *krest = new ref_variant_krest();
+            ref_variant_ffwd  *ffwd  = new ref_variant_ffwd();
+            #ifdef DEBUG
+            if (! dynamic_cast<RefGroupBracket *>(loader->getCurrChain()->second)) SYSTEMERROR("bad variant build");
+            #endif
+            krest->begbr = loader->getCurrChain()->second;
+            loader->putValueToStack( "VARIANTS-krest", krest); //  добавим позже в конец цепочки
+            loader->putValueToStack( "VARIANTS-vopr" , new ref_variant_vopr()); //  добавим позже в конец цепочки
+            loader->putValueToStack( "VARIANTS-ffwd" , ffwd);  //  добавим этот ffwd в следующем разделителе.
+            ref_variant_dot *dot = new ref_variant_dot();
+            dot->krest    = krest;
+            dot->nextffwd = ffwd;
+            *(loader->getCurrChain()) += dot;
+    } else
+    if ( theCommand.compare(_L("THE-VARIANT")) == 0) { //       | => x
+            ref_variant_vert  *vert  = new ref_variant_vert();
+            ref_variant_ffwd  *ffwd  = (ref_variant_ffwd *) loader->getValueFromStack( "VARIANTS-ffwd" );
+            ref_variant_ffwd  *ffwdnext = new ref_variant_ffwd();
+            loader->putValueToStack( "VARIANTS-ffwd" , ffwdnext); // для следующего разделителя
+            ref_variant_dot   *dot   = new ref_variant_dot ();
+
+            vert->vopr = (ref_variant_vopr *) loader->getValueFromStack("VARIANTS-vopr");
+            dot->krest = (ref_variant_krest *)loader->getValueFromStack("VARIANTS-krest");
+            dot->nextffwd = ffwdnext;
+
+            *(loader->getCurrChain()) += vert;
+            *(loader->getCurrChain()) += ffwd;
+            *(loader->getCurrChain()) += dot ;
+    } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
     } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
@@ -292,7 +322,20 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefGroupBracket *gbrclose =  dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
             *(loader->getCurrChain()) += new RefGroupBracket(gbrclose, 0);
     } else
+    if ( theCommand.compare(_L("VARIANTS")) == 0) {  //   | => x ?
+            ref_variant_krest *krest = (ref_variant_krest *)loader->extractValueFromStack("VARIANTS-krest");
+            ref_variant_vopr  *vopr  = (ref_variant_vopr *) loader->extractValueFromStack("VARIANTS-vopr" );
+            ref_variant_ffwd  *ffwd  = (ref_variant_ffwd *) loader->extractValueFromStack("VARIANTS-ffwd" );
+            ref_variant_vert  *vert  = (ref_variant_vert *) new ref_variant_vert();
+            vert->vopr = vopr;
 
+            *(loader->getCurrChain()) += vert;
+            *(loader->getCurrChain()) += ffwd;
+            *(loader->getCurrChain()) += krest;
+            *(loader->getCurrChain()) += vopr;
+    } else
+    if ( theCommand.compare(_L("THE-VARIANT")) == 0 ) {
+    } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
             *(loader->getCurrChain()) += new RefMatchingCutter();
     } else
