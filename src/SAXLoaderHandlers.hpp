@@ -149,8 +149,9 @@ class LoaderHeap {
 
         RefObject *extractValueFromStack(unistring name){
             std::stack<RefObject*>  &svalue   = stackstags[name];
+            //std::cout << "\n--stackstags["<<name<<"]("<< stackstags[name].size() <<")" << flush;
             #ifdef DEBUG
-            if (!svalue.size()) SYSTEMERROR("unexpected extracter query: " << name);
+            if (svalue.empty()) SYSTEMERROR("unexpected extracter query: " << name);
             #endif
             RefObject* value = svalue.top();
             //std::cout << "\n--extractValueFromStack["<<name<<"]::" << value->toString();
@@ -187,7 +188,7 @@ class LoaderHeap {
         RefChain* getCurrChain(){
             return stckChains.top();
         }
-        void putValueToStack(unistring name, RefObject* o){
+        RefObject* putValueToStack(unistring name, RefObject* o){
             /** /
             std::cout<<"\n++putValueToStack(";
             std::cout<<name;
@@ -197,6 +198,7 @@ class LoaderHeap {
             std::cout << ")";/**/
             stackstags[name].push(o);
             //std::cout << "\n"<< "++stackstags["<<name<<"].count="<< (stackstags[name].size()) <<"\n";
+            return o;
         }
         void setChars(unistring ch){
             currentchars = ch;

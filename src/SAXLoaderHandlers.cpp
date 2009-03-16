@@ -149,6 +149,10 @@ try {
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
     } else
+    if ( theCommand.compare(_L("NOT")) == 0) {
+            *(loader->getCurrChain()) += (RefNot*) (loader->putValueToStack("NOT",
+                                                                                    new RefNot()));
+    } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
             loader->currentCondition = new RefCondition();
     } else
@@ -338,6 +342,12 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
             *(loader->getCurrChain()) += new RefMatchingCutter();
+    } else
+    if ( theCommand.compare(_L("NOT")) == 0) {
+        #ifdef DEBUG
+        if (! dynamic_cast<RefNot *>(loader->getValueFromStack("NOT")) ) SYSTEMERROR("alarm!");
+        #endif
+        *(loader->getCurrChain()) += new RefNot((RefNot *)(loader->extractValueFromStack("NOT")));
     } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
             RefCondition* cond = loader->currentCondition;

@@ -53,7 +53,7 @@ class ref_variant_dot : public RefData/*, public IRefVar*/ { // IRefVar чтоб
 
         virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
         virtual unistring toString(){
-            return "o ";
+            return "-o- ";
             std::ostringstream ss;
             ss << " $o." << ((long)this);
             return ss.str();
@@ -107,7 +107,7 @@ class ref_variant_vopr : public RefData {
 	TResult  init(Session* s, RefData *&l); //
 	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
-    virtual unistring toString(){ return "?";};
+    virtual unistring toString(){ return "-?-";};
 
 };
 //----------  x  ------------
@@ -123,7 +123,7 @@ class ref_variant_krest : public RefData {
 	TResult  init(Session* s, RefData *&l); //
 	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
-    virtual unistring toString(){ return "x";};
+    virtual unistring toString(){ return "-x-";};
 
 };
 
@@ -145,11 +145,30 @@ class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
         virtual RefData* Copy(RefData *where=0){ return new RefGroupBracket("", where); };
         virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ return new RefGroupBracket(b, where); };
         */
-        virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpectef call"); };
-        virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ SYSTEMERROR("unexpectef call"); };
+        virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected call"); };
+        virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ SYSTEMERROR("unexpected call"); };
 
         virtual unistring toString(){ return (isOpen() ? "{" : ("}."+name) ); };
         virtual void forceback(Session *){ /** todo: очищать подсессию до открывающей скобки */};
+};
+
+
+
+//-------- $NOT -----------//
+class RefNot : public RefBracketBase {
+    public:
+        virtual ~RefNot(){};
+        RefNot(RefData *rp=0) : RefBracketBase(rp){ };
+        RefNot(RefNot *other, RefData *rp=0) : RefBracketBase(other, rp){ };
+
+        virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected call"); };
+        virtual RefData* Copy(RefBracketBase*, RefData *rp=0)   { SYSTEMERROR("unexpected call"); };
+
+        virtual unistring toString(){ return "$not "; };
+        TResult  init(Session *, RefData *&l){ return (isOpen() ? GO : FAIL); };
+        TResult  back(Session *, RefData *&l, RefData *&r){ return (isOpen() ? SUCCESS : BACK); };
+        bool operator==(RefData&rd){ SYSTEMERROR("unexpected call"); return false; };
+
 };
 
 #endif // DATASTRUCTS_H_INCLUDED

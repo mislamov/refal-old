@@ -113,6 +113,8 @@ ScanLeftPart_ { e.e = <PProut "\nScanLeftPart: " <DeScob e.e>><ScanLeftPart_ e.e
 ScanLeftPart {
 	=;
 
+	"$not" e.lp = "<NOT>" <ScanLeftPart e.lp> "</NOT>";
+
 	e.shablon (',') e.ifs =
 			<ScanObjectExprWithoutExecs e.shablon>
 			<ScanIfs (',') e.ifs>;
@@ -158,7 +160,7 @@ TransformSpecificatorsInObjectExprWithoutExecs {
 	e.all : e.1 "<GROUP_F name=\"" e.gname "\">" e.2 "</GROUP_F>" e.3,
 		<NotHas "</GROUP_F>" e.2> : true,
 		<NotHas "<GROUP_F name=\"" e.2> : true,
-		<Print <IsVarName e.gname>> : true,
+		<IsVarName e.gname> : true,
 		e.2 : e.4 "|" e.5  
 		=  	<TransformSpecificatorsInObjectExprWithoutExecs   
 				e.1 
@@ -464,7 +466,7 @@ Scan{
 		<IsSeparatorChar s.1> : true	=	"$separator" ('.') "$separator" <Scan e.e>;
 
 
-
+	'$not' e.all = "$not" <Scan e.all>;
 	'::=' e.all = (':')(':')('=') <Scan e.all>;
 	'::' e.all = ('/') <Scan e.all>;
 	' '  e.all = <Scan e.all>;
