@@ -147,6 +147,13 @@ try {
             *(loader->getCurrChain()) += ffwd;
             *(loader->getCurrChain()) += dot ;
     } else
+    if ( theCommand.compare(_L("REPEAT")) == 0 ) {
+        infint min = str2infint(toWstring(attributes.getValue("from")));
+        infint max = str2infint(toWstring(attributes.getValue("to")));
+        ref_repeater *repeater = new ref_repeater(min, max);
+        loader->putValueToStack( "REPEAT" , repeater);
+        *(loader->getCurrChain()) += repeater;
+    } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
     } else
     if ( theCommand.compare(_L("NOT")) == 0) {
@@ -339,6 +346,10 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             *(loader->getCurrChain()) += vopr;
     } else
     if ( theCommand.compare(_L("THE-VARIANT")) == 0 ) {
+    } else
+    if ( theCommand.compare(_L("REPEAT")) == 0 ) {
+        ref_repeater *repeater = (ref_repeater *)loader->extractValueFromStack( "REPEAT" );
+        *(loader->getCurrChain()) += new ref_repeater(repeater);
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
             *(loader->getCurrChain()) += new RefMatchingCutter();

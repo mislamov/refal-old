@@ -63,7 +63,7 @@ class RefVariable_t : public RefVariable {
 /*************************
 *   Скобки
 **************************/
-class RefStructBracket : public RefBracketBase {
+class RefStructBracket : public RefBracketBase {  ///?: public IRefVarStacked,
     public:
         RefStructBracket(RefData* rp=0);
         RefStructBracket(RefStructBracket *br, RefData* rp=0);

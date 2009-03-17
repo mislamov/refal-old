@@ -1,15 +1,15 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-//#define DEBUG
+#define DEBUG
 
 #define _UNICODE
 /****************************************************************************************
-* CORE - СЃРµСЂРґС†РµРІРёРЅР° СЂРµС„Р°Р»-РјР°С€РёРЅС‹
-* core С…СЂР°РЅРёС‚ РѕРїРёСЃР°РЅРёСЏ РІРЅСѓС‚СЂРµРЅРЅРёС… С‚РёРїРѕРІ РґР°РЅРЅС‹С…, РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РЅР° СѓСЂРѕРІРЅРµ СЂР°Р±РѕС‚С‹ СЃ Р±Р°Р№С‚Р°РјРё
-*     СЋРЅРёРєРѕРґ-СЃРёРјРІРѕР»С‹
-*     Р±РµСЃРєРѕРЅРµС‡РЅС‹Рµ С†РµР»С‹Рµ Рё РІРµС‰РµСЃС‚РІРµРЅРЅС‹Рµ
-*     Рё РґСЂ.
+* CORE - сердцевина рефал-машины
+* core хранит описания внутренних типов данных, используемых на уровне работы с байтами
+*     юникод-символы
+*     бесконечные целые и вещественные
+*     и др.
 *****************************************************************************************/
 
 #ifdef DEBUG
@@ -24,9 +24,14 @@
         };
 #else
     #define SYSTEMERROR(msg) { \
-        std::cout << "\n\n######## SYSTEM ERROR ########:: " << msg << "\n\n" << std::flush; \
+        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+        std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         abort(); \
         };
+    /*#define SYSTEMERROR(msg) { \
+        std::cout << "\n\n######## SYSTEM ERROR ########:: " << msg << "\n\n" << std::flush; \
+        abort(); \
+        };*/
 
     #define LOG(msg) {}
 #endif
@@ -49,13 +54,20 @@ typedef std::string  unistring;
 
 typedef long            infint;
 typedef float           infreal;
-typedef int             ThisId;     // С‚РёРї РґР»СЏ С…СЂР°РЅРµРЅРёСЏ  РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° РєР°Р¶РґРѕРіРѕ РґР°С‚Р°С‚Р°Р№РїР°
+typedef int             ThisId;     // тип для хранения  идентификатора каждого дататайпа
 
+infint str2infint(unistring si);  // строку в число
 
 const unistring EmptyUniString = _L("");
 const unistring DefaultVarName = _L("");
 
-typedef enum { GO, BACK, FAIL, SUCCESS, ERROR, FORCEBACK } TResult; // СЂРµР·СѓР»СЊС‚Р°С‚ РїРѕРґРїСЂРѕС†РµСЃСЃР° СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёСЏ
-
+typedef enum { GO, BACK, FAIL, SUCCESS, ERROR, FORCEBACK } TResult; // результат подпроцесса сопоставления
+typedef enum {
+    mERROR,
+    mNEXT,
+    mPRED,
+    mOTHER_next,
+    mOTHER_pred
+} TMessage; // сообщения для nwxt-pred-point
 
 #endif // REF_CORE_H_INCLUDED

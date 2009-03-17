@@ -199,7 +199,7 @@ class RefTemplateBridgeTmpl;
 
 
 // мосты между лев.частью и внешним шаблоном. Со стороны левой части
-class RefTemplateBridgeVar : public RefBracketBase  {
+class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
         unistring name;
     public:
         RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
@@ -239,7 +239,7 @@ class RefTemplateBridgeVar : public RefBracketBase  {
 };
 
 // мосты между лев.частью и внешним шаблоном. Со стороны внешнего шаблона
-class RefTemplateBridgeTmpl : public RefBracketBase {
+class RefTemplateBridgeTmpl : public RefBracketBase, public IRefVarStacked {
     public:
         RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){};
         RefTemplateBridgeTmpl(RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){};
@@ -257,6 +257,7 @@ class RefTemplateBridgeTmpl : public RefBracketBase {
             SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");
         };
 
+        unistring getName(){ SYSTEMERROR("unexpected call"); };
 };
 
 #endif // FUNCTION_H_INCLUDED

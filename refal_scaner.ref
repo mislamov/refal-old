@@ -217,6 +217,8 @@ IsWordNumbDot {
 ScanObjectExprWithExecs_ { e.e = <PProut "\nScanObjectExprWithExecs: " e.e><ScanObjectExprWithExecs_ e.e>; }
 ScanObjectExprWithExecs {
 	=;
+
+	"$separator" e.e = <ScanObjectExprWithExecs e.e>;
 	
 	/* отсечение */
 	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
@@ -233,18 +235,67 @@ ScanObjectExprWithExecs {
 			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
 			e.else = <MakeError ScanObjectExprWithExecs 'bad varname for GROUP-brackets'>;
 		};
-	
+
+	/* ВАРИАНТЫ */
+	('{')  e.oexp  ('}')"["(e.from)".."(e.to)"]"('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname "\">" 
+		"<REPEAT from=\"" e.from "\" to=\"" e.to "\">" 
+			"<GROUP_F name=\""  <GetRandomName> "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+	('{')  e.oexp  ('}')"["(e.from)"..." "]" ('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname "\">" 
+		"<REPEAT from=\"" e.from "\" to=\"inf\">" 
+			"<GROUP_F name=\""  <GetRandomName> "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+	('{')  e.oexp  ('}')"[" "..."(e.to)"]" ('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname "\">" 
+		"<REPEAT from=\"0\" to=\""e.to"\">" 
+			"<GROUP_F name=\"" <GetRandomName>  "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+	('{')  e.oexp  ('}')"[" (e.fromto)"]" ('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname  "\">" 
+		"<REPEAT from=\""e.fromto"\" to=\""e.fromto"\">" 
+			"<GROUP_F name=\"" <GetRandomName>  "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+
+
 	/* групповые скобки без имени */
 	('{')  e.oexp  ('}') e.e,
 		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\""   "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+	=	"<GROUP_F name=\""  <GetRandomName>  "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
 
 		
 	
 	
-
-	"$separator" e.e = <ScanObjectExprWithExecs e.e>;
 
 	/* Скобки */
 	('(') e.inside (')') e.next,
@@ -466,6 +517,10 @@ Scan{
 		<IsSeparatorChar s.1> : true	=	"$separator" ('.') "$separator" <Scan e.e>;
 
 
+	'[' e.all = "[" <Scan e.all>;
+	']' e.all = "]" <Scan e.all>;
+	'...' e.all = "..." <Scan e.all>;
+	'..'  e.all = ".."  <Scan e.all>;
 	'$not' e.all = "$not" <Scan e.all>;
 	'::=' e.all = (':')(':')('=') <Scan e.all>;
 	'::' e.all = ('/') <Scan e.all>;
@@ -658,3 +713,11 @@ FindAndUseBlock {
 			};
 }
 
+
+GetRandomName {
+	= <Replace  (' :') <Time><Symb <Step>>>;
+}
+Replace { 
+	(e.A s.1 e.B) e.2 s.1 e.3 = <Replace (e.A s.1 e.B) e.2 e.3>;
+	(e.A) e.e = e.e; 
+}

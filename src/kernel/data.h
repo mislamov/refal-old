@@ -127,17 +127,17 @@ class RefalNameSpace {
 };
 
 // Абстрактный интерфейс-класс - для всего, что в матчинге считается переменной
-class IRefVar {
+class IRefVarStacked {
     public:
         virtual unistring getName() = 0;
-        virtual void setName(unistring name) = 0;
+        //virtual void setName(unistring name) = 0;
 };
 
 
 // Абстрактный класс - предок всех открытых переменных языка (простых и скобочных)
-class RefVariableBase : public IRefVar {
+class RefVariableBase : public IRefVarStacked {
     public:
-        RefVariableBase() : IRefVar() { };
+        RefVariableBase() : IRefVarStacked() { };
 };
 
 class RefVariable : public RefVariableBase, public RefData , public RefalNameSpace { // Простая переменная
@@ -202,7 +202,7 @@ class RefSmplVarType : public RefVariable {
 class RefVarTable : public std::map<unistring, RefVariable*>{};
 
 
-class RefBracketBase : public IRefVar, public RefData {
+class RefBracketBase : /*public IRefVarStacked, */ public RefData {
     protected:
         bool        is_opened; // true = begin- ; false = end-
 
@@ -222,8 +222,8 @@ class RefBracketBase : public IRefVar, public RefData {
         virtual RefData* Copy(RefBracketBase *b, RefData *rp=0)=0;
         virtual RefData* Copy(RefData *rp=0)=0;
 
-        virtual unistring getName(){ SYSTEMERROR("alarm!"); };
-        virtual void setName(unistring ){ SYSTEMERROR("alarm!"); };
+        /*virtual unistring getName(){ SYSTEMERROR("alarm!"); };
+        virtual void setName(unistring ){ SYSTEMERROR("alarm!"); };*/
 
 };
 

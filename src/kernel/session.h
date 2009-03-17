@@ -57,16 +57,20 @@ class SessionOfMaching  : public RefObject {
 
                 std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
                 //std::stack<RefData *>	        StackOfGroupSkob;	    // Стек указателей на ПЕРЕДначало ОВ для группы - а надо ли
-                std::stack<DataForRepeater *>	StackOfRepeatSkob;	    // Стек итераций повторителей
-                std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
+                //std::stack<DataForRepeater *>	StackOfRepeatSkob;	    // Стек итераций повторителей
+                //std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
                 std::stack<ref_variant_vert*> StackOfVariants;	        // Стек удачно сопоставленных вариантов (ссылки на границы последнего варианта)
 
+                std::stack<infint> StackOfRepeater;	        // Стек активных повторителей
+                std::stack<infint> StackOfRepeaterDoned;	    // Стек удачно сопоставленных повторителей
+
+                RefData *activeTemplate; // последнее активное выражение шаблона в сопоставлении (использовать вне matching ОПАСНО!)
                 RefTemplateBridgeVar *templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
 
 
                 TVarBodyTable varTable;		          // Таблица переменных  имя -> ссылка на элемент стека
                 std::stack<TVarBody*> StackOfSopost; // Стек хранителей состояний шаблонов
-                RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
+                //RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
 
                 // создает и возвращает субсессию (точку восстановления)
                 SessionOfMaching(RefData *argLeft, RefData *argRight){
@@ -75,7 +79,7 @@ class SessionOfMaching  : public RefObject {
                     isfar = false;
                     pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
                     StackOfDataSkob.push(dynamic_cast<RefData_DOT *>(pole_zrenija->second));
-                    StopBrackForceVar = 0;
+                    //StopBrackForceVar = 0;
                     templReturnBackPoint = 0;
                 }
 
@@ -85,7 +89,7 @@ class SessionOfMaching  : public RefObject {
                     isfar = true;
                     templReturnBackPoint = 0;
                     pole_zrenija = pz;
-                    StopBrackForceVar = 0;
+                    //StopBrackForceVar = 0;
                 }
 
                 // очищает точку восстановления с удалением мусора
@@ -115,6 +119,9 @@ class Session : public RefObject {
   public:
     int fcalls;
     unsigned long step;
+
+    TResult result_sost;     // последний статус в сопоставлении. Внешнее изменение: ref_variant_dot::pred_point
+    TMessage message4nextpred; // через эту переменную методы init и back могут передавать указание методам next_point и pred_point
 
     // данные
     std::map <unistring, RefModuleBase*>  modules;  //  подгруженные модули
@@ -168,7 +175,7 @@ class Session : public RefObject {
 
 
 
-
+/*
 class DataForRepeater {
 public:
     RefData *owner; //?
@@ -181,6 +188,6 @@ public:
 
     DataForRepeater(RefData *o);
     std::string toString(){ return ("@DataForRepeater:owner=" + owner->toString()); }
-};
+};*/
 
 #endif

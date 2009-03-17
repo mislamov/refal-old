@@ -13,8 +13,8 @@ class ref_variant_krest;
 class ref_variant_vert;
 class ref_variant_vopr;
 
-//---------- [  ] ----------
-class RefData_DOT : public RefBracketBase { // begin- Рё end-
+//---------- $[  $] ----------
+class RefData_DOT : public IRefVarStacked, public RefBracketBase { // begin- Рё end-
 public:
 	//~RefData_DOT(){ if(pred)next->pred=pred; if(pred)pred->next=next; };
 	RefData_DOT(RefData* rp = 0) : RefBracketBase(rp){};
@@ -25,6 +25,8 @@ public:
 
 	virtual RefData*  next_term( ThisId var_id, Session *s );
 	virtual RefData*  pred_term( ThisId var_id, Session *s );
+
+	unistring getName(){ SYSTEMERROR("unexpected call"); }
 
     virtual RefData* Copy(RefData *where=0){ return new RefData_DOT(where); };
     virtual RefData* Copy(RefBracketBase *b, RefData *where=0){
@@ -40,7 +42,7 @@ public:
 
 
 //-----------  o  -----------
-class ref_variant_dot : public RefData/*, public IRefVar*/ { // IRefVar чтоб срабаытвал restoreTempl и saveTempl
+class ref_variant_dot : public RefData/*, public IRefVarStacked*/ { // IRefVarStacked чтоб срабаытвал restoreTempl и saveTempl
     public:
         ref_variant_ffwd  *nextffwd;
         ref_variant_krest *krest;
@@ -50,6 +52,7 @@ class ref_variant_dot : public RefData/*, public IRefVar*/ { // IRefVar чтоб
         TResult	   init	      (Session *s, RefData *&l);
         TResult	   back	      (Session *s, RefData *&l, RefData *&r);
         bool operator==(RefData&rd);
+        void forceback(Session* s){};
 
         virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
         virtual unistring toString(){
@@ -75,7 +78,7 @@ class ref_variant_vert : public RefData {
         void forceback (Session *s);
 
 	TResult  init(Session* s, RefData *&l); //
-	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
+	TResult  back(Session* s, RefData *&l, RefData *&r); //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
     virtual unistring toString(){ return " |";};
 
@@ -89,6 +92,7 @@ class ref_variant_ffwd : public RefData {
         bool operator==(RefData&rd);
 
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
+    void forceback(Session* s){};
     virtual unistring toString(){
         return "=>";
         std::ostringstream ss;
@@ -105,9 +109,10 @@ class ref_variant_vopr : public RefData {
         bool operator==(RefData&rd);
 
 	TResult  init(Session* s, RefData *&l); //
-	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
+	TResult  back(Session* s, RefData *&l, RefData *&r); //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
     virtual unistring toString(){ return "-?-";};
+    void forceback(Session* s);
 
 };
 //----------  x  ------------
@@ -124,13 +129,14 @@ class ref_variant_krest : public RefData {
 	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
     virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
     virtual unistring toString(){ return "-x-";};
+    void forceback(Session* s){};
 
 };
 
 
 ////////////////  {o      | => o      | => o      | => x ?} ///////////////////
 //---------- {  } ----------
-class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
+class RefGroupBracket : public RefBracketBase, public IRefVarStacked, public RefalNameSpace {
     public:
         virtual ~RefGroupBracket(){};
         RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) { RefalNameSpace::setName(name); }; // оптимизировать
@@ -155,7 +161,7 @@ class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
 
 
 //-------- $NOT -----------//
-class RefNot : public RefBracketBase {
+class RefNot : public RefBracketBase, public IRefVarStacked { // сохр сост IRefVarStacked нужно для forceback (стопор для $not[)
     public:
         virtual ~RefNot(){};
         RefNot(RefData *rp=0) : RefBracketBase(rp){ };
@@ -164,11 +170,60 @@ class RefNot : public RefBracketBase {
         virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected call"); };
         virtual RefData* Copy(RefBracketBase*, RefData *rp=0)   { SYSTEMERROR("unexpected call"); };
 
-        virtual unistring toString(){ return "$not "; };
-        TResult  init(Session *, RefData *&l){ return (isOpen() ? GO : FAIL); };
-        TResult  back(Session *, RefData *&l, RefData *&r){ return (isOpen() ? SUCCESS : BACK); };
+        virtual unistring toString(){
+            std::ostringstream ss;
+            ss << "$not" << (isOpen()?"[":"]") << " ";
+            return ss.str();
+        };
+        TResult  init(Session *s, RefData *&l);
+        TResult  back(Session *, RefData *&l, RefData *&r);
+        RefData*  next_point (ThisId id, Session*s);
+        RefData*  pred_point (ThisId id, Session*s);
+
+        void forceback(Session* s);
+
         bool operator==(RefData&rd){ SYSTEMERROR("unexpected call"); return false; };
+        unistring getName(){ SYSTEMERROR("unexpected call"); return EmptyUniString; };
+};
+
+
+//-------- [...] -----------//  варианты. В ОВ выглядит так:    { [ ... ] }.vname
+class ref_repeater : public RefBracketBase {
+        infint min; /// todo: экономить. вообще используются толька в ]
+        infint max;
+    public:
+        virtual ~ref_repeater(){};
+
+        ref_repeater(infint tfrom, infint tto, RefData *rp=0) : RefBracketBase(rp) { min=tfrom; max=tto; };
+        ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
+        //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
+        TResult  init(Session *, RefData *&l);
+        TResult  back(Session *, RefData *&l, RefData *&r);
+        RefData*  next_point (ThisId id, Session*);
+        RefData*  pred_point (ThisId id, Session*);
+
+        bool operator==(RefData&rd){ SYSTEMERROR("unexpected call"); };
+
+        virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected call"); };
+        virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ SYSTEMERROR("unexpected call"); };
+
+        infint getMin(){ return isOpen()?min: ((ref_repeater*)other)->getMin(); };
+        infint getMax()  { return isOpen()?max  : ((ref_repeater*)other)->getMax(); };
+
+        virtual unistring toString(){
+            if (isOpen()) {
+                return "[" ;
+            }
+            std::ostringstream ss;
+            ss << "][" << getMin() << ".." << getMax() << "]";
+            return ss.str();
+        };
+        virtual void forceback(Session *){ /** todo: */};
+
 
 };
+
+
+
 
 #endif // DATASTRUCTS_H_INCLUDED
