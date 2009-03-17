@@ -63,7 +63,7 @@ class RefVariable_t : public RefVariable {
 /*************************
 *   Скобки
 **************************/
-class RefStructBracket : public RefBracketBase {  ///?: public IRefVarStacked,
+class RefStructBracket : public RefBracketBase, public IRefVarStacked {  // IRefVarStacked нужно для back(l, r) - работает с getStackOfDataSkob
     public:
         RefStructBracket(RefData* rp=0);
         RefStructBracket(RefStructBracket *br, RefData* rp=0);
@@ -90,6 +90,8 @@ class RefStructBracket : public RefBracketBase {  ///?: public IRefVarStacked,
             #endif
             return new RefStructBracket((RefStructBracket *)b, rp);
         };
+
+        unistring getName(){ SYSTEMERROR("unexpected call"); };
 
 };
 

@@ -27,7 +27,7 @@ bool RefStructBracket::operator ==(RefData &rd) {
 };
 
 TResult RefStructBracket::init(Session* s, RefData *&l) {
-    move_to_next_term(l,myid(),s);
+    move_to_next_term(l,0/*myid()*/,s);
     RefStructBracket* aux = dynamic_cast<RefStructBracket *>(l);
     if (!aux || (isOpen()!=aux->isOpen()))  return BACK; //   )  (
     if (isOpen()) {  //    (  (
@@ -57,7 +57,7 @@ TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
     // )
     #ifdef DEBUG
     if (! dynamic_cast<RefBracketBase *>(r) ){
-        SYSTEMERROR("may be unnormal situation");
+        SYSTEMERROR("may be unnormal situation: r = " << r->toString());
     }
     #endif
     s->getStackOfDataSkob()->push( dynamic_cast<RefBracketBase*>( r ) );
@@ -104,10 +104,10 @@ bool RefExecBracket::operator ==(RefData &rd) {
 
 TResult RefExecBracket::init(Session* s, RefData *&l) {
     SYSTEMERROR("RefExecBracket::init! Exec bracket can't to match!");
-    move_to_next_term(l,myid(),s);
+    move_to_next_term(l,0/*myid()*/,s);
     RefData*  a   = l;
     RefExecBracket* aux = dynamic_cast<RefExecBracket *>(a);
-//    if (a)  a->drop(myid()); //   удаляет старую ссылку если создатель
+//    if (a)  a->drop(0/*myid()*/); //   удаляет старую ссылку если создатель
     if (!aux || (is_opened!=aux->is_opened))  return BACK; //   )  (
     if (is_opened) {  //    (  (
         s->getStackOfDataSkob()->push( aux->other );
@@ -140,7 +140,7 @@ TResult RefExecBracket::back(Session* s, RefData *&l, RefData *&r) {
 
 
 TResult  RefVariable_s::init(Session *s, RefData *&a) {
-    move_to_next_term(a, myid(), s);
+    move_to_next_term(a, 0/*myid()*/, s);
     if (! dynamic_cast<RefBracketBase *>(a) ){
         return GO;
     } else {
@@ -156,7 +156,7 @@ TResult  RefVariable_s::back(Session *s, RefData *&l, RefData *&r) {
 
 
 TResult  RefVariable_t::init(Session *s, RefData *&a) {
-    move_to_next_term(a, myid(), s);
+    move_to_next_term(a, 0/*myid()*/, s);
     if (dynamic_cast<RefData_DOT *>(a) ){
         return BACK;
     } else {
@@ -193,10 +193,10 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
 
 
 
-        move_to_next_term(r, myid(), s);
+        move_to_next_term(r, 0/*myid()*/, s);
         r = r->endOfTerm();
     } else {
-        move_to_next_term(r, myid(), s);
+        move_to_next_term(r, 0/*myid()*/, s);
         l = r->beginOfTerm();
         r = r->endOfTerm();
     }
@@ -217,10 +217,10 @@ TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
     if (!l) return BACK;
     if (l==r){
         l = 0;
-        r = move_to_pred_point(r, myid(), s);
+        r = move_to_pred_point(r, 0/*myid()*/, s);
         return GO;
     }
-    r = move_to_pred_point(r, myid(), s);
+    r = move_to_pred_point(r, 0/*myid()*/, s);
     //SYSTEMERROR("not yet");
     return GO;
 };
@@ -252,6 +252,7 @@ unistring vectorToString(RefData *f, RefData *g){
     }
     #endif
     if (!f) {
+        #ifdef DEBUG
         a+= "$null, ";
         if (g){
             a+=" after "+g->toString();
@@ -259,6 +260,7 @@ unistring vectorToString(RefData *f, RefData *g){
         } else {
             a+=" $null";
         }
+        #endif
     } else {
 
         while (f && (!g || f!=g->next)) {
@@ -272,10 +274,8 @@ unistring vectorToString(RefData *f, RefData *g){
                     std::cout << a << std::flush;
                     std::cout << "\n~f=" << (f?f->toString():"@null")  << std::flush;
                     std::cout << "\n~f->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush;
-//return a;
                     #endif
                     SYSTEMERROR(" next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
-                    //LOG("WANING!!!  next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
                 };
         };
 
@@ -284,10 +284,6 @@ unistring vectorToString(RefData *f, RefData *g){
                 SYSTEMERROR("f!=g after vectorToString! f=" << f << " and g=" << g->toString());
         };
         #endif
-    }
-    if(g){
-//            a += " -> ";
-//            a += (g->next?g->next->toString():"$null");
     }
     return a;
 }

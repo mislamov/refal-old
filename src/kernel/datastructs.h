@@ -14,7 +14,7 @@ class ref_variant_vert;
 class ref_variant_vopr;
 
 //---------- $[  $] ----------
-class RefData_DOT : public IRefVarStacked, public RefBracketBase { // begin- Р С‘ end-
+class RefData_DOT : public IRefVarStacked, public RefBracketBase { // begin- Рё end-
 public:
 	//~RefData_DOT(){ if(pred)next->pred=pred; if(pred)pred->next=next; };
 	RefData_DOT(RefData* rp = 0) : RefBracketBase(rp){};
@@ -42,7 +42,7 @@ public:
 
 
 //-----------  o  -----------
-class ref_variant_dot : public RefData/*, public IRefVarStacked*/ { // IRefVarStacked С‡С‚РѕР± СЃСЂР°Р±Р°С‹С‚РІР°Р» restoreTempl Рё saveTempl
+class ref_variant_dot : public RefData/*, public IRefVarStacked*/ { // IRefVarStacked чтоб срабаытвал restoreTempl и saveTempl
     public:
         ref_variant_ffwd  *nextffwd;
         ref_variant_krest *krest;
@@ -139,14 +139,14 @@ class ref_variant_krest : public RefData {
 class RefGroupBracket : public RefBracketBase, public IRefVarStacked, public RefalNameSpace {
     public:
         virtual ~RefGroupBracket(){};
-        RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) { RefalNameSpace::setName(name); }; // РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ
+        RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) { RefalNameSpace::setName(name); }; // оптимизировать
         RefGroupBracket(RefGroupBracket *oth, RefData *rp) : RefBracketBase(oth, rp) { RefalNameSpace::setName(oth->name); };
         //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
         TResult  init(Session *, RefData *&l);
         TResult  back(Session *, RefData *&l, RefData *&r);
         bool operator==(RefData&rd){ return false; };
 
-        virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo: РѕРїС‚РёРёР·РёСЂРѕРІР°С‚СЊ
+        virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo: оптиизировать
         /*
         virtual RefData* Copy(RefData *where=0){ return new RefGroupBracket("", where); };
         virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ return new RefGroupBracket(b, where); };
@@ -155,41 +155,17 @@ class RefGroupBracket : public RefBracketBase, public IRefVarStacked, public Ref
         virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ SYSTEMERROR("unexpected call"); };
 
         virtual unistring toString(){ return (isOpen() ? "{" : ("}."+name) ); };
-        virtual void forceback(Session *){ /** todo: РѕС‡РёС‰Р°С‚СЊ РїРѕРґСЃРµСЃСЃРёСЋ РґРѕ РѕС‚РєСЂС‹РІР°СЋС‰РµР№ СЃРєРѕР±РєРё */};
+        virtual void forceback(Session *){ /** todo: очищать подсессию до открывающей скобки */};
 };
 
 
 
-//-------- $NOT -----------//
-class RefNot : public RefBracketBase, public IRefVarStacked { // СЃРѕС…СЂ СЃРѕСЃС‚ IRefVarStacked РЅСѓР¶РЅРѕ РґР»СЏ forceback (СЃС‚РѕРїРѕСЂ РґР»СЏ $not[)
-    public:
-        virtual ~RefNot(){};
-        RefNot(RefData *rp=0) : RefBracketBase(rp){ };
-        RefNot(RefNot *other, RefData *rp=0) : RefBracketBase(other, rp){ };
-
-        virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected call"); };
-        virtual RefData* Copy(RefBracketBase*, RefData *rp=0)   { SYSTEMERROR("unexpected call"); };
-
-        virtual unistring toString(){
-            std::ostringstream ss;
-            ss << "$not" << (isOpen()?"[":"]") << " ";
-            return ss.str();
-        };
-        TResult  init(Session *s, RefData *&l);
-        TResult  back(Session *, RefData *&l, RefData *&r);
-        RefData*  next_point (ThisId id, Session*s);
-        RefData*  pred_point (ThisId id, Session*s);
-
-        void forceback(Session* s);
-
-        bool operator==(RefData&rd){ SYSTEMERROR("unexpected call"); return false; };
-        unistring getName(){ SYSTEMERROR("unexpected call"); return EmptyUniString; };
-};
 
 
-//-------- [...] -----------//  РІР°СЂРёР°РЅС‚С‹. Р’ РћР’ РІС‹РіР»СЏРґРёС‚ С‚Р°Рє:    { [ ... ] }.vname
+
+//-------- [...] -----------//  варианты. В ОВ выглядит так:    { [ ... ] }.vname
 class ref_repeater : public RefBracketBase {
-        infint min; /// todo: СЌРєРѕРЅРѕРјРёС‚СЊ. РІРѕРѕР±С‰Рµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ С‚РѕР»СЊРєР° РІ ]
+        infint min; /// todo: экономить. вообще используются толька в ]
         infint max;
     public:
         virtual ~ref_repeater(){};

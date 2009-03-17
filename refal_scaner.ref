@@ -113,8 +113,6 @@ ScanLeftPart_ { e.e = <PProut "\nScanLeftPart: " <DeScob e.e>><ScanLeftPart_ e.e
 ScanLeftPart {
 	=;
 
-	"$not" e.lp = "<NOT>" <ScanLeftPart e.lp> "</NOT>";
-
 	e.shablon (',') e.ifs =
 			<ScanObjectExprWithoutExecs e.shablon>
 			<ScanIfs (',') e.ifs>;
@@ -218,7 +216,8 @@ ScanObjectExprWithExecs_ { e.e = <PProut "\nScanObjectExprWithExecs: " e.e><Scan
 ScanObjectExprWithExecs {
 	=;
 
-	"$separator" e.e = <ScanObjectExprWithExecs e.e>;
+	"$separator"	e.e = 	<ScanObjectExprWithExecs e.e>;
+	"$not"		e.e = 	"<NOT/>"  <ScanObjectExprWithExecs e.e>;
 	
 	/* отсечение */
 	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
@@ -417,16 +416,32 @@ ScanIfs {
 		false e.left-part (',') e.ifs,
 		<ScanLeftPart e.left-part>   : e.lpscaned,
 		<ExistError  e.lpscaned> : {
-				false = "<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
+				false, e.rpscaned : "<NOT/>" e.rpscanednext
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
 					<ScanIfs (',') e.ifs>;
+					
+				false, e.lpscaned : "<NOT/>" e.lpscanednext
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>"
+					<ScanIfs (',') e.ifs>;
+					
+				false
+				= 	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
+					<ScanIfs (',') e.ifs>;
+					
 				true  = <MakeError ScanIfs e.lpscaned>;
 		};
 
 		false e.left-part,
 		<ScanLeftPart e.left-part>   : e.lpscaned,
 		<ExistError  e.lpscaned> : {
-				false = "<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
-				true  = <MakeError ScanIfs e.lpscaned>;
+				false, e.rpscaned : "<NOT/>" e.rpscanednext 
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
+				false, e.lpscaned : "<NOT/>" e.lpscanednext 
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>";
+				false
+				= 	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
+				true  
+				=	<MakeError ScanIfs e.lpscaned>;
 		};
 
 		true  e.next	=   <MakeError ScanIfs e.rpscaned>;
@@ -521,6 +536,8 @@ Scan{
 	']' e.all = "]" <Scan e.all>;
 	'...' e.all = "..." <Scan e.all>;
 	'..'  e.all = ".."  <Scan e.all>;
+	'$NOT' e.all = "$not" <Scan e.all>;
+	'$Not' e.all = "$not" <Scan e.all>;
 	'$not' e.all = "$not" <Scan e.all>;
 	'::=' e.all = (':')(':')('=') <Scan e.all>;
 	'::' e.all = ('/') <Scan e.all>;
@@ -686,7 +703,7 @@ FindAndUseBlock {
 	()("Template")(e.name)e.tmpl (';') e.next,
 		<ScanTemplate (e.name)e.tmpl> : e.stp,
 		<ExistError e.stp> : false
-			= 
+			=
 				"<TEMPLATE name=\""e.name"\">"  e.stp "</TEMPLATE>"
 				<FindAndUseBlock  () e.next> ;
 

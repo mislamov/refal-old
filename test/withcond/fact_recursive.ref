@@ -5,5 +5,5 @@ $ENTRY Fact {
             }
 
 $ENTRY Go {
-= <Prout <Fact 10>>;
+= <Prout '10! = ' <Fact 10>>;
           }

@@ -141,7 +141,7 @@ class Session : public RefObject {
     void  SaveTemplItem   (RefData* var, RefData* l, RefData* r); // если аргумент - переменная, то добавляем ее состояние
     void  RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ); // извлекаем последнее сохраненное сост-е
 
-    bool  matching(RefChain *tmplate, RefData*l, RefData*r, bool isdemaching=false); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
+    bool  matching(RefChain *tmplate, RefData*l, RefData*r, bool isdemaching, bool isRevers); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 
     std::stack<TVarBody*> *getCurrentSopostStack(){
         #ifdef DEBUG

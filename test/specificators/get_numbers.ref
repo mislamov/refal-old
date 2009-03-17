@@ -1,5 +1,5 @@
 $ENTRY Go {
-	= <Prout 'Enter...'><Card><Run <Mount 'rbc.html'>><Card>;
+	= <Prout 'Enter...'><Card><Run <Mount 'rbc.html'>>;
 }
 
 Template nonum ::= {

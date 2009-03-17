@@ -4,7 +4,7 @@
 /* автор Ермолаев Д.С. www.icreator.ru */
 /* ввод одного слова с консоли */
 
-$ENTRY Go { =   <Prout <Question ('plohaja') >>; };
+$ENTRY Go { =   <Prout 'plohaja -> ' <Question ('plohaja') >>; };
 
 /* таблица1. слова, которые имеют неправильное окончание */
 WordsMissTable { =

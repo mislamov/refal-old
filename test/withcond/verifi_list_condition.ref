@@ -9,7 +9,7 @@ Run {
 
 		=	<Prout 'abc = 'e.abc'    b = ' s.b>;
 
-	e.else = ;
+	e.else = <Prout 'success'>;
 }
 
 Verifi {

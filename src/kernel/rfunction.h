@@ -133,6 +133,7 @@ public:
 class RefCondition : public RefConditionBase {
         RefChain *rightPart;
         RefChain *leftPart;
+        bool isReverse; // признак условия $NOT
     public:
         RefObject *own;  // RefCondition or RefFunctionBase
 
@@ -143,12 +144,12 @@ class RefCondition : public RefConditionBase {
         virtual TResult  init(Session* , RefData *&); //
         virtual TResult  back(Session* , RefData *&, RefData *&); //
 
-        RefCondition(RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system = false; }
+        RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r){ isReverse = withnot; rightPart = leftPart = 0; is_system = false; }
         //RefCondition(RefObject *owner, RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system = false; own = owner; }
         virtual ~RefCondition(){};
         unistring toString(){
             std::ostringstream s;
-            s << " @Condition/" <<  (dynamic_cast<RefUserFunction *>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
+            s << " @Condition/" << (isReverse?"$not$":"") <<  (dynamic_cast<RefUserFunction *>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
             return s.str();
         }
         RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected try to Copy REF-condition"); return 0; };
@@ -187,7 +188,7 @@ class RefUserTemplate : public RefTemplateBase {
     public:
         inline unistring getName(){ return name; };
         RefUserTemplate(unistring name, RefChain *lp=0);
-        inline RefChain* getLeftPart(){return leftPart;};
+        inline RefChain* getLeftPart(){ return leftPart;};
         void setLeftPart(RefChain *);
         RefObject* getObjectByName(unistring name, Session *s){ SYSTEMERROR("--== ZAGLUSHKA ==--"); };
         unistring toString(){
@@ -241,8 +242,8 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
 // мосты между лев.частью и внешним шаблоном. Со стороны внешнего шаблона
 class RefTemplateBridgeTmpl : public RefBracketBase, public IRefVarStacked {
     public:
-        RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){};
-        RefTemplateBridgeTmpl(RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){};
+        RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){ };
+        RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ };
         unistring toString() { if (isOpen()) return sss = "{[}"; else return sss = "{]}"; };
 
         TResult init(Session* s, RefData *&currentPoint);

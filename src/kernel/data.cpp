@@ -498,8 +498,8 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
         return GO; // ссылка на пустой отрезок - верна
     }
 
-    move_to_next_term(currentPoint, myid(), s);
-    if (currentPoint->myid()==ldata->myid()){ // сопоставление с собой
+    move_to_next_term(currentPoint, 0/*myid()*/, s);
+    if (currentPoint/*->myid()*/==ldata/*->myid()*/){ // сопоставление с собой
         currentPoint = rdata;
         return GO;
     }
@@ -512,8 +512,8 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
             //currentPoint->drop(myid);
             return BACK;
         } //std::cout << '^' << dynamic_cast<ref_BYTE *>(a)->get_ch();
-        move_to_next_point(ldata, myid(), s);
-        currentPoint = move_to_next_point(currentPoint, myid(), s);
+        move_to_next_point(ldata, 0/*myid()*/, s);
+        currentPoint = move_to_next_point(currentPoint, 0/*myid()*/, s);
     };
     if (!(*currentPoint == *ldata)){ // сравниваем последние элементы
             //ldata->drop(myid);

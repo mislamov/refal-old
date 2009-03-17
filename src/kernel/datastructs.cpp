@@ -20,7 +20,7 @@ TResult RefData_DOT::init(Session* s, RefData *&l){
 		};
 
 		// )
-		move_to_next_term(l, this->myid(), s);
+		move_to_next_term(l, 0/*this->myid()*/, s);
 		aux = dynamic_cast<RefData_DOT *>(l);
 		if ( !aux || aux->is_opened) { return BACK; }
 		return SUCCESS;
@@ -115,55 +115,6 @@ bool ref_variant_krest::operator==(RefData&rd){ return false; };
 
 
 
-//----------  $not  ------------
-
-TResult  RefNot::init(Session *s, RefData *&l){
-            if (isOpen()){ ///  $not[
-                s->message4nextpred = mNEXT;
-                return GO;
-            } else {       ///  $not ]
-                s->message4nextpred = mPRED;
-                return FORCEBACK;
-            };
-};
-
-TResult  RefNot::back(Session *s, RefData *&l, RefData *&r){
-            if (isOpen()){
-                //s->message4nextpred = mOTHER_next;
-
-                s->message4nextpred = mNEXT;
-                s->matchSessions.back()->activeTemplate = other;
-
-                return GO;
-            } else {
-                SYSTEMERROR("Unexpected call");
-                // ??
-            }
-};
-
-RefData*  RefNot::next_point (ThisId id, Session*s){
-            if (s->message4nextpred == mNEXT) return next;
-            if (s->message4nextpred == mPRED) return pred;
-            if (s->message4nextpred == mOTHER_next) return other->next;
-            if (s->message4nextpred == mOTHER_pred) return other->pred;
-            SYSTEMERROR("unexpected message");
-};
-
-RefData*  RefNot::pred_point (ThisId id, Session*s){
-            if (s->message4nextpred == mNEXT) return next;
-            if (s->message4nextpred == mPRED) return pred;
-            if (s->message4nextpred == mOTHER_next) return other->next;
-            if (s->message4nextpred == mOTHER_pred) return other->pred;
-            SYSTEMERROR("unexpected message");
-};
-
-void RefNot::forceback(Session* s){  // принудительный откат. Точка убирает из сессии свое состояние
-    if (isOpen()){
-        SYSTEMERROR("not realized");
-    } else {
-        s->message4nextpred = mPRED;
-    }
-};
 
 //----------  [...]  ------------
 TResult  ref_repeater::init(Session *s, RefData *&l){

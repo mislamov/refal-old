@@ -16,14 +16,14 @@ long RefValuedData::getCount(){ return symcount; };
 
 template <class T>
 TResult RefSymbolBase <T>::init(Session* s, RefData *&l) {
-    move_to_next_term(l,myid(),s);
+    move_to_next_term(l,0/*myid()*/,s);
     RefData* aux = l;
     #ifdef DEBUG
         if (!aux) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
     #endif
     //std::cout << "\n?::: "; print_inf(); std::cout << "=="; aux->print_inf(); std::cout << std::flush;
     bool tmpr = (*this == *aux);
-    //aux->drop(myid());
+    //aux->drop(0/*myid()*/);
     if (tmpr) return GO;
     //s->get_moved_to_pred_current_term(myid);
     return BACK;
@@ -84,7 +84,7 @@ template <class T>
 
 template <class T>
     TResult RefVarForSymbol<T>::init(Session* s, RefData *&l){
-        move_to_next_point(l, myid(), s);
+        move_to_next_point(l, 0/*myid()*/, s);
         if (dynamic_cast<T *>(l))
             return GO;
         else
@@ -135,13 +135,21 @@ void RefSymbol<unistring>::setValueFromString(unistring s){
 
 
 unistring RefSymbol<unistring>::toString(){
-    return "\"" + getValue() + "\" ";
+        #ifdef DEBUG
+            return "\"" + getValue() + "\" ";
+        #else
+            return getValue() + " ";
+        #endif
 }
 
 unistring RefSymbol<unichar>::toString(){
         std::ostringstream s;
         if ((getValue() == 10) || (getValue() == 13)){
+            #ifdef DEBUG
             s << "\\n";
+            #else
+            s << "\n";
+            #endif
         } else {
             s << this->getValue();
         }

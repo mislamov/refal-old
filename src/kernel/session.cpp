@@ -171,8 +171,13 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
     После успешного матчинга условия - все новое нужно сохранить для возможного отката
 
     Если isdemaching==true, то argleft и argrigh игнорируются.
+    Если isRevers==true, то инфертировать успех: удачное сопоставление нас не удовлетворяет. Для демачинга - неуспех
 */
-bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, bool isdemaching) {
+bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, bool isdemaching, bool isRevers) {
+    if (isRevers && isdemaching) {
+        return false;
+    }
+
     bool succmatch = false;
 
     if (! isdemaching) {
@@ -190,19 +195,19 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, b
         succmatch = matchingBySession(this, tmplate, isdemaching);
     }
 
-    if (succmatch) {
-        // если успех, то сохранить состояние, и вернуть успех
-        return succmatch;
-    }//else {
-    // если провал, то очистить все последствия (откатиться до точки, очистить созданное после точки и саму точку)
-    #ifdef DEBUG
-    if (! this->matchSessions.size()) SYSTEMERROR("alarm");
-    #endif
-    delete this->matchSessions.back();
-    this->matchSessions.pop_back();
-    return succmatch;
-    //}
-}
+    if (isRevers || !succmatch){
+        // если реверс или не реверс но провал, то очистить все последствия (откатиться до точки, очистить созданное после точки и саму точку)
+        #ifdef DEBUG
+        if (! this->matchSessions.size()) SYSTEMERROR("alarm");
+        #endif
+        delete this->matchSessions.back();
+        this->matchSessions.pop_back();
+    }
+
+    //return (succmatch xor isRevers);
+    return ((succmatch && !isRevers) || (!succmatch && isRevers));
+
+};
 
 
 
@@ -427,12 +432,6 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             }
             ; // (
 
-            /// заплатка. сделать правильно:
-            if (dynamic_cast<RefNot *>(activeTemplate)) {
-                s->RestoreTemplItem(activeTemplate, l, r);
-                move_to_pred_point(activeTemplate, 0, s); // шаблон отрицание на back реагирует как на успех, а в данном случае нужен провал,
-                // поэтому перескакиваем
-            }
 
             //this->getCurrentSopostStack().pop(); /// clean pered pop ? // - for (
             //move_to_pred_point(activeTemplate, 0, this);

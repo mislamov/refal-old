@@ -48,7 +48,7 @@ int main ( int argv, char **argc ) {
     time_t starttime, stoptime;
     time ( &starttime );
 
-    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
+//    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
 
 	RefExecBracket
 	*lb = new RefExecBracket(),
@@ -67,8 +67,8 @@ int main ( int argv, char **argc ) {
 	RefChain *result = evalutor ( polez, s );
 	//s->flush();
 
-	std::cout << "\n\nRETURN: " << result->toString() << "\n";
     time ( &stoptime );
-    std::cout << "============================================\n" << stringtime(localtime (&stoptime)) << "\n" << difftime(stoptime, starttime) << " sec.\n" << std::flush;
+    std::cout << "============================================\nTime: " /*<< stringtime(localtime (&stoptime)) << "\n"*/ << difftime(stoptime, starttime) << " sec.\n" << std::flush;
+	std::cout << "Result: " << result->toString() << "\n";
 	return 0;
 }

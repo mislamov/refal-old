@@ -119,7 +119,7 @@ s->fcalls++;
         /// todo: создать тут точку отката сессии для очистки последствий функции
         SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
 
-        if (s->matching( (*sent)->leftPart, argfirst, argsecond, false)){
+        if (s->matching( (*sent)->leftPart, argfirst, argsecond, false, false)){
             LOG(s->step++ <<  "\tsucessfull!");
             //s->showStatus();
 
@@ -244,7 +244,6 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
 // matching  в случае неуспеха сам восстанавливает состояние. В случае успеха - оставляет изменения
 // по идее рефал-условие не должно контроллировать точки состояний. Главное правильно вызывать дизмачинг (домачинг)
 TResult  RefCondition::init(Session* s, RefData *&l){
-
     /// todo: ниже не верно. условие может быть внутри внешнего шаблона и сопоставляться с пустым выражением не в конце
     /// однако для условия в предложении очень важно проверять, что оно сопост-ся с концом аргумента
     /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
@@ -266,10 +265,10 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 
     //std::cout << "\nCOND-EVALUTE-OO:\t" << newpz->toString() << " : " << this->leftPart->toString();
 
-    if (s->matching( this->leftPart, newpz->first, newpz->second, false )){
+    if (s->matching( this->leftPart, newpz->first, newpz->second, false, isReverse )){
         //std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
         //std::cout << "s.sopost.top: " << s->getCurrentSopostStack()->top()->toString() << flush;
-        return GO;
+        return (GO);
     } else {
         newpz->clear(); // сопоставление неуспешно - удаляем
         delete newpz;
@@ -278,14 +277,14 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 
         //s->showStatus();
 
-        return BACK;
+        return (BACK);
     }
 
 };
 
 TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
 
-    if (s->matching( this->leftPart, 0, 0, true )){ // продолжаем поиск вариантов
+    if (!isReverse && s->matching( this->leftPart, 0, 0, true, false)){ // продолжаем поиск вариантов
         //std::cout << "\n\nCOND-RETURN:::\tback-> GO" << std::flush << "\n\n\n";
         return GO;
     } else {

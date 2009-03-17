@@ -56,7 +56,7 @@ class RefData : public RefObject {
     public:
         RefData(RefData *rp=0); // pr вставляем после себя
         virtual ~RefData();
-        ThisId  myid(){  sss=toString(); return (ThisId)(this); };
+        //ThisId  0/*myid()*/{  return (ThisId)(this); };
         bool  is_system;
         //bool  is_symbol; // сопостовимость с s-перемеенной
 
@@ -86,7 +86,7 @@ class RefData : public RefObject {
         virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
         virtual void    forceback(Session* s){ SYSTEMERROR("RefData.forceback NOT DEFINE for " << toString()); };; // принудительный откат. Точка убирает из сессии свое состояние
 
-        virtual void print_inf(){ std::cout << "[" << (sss=toString()) << "]" << this << " "; };
+        //virtual void print_inf(){ std::cout << "[" << (sss=toString()) << "]" << this << " "; };
 
         virtual RefData*  Copy(RefData* where=0) = 0;
 //      virtual RefData*  getCopyAsData(RefData*);//= 0;  // клон без ссылок. Важно перегружать везде где нужно и правильно!
@@ -109,7 +109,12 @@ class RefNULL : public RefData {
         virtual TResult init(Session*, RefData *&);
         virtual TResult back(Session*, RefData *&, RefData *&);
 
-        virtual unistring toString(){ /*unistring s ="."; return s;*/ return " . "; };
+        virtual unistring toString(){
+            #ifdef DEBUG
+            return " . ";
+            #endif
+            return "";
+        };
         void forceback(Session *){};
 };
 
