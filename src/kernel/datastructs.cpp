@@ -34,7 +34,11 @@ TResult RefData_DOT::back(Session* sess, RefData *&l, RefData *&r){
 };
 
 
-unistring  RefData_DOT::toString() {        std::ostringstream s;
+unistring  RefData_DOT::toString() {
+        #ifndef DEBUG
+        return "";
+        #endif
+        std::ostringstream s;
         s << (is_opened?" [":" ]")
         /**/<< "." << std::hex << (unsigned short)this << ' '; /*<< ":other=" << (long)this->other << " ";/**/
 //        s << "." << (long)this << ' ';
