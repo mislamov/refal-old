@@ -366,6 +366,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
         std::cout << "\n##########################################################################################";
         std::cout << "\n####:ERROR: \t" << loader->currentchars;
         std::cout << "\n##########################################################################################\n";
+        SYSTEMERROR("ABORT");
     } else
     /*****************   выделить в менеджер для простого добавления пользовательских типов  *****************/
     //if (tmp = getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ

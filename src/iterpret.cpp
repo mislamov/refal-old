@@ -21,7 +21,7 @@ std::string stringtime(struct tm * tt) {
 }
 
 int main ( int argv, char **argc ) {
-    std::cout << "D-Refal 0.0.4 pre-alpha  Copyright (c) 2008-2009 Marat Islamov\n" << flush;
+    std::cout << REFVERSION << "\n" << flush;
     if (argv == 1) {
         std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << flush;
         //return 0;
@@ -63,7 +63,8 @@ int main ( int argv, char **argc ) {
 //std::cout << msystem.toString() << "\n";
     s->regModule ( &msystem );
     mod = new RefUserModule();
-    loadModuleFromXmlFile ( mod, xmlFile );
+    err = loadModuleFromXmlFile ( mod, xmlFile );
+    if (err) return err;
     s->regModule ( mod );
     #ifdef DEBUG
     std::cout << mod->toString() << "\n";
