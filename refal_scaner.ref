@@ -490,11 +490,19 @@ DeScob {
 GetRand { ,<Rp rand'='<+ 1 <Cp rand>>>:e.e = <Implode 'rrrr98358935897389457'<Symb <Cp rand>>> ;  }
 
 
-$ENTRY Go { =
+$ENTRY Go { 
+	,<Br rand'='0>:,
+	<Br scanbl'='0>:,
+	<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>> : e.program,
+	<ExistError e.program> : false
+	=
 		<Open 'w' 3 <Arg 1>'.xml'>
-		<Br rand'='0>
-		<Br scanbl'='0>
-			<Put 3 <DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>>"</BEGIN>">>;
+		<Put 3 
+			<DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>>"</BEGIN>">
+		>;
+		
+		
+	e.else = <Exit 9>;
 }
 
 /* переводит все термы в текст */
@@ -681,8 +689,8 @@ UnUgl {=;
 PrintAll { e.e = <PProut e.e>; }
 
 
-PProut { e.e = <Putout 8 e.e><Prout e.e>; }
-PPrint { e.e = <Putout 8 e.e><Print e.e>; }
+PProut { e.e = <Prout e.e>; }
+PPrint { e.e = <Print e.e>; }
 
 
 ScanTemplate {
