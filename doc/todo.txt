@@ -79,3 +79,17 @@ e. Array.A e.  =  Array.A::items::name
 
 
 Cutter можно сделать скобочным - откат закрытого форсируется до открытого. часть кода будет как в structBracket. сами structbracket можно будет окружать cutter-ами и сделать их примитивными:   ![  (  ...  ) !]
+
+
+
+
+
+
+
+
+
+
+БИБЛИОТЕКА СТАНДАРТНЫХ АЛГОРИТМОВ
+Наибольшая общая подстрока (longest common substring)  - LCsStr
+Наибольшая общая подпоследовательность (англ. longest common subsequence) LCsSeq
+

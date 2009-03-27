@@ -1,3 +1,21 @@
+// D-Refal - sentential program language
+// Copyright (C) 2008-2009 Islamov Marat Shamilevich
+// islamov.marat@gmail.com
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include "kernel.h"
 #include "session.h"
 //#include "dataterms.h"
@@ -182,6 +200,12 @@ TResult  RefVariable_E::init(Session *s, RefData *&a) {
     return GO;
 };
 
+TResult  RefVariable_END::init(Session *s, RefData *&a) {
+    //SYSTEMERROR("");
+    a = s->getStackOfDataSkob()->top()->pred;
+    return GO;
+};
+
 TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
     //std::cout << "\n## restore for e.e: " << std::flush; if (l) l->print_inf(); std::cout << " , "; if (r) r->print_inf(); std::cout << " next: " << r->next->toString() << "\n" << flush;
     if (l) {
@@ -190,9 +214,6 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
             return BACK;
         };
         //std::cout << "\n\n[r]: r==" << r->toString() << "  top=" << s->getStackOfDataSkob()->top()->toString() << "   " << s->getStackOfDataSkob()->size() << std::flush;
-
-
-
         move_to_next_term(r, 0/*myid()*/, s);
         r = r->endOfTerm();
     } else {
@@ -225,6 +246,10 @@ TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
     return GO;
 };
 
+TResult  RefVariable_END::back(Session *s, RefData *&l, RefData *&r) {
+    return BACK;
+};
+
 
 
 //--------------------------------------------------
@@ -240,6 +265,9 @@ bool	RefVariable_e::operator==(RefData &rd) {
 };
 bool	RefVariable_E::operator==(RefData &rd) {
     return dynamic_cast<RefVariable_E *>(&rd);
+};
+bool	RefVariable_END::operator==(RefData &rd) {
+    return dynamic_cast<RefVariable_END *>(&rd);
 };
 
 unistring vectorToString(RefData *f, RefData *g){

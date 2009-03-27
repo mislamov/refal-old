@@ -1,0 +1,59 @@
+$ENTRY Go {
+	= 
+/** /		<Open 'r' 1 '1.txt'>
+		<Open 'r' 2 '2.txt'>		
+		<Prout <Diff (<Mount 1>)(<Mount 2>)>>;
+/**/		
+/**/
+		<Prout <Diff (<Mount '1.txt'>)(<Mount '2.txt'>)>>;
+/**/
+}
+
+MaxDiff {=10000;}
+
+/** /
+Mount {
+	s.1, <Get s.1> : {
+		e.e 0 = e.e;
+		e.e   = e.e <Mount s.1>;
+	};
+}
+/**/
+
+Diff  {  e.e = <Diff_ e.e>; }
+Diff_ {
+	(s.A e.B s.C END.else1)(s.A e.B s.D END.else2),
+		<Same s.C s.D> : false 
+		=	<Print s.A e.B>
+			<Diff (s.C END.else1)(s.D END.else2)>;
+		
+	( { s. }[1..100].diff s.A e.B s.C END.else1)(s.A e.B s.D END.else2),
+		<Same <Print s.C s.D>> : false 
+		=	<Print '\n#### E. ####\n' s.A e.B>
+			<Diff (s.C END.else1)(s.D END.else2)>;
+		
+	( s.A e.B s.C END.else1)({ s. }[1..100].diff s.A e.B s.D END.else2),
+		<Same s.C s.D> : false 
+		=	<Print '\n#### E. ####\n' s.A e.B>
+			<Diff (s.C END.else1)(s.D END.else2)>;
+
+	(END.1)(END.1) = END.1;
+
+	( { s. }[1..100].diff1 END.else1)({ s. }[1..100].diff2 END.else2) = '\n#### E. ####\n' <Diff (END.else1)(END.else2)>;
+
+	(END.1)(END.2) = '\n#### E. ####\n';
+
+}
+
+Same { t.1 t.1 = true; t.1 t.2 = false; };
+
+Min {
+	s.1 s.2,
+	<Less s.1 s.2> : "true" = s.1;
+	s.1 s.2 = s.2;
+}
+Max {
+	s.1 s.2,
+	<Less s.1 s.2> : "false" = s.1;
+	s.1 s.2 = s.2;
+}
