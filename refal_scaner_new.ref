@@ -9,15 +9,21 @@ Template Alpha 	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|
 			'Z'|'X'|'C'|'V'|'B'|'N'|'M'|'A'|'S'|'D'|'F'|'G'|'H'|'J'|'K'|'L'|'Q'|'W'|'E'|'R'|'T'|'Y'|'U'|'I'|'O'|'P' 
 			};
 Template Digit ::= { '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' };
-Template Digits	  ::= Digit. { Digit. Digits. | } ! ;
-Template Alphas	  ::= Alpha. { Alpha. | Digit. }[infin] ! ;
+Template Digits	  ::= Digit. { Digit. Digits. | } !;
+Template Alphas	  ::= Alpha. { Alpha. | Digit. }[infin] ;
 
+/* в строке раскрывает все метасимволы с '\' */
 UnEscape {
 	'\\' { '\\' | 'n'='\n' | 't'='\t' | '"' | '\'' }.sym E.next  =  @.sym <UnEscape E.next>;
 	'\\' s.sym  E.next   =  <MakeError 'unknown escaped code: \\'s.sym> <UnEscape E.next>;
 	s.s  E.next 	     =  s.s <UnEscape  E.next>;
 }
 
+/*
+	Подготовка к парсингу:
+	- создание меток строки для дебага и сообщений об ошибках
+	
+*/
 PreScan {
 	integer.line e.first '\n' E.next,  
 		<+ 1 integer.line> : integer.newline 
@@ -27,6 +33,9 @@ PreScan {
 	E.else	=	<PreScan 0 E.else>;
 }
 
+/*
+	Парсинг-сканирование
+*/
 Scan {
 	{ ' ' | '\t' | comment. }[infin] E.next  =  ("$separator") <Scan E.next>;
 	'\n' E.next = <SystemError 'Unexpected \\n symbol after PreScan. before this: ' E.next>;
@@ -43,36 +52,40 @@ Scan {
 	'\'' e.string '\'' E.next,
 		$NOT e.string : E. '\\' =  <UnEscape e.string> <Scan E.next>;
 	'"' e.string '"' E.next,
-		$NOT e.string : E. '\\' =  <Implode  e.string> <Scan E.next>;
-		
-	Word.prescaned E.next = Word.prescaned  <Scan E.next>;
+		$NOT e.string : E. '\\' =  <Implode  <UnEscape e.string>> <Scan E.next>;
+	
+	Alphas.word  E.next = (Alphas.word)  <Scan E.next>;
+	Word.prescaned  E.next = Word.prescaned  <Scan E.next>;
 	s.unkn E.next = <MakeError 'Error syntax here: ' s.unkn E.next>;
 	=;
 }
 
-/********* Синтаксис D-REFAL **********/
+/********* Синтаксис D-REFAL после <Scan> **********/
 // если все части варианта имеют переменную с общим именем, то ее значение доступно через '::' . Можно использовать Empty. - переменную в альтернативах
 
 Template Separator ::= ("$separator");
 
 Template Empty	::= ;
-Template Shablon		::=  ;  // образец
+Template Obrazec		::=  ;  // образец
 Template RefData		::=  ;  // данное рефала: число буква слово байт
 
+Template VInteger  ::=  { RefVariable. | integer. }; // целое или переменная. Потом проверить, что переменная - закрытая integer
+
 // ПЕРЕМЕННАЯ
-Template RefVariable  		::=  RefVariableDescriptor.type "." { Word. | }.name;
-Template RefVariableDescriptor	::=  { Word. | ('{') Shablon. ('}') | ('@') | RefData. }.descriptor  RefRepeater.repeater
+Template RefVariable  		::=  RefVariableDescriptor.type ('.') { (Alphas.) | }.name;
+Template RefVariableDescriptor	::=  { Alphas. | ('{') Obrazec. ('}') | ('@') }.descriptor  RefRepeater.repeater
 Template RefRepeater	::= {
-			('[') integer.from ('..' ) integer.to (']')  		  |
-			('[') integer.from ('...') {Empty.=infin}.to   (']')      |
+			('[') VInteger.from ('..' ) VInteger.to (']')  		  |
+			('[') VInteger.from ('...') {Empty.=infin}.to   (']')     |
 			('[') "infin" (']') {Empty.=infin}.from {Empty.=infin}.to |
 			{Empty.=1}.from {Empty.=1}.to
-}; /*export: .from .to*/
+}; /* export: .from .to */
+
+
 
 
 
 // может запретить данные-компаут-символы без кавычек? Без кавычек только элементы языка?
-
 ScanObjectExprWithExecs {
 	=;
 
