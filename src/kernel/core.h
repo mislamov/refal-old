@@ -86,7 +86,8 @@ typedef enum {
     mNEXT,
     mPRED,
     mOTHER_next,
-    mOTHER_pred
+    mOTHER_pred,
+    mFORCEBACK   //
 } TMessage; // сообщения для nwxt-pred-point
 
 #endif // REF_CORE_H_INCLUDED

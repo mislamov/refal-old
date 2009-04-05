@@ -414,6 +414,7 @@ RefData*  RefTemplateBridgeVar::pred_point( ThisId var_id, Session *s){
         #ifdef DEBUG
         if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
         #endif
+        if (s->message4nextpred == mFORCEBACK) return pred;
         return this->bridge;
     }
 };

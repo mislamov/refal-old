@@ -542,6 +542,7 @@ IsSeparatorChar {
 	' '  = true;
 	'\t' = true;
 	'\n' = true;
+	'\r' = true;
 	s.s = false;
 }
 
@@ -549,6 +550,7 @@ Scan{
 	=;
 	'/*'  e.comm '*/' e.next  =  <Scan e.next>;
 	'\n' '*' e.comm '\n' e.next  =  <Scan '\n' e.next>;
+	'//' e.comm '\n' e.next  =  <Scan '\n' e.next>;
 
 
 	s.1 '.' e.e,
@@ -571,6 +573,7 @@ Scan{
 	'::' e.all = ('/') <Scan e.all>;
 	' '  e.all = <Scan e.all>;
 	'\n' e.all = <Scan e.all>;
+	'\r' e.all = <Scan e.all>;
 	'\t' e.all = <Scan e.all>;
 	'*' e.all = (Mul)	<Scan e.all>;
 	'/' e.all = (Div)	<Scan e.all>;
@@ -581,7 +584,8 @@ Scan{
 	(s.quo (e.e)) '\\' e.all,
 		     e.all : {
 				'\\' e.next =  <Scan (s.quo (e.e '\\')) e.next>;
-				'n'  e.next =  <Scan (s.quo (e.e '\n')) e.next>;
+				'n'  e.next =  <Scan (s.quo (e.e '\x13')) e.next>;
+				'r'  e.next =  <Scan (s.quo (e.e '\x10')) e.next>;
 				'\'' e.next =  <Scan (s.quo (e.e '\'')) e.next>;
 				'"'  e.next =  <Scan (s.quo (e.e '"' )) e.next>;
 				't'  e.next =  <Scan (s.quo (e.e '\t')) e.next>;

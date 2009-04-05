@@ -71,6 +71,23 @@ public:
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
 };
 
+class system_IMPLODE : public RefBuildInFunction {
+public:
+    system_IMPLODE(RefDllModule *m) : RefBuildInFunction("Implode", m) {}
+    unistring toString(){ return "IMPLODE"; };
+    unistring getName(){ return "Implode"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
+class system_EXPLODE : public RefBuildInFunction {
+public:
+    system_EXPLODE(RefDllModule *m) : RefBuildInFunction("Explode", m) {}
+    unistring toString(){ return "EXPLODE"; };
+    unistring getName(){ return "Explode"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
+
 class system_MOUNT : public RefBuildInFunction {
 public:
     system_MOUNT(RefDllModule *m) : RefBuildInFunction("Mount", m) {}
@@ -117,6 +134,8 @@ public:
 
         setObjectByName("Lenw",  new system_LENW(this));
         setObjectByName("Compare",  new system_COMPARE(this));
+        setObjectByName("Implode",  new system_IMPLODE(this));
+        setObjectByName("Explode",  new system_EXPLODE(this));
 
         setObjectByName("Add",  getObjectByName("Sum"));
         setObjectByName("Sub",  getObjectByName("Dec"));

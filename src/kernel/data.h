@@ -102,7 +102,9 @@ class RefData : public RefObject {
 //        virtual bool dynamic_same(RefData *); // для динамических точек - признак эквивалентности
         virtual TResult init(Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
         virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
-        virtual void    forceback(Session* s){ SYSTEMERROR("RefData.forceback NOT DEFINE for " << toString()); };; // принудительный откат. Точка убирает из сессии свое состояние
+        virtual void    forceback(Session* s){
+            SYSTEMERROR("RefData.forceback NOT DEFINE for "
+            << toString()); };; // принудительный откат. Точка убирает из сессии свое состояние
 
         //virtual void print_inf(){ std::cout << "[" << (sss=toString()) << "]" << this << " "; };
 

@@ -1,59 +1,55 @@
-$ENTRY Go {
-	= 
-/** /		<Open 'r' 1 '1.txt'>
-		<Open 'r' 2 '2.txt'>		
-		<Prout <Diff (<Mount 1>)(<Mount 2>)>>;
-/**/		
-/**/
-		<Prout <Diff (<Mount '1.txt'>)(<Mount '2.txt'>)>>;
-/**/
+// **********************************************
+InputFile{='fn.ref';}
+
+$Entry Go { = <Prout <P1_Prescaning <Print <P1_Prescaning_pre 0 '\n'<Mount <InputFile>>'\n' >>>>; }
+
+
+Template comment  ::= { '/*' e. '*/' | '//' e. '\n' } ! ;
+Template Digit ::= { '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' };
+Template Digits	  ::= Digit. { Digits. | } ! ;
+Template Letter	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|'k'|'l'|'q'|'w'|'e'|'r'|'t'|'y'|'u'|'i'|'o'|'p'|
+			'Z'|'X'|'C'|'V'|'B'|'N'|'M'|'A'|'S'|'D'|'F'|'G'|'H'|'J'|'K'|'L'|'Q'|'W'|'E'|'R'|'T'|'Y'|'U'|'I'|'O'|'P' 
+			};
+
+
+DoError { int.line END.text = <Print '#### ERROR ['@.line']: ' @.text>; }
+
+// счет строк для сообщений об ошбках
+P1_Prescaning_pre {
+	int.line  e.pred '\n' END.next,
+		<+ 1 int.line> : int.newline 
+		=	@.pred  '\n'<Implode '$line:' @.newline> <P1_Prescaning_pre @.newline @.next>;
+	int.line  END.next =  @.next <Implode '$line:' <+ 1 @.line>>;
 }
 
-MaxDiff {=10000;}
 
-/** /
-Mount {
-	s.1, <Get s.1> : {
-		e.e 0 = e.e;
-		e.e   = e.e <Mount s.1>;
-	};
-}
-/**/
 
-Diff  {  e.e = <Diff_ e.e>; }
-Diff_ {
-	(s.A e.B s.C END.else1)(s.A e.B s.D END.else2),
-		<Same s.C s.D> : false 
-		=	<Print s.A e.B>
-			<Diff (s.C END.else1)(s.D END.else2)>;
-		
-	( { s. }[1..100].diff s.A e.B s.C END.else1)(s.A e.B s.D END.else2),
-		<Same <Print s.C s.D>> : false 
-		=	<Print '\n#### E. ####\n' s.A e.B>
-			<Diff (s.C END.else1)(s.D END.else2)>;
-		
-	( s.A e.B s.C END.else1)({ s. }[1..100].diff s.A e.B s.D END.else2),
-		<Same s.C s.D> : false 
-		=	<Print '\n#### E. ####\n' s.A e.B>
-			<Diff (s.C END.else1)(s.D END.else2)>;
+//   1.      prescaning-парсинг (чтение знаков языка)
+P1_Prescaning { END.e = <Prout 'P1_Prescaning: [' @.e ']'><P1_Prescaning0 @.e>; }
+P1_Prescaning0 {
+	{ ' ' | '\t' | comment. | '\r' | '\n' } END.next  
+					=  "$separator" <P1_Prescaning  @.next>;
+	{'...'|'..'|'.'|'::='|'::'|':'|';'|'='|'{'|'}'|'['|']'|'('|')'|'<'|'>'|'|'}.item  END.next 
+					=  <Implode @.item> <P1_Prescaning  @.next>;
+	Digits.num  END.next  
+					=  <Numb @.num> <P1_Prescaning  @.next>; /// todo: вещественные в разных форматах
+	{ Letter. e. }.word { s.notletter END.nn }.next,
+		$NOT s.notletter : Letter. ,
+		$NOT s.notletter : Digit.
+					=  <Implode @.word>  <P1_Prescaning  @.next>;
+					
+	'\'' e.text s.last '\'' END.next,
+		$NOT s.last : '\\'  =  ("text" e.text s.last) <P1_Prescaning  @.next>;
 
-	(END.1)(END.1) = END.1;
-
-	( { s. }[1..100].diff1 END.else1)({ s. }[1..100].diff2 END.else2) = '\n#### E. ####\n' <Diff (END.else1)(END.else2)>;
-
-	(END.1)(END.2) = '\n#### E. ####\n';
-
+	'"' e.text s.last '"' END.next,
+		$NOT s.last : '\\'  =  ("word" e.text s.last) <P1_Prescaning  @.next>;
+					
+	word.l END.next,
+		<Explode @.l> : '$' e.e 
+					= @.l <P1_Prescaning  @.next>;
+	
+	t.unknown e.text word.linelable END.next,
+		<Explode  word.linelable>: '$line:' Digits.line
+					=  <DoError <Numb @.line> 'Unexpected item `' @.unknown '` here : ' @.unknown @.text>;
 }
 
-Same { t.1 t.1 = true; t.1 t.2 = false; };
-
-Min {
-	s.1 s.2,
-	<Less s.1 s.2> : "true" = s.1;
-	s.1 s.2 = s.2;
-}
-Max {
-	s.1 s.2,
-	<Less s.1 s.2> : "false" = s.1;
-	s.1 s.2 = s.2;
-}

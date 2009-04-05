@@ -225,14 +225,18 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
 
         RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
         RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ bridge=0;  name="NOT SET";};
-        unistring toString() { if (isOpen()) return sss = ("[{]." + name); else return sss =  name+".[}]"; };
+        unistring toString() { if (isOpen()) return sss = ("[{]." + getName()); else return sss =  name+".[}]"; };
 
         TResult init(Session* s, RefData *&currentPoint);
         TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
         RefData*  next_point( ThisId var_id, Session *s);
         RefData*  pred_point( ThisId var_id, Session *s);
 
-        unistring getName(){ return name; }
+        unistring getName(){
+            if (isOpen())
+                return ((RefTemplateBridgeVar*) other)->name;
+            return name;
+        }
         void setName(unistring nname){ name = nname; }
 
         RefData* Copy(RefBracketBase *bb, RefData *rp=0){
@@ -254,6 +258,8 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
             /// ??? нужно ли копировать тело сопоставления с таблицей переменных
             return cp;
         };
+
+        virtual void    forceback(Session* s){};
 
 };
 
@@ -277,6 +283,8 @@ class RefTemplateBridgeTmpl : public RefBracketBase, public IRefVarStacked {
         };
 
         unistring getName(){ SYSTEMERROR("unexpected call"); };
+        virtual void    forceback(Session* s){};
+
 };
 
 #endif // FUNCTION_H_INCLUDED

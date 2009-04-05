@@ -1,9 +1,94 @@
-/**********************************************
-	Препроцессор D-Refal программ.
-***********************************************/
+// **********************************************
+//	Препроцессор D-Refal программ.
+// **********************************************
+//   1.      prescaning-парсинг (чтение знаков языка)
+//   2.      структуризация и синтаксический анализ (генерация структуры программы)
+//   3.      семантический анализ и оптимизация (перестройка структуры программы)
+//   4.      построение байт/xml-кода
+InputFile{='refal_scaner_new.ref';}
+
+$Entry Go { = <Prout <P1_Prescaning <Print <P1_Prescaning_pre 0 '\n'<Mount <InputFile>>'\n' >>>>; }
 
 
-Template comment  ::= { '/*' e. '*/' | '//' e. '\n'  | '\n*' e. '\n' } ! ;
+Template comment  ::= { '/*' e. '*/' | '//' e. '\n' } ! ;
+Template Digit ::= { '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' };
+Template Digits	  ::= Digit. { Digits. | } !;
+Template Letter	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|'k'|'l'|'q'|'w'|'e'|'r'|'t'|'y'|'u'|'i'|'o'|'p'|
+			'Z'|'X'|'C'|'V'|'B'|'N'|'M'|'A'|'S'|'D'|'F'|'G'|'H'|'J'|'K'|'L'|'Q'|'W'|'E'|'R'|'T'|'Y'|'U'|'I'|'O'|'P' 
+			};
+
+
+DoError { int.line e.text = <Prout '#### ERROR ['@.line']: ' @.text>; }
+
+// счет строк для сообщений об ошбках
+P1_Prescaning_pre {
+	int.line  e.pred '\n' E.next,
+		<+ 1 int.line> : int.newline 
+		=	@.pred  '\n'<Implode '$line:' int.newline> <P1_Prescaning_pre int.newline @.next>;
+	int.line  E.next =  E.next <Implode '$line:' <+ 1 @.line>>;
+}
+//   1.      prescaning-парсинг (чтение знаков языка)
+P1_Prescaning {
+	{ ' ' | '\t' | comment. }[infin] E.next  
+					=  "$separator" <P1_Prescaning  @.next>;
+	{'...'|'..'|'.'|'::='|'::'|':'|'='|'{'|'}'|'['|']'|'('|')'|'<'|'>'|'|'}.item  E.next 
+					=  <Implode @.item> <P1_Prescaning  @.next>;
+	Digits.num  E.next  
+					=  <Numb @.num> <P1_Prescaning  @.next>; /// todo: вещественные в разных форматах
+	{ Letter. e. }.word { s.notletter ! E.nn }.next,
+		$NOT s.notletter : Letter. ,
+		$NOT s.notletter : Digit.
+					=  <Implode @.word>  <P1_Prescaning  @.next>;
+	t.unknown e.text t.linelable E.next,
+		<Explode  t.linelable>: '$line:' Digits.line
+					=  <DoError <Numb @.line> 'Unexpected item `' t.unknown '` here : ' t.unknown e.text>;
+}
+
+
+
+//   2.      структуризация и синтаксический анализ (генерация структуры программы)
+//   3.      семантический анализ и оптимизация (перестройка структуры программы)
+//   4.      построение байт/xml-кода
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Template comment  ::= { '/*' e. '*/' | '//' e. '\n'  | '\n*' e. '\n' } ! ;
+
+/*
 Template ResvWord ::= {'Template' | '$NOT' };
 Template Alpha 	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|'k'|'l'|'q'|'w'|'e'|'r'|'t'|'y'|'u'|'i'|'o'|'p'|
 			'Z'|'X'|'C'|'V'|'B'|'N'|'M'|'A'|'S'|'D'|'F'|'G'|'H'|'J'|'K'|'L'|'Q'|'W'|'E'|'R'|'T'|'Y'|'U'|'I'|'O'|'P' 
@@ -12,55 +97,52 @@ Template Digit ::= { '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' }
 Template Digits	  ::= Digit. { Digit. Digits. | } !;
 Template Alphas	  ::= Alpha. { Alpha. | Digit. }[infin] ;
 
-/* в строке раскрывает все метасимволы с '\' */
+// в строке раскрывает все метасимволы с '\' 
 UnEscape {
 	'\\' { '\\' | 'n'='\n' | 't'='\t' | '"' | '\'' }.sym E.next  =  @.sym <UnEscape E.next>;
 	'\\' s.sym  E.next   =  <MakeError 'unknown escaped code: \\'s.sym> <UnEscape E.next>;
 	s.s  E.next 	     =  s.s <UnEscape  E.next>;
 }
 
-/*
-	Подготовка к парсингу:
-	- создание меток строки для дебага и сообщений об ошибках
+
+//	Подготовка к парсингу:
+//	- создание меток строки для дебага и сообщений об ошибках
 	
-*/
-PreScan {
-	integer.line e.first '\n' E.next,  
-		<+ 1 integer.line> : integer.newline 
-		=	e.first  <Implode '$line:' integer.newline> <PreScan integer.newline E.next>;
-	integer.line E.next  
-		=  	<Implode '$line:' <+ integer.line 1>> E.next;		
-	E.else	=	<PreScan 0 E.else>;
+PreParse {
+	int.line e.first '\n' E.next,  
+		<+ 1 int.line> : int.newline 
+		=	e.first  <Implode '$line:' int.newline> <PreParse int.newline E.next>;
+	int.line E.next  
+		=  	<Implode '$line:' <+ int.line 1>> E.next;		
+	E.else	=	<PreParse 0 E.else>;
 }
 
-/*
-	Парсинг-сканирование
-*/
-Scan {
-	{ ' ' | '\t' | comment. }[infin] E.next  =  ("$separator") <Scan E.next>;
-	'\n' E.next = <SystemError 'Unexpected \\n symbol after PreScan. before this: ' E.next>;
-	ResvWord.word  E.next	= <Implode <LowerCase @.word>> <Scan E.next>;
-	Alphas.id  E.next  	= <Implode <LowerCase @.id>>   <Scan E.next>;
-	Digits.id  E.next  	= <Numb    @.id> <Scan E.next>;
+//	Парсинг-сканирование
+Parse {
+	{ ' ' | '\t' | comment. }[infin] E.next  =  ("$separator") <Parse E.next>;
+	'\n' E.next = <SystemError 'Unexpected \\n symbol after PreParse. before this: ' E.next>;
+	ResvWord.word  E.next	= <Implode <LowerCase @.word>> <Parse E.next>;
+	Alphas.id  E.next  	= <Implode <LowerCase @.id>>   <Parse E.next>;
+	Digits.id  E.next  	= <Numb    @.id> <Parse E.next>;
 	{ '...' | '..' | '.'  |
 	  '['   | ']'  | 
 	  '{'   | '}'  | 
 	  '::=' |
 	  '::'  | '@'
-	}.item  E.next  	= ( @.item ) <Scan E.next>;
+	}.item  E.next  	= ( @.item ) <Parse E.next>;
 	
 	'\'' e.string '\'' E.next,
-		$NOT e.string : E. '\\' =  <UnEscape e.string> <Scan E.next>;
+		$NOT e.string : E. '\\' =  <UnEscape e.string> <Parse E.next>;
 	'"' e.string '"' E.next,
-		$NOT e.string : E. '\\' =  <Implode  <UnEscape e.string>> <Scan E.next>;
+		$NOT e.string : E. '\\' =  <Implode  <UnEscape e.string>> <Parse E.next>;
 	
-	Alphas.word  E.next = (Alphas.word)  <Scan E.next>;
-	Word.prescaned  E.next = Word.prescaned  <Scan E.next>;
+	Alphas.word  E.next = (Alphas.word)  <Parse E.next>;
+	Word.preParseed  E.next = Word.preParseed  <Parse E.next>;
 	s.unkn E.next = <MakeError 'Error syntax here: ' s.unkn E.next>;
 	=;
 }
 
-/********* Синтаксис D-REFAL после <Scan> **********/
+// ********* Синтаксис D-REFAL после <Parse> **********
 // если все части варианта имеют переменную с общим именем, то ее значение доступно через '::' . Можно использовать Empty. - переменную в альтернативах
 
 Template Separator ::= ("$separator");
@@ -69,48 +151,48 @@ Template Empty	::= ;
 Template Obrazec		::=  ;  // образец
 Template RefData		::=  ;  // данное рефала: число буква слово байт
 
-Template VInteger  ::=  { RefVariable. | integer. }; // целое или переменная. Потом проверить, что переменная - закрытая integer
+Template Vint  ::=  { RefVariable. | int. }; // целое или переменная. Потом проверить, что переменная - закрытая int
 
 // ПЕРЕМЕННАЯ
 Template RefVariable  		::=  RefVariableDescriptor.type ('.') { (Alphas.) | }.name;
 Template RefVariableDescriptor	::=  { Alphas. | ('{') Obrazec. ('}') | ('@') }.descriptor  RefRepeater.repeater
 Template RefRepeater	::= {
-			('[') VInteger.from ('..' ) VInteger.to (']')  		  |
-			('[') VInteger.from ('...') {Empty.=infin}.to   (']')     |
+			('[') Vint.from ('..' ) Vint.to (']')  		  |
+			('[') Vint.from ('...') {Empty.=infin}.to   (']')     |
 			('[') "infin" (']') {Empty.=infin}.from {Empty.=infin}.to |
 			{Empty.=1}.from {Empty.=1}.to
-}; /* export: .from .to */
+}; // export: .from .to 
 
 
 
 
 
 // может запретить данные-компаут-символы без кавычек? Без кавычек только элементы языка?
-ScanObjectExprWithExecs {
+ParseObjectExprWithExecs {
 	=;
 
-	"$separator"	E.e = 		 <ScanObjectExprWithExecs E.e>;
-	"$not"		E.e = 	"<NOT/>" <ScanObjectExprWithExecs E.e>;
+	"$separator"	E.e = 		 <ParseObjectExprWithExecs E.e>;
+	"$not"		E.e = 	"<NOT/>" <ParseObjectExprWithExecs E.e>;
 
-	/* отсечение */
-	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
+	// отсечение 
+	('!')  e.e = "<CUTTER/>" <ParseObjectExprWithExecs e.e>;
 
-	/* разделитель вариантов */
-	('|')  e.e = "|" <ScanObjectExprWithExecs e.e>;
+	// разделитель вариантов 
+	('|')  e.e = "|" <ParseObjectExprWithExecs e.e>;
 
-	/* групповые скобки c именем */
+	// групповые скобки c именем 
 	('{')  e.oexp  ('}')('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false,
 		<Type t.varname> : {
-			'W' s.sub t.varname = "<GROUP_F name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
-			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
-			e.else = <MakeError ScanObjectExprWithExecs 'bad varname for GROUP-brackets'>;
+			'W' s.sub t.varname = "<GROUP_F name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP_F>" <ParseObjectExprWithExecs e.e>;
+			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ParseObjectExprWithExecs e.e>;
+			e.else = <MakeError ParseObjectExprWithExecs 'bad varname for GROUP-brackets'>;
 		};
 
-	/* ВАРИАНТЫ */
+	// ВАРИАНТЫ 
 	('{')  e.oexp  ('}')"["(e.from)".."(e.to)"]"('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname "\">" 
 		"<REPEAT from=\"" e.from "\" to=\"" e.to "\">" 
@@ -119,10 +201,10 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"["(e.from)"..." "]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname "\">" 
 		"<REPEAT from=\"" e.from "\" to=\"inf\">" 
@@ -131,10 +213,10 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"[" "..."(e.to)"]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname "\">" 
 		"<REPEAT from=\"0\" to=\""e.to"\">" 
@@ -143,10 +225,10 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"[" (e.fromto)"]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname  "\">" 
 		"<REPEAT from=\""e.fromto"\" to=\""e.fromto"\">" 
@@ -155,244 +237,227 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 
 
-	/* групповые скобки без имени */
+	// групповые скобки без имени 
 	('{')  e.oexp  ('}') e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\""  <GetRandomName>  "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+	=	"<GROUP_F name=\""  <GetRandomName>  "\">" e.oexp_I "</GROUP_F>" <ParseObjectExprWithExecs e.e>;
 
 		
 	
 	
 
-	/* Скобки */
+	// Скобки 
 	('(') e.inside (')') e.next,
-	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
-	<ExistError  e.insidescaned_I> : false
-	=	"<BRACKET>"  e.insidescaned_I "</BRACKET>" <ScanObjectExprWithExecs  e.next >;
+	<ParseObjectExprWithExecs e.inside> : e.insideParseed_I,
+	<ExistError  e.insideParseed_I> : false
+	=	"<BRACKET>"  e.insideParseed_I "</BRACKET>" <ParseObjectExprWithExecs  e.next >;
 
 	('<') (t.word) e.inside ('>') e.next,
-	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
-	<ExistError  e.insidescaned_I> : false
+	<ParseObjectExprWithExecs e.inside> : e.insideParseed_I,
+	<ExistError  e.insideParseed_I> : false
 
-	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
-
-
+	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insideParseed_I "</EXEC>" <ParseObjectExprWithExecs e.next>;
 
 
-	/* продолжение ссылки напеременную */
+
+
+	// продолжение ссылки напеременную 
 	"$path" ('/')(t.1) e.next, 
 		<Type t.1> : 'W' s.sub1 t.1
-		=	'/' <Explode t.1> <ScanObjectExprWithExecs  "$path" e.next>;
+		=	'/' <Explode t.1> <ParseObjectExprWithExecs  "$path" e.next>;
 
-	/* конец ссылки напеременную */
+	// конец ссылки напеременную 
 	"$path" e.next		
-		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
+		=	"</LNK>" <ParseObjectExprWithExecs  e.next>;
 
 
 
-	/*ссылка на переменную*/
+	// ссылка на переменную
 	(t.1)('.')(t.2)('/') e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'W' s.sub2 t.2
 	=	"<LNK>" <Explode t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+		<ParseObjectExprWithExecs "$path" ('/') e.next>;
 
-	/*ссылка на переменную c числовым именем*/
+	// ссылка на переменную c числовым именем
 	(t.1)('.')(t.2)('/') e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'N' s.sub2 t.2
 	=	"<LNK>" <Symb t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+		<ParseObjectExprWithExecs "$path" ('/') e.next>;
 
-	/*переменная*/
+	// переменная
 	(t.1)('.')(t.2) e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'W' s.sub2 t.2
 	=	"<VAR>" <Explode t.1> '.' <Explode t.2> "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
+		<ParseObjectExprWithExecs e.next>;
 
-	/*переменная с числовым именем*/
+	// переменная с числовым именем
 	(t.1)('.')(t.2) e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'N' s.sub2 t.2
 	=	"<VAR>" <Explode t.1> '.' <Symb t.2> "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/*переменная без имени*/
+	// переменная без имени
 	(t.1)('.') "$separator" e.next,
 	<Type t.1> : 'W' s.sub1 t.1
 	=	"<VAR>" <Explode t.1> '.' "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/* ссылка на переменную с НЕ числовым именем*/
+	// ссылка на переменную с НЕ числовым именем
 	('@')('.')(t.2) e.next,
 	<Type t.2> : 'W' s.sub2 t.2
 	=	"<LNK>" <Explode t.2> "</LNK>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/* ссылка на переменную с числовым именем*/
+	// ссылка на переменную с числовым именем
 	('@')('.')(t.2) e.next,
 	<Type t.2> : 'N' s.sub2 t.2
 	=	"<LNK>" <Symb t.2> "</LNK>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/*просто слово или число*/
+	// просто слово или число
 	(t.1) e.next, <Type t.1> :
 				{
-					'N' s.sub t.1 = "<INT>" <Symb t.1> "</INT>"   <ScanObjectExprWithExecs e.next>;
-					'W' s.sub t.1 = "<WORD>" <Explode t.1> "</WORD>" <ScanObjectExprWithExecs e.next>;
+					'N' s.sub t.1 = "<INT>" <Symb t.1> "</INT>"   <ParseObjectExprWithExecs e.next>;
+					'W' s.sub t.1 = "<WORD>" <Explode t.1> "</WORD>" <ParseObjectExprWithExecs e.next>;
 					s.T s.sub t.1 = "@ERROR:" ('unkonown symbol in object-expression = "' t.1 '" of type [' s.T s.sub '] in ' (t.1) e.next);
 				};
 
 
-	/*термальное предложение*/
-	(e.1) e.next  =  "<WORD>" e.1 "</WORD>" <ScanObjectExprWithExecs e.next>;
+	// термальное предложение
+	(e.1) e.next  =  "<WORD>" e.1 "</WORD>" <ParseObjectExprWithExecs e.next>;
 
-	/* не возможно появления тут аргумента вида (t.1) e.2   !!! */
+	// не возможно появления тут аргумента вида (t.1) e.2   !!! 
 
-	s.s e.next = "<TEXT>" s.s "</TEXT>" <ScanObjectExprWithExecs e.next>;
+	s.s e.next = "<TEXT>" s.s "</TEXT>" <ParseObjectExprWithExecs e.next>;
 
-	e.error = <MakeError ScanObjectExprWithExecs e.error>;
+	e.error = <MakeError ParseObjectExprWithExecs e.error>;
 
 }
 
+// **********************************************************
+// *
+// * Разбор элементов языка
+// *
+// **********************************************************
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-**********************************************************
-*
-* Разбор элементов языка
-*
-**********************************************************
-
-ScanModule_ { e.e = <PProut "\nScanModule: " e.e/*<DeScob e.e>*/><ScanModule_ e.e>; }
-ScanModule {
+ParseModule_ { e.e = <PProut "\nParseModule: " e.e><ParseModule_ e.e>; }
+ParseModule {
 	=;
 
-	/* подразумевается, что обрабатывается только один внешний блок */
-	(t.fname) ('{') e.bodyPredl ('}') /*e.modulenext*/,
-	<ScanPredlsInBody e.bodyPredl>   : e.bodyScaned,
-	<ExistError e.bodyScaned> : {
-		false	=	"<FUNCTION name=\"" t.fname "\">" e.bodyScaned "</FUNCTION>\n" /*<ScanModule e.modulenext>*/ ;
-		true 	= 	<MakeError ScanModule e.bodyScaned>;
+	// подразумевается, что обрабатывается только один внешний блок 
+	(t.fname) ('{') e.bodyPredl ('}'),
+	<ParsePredlsInBody e.bodyPredl>   : e.bodyParseed,
+	<ExistError e.bodyParseed> : {
+		false	=	"<FUNCTION name=\"" t.fname "\">" e.bodyParseed "</FUNCTION>\n"  ;
+		true 	= 	<MakeError ParseModule e.bodyParseed>;
 		};
 
 
 	('$') ( e.entry ) e.else,
-		<Upper <Explode e.entry>> : 'ENTRY' = <ScanModule e.else>;
+		<Upper <Explode e.entry>> : 'ENTRY' = <ParseModule e.else>;
 
-	e.error = <MakeError ScanModule e.error>;
+	e.error = <MakeError ParseModule e.error>;
 }
 
-ScanPredlsInBody_  { e.e = <PProut "\nScanPredlsInBody: " <DeScob e.e>><ScanPredlsInBody_ e.e>; }
-ScanPredlsInBody {
+ParsePredlsInBody_  { e.e = <PProut "\nParsePredlsInBody: " <DeScob e.e>><ParsePredlsInBody_ e.e>; }
+ParsePredlsInBody {
 	e.predl (';') e.nextBodyPredl,
-	<ScanPredl e.predl>	: e.pscaned,
-	<ExistError e.pscaned>	: false,
+	<ParsePredl e.predl>	: e.pParseed,
+	<ExistError e.pParseed>	: false,
 	e.nextBodyPredl : {
-					=	"<SENTENCE>" e.pscaned "</SENTENCE>";
-				e.e	=	"<SENTENCE>" e.pscaned "</SENTENCE>" <ScanPredlsInBody e.e>;
+					=	"<SENTENCE>" e.pParseed "</SENTENCE>";
+				e.e	=	"<SENTENCE>" e.pParseed "</SENTENCE>" <ParsePredlsInBody e.e>;
 	};
 
 	e.predl t.last, 
 		t.last : {
-			(';')   = "<SENTENCE>" <ScanPredl  e.predl> "</SENTENCE>";
-			t.last  = "<SENTENCE>" <ScanPredl  e.predl t.last> "</SENTENCE>";
+			(';')   = "<SENTENCE>" <ParsePredl  e.predl> "</SENTENCE>";
+			t.last  = "<SENTENCE>" <ParsePredl  e.predl t.last> "</SENTENCE>";
 		};
 
-	= <MakeError ScanPredlsInBody  'can\'t be empty body of block'>;
+	= <MakeError ParsePredlsInBody  'can\'t be empty body of block'>;
 }
 
 
 
-ScanPredl_ { e.e = <PProut "\nScanPredl: " <DeScob e.e>><ScanPredl_ e.e>; }
-ScanPredl  {
-	/* блок - недоработанная заглушка. создает вызов не существуюущей функции */
+ParsePredl_ { e.e = <PProut "\nParsePredl: " <DeScob e.e>><ParsePredl_ e.e>; }
+ParsePredl  {
+	// блок - недоработанная заглушка. создает вызов не существуюущей функции 
 	e.left-part (',') e.RIGHT-PART (':') ('{') e.block ('}'),
 
-	<ScanRigthPart e.RIGHT-PART> : e.rpscaned,
-	<ExistError e.rpscaned> : false,
+	<ParseRigthPart e.RIGHT-PART> : e.rpParseed,
+	<ExistError e.rpParseed> : false,
 
-	<ScanLeftPart e.left-part> : e.lpscaned,
-	<ExistError e.lpscaned> : false,
+	<ParseLeftPart e.left-part> : e.lpParseed,
+	<ExistError e.lpParseed> : false,
 
-	<ScanPredlsInBody e.block> : e.bscaned,
-	<ExistError e.bscaned> : false,
+	<ParsePredlsInBody e.block> : e.bParseed,
+	<ExistError e.bParseed> : false,
 
 	<GetRand> : t.rand,
 	<Explode t.rand> : e.randtext,
-	<ScanIfs (',') e.RIGHT-PART (':') (e)('.')(t.rand)> : e.lp
+	<ParseIfs (',') e.RIGHT-PART (':') (e)('.')(t.rand)> : e.lp
 
-	=	"<LEFT-PART>"  e.lpscaned  e.lp  "</LEFT-PART>"
-		"<RIGHT-PART>" <ScanRigthPart  ('<')(t.rand)(e)('.')(t.rand)('>')> "</RIGHT-PART>";
+	=	"<LEFT-PART>"  e.lpParseed  e.lp  "</LEFT-PART>"
+		"<RIGHT-PART>" <ParseRigthPart  ('<')(t.rand)(e)('.')(t.rand)('>')> "</RIGHT-PART>";
 
 
 	e.leftpart ('=') e.rigthpart,
-	<ScanLeftPart  e.leftpart>  : e.leftScanned,
-	<ExistError e.leftScanned> : {
-		true  = <MakeError ScanPredl e.leftScanned>;
+	<ParseLeftPart  e.leftpart>  : e.leftParsened,
+	<ExistError e.leftParsened> : {
+		true  = <MakeError ParsePredl e.leftParsened>;
 
 		false,
-		<ScanRigthPart e.rigthpart> : e.rigthScanned,
-		<ExistError e.rigthScanned> : {
+		<ParseRigthPart e.rigthpart> : e.rigthParsened,
+		<ExistError e.rigthParsened> : {
 			false	=
-				"<LEFT-PART>"  e.leftScanned  "</LEFT-PART>"
-				"<RIGHT-PART>" e.rigthScanned "</RIGHT-PART>";
+				"<LEFT-PART>"  e.leftParsened  "</LEFT-PART>"
+				"<RIGHT-PART>" e.rigthParsened "</RIGHT-PART>";
 			true	=
-				<MakeError ScanPredl e.rigthScanned>;
+				<MakeError ParsePredl e.rigthParsened>;
 			};
 	};
 
-	e.error = <MakeError ScanPredl e.error>;
+	e.error = <MakeError ParsePredl e.error>;
 
 }
-ScanLeftPart_ { e.e = <PProut "\nScanLeftPart: " <DeScob e.e>><ScanLeftPart_ e.e>; }
-ScanLeftPart {
+ParseLeftPart_ { e.e = <PProut "\nParseLeftPart: " <DeScob e.e>><ParseLeftPart_ e.e>; }
+ParseLeftPart {
 	=;
 
 	e.shablon (',') e.ifs =
-			<ScanObjectExprWithoutExecs e.shablon>
-			<ScanIfs (',') e.ifs>;
-	e.shablon = <ScanObjectExprWithoutExecs e.shablon>;
-/*	e.error = <MakeError ScanLeftPart e.error>;*/
+			<ParseObjectExprWithoutExecs e.shablon>
+			<ParseIfs (',') e.ifs>;
+	e.shablon = <ParseObjectExprWithoutExecs e.shablon>;
+//	e.error = <MakeError ParseLeftPart e.error>;
 }
 
 
 
-ScanRigthPart_ { e.e = <PProut "\nScanRigthPart: " <DeScob e.e>><PProut "\nScanRigthPart: " e.e><ScanRigthPart_ e.e>; }
-ScanRigthPart {
-	e.rp = <ScanObjectExprWithExecs  e.rp>;
+ParseRigthPart_ { e.e = <PProut "\nParseRigthPart: " <DeScob e.e>><PProut "\nParseRigthPart: " e.e><ParseRigthPart_ e.e>; }
+ParseRigthPart {
+	e.rp = <ParseObjectExprWithExecs  e.rp>;
 }
 
 
 
-ScanObjectExprWithoutExecs_ { e.e = <PProut "\nScanObjectExprWithoutExecs: " e.e><ScanObjectExprWithoutExecs_ e.e>; }
-ScanObjectExprWithoutExecs {
+ParseObjectExprWithoutExecs_ { e.e = <PProut "\nParseObjectExprWithoutExecs: " e.e><ParseObjectExprWithoutExecs_ e.e>; }
+ParseObjectExprWithoutExecs {
 	e.arg, 
-		<ScanObjectExprWithoutExecsFirst e.arg> : e.arg_I,
+		<ParseObjectExprWithoutExecsFirst e.arg> : e.arg_I,
 		<ExistError e.arg_I> : { 
 			false	=	<TransformSpecificatorsInObjectExprWithoutExecs e.arg_I>;
 			true	=	e.arg_I;
@@ -409,9 +474,8 @@ IsVarName {
 	};
 }
 
-/* перестраивает спецификаторы для загрузки программы: 
-	варианты:	  {o   | => o   | => o   | => x   ? }
-*/
+// перестраивает спецификаторы для загрузки программы: 
+//	варианты:	  {o   | => o   | => o   | => x   ? }
 TransformSpecificatorsInObjectExprWithoutExecs_ { e.e = <Prout "TransformSpecificatorsInObjectExprWithoutExecs:" e.e><TransformSpecificatorsInObjectExprWithoutExecs e.e>; };
 TransformSpecificatorsInObjectExprWithoutExecs {
 	e.all,
@@ -441,10 +505,10 @@ TransformSpecificatorsInObjectExprWithoutExecs {
 	e.noOldGroups = e.noOldGroups;
 }
 
-ScanObjectExprWithoutExecsFirst {
-	e.1 ('<') e.2 = <MakeError ScanObjectExprWithoutExecs 'unecpected "<" in <' e.2>;
-	e.1 ('>') e.2 = <MakeError ScanObjectExprWithoutExecs 'unecpected ">" in >' e.2>;
-	e.e = <ScanObjectExprWithExecs e.e>; /* уже знаем, что нету вызовов */
+ParseObjectExprWithoutExecsFirst {
+	e.1 ('<') e.2 = <MakeError ParseObjectExprWithoutExecs 'unecpected "<" in <' e.2>;
+	e.1 ('>') e.2 = <MakeError ParseObjectExprWithoutExecs 'unecpected ">" in >' e.2>;
+	e.e = <ParseObjectExprWithExecs e.e>; // уже знаем, что нету вызовов 
 }
 
 ReplaceAll {
@@ -468,36 +532,36 @@ IsWordNumbDot {
 				e.e = false;
 			};
 
-	/*"$separator" = false;*/
+	//"$separator" = false;
 	t.else = false;
 }
 
-ScanObjectExprWithExecs_ { e.e = <PProut "\nScanObjectExprWithExecs: " e.e><ScanObjectExprWithExecs_ e.e>; }
-ScanObjectExprWithExecs {
+ParseObjectExprWithExecs_ { e.e = <PProut "\nParseObjectExprWithExecs: " e.e><ParseObjectExprWithExecs_ e.e>; }
+ParseObjectExprWithExecs {
 	=;
 
-	"$separator"	e.e = 	<ScanObjectExprWithExecs e.e>;
-	"$not"		e.e = 	"<NOT/>"  <ScanObjectExprWithExecs e.e>;
+	"$separator"	e.e = 	<ParseObjectExprWithExecs e.e>;
+	"$not"		e.e = 	"<NOT/>"  <ParseObjectExprWithExecs e.e>;
 	
-	/* отсечение */
-	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
+	// отсечение 
+	('!')  e.e = "<CUTTER/>" <ParseObjectExprWithExecs e.e>;
 
-	/* разделитель вариантов */
-	('|')  e.e = "|" <ScanObjectExprWithExecs e.e>;
+	// разделитель вариантов 
+	('|')  e.e = "|" <ParseObjectExprWithExecs e.e>;
 
-	/* групповые скобки c именем */
+	// групповые скобки c именем 
 	('{')  e.oexp  ('}')('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false,
 		<Type t.varname> : {
-			'W' s.sub t.varname = "<GROUP_F name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
-			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
-			e.else = <MakeError ScanObjectExprWithExecs 'bad varname for GROUP-brackets'>;
+			'W' s.sub t.varname = "<GROUP_F name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP_F>" <ParseObjectExprWithExecs e.e>;
+			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ParseObjectExprWithExecs e.e>;
+			e.else = <MakeError ParseObjectExprWithExecs 'bad varname for GROUP-brackets'>;
 		};
 
-	/* ВАРИАНТЫ */
+	// ВАРИАНТЫ 
 	('{')  e.oexp  ('}')"["(e.from)".."(e.to)"]"('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname "\">" 
 		"<REPEAT from=\"" e.from "\" to=\"" e.to "\">" 
@@ -506,10 +570,10 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"["(e.from)"..." "]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname "\">" 
 		"<REPEAT from=\"" e.from "\" to=\"inf\">" 
@@ -518,10 +582,10 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"[" "..."(e.to)"]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname "\">" 
 		"<REPEAT from=\"0\" to=\""e.to"\">" 
@@ -530,10 +594,10 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"[" (e.fromto)"]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
 	=	"<GROUP_F name=\"" t.varname  "\">" 
 		"<REPEAT from=\""e.fromto"\" to=\""e.fromto"\">" 
@@ -542,191 +606,161 @@ ScanObjectExprWithExecs {
 			"</GROUP_F>"
 		"</REPEAT>" 
 		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
+		<ParseObjectExprWithExecs e.e>;
 
 
 
-	/* групповые скобки без имени */
+	// групповые скобки без имени 
 	('{')  e.oexp  ('}') e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ParseObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\""  <GetRandomName>  "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+	=	"<GROUP_F name=\""  <GetRandomName>  "\">" e.oexp_I "</GROUP_F>" <ParseObjectExprWithExecs e.e>;
 
 		
 	
 	
 
-	/* Скобки */
+	// Скобки 
 	('(') e.inside (')') e.next,
-	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
-	<ExistError  e.insidescaned_I> : false
-	=	"<BRACKET>"  e.insidescaned_I "</BRACKET>" <ScanObjectExprWithExecs  e.next >;
+	<ParseObjectExprWithExecs e.inside> : e.insideParseed_I,
+	<ExistError  e.insideParseed_I> : false
+	=	"<BRACKET>"  e.insideParseed_I "</BRACKET>" <ParseObjectExprWithExecs  e.next >;
 
 	('<') (t.word) e.inside ('>') e.next,
-	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
-	<ExistError  e.insidescaned_I> : false
+	<ParseObjectExprWithExecs e.inside> : e.insideParseed_I,
+	<ExistError  e.insideParseed_I> : false
 
-	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
-
-
+	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insideParseed_I "</EXEC>" <ParseObjectExprWithExecs e.next>;
 
 
-	/* продолжение ссылки напеременную */
+
+
+	// продолжение ссылки напеременную 
 	"$path" ('/')(t.1) e.next, 
 		<Type t.1> : 'W' s.sub1 t.1
-		=	'/' <Explode t.1> <ScanObjectExprWithExecs  "$path" e.next>;
+		=	'/' <Explode t.1> <ParseObjectExprWithExecs  "$path" e.next>;
 
-	/* конец ссылки напеременную */
+	// конец ссылки напеременную 
 	"$path" e.next		
-		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
+		=	"</LNK>" <ParseObjectExprWithExecs  e.next>;
 
 
 
-	/*ссылка на переменную*/
+	// ссылка на переменную
 	(t.1)('.')(t.2)('/') e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'W' s.sub2 t.2
 	=	"<LNK>" <Explode t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+		<ParseObjectExprWithExecs "$path" ('/') e.next>;
 
-	/*ссылка на переменную c числовым именем*/
+	// ссылка на переменную c числовым именем
 	(t.1)('.')(t.2)('/') e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'N' s.sub2 t.2
 	=	"<LNK>" <Symb t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+		<ParseObjectExprWithExecs "$path" ('/') e.next>;
 
-	/*переменная*/
+	// переменная
 	(t.1)('.')(t.2) e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'W' s.sub2 t.2
 	=	"<VAR>" <Explode t.1> '.' <Explode t.2> "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
+		<ParseObjectExprWithExecs e.next>;
 
-	/*переменная с числовым именем*/
+	// переменная с числовым именем
 	(t.1)('.')(t.2) e.next,
 	<Type t.1> : 'W' s.sub1 t.1,
 	<Type t.2> : 'N' s.sub2 t.2
 	=	"<VAR>" <Explode t.1> '.' <Symb t.2> "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/*переменная без имени*/
+	// переменная без имени
 	(t.1)('.') "$separator" e.next,
 	<Type t.1> : 'W' s.sub1 t.1
 	=	"<VAR>" <Explode t.1> '.' "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/* ссылка на переменную с НЕ числовым именем*/
+	// ссылка на переменную с НЕ числовым именем
 	('@')('.')(t.2) e.next,
 	<Type t.2> : 'W' s.sub2 t.2
 	=	"<LNK>" <Explode t.2> "</LNK>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/* ссылка на переменную с числовым именем*/
+	// ссылка на переменную с числовым именем
 	('@')('.')(t.2) e.next,
 	<Type t.2> : 'N' s.sub2 t.2
 	=	"<LNK>" <Symb t.2> "</LNK>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
+		<ParseObjectExprWithExecs e.next>;
+	
 
-	/*просто слово или число*/
+	// просто слово или число
 	(t.1) e.next, <Type t.1> :
 				{
-					'N' s.sub t.1 = "<INT>" <Symb t.1> "</INT>"   <ScanObjectExprWithExecs e.next>;
-					'W' s.sub t.1 = "<WORD>" <Explode t.1> "</WORD>" <ScanObjectExprWithExecs e.next>;
+					'N' s.sub t.1 = "<INT>" <Symb t.1> "</INT>"   <ParseObjectExprWithExecs e.next>;
+					'W' s.sub t.1 = "<WORD>" <Explode t.1> "</WORD>" <ParseObjectExprWithExecs e.next>;
 					s.T s.sub t.1 = "@ERROR:" ('unkonown symbol in object-expression = "' t.1 '" of type [' s.T s.sub '] in ' (t.1) e.next);
 				};
 
 
-	/*термальное предложение*/
-	(e.1) e.next  =  "<WORD>" e.1 "</WORD>" <ScanObjectExprWithExecs e.next>;
+	// термальное предложение
+	(e.1) e.next  =  "<WORD>" e.1 "</WORD>" <ParseObjectExprWithExecs e.next>;
 
-	/* не возможно появления тут аргумента вида (t.1) e.2   !!! */
+	// не возможно появления тут аргумента вида (t.1) e.2   !!! 
 
-	s.s e.next = "<TEXT>" s.s "</TEXT>" <ScanObjectExprWithExecs e.next>;
+	s.s e.next = "<TEXT>" s.s "</TEXT>" <ParseObjectExprWithExecs e.next>;
 
-	e.error = <MakeError ScanObjectExprWithExecs e.error>;
+	e.error = <MakeError ParseObjectExprWithExecs e.error>;
 
 }
 
 
-ScanIfs_ { e.e = <PProut "\nScanIfs: " e.e/*<DeScob e.e>*/><PProut "\nScanIfs: " <DeScob e.e>><ScanIfs_ e.e>; }
-ScanIfs {
+ParseIfs_ { e.e = <PProut "\nParseIfs: " e.e><PProut "\nParseIfs: " <DeScob e.e>><ParseIfs_ e.e>; }
+ParseIfs {
 	=;
 
-	/* несколько условий */
-/*
-	(',') e.RIGHT-PART (':') e.left-part (',') e.ifs,
-	<ScanLeftPart e.left-part>   : e.lpscaned,
-	<ExistError  e.lpscaned> : false,
-	<ScanRigthPart e.RIGHT-PART> : e.rpscaned,
-	<ExistError  e.rpscaned> : false,
-	<ScanIfs (',') e.ifs> : e.ifscaned,
-	<ExistError  e.ifscaned> : false
-	=	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
-		e.ifscaned;
-*/
-
+	// несколько условий 
+	
 	(',') e.RIGHT-PART (':') e.next,
-	<ScanRigthPart e.RIGHT-PART> : e.rpscaned,
-	<ExistError  e.rpscaned> e.next : {
+	<ParseRigthPart e.RIGHT-PART> : e.rpParseed,
+	<ExistError  e.rpParseed> e.next : {
 		false e.left-part (',') e.ifs,
-		<ScanLeftPart e.left-part>   : e.lpscaned,
-		<ExistError  e.lpscaned> : {
-				false, e.rpscaned : "<NOT/>" e.rpscanednext
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
-					<ScanIfs (',') e.ifs>;
+		<ParseLeftPart e.left-part>   : e.lpParseed,
+		<ExistError  e.lpParseed> : {
+				false, e.rpParseed : "<NOT/>" e.rpParseednext
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpParseednext "</RIGHT-PART>" "<LEFT-PART>" e.lpParseed "</LEFT-PART>" "</IF>"
+					<ParseIfs (',') e.ifs>;
 					
-				false, e.lpscaned : "<NOT/>" e.lpscanednext
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>"
-					<ScanIfs (',') e.ifs>;
+				false, e.lpParseed : "<NOT/>" e.lpParseednext
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpParseed "</RIGHT-PART>" "<LEFT-PART>" e.lpParseednext "</LEFT-PART>" "</IF>"
+					<ParseIfs (',') e.ifs>;
 					
 				false
-				= 	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
-					<ScanIfs (',') e.ifs>;
+				= 	"<IF>" "<RIGHT-PART>" e.rpParseed "</RIGHT-PART>" "<LEFT-PART>" e.lpParseed "</LEFT-PART>" "</IF>"
+					<ParseIfs (',') e.ifs>;
 					
-				true  = <MakeError ScanIfs e.lpscaned>;
+				true  = <MakeError ParseIfs e.lpParseed>;
 		};
 
 		false e.left-part,
-		<ScanLeftPart e.left-part>   : e.lpscaned,
-		<ExistError  e.lpscaned> : {
-				false, e.rpscaned : "<NOT/>" e.rpscanednext 
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
-				false, e.lpscaned : "<NOT/>" e.lpscanednext 
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>";
+		<ParseLeftPart e.left-part>   : e.lpParseed,
+		<ExistError  e.lpParseed> : {
+				false, e.rpParseed : "<NOT/>" e.rpParseednext 
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpParseednext "</RIGHT-PART>" "<LEFT-PART>" e.lpParseed "</LEFT-PART>" "</IF>";
+				false, e.lpParseed : "<NOT/>" e.lpParseednext 
+				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpParseed "</RIGHT-PART>" "<LEFT-PART>" e.lpParseednext "</LEFT-PART>" "</IF>";
 				false
-				= 	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
+				= 	"<IF>" "<RIGHT-PART>" e.rpParseed "</RIGHT-PART>" "<LEFT-PART>" e.lpParseed "</LEFT-PART>" "</IF>";
 				true  
-				=	<MakeError ScanIfs e.lpscaned>;
+				=	<MakeError ParseIfs e.lpParseed>;
 		};
 
-		true  e.next	=   <MakeError ScanIfs e.rpscaned>;
+		true  e.next	=   <MakeError ParseIfs e.rpParseed>;
 	};
 
-/*
-	(',') e.RIGHT-PART (':') e.left-part (',') e.ifs,
-	<ScanLeftPart e.left-part>   : e.lpscaned,
-	<ExistError  e.lpscaned> : false,
-	<ScanRigthPart e.RIGHT-PART> : e.rpscaned,
-	<ExistError  e.rpscaned> : false
-	=	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
-		<ScanIfs (',') e.ifs>;
-*/
-
-	/* одно условие */
-/*	(',') e.RIGHT-PART (':') e.left-part,
-	<ScanLeftPart e.left-part>	: e.lpscaned,
-	<ExistError  e.lpscaned> 	: false,
-	<ScanRigthPart e.RIGHT-PART>	: e.rpscaned,
-	<ExistError  e.rpscaned>	: false
-	=	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>" ;
-*/
-
-	e.error = <MakeError ScanIfs e.error>;
+	e.error = <MakeError ParseIfs e.error>;
 }
 
 
@@ -734,7 +768,7 @@ ScanIfs {
 ExistError { e.1 "@ERROR:" (e.msg) e.2 = true; e.else = false; }
 MakeError  {
 	t.fname e.1 "@ERROR:" (e.msg) e.2 	= "@ERROR:" (e.msg);
-	t.fname e.e 	= "@ERROR:" ('value unscaned by <'t.fname'> : 'e.e) ;
+	t.fname e.e 	= "@ERROR:" ('value unParseed by <'t.fname'> : 'e.e) ;
 }
 DeScob {
  (e.1) e.2 = e.1 <DeScob e.2>;
@@ -753,11 +787,11 @@ GetRand { ,<Rp rand'='<+ 1 <Cp rand>>>:e.e = <Implode 'rrrr98358935897389457'<Sy
 $ENTRY Go { =
 		<Open 'w' 3 <Arg 1>'.xml'>
 		<Br rand'='0>
-		<Br scanbl'='0>
-			<Put 3 <DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>>"</BEGIN>">>;
+		<Br Parsebl'='0>
+			<Put 3 <DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Parse <Mount <Arg 1> >>>>"</BEGIN>">>;
 }
 
-/* переводит все термы в текст */
+// переводит все термы в текст 
 DePlode {
 	=;
 	s.1 e.e, <Type s.1>:'W'e.ee = <Explode s.1> <DePlode e.e>;
@@ -779,67 +813,67 @@ IsSeparatorChar {
 
 
 
-Scan{
+Parse{
 	=;
-	'/*'  e.comm '*/' e.next  =  <Scan e.next>;
-	'\n' '*' e.comm '\n' e.next  =  <Scan '\n' e.next>;
+	'/*'  e.comm '* / e.next  =  <Parse e.next>;
+	'\n' '*' e.comm '\n' e.next  =  <Parse '\n' e.next>;
 
 
 	s.1 '.' e.e,
-		<IsSeparatorChar s.1> : true =	"$separator" ('.') <Scan e.e>;
+		<IsSeparatorChar s.1> : true =	"$separator" ('.') <Parse e.e>;
 	'.' s.1 e.e,
-		<IsSeparatorChar s.1> : true =	('.') "$separator" <Scan e.e>;
+		<IsSeparatorChar s.1> : true =	('.') "$separator" <Parse e.e>;
 	s.0 '.' s.1 e.e,
 		<IsSeparatorChar s.0> : true,
-		<IsSeparatorChar s.1> : true	=	"$separator" ('.') "$separator" <Scan e.e>;
+		<IsSeparatorChar s.1> : true	=	"$separator" ('.') "$separator" <Parse e.e>;
 
 
-	'[' e.all = "[" <Scan e.all>;
-	']' e.all = "]" <Scan e.all>;
-	'...' e.all = "..." <Scan e.all>;
-	'..'  e.all = ".."  <Scan e.all>;
-	'$NOT' e.all = "$not" <Scan e.all>;
-	'$Not' e.all = "$not" <Scan e.all>;
-	'$not' e.all = "$not" <Scan e.all>;
-	'::=' e.all = (':')(':')('=') <Scan e.all>;
-	'::' e.all = ('/') <Scan e.all>;
-	' '  e.all = <Scan e.all>;
-	'\n' e.all = <Scan e.all>;
-	'\t' e.all = <Scan e.all>;
-	'*' e.all = (Mul)	<Scan e.all>;
-	'/' e.all = (Div)	<Scan e.all>;
-	'+' e.all = (Add)	<Scan e.all>;
-	'-' e.all = (Dec)	<Scan e.all>;
-	'\''e.all = <Scan ('\'' ()) e.all>;
-	'"' e.all = <Scan ('"'  ()) e.all>;
+	'[' e.all = "[" <Parse e.all>;
+	']' e.all = "]" <Parse e.all>;
+	'...' e.all = "..." <Parse e.all>;
+	'..'  e.all = ".."  <Parse e.all>;
+	'$NOT' e.all = "$not" <Parse e.all>;
+	'$Not' e.all = "$not" <Parse e.all>;
+	'$not' e.all = "$not" <Parse e.all>;
+	'::=' e.all = (':')(':')('=') <Parse e.all>;
+	'::' e.all = ('/') <Parse e.all>;
+	' '  e.all = <Parse e.all>;
+	'\n' e.all = <Parse e.all>;
+	'\t' e.all = <Parse e.all>;
+	'*' e.all = (Mul)	<Parse e.all>;
+	'/' e.all = (Div)	<Parse e.all>;
+	'+' e.all = (Add)	<Parse e.all>;
+	'-' e.all = (Dec)	<Parse e.all>;
+	'\''e.all = <Parse ('\'' ()) e.all>;
+	'"' e.all = <Parse ('"'  ()) e.all>;
 	(s.quo (e.e)) '\\' e.all,
 		     e.all : {
-				'\\' e.next =  <Scan (s.quo (e.e '\\')) e.next>;
-				'n'  e.next =  <Scan (s.quo (e.e '\n')) e.next>;
-				'\'' e.next =  <Scan (s.quo (e.e '\'')) e.next>;
-				'"'  e.next =  <Scan (s.quo (e.e '"' )) e.next>;
-				't'  e.next =  <Scan (s.quo (e.e '\t')) e.next>;
+				'\\' e.next =  <Parse (s.quo (e.e '\\')) e.next>;
+				'n'  e.next =  <Parse (s.quo (e.e '\n')) e.next>;
+				'\'' e.next =  <Parse (s.quo (e.e '\'')) e.next>;
+				'"'  e.next =  <Parse (s.quo (e.e '"' )) e.next>;
+				't'  e.next =  <Parse (s.quo (e.e '\t')) e.next>;
 
-				s.s  e.next = <MakeError Scan 'unknown special symbol \\' s.s ' before "'e.next'"'>;
-				e.e = <MakeError Scan 'unknown ARGUMENT: ' e.e>;
+				s.s  e.next = <MakeError Parse 'unknown special symbol \\' s.s ' before "'e.next'"'>;
+				e.e = <MakeError Parse 'unknown ARGUMENT: ' e.e>;
 		};
 	(s.quo (e.e)) s.quo e.all, s.quo : {
-				'\'' =  e.e  <Scan e.all>;
-				'"'  = (e.e) <Scan e.all>;
+				'\'' =  e.e  <Parse e.all>;
+				'"'  = (e.e) <Parse e.all>;
 		};
-	(s.quo (e.e)) s.sym e.all = <Scan (s.quo (e.e s.sym)) e.all>;
+	(s.quo (e.e)) s.sym e.all = <Parse (s.quo (e.e s.sym)) e.all>;
 
 	e.all, <Type e.all> : {
-			'L's.sub e.all, <Implode  e.all > : t.word e.else = (t.word) <Scan e.else>;
+			'L's.sub e.all, <Implode  e.all > : t.word e.else = (t.word) <Parse e.else>;
 			'D's.sub e.all, 
 				<ImplNumb e.all > : t.word s.separ e.else,
 				<Type s.separ> : s.s e.e,
-				'LD' : e.e1 s.s e.e2  =  <Scan 'drefVName'e.all>;  /* имя переменной с цифры */
+				'LD' : e.e1 s.s e.e2  =  <Parse 'drefVName'e.all>;  // имя переменной с цифры 
 				
-			'D's.sub e.all, <ImplNumb e.all > : t.word e.else = (t.word) <Scan e.else>;
-			'Pl' s.w e.1 = (s.w) <Scan e.1>;
-			s.1 s.2 s.3 e.e = <MakeError Scan 'unknown type "'s.1 s.2 '" of RIGHT-PART elemet of ' e.all>;
-			e.e = <MakeError Scan 'unknown ARGUMENT TYPE: ' e.e>;
+			'D's.sub e.all, <ImplNumb e.all > : t.word e.else = (t.word) <Parse e.else>;
+			'Pl' s.w e.1 = (s.w) <Parse e.1>;
+			s.1 s.2 s.3 e.e = <MakeError Parse 'unknown type "'s.1 s.2 '" of RIGHT-PART elemet of ' e.all>;
+			e.e = <MakeError Parse 'unknown ARGUMENT TYPE: ' e.e>;
 		};
 }
 
@@ -850,15 +884,8 @@ Same {
 
 
 
-/*
-FixVarLinksInSent{ e.e = <Prout '::::<FixVarLinksInSent 'e.e'>'><FixVarLinksInSent_ e.e>; }
-FixVarLinksInSent_ {
-	(e.vn) e.1 "<VAR>" e.vt '.' e.vn "</VAR>" e.2 = e.1 "<LNK>" e.vn "</LNK>" <FixVarLinksInSent (e.vn) e.2>;
-	(e.vn) e.e = e.e;
-}
-*/
 
-/* переводит закр. перем. в ссылки */
+// переводит закр. перем. в ссылки 
 FixVarLinks{
 
 	"<SENTENCE>" e.body "</SENTENCE>" e.2 = "<SENTENCE>" <FixVarLinks2 e.body> "</SENTENCE>" <FixVarLinks e.2>;
@@ -870,12 +897,7 @@ FixVarLinks{
 	=;
 	
 }
-/*
-FixVarLinks{
-	e.1 "<SENTENCE>" e.sent "</SENTENCE>" e.2 = <Print e.1> "<SENTENCE>" <FixVarLinks2 e.sent> "</SENTENCE>" <FixVarLinks e.2>;
-	e.e=e.e;
-}
-*/
+
 FixVarLinks2{
 	e.1 "<VAR>" e.var "</VAR>" e.2 "<VAR>" e.var "</VAR>" e.3,
 	    e.var : e.vtype '.' s.vname1 e.vname2
@@ -887,11 +909,11 @@ FixVarLinks2{
 
 
 
-/*обрабатывает сообщения об ошибках, закрытые переменные переводит в ссылки на открытые*/
+// обрабатывает сообщения об ошибках, закрытые переменные переводит в ссылки на открытые
 Preproc{
 	e.all = <PrintErrors e.all><FormatXml <FixVarLinks <PreprocPragma e.all>>>;
 }
-/* расставляет отсутпы */
+// расставляет отсутпы 
 FormatXml {
 	t.word e.e,
 		<Type t.word>    : 'W' s.subt t.word,		
@@ -910,7 +932,7 @@ PrintErrors {
 		<PrintErrors e.2>;
 	e.e = ;
 }
-/* метакодирует в xml, упрощает мета-код */
+// метакодирует в xml, упрощает мета-код 
 PreprocPragma{
 	=;
 	e.begin "</TEXT>" "<TEXT>" e.next = <PreprocPragma e.begin e.next>;
@@ -947,15 +969,15 @@ PProut { e.e = <Putout 8 e.e><Prout e.e>; }
 PPrint { e.e = <Putout 8 e.e><Print e.e>; }
 
 
-ScanTemplate {
+ParseTemplate {
 	(e.tname)(':')(':')('=') e.left-part,
-		<ScanLeftPart e.left-part>   : e.lpscaned,
-		<ExistError  e.lpscaned> : {
-			false	=  "<LEFT-PART>" e.lpscaned "</LEFT-PART>";
-			true	=  <MakeError ScanTemplate 'error left-part difinition in Template : ' e.lpscaned>;
+		<ParseLeftPart e.left-part>   : e.lpParseed,
+		<ExistError  e.lpParseed> : {
+			false	=  "<LEFT-PART>" e.lpParseed "</LEFT-PART>";
+			true	=  <MakeError ParseTemplate 'error left-part difinition in Template : ' e.lpParseed>;
 		};
 
-	e.else = <MakeError  ScanTemplate 'error template definition: ' e.else >;
+	e.else = <MakeError  ParseTemplate 'error template definition: ' e.else >;
 }
 
 
@@ -963,7 +985,7 @@ FindAndUseBlock {
 	()(';') e.e = <FindAndUseBlock ()e.e>;
 
 	()("Template")(e.name)e.tmpl (';') e.next,
-		<ScanTemplate (e.name)e.tmpl> : e.stp,
+		<ParseTemplate (e.name)e.tmpl> : e.stp,
 		<ExistError e.stp> : false
 			=
 				"<TEMPLATE name=\""e.name"\">"  e.stp "</TEMPLATE>"
@@ -971,23 +993,23 @@ FindAndUseBlock {
 
 	()("Template")e.tmpl (';') e.next 
 			= 
-				<MakeError <ScanTemplate e.tmpl>>
+				<MakeError <ParseTemplate e.tmpl>>
 				<FindAndUseBlock  () e.next> ;
 		
 
 				
-	(e.some)('{') e.e = <Rp scanbl'='<+ 1 <Cp scanbl>>> <FindAndUseBlock  (e.some ('{')) e.e>;
-	(e.some)('}') e.e, <Cp scanbl> : {
+	(e.some)('{') e.e = <Rp Parsebl'='<+ 1 <Cp Parsebl>>> <FindAndUseBlock  (e.some ('{')) e.e>;
+	(e.some)('}') e.e, <Cp Parsebl> : {
 			1 =
-				<Rp scanbl'='0>
-				<ScanModule e.some ('}')> <FindAndUseBlock ()e.e>;
+				<Rp Parsebl'='0>
+				<ParseModule e.some ('}')> <FindAndUseBlock ()e.e>;
 			t.else =
-				<Rp scanbl'='<- <Cp scanbl> 1>>
+				<Rp Parsebl'='<- <Cp Parsebl> 1>>
 				<FindAndUseBlock (e.some ('}')) e.e>;
 			};
 	(e.some)t.sym e.e = <FindAndUseBlock (e.some t.sym) e.e>;
-	(e.some), <Cp scanbl> : {
-			0	= <ScanModule e.some>;
+	(e.some), <Cp Parsebl> : {
+			0	= <ParseModule e.some>;
 			t.else	= <MakeError  FindAndUseBlock  'ERROR body item at the end: ' t.else>;
 			};
 }
@@ -1000,3 +1022,4 @@ Replace {
 	(e.A s.1 e.B) e.2 s.1 e.3 = <Replace (e.A s.1 e.B) e.2 e.3>;
 	(e.A) e.e = e.e; 
 }
+*/

@@ -164,7 +164,7 @@ unistring RefSymbol<unichar>::toString(){
         std::ostringstream s;
         if ((getValue() == 10) || (getValue() == 13)){
             #ifdef DEBUG
-            s << "\\n";
+            s << "#" << (int)getValue();
             #else
             s << "\n";
             #endif

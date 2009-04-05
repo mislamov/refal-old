@@ -443,6 +443,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             #endif
 
             // сейчас активна закрытая скобка
+            s->message4nextpred = mFORCEBACK;
             while (activeTemplate != finish) {
                 LOG( ">> BACKFORSE forceback: " << activeTemplate->toString() );
                 activeTemplate->forceback(s);  // принудительный откат переменной

@@ -62,7 +62,7 @@ int main ( int argv, char **argc ) {
     }
 
     std::ostringstream ss;
-    ss << homedir << "refgo -e " << homedir << "refal_scaner " << pname << "\n";
+    ss << homedir << "refgo -e " /*<< homedir*/ << "refal_scaner " << pname << "\n";
     //std::cout << ss.str() << flush;
     int err = system(ss.str().c_str());
     if (err) {

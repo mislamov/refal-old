@@ -222,6 +222,27 @@ bool system_COMPARE::eval(RefData* lft, RefData* rht, RefChain* &result, Session
     return false;
 };
 
+bool system_IMPLODE::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    result = new RefChain(lft, rht);
+    RefWord  *ww = new RefWord(result->toString());
+    result->first = result->second = ww;
+    return true;
+};
+
+bool system_EXPLODE::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    if (lft != rht) return false;
+    RefWord* ww = dynamic_cast<RefWord*>(lft);
+    if (! ww) return false;
+
+    long i = 0;
+    unistring str = ww->getValue();
+    result = new RefChain();
+    while(str[i]){
+        *result += new RefAlpha(str[i++]);
+    }
+    return true;
+};
+
 
 
 bool system_MOUNT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
