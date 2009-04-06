@@ -106,6 +106,16 @@ RefChain* Lenw (RefData* beg, RefData* end, Session* s){
     return new RefChain(a, a);
 };
 
+RefChain* Numb (RefData* beg, RefData* end, Session* s){
+    /// todo: сделать не только integer
+    RefChain *result = new RefChain(beg, end);
+    long l = strtol(result->toString().c_str(), NULL, 10);
+
+    RefInteger *rint = new RefInteger(l);
+    result->first = result->second = rint;
+    return result;
+};
+
 
 RefChain*  DataCompare(RefData* beg, RefData* end, Session* s){
     RefData *a = 0;
@@ -148,7 +158,9 @@ RefChain* Mount (RefData* beg, RefData* end, Session* s){
       is.close();
 
         for (int i=0; i<length; i++){
-            (*result) += new RefAlpha(buffer[i]);
+            if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
+                (*result) += new RefAlpha(buffer[i]);
+            }
         }
 
       delete[] buffer;
@@ -212,6 +224,12 @@ bool system_SUM::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s)
 
 bool system_LENW::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     result = Lenw(lft, rht, s);
+    if (result) return true;
+    return false;
+};
+
+bool system_NUMB::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    result = Numb(lft, rht, s);
     if (result) return true;
     return false;
 };

@@ -14,7 +14,7 @@ Template comment  ::= { '/*' e. '*/' | '//' e. '\n' } ! ;
 Template Digit ::= { '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' };
 Template Digits	  ::= Digit. { Digits. | } !;
 Template Letter	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|'k'|'l'|'q'|'w'|'e'|'r'|'t'|'y'|'u'|'i'|'o'|'p'|
-			'Z'|'X'|'C'|'V'|'B'|'N'|'M'|'A'|'S'|'D'|'F'|'G'|'H'|'J'|'K'|'L'|'Q'|'W'|'E'|'R'|'T'|'Y'|'U'|'I'|'O'|'P' 
+			'Z'|'X'|'C'|'V'|'B'|'N'|'M'|'A'|'S'|'D'|'F'|'G'|'H'|'J'|'K'|'L'|'Q'|'W'|'E'|'R'|'T'|'Y'|'U'|'I'|'O'|'P'| '-' | '_' 
 			};
 
 
@@ -31,7 +31,7 @@ P1_Prescaning_pre {
 P1_Prescaning {
 	{ ' ' | '\t' | comment. }[infin] E.next  
 					=  "$separator" <P1_Prescaning  @.next>;
-	{'...'|'..'|'.'|'::='|'::'|':'|'='|'{'|'}'|'['|']'|'('|')'|'<'|'>'|'|'}.item  E.next 
+	{'...'|'..'|'.'|'::='|'::'|':'|'='|'{'|'}'|'['|']'|'('|')'|'<'|'>'|'|'|'!'|'@'|','}.item  E.next 
 					=  <Implode @.item> <P1_Prescaning  @.next>;
 	Digits.num  E.next  
 					=  <Numb @.num> <P1_Prescaning  @.next>; /// todo: вещественные в разных форматах

@@ -63,6 +63,14 @@ public:
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
 };
 
+class system_NUMB : public RefBuildInFunction {
+public:
+    system_NUMB(RefDllModule *m) : RefBuildInFunction("Numb", m) {}
+    unistring toString(){ return "NUMB"; };
+    unistring getName(){ return "Numb"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
 class system_COMPARE : public RefBuildInFunction {
 public:
     system_COMPARE(RefDllModule *m) : RefBuildInFunction("Compare", m) {}
@@ -131,6 +139,8 @@ public:
         setObjectByName("Div",  new system_DIV(this));
         setObjectByName("Mul",  new system_MUL(this));
         setObjectByName("Sum",  new system_SUM(this));
+
+        setObjectByName("Numb",  new system_NUMB(this));
 
         setObjectByName("Lenw",  new system_LENW(this));
         setObjectByName("Compare",  new system_COMPARE(this));

@@ -164,7 +164,7 @@ class RefGroupBracket : public RefBracketBase, public IRefVarStacked, public Ref
         TResult  back(Session *, RefData *&l, RefData *&r);
         bool operator==(RefData&rd){ return false; };
 
-        virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo: оптиизировать
+        virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo: оптимизировать
         /*
         virtual RefData* Copy(RefData *where=0){ return new RefGroupBracket("", where); };
         virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ return new RefGroupBracket(b, where); };

@@ -236,6 +236,12 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
 
 TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
     if (!l) return BACK;
+    #ifdef DEBUG
+    if (! r)SYSTEMERROR("alarm!");
+    #endif
+    r = r->beginOfTerm();
+
+
     if (l==r){
         l = 0;
         r = move_to_pred_point(r, 0/*myid()*/, s);

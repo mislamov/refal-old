@@ -20,7 +20,7 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.0.5 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
-#define DEBUG
+//#define DEBUG
 
 #define _UNICODE
 /****************************************************************************************

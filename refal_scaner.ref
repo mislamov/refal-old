@@ -584,8 +584,8 @@ Scan{
 	(s.quo (e.e)) '\\' e.all,
 		     e.all : {
 				'\\' e.next =  <Scan (s.quo (e.e '\\')) e.next>;
-				'n'  e.next =  <Scan (s.quo (e.e '\x13')) e.next>;
-				'r'  e.next =  <Scan (s.quo (e.e '\x10')) e.next>;
+				'n'  e.next =  <Scan (s.quo (e.e '\n')) e.next>;
+				'r'  e.next =  <Scan (s.quo (e.e '\r')) e.next>;
 				'\'' e.next =  <Scan (s.quo (e.e '\'')) e.next>;
 				'"'  e.next =  <Scan (s.quo (e.e '"' )) e.next>;
 				't'  e.next =  <Scan (s.quo (e.e '\t')) e.next>;
