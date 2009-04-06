@@ -1,7 +1,7 @@
 // **********************************************
 InputFile{='fn.ref';}
 
-$Entry Go { = <Prout <P1_Prescaning (())<P1_Prescaning_pre 0 '\n'<Mount <InputFile>>'\n' >>>; }
+$Entry Go { = <Prout <P1_Builder <P1_Prescaning ()<P1_Prescaning_pre 0 '\n'<Mount <InputFile>>'\n' >>>>; }
 
 
 Template comment  ::= { '/*' e. '*/' | '//' e. '\n' } ! ;
@@ -31,6 +31,8 @@ Template separateS ::= separate. { separateS. | } ! ;
 //   1.      prescaning-парсинг (чтение знаков языка)
 /////////////////////////////////////////////////////////////
 OtherBrack { '>'='<';'}'='{';']'='[';')'='('; }
+ImplodeMeta { ';'="$;";  e.e=<Implode e.e>; }
+ImplodeMeta { ';'="$;";  e.e=<Implode e.e>; }
 P1_Prescaning0 { END.e = <Prout 'P1_Prescaning: [' @.e ']'><P1_Prescaning0 @.e>; }
 P1_Prescaning {
 	(E.code) separateS. END.next  
@@ -41,7 +43,7 @@ P1_Prescaning {
 	 |'+'|'-'|'*'|'/'
 	 | '$NOT' | '$not'
 	}.item  END.next 
-					=  <P1_Prescaning  (E.code <Implode @.item>) @.next>;
+					=  <P1_Prescaning  (E.code <ImplodeMeta @.item>) @.next>;
 					
 	(E.code) Digits.num  END.next  
 					=  <P1_Prescaning  (E.code <Numb @.num>) @.next>; /// todo: вещественные в разных форматах
@@ -60,10 +62,10 @@ P1_Prescaning {
 
 	// начало скобочного выражения
 	(E.code) {'{'|'['|'('|'<'}.br  END.next
-					=  <P1_Prescaning  (E.code <Implode @.br>) @.next>;
+					=  <P1_Prescaning  (E.code <Implode @.br' '>) @.next>;
 	// конец скобочного выражения
 	(E.code) {'}'|']'|')'|'>'}.br  END.next,
-		<Implode <OtherBrack @.br>> : s.obr,
+		<Implode <OtherBrack @.br>' '> : s.obr,
 		@.code : E.A  s.obr  END.B
 					=  <P1_Prescaning  (@.A (s.obr @.B)) @.next>;
 
@@ -132,23 +134,24 @@ Template TemplateName ::= word.fname ; ///todo: словность?
 
 P1_Builder {
 
-   // шаблон
-   MODULE "Template" {"$separator"|} TemplateName.tname {"$separator"|} "::=" e.leftPart ";" END.next		/// todo: проверку на словность имени
-	   =	("template" @.tname <P1_Builder  LEFT-PART  @.leftPart>) 
-		<P1_Builder  MODULE  @.next>;
+   // шаблон  /// todo: проверку на словность имени
+   MODULE "Template" {"$separator" |} TemplateName.tname {"$separator" |} "::=" e.leftPart "$;" END.next
+	   =	( "template" @.tname <P1_Builder  "LEFT_PART"  @.leftPart> ) 
+		<P1_Builder  "MODULE"  @.next> ;
 
    // функция
-   MODULE  FunctionName.fname {"$separator"|} ("{" END.block ) {"$separator"|} {";"|} END.next
-	   =	("func" @.fname  <P1_Builder  BLOCK  @.block>)
-		<P1_Builder  MODULE  @.next>;
+   MODULE  FunctionName.fname {"$separator" |} ("{ " END.block ) {"$separator"|} { "$;" |} END.next
+	   =	( "func" @.fname  <P1_Builder  BLOCK  @.block> )
+		<P1_Builder  MODULE  @.next> ;
 
-   LEFT-PART = ;
-   BLOCK = ;
+   LEFT_PART = leftpart;
+   BLOCK = block;
 
 
    word.state word.t END.next, 
 	   <Explode word.t> : {'$separator'|} { '$line:' Digits. |}.lne 
 	   =	@.lne <P1_Builder @.state @.next>;
+
 }
 
 

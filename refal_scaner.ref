@@ -393,11 +393,12 @@ ScanObjectExprWithExecs {
 	/**/
 
 	/*просто слово или число*/
-	(t.1) e.next, <Type t.1> :
+	(s.1) e.next, <Type s.1> :
 				{
-					'N' s.sub t.1 = "<INT>" <Symb t.1> "</INT>"   <ScanObjectExprWithExecs e.next>;
-					'W' s.sub t.1 = "<WORD>" <Explode t.1> "</WORD>" <ScanObjectExprWithExecs e.next>;
-					s.T s.sub t.1 = "@ERROR:" ('unkonown symbol in object-expression = "' t.1 '" of type [' s.T s.sub '] in ' (t.1) e.next);
+					'N' s.sub s.1 = "<INT>" <Symb s.1> "</INT>"   <ScanObjectExprWithExecs e.next>;
+					'W' s.sub s.1 = "<WORD>" <Explode s.1> "</WORD>" <ScanObjectExprWithExecs e.next>;
+					/*s.0 s.sub s.1 = "<WORD>" s.1 "</WORD>" <ScanObjectExprWithExecs e.next>;*/
+					s.T s.sub s.1 = "@ERROR:" ('unkonown symbol in object-expression = "' s.1 '" of type [' s.T s.sub '] in ' (s.1) e.next);
 				};
 
 
