@@ -24,13 +24,21 @@
 #include <stdlib.h>
 #include <iostream>
 
-long ocount = 0;
+/*
+long co::ocount    = 0;
+long co::datacount = 0;
+long co::symcount  = 0;
+long co::varcount  = 0;
+*/
 
-long RefObject::getCout(){ return ocount; };
-RefObject::RefObject(){ ocount++; };
-RefObject::~RefObject(){ ocount--; };
+RefObject::RefObject(){ co::ocount++;
+    if (! (co::ocount % 10000)) std::cout << "\n:: " << co::ocount << " / " << co::chaincount << " / " << ((float)co::chaincount)/co::datacount << "\n";
+};
+RefObject::~RefObject(){ co::ocount--; };
 
 RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
+    co::datacount++;
+
     sss = "";
 	is_system = true;
 //	is_symbol = true;
@@ -47,7 +55,8 @@ RefData::RefData(RefData *pr) : RefObject() { // создаемся после p
 }
 
 RefData::~RefData(){
-    //std::cout << "\n--DEL: " << sss << "\n" << std::flush;
+    //std::cout << "\n--DEL: " << this->toString() << "\n" << std::flush;
+    co::datacount--;
     if (next) next->pred = pred;
     if (pred) pred->next = next;
 };
@@ -321,7 +330,7 @@ void RefChain::clear(){
         //std::cout << "\n\n---RefChain::clear() - zaglushka---: " << this->toString() << "\n\n" << std::flush;
         if (first) first->pred = 0;
         if (second) second->next = 0;
-        //delChain(first, second);
+        delChain(first, second);
         return;
 };
 
@@ -389,6 +398,7 @@ RefChain& RefChain::operator+=(RefChain &ch){
 
 
 RefChain::RefChain(RefData *l, RefData *r){
+        co::chaincount++;
         if (!l){
             first = 0;
             second = r;
@@ -399,6 +409,7 @@ RefChain::RefChain(RefData *l, RefData *r){
 };
 
 RefChain::~RefChain(){
+    co::chaincount--;
 };
 
 
@@ -600,6 +611,7 @@ RefUserVar::RefUserVar(unistring typeName, unistring name, RefData *rp) : RefVar
 
 
 unistring RefChain::toString(){ return sss = vectorToString(first, second); };
+unistring RefChain::explode(){ return sss = vectorExplode(first, second); };
 
 
 void delChain(RefData*a, RefData*b){
@@ -625,3 +637,5 @@ return;
 };
 
 
+RefVariable::~RefVariable(){ co::varcount--;};
+RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(), RefData(rp), RefalNameSpace(name){ co::varcount++; is_system = false;  };

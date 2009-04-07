@@ -27,8 +27,7 @@
 #include "data.h"
 
 // счетчик для контроля утечек памяти
-long symcount = 0;
-long RefValuedData::getCount(){ return symcount; };
+//long RefValuedData::getCount(){ return symcount; };
 
 
 
@@ -55,13 +54,13 @@ template <class T>
 
 template <class T>
     RefSymbolBase<T>::~RefSymbolBase(){
-                symcount--;
+                co::symcount--;
 };
 
 template <class T>
     RefSymbolBase<T>::RefSymbolBase(RefData *rp) : RefValuedData(rp){
         this->is_system = false;
-        symcount++;
+        co::symcount++;
 };
 /*template <class T>
     void RefSymbolBase<T>::setValue(T i){};
@@ -151,7 +150,6 @@ void RefSymbol<unistring>::setValueFromString(unistring s){
 
 
 
-
 unistring RefSymbol<unistring>::toString(){
         #ifdef DEBUG
             return "\"" + getValue() + "\" ";
@@ -159,6 +157,7 @@ unistring RefSymbol<unistring>::toString(){
             return getValue() + " ";
         #endif
 }
+
 
 unistring RefSymbol<unichar>::toString(){
         std::ostringstream s;

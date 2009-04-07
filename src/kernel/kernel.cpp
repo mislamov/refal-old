@@ -21,6 +21,14 @@
 //#include "dataterms.h"
 
 
+long co::ocount    = 0;
+long co::datacount = 0;
+long co::symcount  = 0;
+long co::varcount  = 0;
+long co::chaincount  = 0;
+
+
+
 
 RefStructBracket::RefStructBracket(RefData* rp) : RefBracketBase(rp) { is_system = false; };
 
@@ -277,12 +285,9 @@ bool	RefVariable_END::operator==(RefData &rd) {
 };
 
 unistring vectorToString(RefData *f, RefData *g){
-    unistring a = "";
-    //return "----";
+    unistring a = EmptyUniString;
     #ifdef DEBUG
      if (!g && f){
-        //return "";
-        //SYSTEMERROR("f && !g in vectorToString! f=" << f->toString() << " and g=" << g);
     }
     #endif
     if (!f) {
@@ -290,7 +295,6 @@ unistring vectorToString(RefData *f, RefData *g){
         a+= "$null, ";
         if (g){
             a+=" after "+g->toString();
-            //a+="(-> "+(g->next?g->next->toString():"null")+" )";
         } else {
             a+=" $null";
         }
@@ -298,10 +302,8 @@ unistring vectorToString(RefData *f, RefData *g){
     } else {
 
         while (f && (!g || f!=g->next)) {
-        //while (f && f!=g->next) {
                 RefData *ff = f;
                 a += f->toString();
-                //a += ' ';
                 f = f->next;
                 if (f && f->pred != ff){
                     #ifdef DEBUG
@@ -318,6 +320,22 @@ unistring vectorToString(RefData *f, RefData *g){
                 SYSTEMERROR("f!=g after vectorToString! f=" << f << " and g=" << g->toString());
         };
         #endif
+    }
+    return a;
+}
+
+unistring vectorExplode(RefData *f, RefData *g){
+    #ifdef DEBUG
+        vectorToString(f, g); // проверка ошибок
+    #endif
+
+    unistring a = EmptyUniString;
+    if (f) {
+        while (f && (!g || f!=g->next)) {
+                RefData *ff = f;
+                a += f->explode();
+                f = f->next;
+        }
     }
     return a;
 }

@@ -128,6 +128,14 @@ public:
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
 };
 
+class system_EXIT : public RefBuildInFunction {
+public:
+    system_EXIT(RefDllModule *m) : RefBuildInFunction("Exit", m) {}
+    unistring toString(){ return "EXIT"; };
+    unistring getName() { return "Exit"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+};
+
 
 
 
@@ -154,6 +162,8 @@ public:
         setObjectByName("Card", new system_CARD(this));
         setObjectByName("Prout", new system_PROUT(this));
         setObjectByName("Print", new system_PRINT(this));
+
+        setObjectByName("Exit", new system_EXIT(this));
     };
 };
 

@@ -60,6 +60,11 @@ class RefSymbolBase : public RefValuedData {
                 s << getValue() ;
                 return s.str();
             };
+            virtual unistring explode(){
+                std::ostringstream s;
+                s << getValue() ;
+                return s.str();            }
+
 };
 
 
@@ -81,7 +86,6 @@ class RefSymbol : public RefSymbolBase<T>{
             virtual void setValueFromString(unistring);
 
             void forceback(Session *){};
-
 };
 
 

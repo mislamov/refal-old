@@ -242,7 +242,7 @@ bool system_COMPARE::eval(RefData* lft, RefData* rht, RefChain* &result, Session
 
 bool system_IMPLODE::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     result = new RefChain(lft, rht);
-    RefWord  *ww = new RefWord(result->toString());
+    RefWord  *ww = new RefWord(result->explode());
     result->first = result->second = ww;
     return true;
 };
@@ -304,3 +304,8 @@ bool system_PRINT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* 
     result = new RefChain(lft, rht); //todo: подобрать сборкой мусора или продумать эффективнее
     return true;
 };
+
+
+bool system_EXIT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    return false;
+}

@@ -144,8 +144,8 @@ class ref_variant_krest : public RefData {
         bool operator==(RefData&rd);
 
 	TResult  init(Session* s, RefData *&l); //
-	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl"); }; //
-    virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl"); };
+	TResult  back(Session* s, RefData *&l, RefData *&r){ SYSTEMERROR("zagl for " << toString() << "->back(s,l,r)"); }; //
+    virtual RefData* Copy(RefData *where=0){ SYSTEMERROR("zagl for " << toString() << "->copy()"); };
     virtual unistring toString(){ return "-x-";};
     void forceback(Session* s){};
 

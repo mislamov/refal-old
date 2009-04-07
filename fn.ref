@@ -1,7 +1,18 @@
 // **********************************************
 InputFile{='fn.ref';}
+//InputFile{='t.ref';}
 
-$Entry Go { = <Prout <P1_Builder <P1_Prescaning ()<P1_Prescaning_pre 0 '\n'<Mount <InputFile>>'\n' >>>>; }
+$Entry Go { = 
+		<Prout<PostScan 
+			<P2_Builder MODULE 
+				<P1_Prescaning 
+					()<P1_Prescaning_pre <Prout 'P1_Prescaning_pre'>
+						0 '\n' <Mount <InputFile>>'\n' 
+					><Prout 'P1_Prescaning'>
+				><Prout 'P2_Builder'>
+			>
+		>>; }
+
 
 
 Template comment  ::= { '/*' e. '*/' | '//' e. '\n' } ! ;
@@ -12,7 +23,8 @@ Template Letter	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|
 			};
 
 
-DoError { int.line END.text = <Print '#### ERROR ['@.line']: ' @.text>; }
+DoError { int.line END.text = <Print '#### ERROR [ line '@.line']: ' <Replace "$separator" ' ' @.text>> <Exit>; }
+Replace { t.1 t.2 e.A t.1 e.B = e.A t.2 <Replace t.1 t.2 e.B>; t.1 t.2 e.e=e.e; }
 
 // счет строк для сообщений об ошбках
 P1_Prescaning_pre {
@@ -31,8 +43,7 @@ Template separateS ::= separate. { separateS. | } ! ;
 //   1.      prescaning-парсинг (чтение знаков языка)
 /////////////////////////////////////////////////////////////
 OtherBrack { '>'='<';'}'='{';']'='[';')'='('; }
-ImplodeMeta { ';'="$;";  e.e=<Implode e.e>; }
-ImplodeMeta { ';'="$;";  e.e=<Implode e.e>; }
+ImplodeMeta { s.e=<Implode '$' s.e>; e.e=<Implode e.e>; }
 P1_Prescaning0 { END.e = <Prout 'P1_Prescaning: [' @.e ']'><P1_Prescaning0 @.e>; }
 P1_Prescaning {
 	(E.code) separateS. END.next  
@@ -132,26 +143,53 @@ Template FunctionName ::= word.fname ; ///todo: словность?
 Template TemplateName ::= word.fname ; ///todo: словность?
 
 
-P1_Builder {
+
+
+P2_Builder0  { e.e = <Prout '<P2_Builder ' e.e '>'> <P2_Builder0 e.e>; }
+P2_Builder {
+
+   { MODULE | LEFT_PART | OBRAZEC } = ;
 
    // шаблон  /// todo: проверку на словность имени
    MODULE "Template" {"$separator" |} TemplateName.tname {"$separator" |} "::=" e.leftPart "$;" END.next
-	   =	( "template" @.tname <P1_Builder  "LEFT_PART"  @.leftPart> ) 
-		<P1_Builder  "MODULE"  @.next> ;
-
+	   =	( "template" @.tname <P2_Builder  "LEFT_PART"  @.leftPart> ) 
+		<P2_Builder  "MODULE"  @.next> ;
    // функция
    MODULE  FunctionName.fname {"$separator" |} ("{ " END.block ) {"$separator"|} { "$;" |} END.next
-	   =	( "func" @.fname  <P1_Builder  BLOCK  @.block> )
-		<P1_Builder  MODULE  @.next> ;
+	   =	( "func" @.fname  <P2_Builder  BLOCK  @.block> )
+		<P2_Builder  MODULE  @.next> ;
 
-   LEFT_PART = leftpart;
-   BLOCK = block;
+   ///  todo блоком
+   LEFT_PART e.obr "$," END.if	=	("left-part" <P2_Builder  OBRAZEC @.obr> <P2_Builder  CONDITION @.if>);
+   LEFT_PART e.obr  =	("left-part" <P2_Builder  OBRAZEC @.obr>);
+
+   CONDITION e.cond1   "$," END.condN = <P2_Builder  CONDITION @.cond1> <P2_Builder  CONDITION @.condN>;
+   CONDITION e.obrazec "$:" e.result  = ("if" <P2_Builder  RIGHT_PART @.obrazec> ("left-part" <P2_Builder  OBRAZEC @.result>));
+
+   BLOCK   e.predl "$;" END.next    =    <P2_Builder  SENTENCE @.result>  <P2_Builder  BLOCK @.next>;
+   BLOCK   END.predl     =    <P2_Builder  SENTENCE @.predl>;
+
+   //SENTENCE e.left "$=" e.rigth  =  ();
+   
+   SENTENCE e. = SENTENCE;
+   OBRAZEC e.    = obrazec;
+   RIGHT_PART e. = right_part;
+
+   word.state "$separator" END.next   =	<P2_Builder @.state @.next>;	   
+   word.state word.t       END.next, 
+	   <Explode word.t> : '$line:' Digits.
+	   =	@.t <P2_Builder @.state @.next>;
 
 
-   word.state word.t END.next, 
-	   <Explode word.t> : {'$separator'|} { '$line:' Digits. |}.lne 
-	   =	@.lne <P1_Builder @.state @.next>;
+   /* Обработка ошибок */
+   MODULE e.text word.ln e. ,
+	   <Explode word.ln> : '$line:' Digits.line
+		   =  <DoError <Numb @.line> ' temlpate or function defenition expected here: `' e.text '`'>;
 
+
+   word.state  e.text word.ln e. ,
+	   <Explode word.ln> : '$line:' Digits.line
+		   =  <DoError <Numb @.line> word.state '-item expected here: `' e.text '`'>;
 }
 
 
@@ -162,3 +200,16 @@ P1_Builder {
 
 //   3.      семантический анализ и оптимизация (перестройка структуры программы)
 //   4.      построение байт/xml-кода
+
+
+
+// почее
+PostScan {
+	word.A END.next,
+		<Explode word.A> : '$line:' END. = <PostScan @.next>;
+	 
+	(END.A) END.next = (<PostScan @.A>) <PostScan @.next>;
+	
+	t.A  END.next = @.A <PostScan @.next>;
+	=;
+}

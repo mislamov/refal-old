@@ -25,6 +25,14 @@
 #include "data.h"
 
 
+namespace co {
+        extern long ocount;
+        extern long datacount;
+        extern long symcount;
+        extern long varcount;
+        extern long chaincount;
+};
+
 
 
 class RefVariable_e : public RefVariable {
@@ -158,6 +166,7 @@ class RefExecBracket : public RefBracketBase {
 
 
 unistring vectorToString(RefData *f, RefData *g);
+unistring vectorExplode(RefData *f, RefData *g);
 void print_vector(RefData *f, RefData *t=0);
 
 #endif // DATATERMS_H_INCLUDED

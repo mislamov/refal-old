@@ -119,7 +119,7 @@ ref_variant_vopr::ref_variant_vopr( RefData* rp) : RefData(rp) { is_system=false
 TResult		ref_variant_vopr::init(Session *, RefData *&l) { return BACK; };
 TResult     ref_variant_vopr::back(Session* s, RefData *&l, RefData *&r){ return BACK; }; //
 RefData*	ref_variant_vopr::pred_point (ThisId id, Session *s) {
-        if (s->message4nextpred == mFORCEBACK){ return pred; }
+        //if (s->message4nextpred == mFORCEBACK){ return pred; } - закрыл, так как откатывать надо не последний вариант а сопоставленный
 		ref_variant_vert *rvv = s->matchSessions.back()->StackOfVariants.top();
 		return rvv;
 };

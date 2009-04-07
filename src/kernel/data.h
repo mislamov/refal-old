@@ -60,9 +60,9 @@ class RefObject {
 
         //static long ocount;
         RefObject();
-        static long getCout();
         ~RefObject();
         virtual unistring toString() = 0;//{ return "@RefObject.toString()"; }
+        virtual unistring explode() { return toString(); }
 };
 
 
@@ -167,8 +167,10 @@ class RefVariableBase : public IRefVarStacked {
 
 class RefVariable : public RefVariableBase, public RefData , public RefalNameSpace { // Простая переменная
     public:
+        ~RefVariable();
+
         virtual void    forceback(Session* s){ }; // принудительный откат. Точка убирает из сессии свое состоян
-        RefVariable(unistring name = EmptyUniString, RefData *rp = 0) : RefVariableBase(), RefData(rp), RefalNameSpace(name){ is_system = false;  };
+        RefVariable(unistring name = EmptyUniString, RefData *rp = 0);
         virtual unistring getName(){ return RefalNameSpace::getName(); }; /// todo очень грязное решение. исправить
         virtual void setName(unistring name){ RefalNameSpace::setName(name); }; /// todo очень грязное решение. исправить
 };
@@ -273,6 +275,7 @@ class RefChain : public std::pair<RefData*, RefData*> {
         inline void set(RefData *&l, RefData *&r){l=first; r=second;};  //  присваивает концы цепочки аргументам
 
         unistring toString();
+        unistring explode(); // голый текст без форматирования
 };
 
 
