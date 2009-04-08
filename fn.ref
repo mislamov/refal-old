@@ -26,7 +26,7 @@ Template Letter	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|
 			};
 
 
-DoError { int.line END.text = <Print '#### ERROR [ line '@.line']: ' <Replace "$separator" ' ' @.text>> <Exit>; }
+DoError { int.line END.text = <Print '#### ERROR [ line '<- @.line 1>']: ' <Replace "$separator" ' ' @.text>> <Exit>; }
 Replace { t.1 t.2 e.A t.1 e.B = e.A t.2 <Replace t.1 t.2 e.B>; t.1 t.2 e.e=e.e; }
 
 // счет строк для сообщений об ошбках
@@ -46,7 +46,7 @@ Template separateS ::= separate. { separateS. | } ! ;
 //   1.      prescaning-парсинг (чтение знаков языка)
 /////////////////////////////////////////////////////////////
 OtherBrack { '>'='<';'}'='{';']'='[';')'='('; }
-ImplodeMeta { s.e=<Implode '$' s.e>; e.e=<Implode e.e>; }
+ImplodeMeta { '+'=(word plus);'-'=(word minus);'*'=(word mul);'/'=(word div);  s.e=<Implode '$' s.e>; e.e=<Implode e.e>; }
 P1_Prescaning0 { END.e = <Prout 'P1_Prescaning: [' @.e ']'><P1_Prescaning0 @.e>; }
 P1_Prescaning {
 	(E.code) separateS. END.next  
@@ -60,11 +60,11 @@ P1_Prescaning {
 					=  <P1_Prescaning  (E.code <ImplodeMeta @.item>) @.next>;
 					
 	(E.code) Digits.num  END.next  
-					=  <P1_Prescaning  (E.code <Numb @.num>) @.next>; /// todo: вещественные в разных форматах
+					=  <P1_Prescaning  (E.code (int <Numb @.num>)) @.next>; /// todo: вещественные в разных форматах
 	(E.code) { Letter. e. }.word { s.notletter END.nn }.next,
 		$NOT s.notletter : Letter. ,
 		$NOT s.notletter : Digit.
-					=   <P1_Prescaning  (E.code <Implode @.word>) @.next>;
+					=   <P1_Prescaning  (E.code ("word" <Implode @.word>)) @.next>;
 					
 	(E.code) '\'' e.all,
 		<P1_Prescaning_quote ('\'') e.all> : (e.text) END.next
@@ -72,7 +72,7 @@ P1_Prescaning {
 
 	(E.code) '"'  e.all,
 		<P1_Prescaning_quote ( '"') e.all> : (e.text) END.next
-					=  <P1_Prescaning  (E.code ("word" e.text)) @.next>;
+					=  <P1_Prescaning  (E.code ("word" <Implode e.text>)) @.next>;
 
 	// начало скобочного выражения
 	(E.code) {'{'|'['|'('|'<'}.br  END.next
@@ -142,11 +142,18 @@ Unescape {
 // <слово ~~~> ? (exec (слово) ~~~)
 
 
-Template FunctionName ::= word.fname ; ///todo: словность?
-Template TemplateName ::= word.fname ; ///todo: словность?
+Template FunctionName ::= (word word.fname) ; ///todo: словность?
+Template TemplateName ::= (word word.fname) ; ///todo: словность?
+Template VarName ::= ({word|int} e.text) ;
 
-
-
+ParseFromTo{
+	e.from ".." e.to,
+		<P2_Builder @.from> : { ({lnk|var|int} e. ) }.tfrom,
+		<P2_Builder @.to  > : { ({lnk|var|int} e. ) }.tto  =  @.tfrom @.tto;
+	e.from "...",
+		<P2_Builder @.from> : { ({lnk|var|int} e. ) }.tfrom = @.tfrom (int "inf");
+	(word "inf") = (int "inf")(int "inf");
+}
 
 P2_Builder0  { e.e = <Prout '<P2_Builder ' e.e '>'> <P2_Builder0 e.e>; }
 P2_Builder {
@@ -154,7 +161,7 @@ P2_Builder {
    { MODULE | LEFT_PART | OBRAZEC } = ;
 
    // шаблон  /// todo: проверку на словность имени
-   MODULE "Template" {"$separator" |} TemplateName.tname {"$separator" |} "::=" e.leftPart "$;" END.next
+   MODULE (word "Template") {"$separator" |} TemplateName.tname {"$separator" |} "::=" e.leftPart "$;" END.next
 	   =	( "template" @.tname <P2_Builder  "LEFT_PART"  @.leftPart> ) 
 		<P2_Builder  "MODULE"  @.next> ;
    // функция
@@ -164,48 +171,51 @@ P2_Builder {
 
    ///  todo блоком
    LEFT_PART e.obr "$," END.if	=	("left-part" <P2_Builder  OBRAZEC @.obr> <P2_Builder  CONDITION @.if>);
-   LEFT_PART e.obr  =	("left-part" <P2_Builder  OBRAZEC @.obr>);
+   LEFT_PART e.obr		=	("left-part" <P2_Builder  OBRAZEC @.obr>);
 
    CONDITION e.cond1   "$," END.condN = <P2_Builder  CONDITION @.cond1> <P2_Builder  CONDITION @.condN>;
    CONDITION e.obrazec "$:" e.result  = ("if" <P2_Builder  RIGHT_PART @.obrazec> ("left-part" <P2_Builder  OBRAZEC @.result>));
 
-   BLOCK   e.predl "$;" END.next    =    <P2_Builder  SENTENCE @.predl>  <P2_Builder  BLOCK @.next> ;
-   BLOCK  {"$separator" |} = ; // пропускает когда блок пуст!
-   BLOCK   END.predl    =    <P2_Builder  SENTENCE @.predl>;
-   //SENTENCE e.left "$=" e.rigth  =  ();
+   BLOCK   e.predl "$;" END.next	=    <P2_Builder  SENTENCE @.predl>  <P2_Builder  BLOCK @.next> ;
+   BLOCK  {"$separator" |} 		= ; // пропускает когда блок пуст!
    
-   SENTENCE e.leftpart "$=" END.rightpart = ("sentence" <P2_Builder  LEFT_PART @.leftpart><P2_Builder  RIGHT_PART @.rightpart>);
-
+   SENTENCE e.leftpart "$=" END.rightpart 					=	("sentence" <P2_Builder  LEFT_PART @.leftpart><P2_Builder  RIGHT_PART @.rightpart>);
 // ===== Переменные =====
-   OBRAZEC  ("word" e.word)"$." ("word" e.name) END.next	= 	(var (e.name) e.word) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC  ("{ " e.chain) "$." ("word" e.name) END.next	=	(group (@.name) <P2_Builder OBRAZEC @.chain>) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC  ("{ " e.chain)("[ " e.from ".." e.to) "$." ("word" e.name)  END.next	
-								=	(group (@.name) (repeat (@.from) (@.to) <P2_Builder OBRAZEC @.chain>)) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC  ("word" e.word)("[ " e.from ".." e.to) "$." ("word" e.name)  END.next
-								=	(group (@.name) (repeat (@.from) (@.to) (var () @.word))) <P2_Builder  OBRAZEC @.next>;
-
+   {OBRAZEC|RIGHT_PART}.state ("word" e.word)"$." VarName.vname END.next	= 	(var (@.vname::text) e.word) <P2_Builder  @.state @.next>;
+   OBRAZEC  ("{ " e.chain) "$." VarName.vname END.next				=	(group (@.vname::text) <P2_Builder OBRAZEC @.chain>) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " e.chain)("[ " e.fromto) "$." ("word" e.name)  END.next	=	(group (@.name) (repeat <ParseFromTo @.fromto> <P2_Builder OBRAZEC @.chain>)) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " e.chain)("[ " e.fromto)  END.next	=	(group () (repeat <ParseFromTo @.fromto> <P2_Builder OBRAZEC @.chain>)) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " e.chain) END.next			=	(group () <P2_Builder OBRAZEC @.chain>) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("word" e.word)"$." END.next		= 	(var () e.word) <P2_Builder OBRAZEC  @.next>;
+								
+/// todo нормальные варианты
+   OBRAZEC  "$|"  END.next  							=	(thr-variant) <P2_Builder  OBRAZEC @.next> ;
+   OBRAZEC  "$!"  END.next  							=	(cutter) <P2_Builder  OBRAZEC @.next> ;
+   OBRAZEC  ("word" e.word)("[ " e.fromto) "$." ("word" e.name)  END.next	=	(group (@.name) (repeat <ParseFromTo @.fromto> (var () @.word))) <P2_Builder  OBRAZEC @.next>;
 // ===== Ссылки =====
-   OBRAZEC "$@" "$." ("word" e.name) END.next	= 	 (lnk @.name) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC {"$@" | ("word" e.)} "$." ("word" e.name) { "::" ("word" e.) }[inf].path END.next	= 	 (lnk @.name @.path) <P2_Builder  OBRAZEC @.next>;
-
+   {OBRAZEC|RIGHT_PART}.state { "$@" | ("word" e. )} "$." VarName.vname { "::" ("word" e. ) }[inf].path END.next
+										= 	 (lnk @.vname::text @.path) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state "$@" "$." VarName.vname END.next		= 	 (lnk @.vname::text) <P2_Builder  @.state @.next>;
 // ===== Данные =====
-   OBRAZEC целое ? (int целое) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC вещ-е ? (real вещ-е) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC слово ? (word слово) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC «литеры» ? (word литеры) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC '~~~' ? (text ~~~) <P2_Builder  OBRAZEC @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("int" int.n)		END.next	=	(int  @.n) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("real" real.n)		END.next	=	(real @.n) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("word" e.w)	END.next	=	(word @.w) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("text" e.t)	END.next	=	(text @.t) <P2_Builder  @.state @.next>;
+
+   {OBRAZEC|RIGHT_PART}.state "$NOT"	END.next	=	"$not" <P2_Builder  @.state @.next>;
 
 // ===== Скобки =====
-   OBRAZEC (~~~) ? (B ~~~) <P2_Builder  OBRAZEC @.next>;
-   OBRAZEC <слово ~~~> ? (exec (слово) ~~~) <P2_Builder  OBRAZEC @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("( " e.chain)	 END.next	=	("( " <P2_Builder  @.state @.chain>) <P2_Builder  @.state @.next>;
+   RIGHT_PART ("< " {"$separator"|} ("word" word.fname) e.chain) END.next	=	(exec (@.fname) <P2_Builder  RIGHT_PART @.chain>) <P2_Builder  RIGHT_PART @.next>;
+   {OBRAZEC|RIGHT_PART} {"$separator"|} = ;
    
-   
-   RIGHT_PART e. = right_part;
 
    word.state "$separator" END.next   =	<P2_Builder @.state @.next>;	   
    word.state word.t       END.next, 
-	   <Explode word.t> : '$line:' Digits.
-	   =	@.t <P2_Builder @.state @.next>;
+			<Explode word.t> : '$line:' Digits.
+			=	@.t <P2_Builder @.state @.next>;
+
+   BLOCK   END.predl    =    <P2_Builder  SENTENCE @.predl>;
 
 
    // Обработка ошибок 

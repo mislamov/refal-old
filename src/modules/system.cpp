@@ -109,7 +109,7 @@ RefChain* Lenw (RefData* beg, RefData* end, Session* s){
 RefChain* Numb (RefData* beg, RefData* end, Session* s){
     /// todo: сделать не только integer
     RefChain *result = new RefChain(beg, end);
-    long l = strtol(result->toString().c_str(), NULL, 10);
+    long l = strtol(result->explode().c_str(), NULL, 10);
 
     RefInteger *rint = new RefInteger(l);
     result->first = result->second = rint;
@@ -143,12 +143,13 @@ RefChain* Mount (RefData* beg, RefData* end, Session* s){
       RefChain *result = new RefChain();
 
       std::ifstream is;
-      is.open ( RefChain(beg, end).toString().c_str(), std::ios::binary );
+      is.open ( RefChain(beg, end).explode().c_str(), std::ios::binary );
 
       // get length of file:
       is.seekg (0, std::ios::end);
       length = is.tellg();
       is.seekg (0, std::ios::beg);
+      if (length < 0) return 0;
 
       // allocate memory:
       buffer = new char [length];

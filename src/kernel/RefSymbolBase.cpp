@@ -154,7 +154,8 @@ unistring RefSymbol<unistring>::toString(){
         #ifdef DEBUG
             return "\"" + getValue() + "\" ";
         #else
-            return getValue() + " ";
+            //return getValue() + " ";
+            return "\"" + getValue() + "\" ";
         #endif
 }
 
@@ -168,7 +169,8 @@ unistring RefSymbol<unichar>::toString(){
             s << "\n";
             #endif
         } else {
-            s << this->getValue();// << '_' <<(long)this << ' ';
+            s << '\'' << this->getValue();// << '_' <<(long)this << ' ';
+            //s << this->getValue();
         }
         return sss = s.str();
 }
