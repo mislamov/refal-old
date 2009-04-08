@@ -191,7 +191,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
     Если isdemaching==true, то argleft и argrigh игнорируются.
     Если isRevers==true, то инфертировать успех: удачное сопоставление нас не удовлетворяет. Для демачинга - неуспех
 */
-bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, bool isdemaching, bool isRevers) {
+bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, RefData *argrigh, bool isdemaching, bool isRevers) {
     if (isRevers && isdemaching) {
         return false;
     }
@@ -202,7 +202,7 @@ bool  Session::matching(RefChain *tmplate, RefData *argleft, RefData *argrigh, b
         /// новое сопоставление в цепочке
         //  поместить новое поле зрения в стек
         //  создать точку восстановления
-        this->matchSessions.push_back( new SessionOfMaching(argleft, argrigh) );
+        this->matchSessions.push_back( new SessionOfMaching(initer, argleft, argrigh) );
         //  showStatus();
         //  запустиь матчинг
         succmatch = matchingBySession(this, tmplate, isdemaching);
@@ -648,7 +648,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
             //  сохраняем сопоставление в вызывающей субсессии
             getCurrentSopostStack()->push( setVarBody(bridge->getName(), varBody) );
             //  создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
-            SessionOfMaching *sess = new SessionOfMaching(getPole_zrenija());
+            SessionOfMaching *sess = new SessionOfMaching(bridge, this);
             //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
             sess->StackOfDataSkob.push( matchSessions.back()->StackOfDataSkob.top()  );
             matchSessions.push_back(sess);
@@ -910,3 +910,44 @@ void Session::showStatus() {
     std::cout << "\n\n";
 
 }
+
+
+
+// создает и возвращает субсессию (точку восстановления) для сопоставления с новым полем зрения
+SessionOfMaching::SessionOfMaching(RefObject *own, RefData *argLeft, RefData *argRight){
+                    owner = own;
+                    //varTable = new TVarBodyTable();
+
+                    isfar = false;
+                    pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
+                    StackOfDataSkob.push(dynamic_cast<RefData_DOT *>(pole_zrenija->second));
+                    //StopBrackForceVar = 0;
+                    templReturnBackPoint = 0;
+}
+
+// создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов (поле зения уже подготовлено)
+SessionOfMaching::SessionOfMaching(RefObject *own, Session *s){
+                    owner = own;
+                    isfar = true;
+                    templReturnBackPoint = 0;
+                    pole_zrenija = s->getPole_zrenija();
+                    //StopBrackForceVar = 0;
+}
+
+// очищает точку восстановления с удалением мусора
+SessionOfMaching::~SessionOfMaching(){
+                    if (!isfar){ // не чужое поле зрения (не внешний шаблон)
+                        //std::cout << "\nown: " << owner->toString() << "\n\n" << flush ;
+                        if (dynamic_cast<RefCondition *>(owner)){
+                            //std::cout << "\ndel: " << pole_zrenija->toString();
+                            pole_zrenija->clear();
+                        } else {
+                            // удаление  датадот
+                            delete pole_zrenija->first;  // в деструкторе ссылки боковых точек выравниваются
+                            delete pole_zrenija->second; // в деструкторе ссылки боковых точек выравниваются
+                        }
+                    }
+                    // сборка мусора
+                    //LOG(" garbage collector nema!");
+}
+

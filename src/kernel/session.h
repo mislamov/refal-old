@@ -71,7 +71,8 @@ class SessionOfMaching  : public RefObject {
         public:
                 bool isfar; // признак того, что субсессия создается для внешнего сопоставления (чужое поле зрения)
         public:
-                RefChain *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
+                RefObject *owner;  // причина подсессии : предложение(образец), условие или внешний шаблон(образец);
+                RefChain  *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
 
                 std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
                 //std::stack<RefData *>	        StackOfGroupSkob;	    // Стек указателей на ПЕРЕДначало ОВ для группы - а надо ли
@@ -90,38 +91,14 @@ class SessionOfMaching  : public RefObject {
                 std::stack<TVarBody*> StackOfSopost; // Стек хранителей состояний шаблонов
                 //RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
 
-                // создает и возвращает субсессию (точку восстановления)
-                SessionOfMaching(RefData *argLeft, RefData *argRight){
-                    //varTable = new TVarBodyTable();
+                // создает и возвращает субсессию (точку восстановления) для сопоставления с новым полем зрения
+                SessionOfMaching(RefObject *own, RefData *argLeft, RefData *argRight);
 
-                    isfar = false;
-                    pole_zrenija = (new RefChain(argLeft, argRight))->aroundByDots();
-                    StackOfDataSkob.push(dynamic_cast<RefData_DOT *>(pole_zrenija->second));
-                    //StopBrackForceVar = 0;
-                    templReturnBackPoint = 0;
-                }
-
-                // создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов
-                SessionOfMaching(RefChain *pz){
-
-                    isfar = true;
-                    templReturnBackPoint = 0;
-                    pole_zrenija = pz;
-                    //StopBrackForceVar = 0;
-                }
+                // создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов (поле зения уже подготовлено)
+                SessionOfMaching(RefObject *own, Session *s);
 
                 // очищает точку восстановления с удалением мусора
-                virtual ~SessionOfMaching(){
-                    if (! isfar){
-                        // удаление  датадот
-                        delete pole_zrenija->first;  // в деструкторе ссылки боковых точек выравниваются
-                        delete pole_zrenija->second; // в деструкторе ссылки боковых точек выравниваются
-                    }
-                    // сборка мусора
-                    //LOG(" garbage collector nema!");
-
-                }
-
+                virtual ~SessionOfMaching();
                 unistring toString() { return "SessionOfMaching"; };
 };
 
@@ -159,7 +136,7 @@ class Session : public RefObject {
     void  SaveTemplItem   (RefData* var, RefData* l, RefData* r); // если аргумент - переменная, то добавляем ее состояние
     void  RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ); // извлекаем последнее сохраненное сост-е
 
-    bool  matching(RefChain *tmplate, RefData*l, RefData*r, bool isdemaching, bool isRevers); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
+    bool  matching(RefObject *initer, RefChain *tmplate, RefData*l, RefData*r, bool isdemaching, bool isRevers); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 
     std::stack<TVarBody*> *getCurrentSopostStack(){
         #ifdef DEBUG

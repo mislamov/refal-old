@@ -32,7 +32,7 @@ long co::varcount  = 0;
 */
 
 RefObject::RefObject(){ co::ocount++;
-    if (! (co::ocount % 10000)) std::cout << "\n:: " << co::ocount << " / " << co::chaincount << " / " << ((float)co::chaincount)/co::datacount << "\n";
+    //if (! (co::ocount % 10000)) std::cout << "\n:: " << co::ocount << " / " << co::chaincount << " / " << ((float)co::chaincount)/co::datacount << "\n";
 };
 RefObject::~RefObject(){ co::ocount--; };
 
@@ -108,7 +108,14 @@ void       RefData::drop   ( ThisId ThisId) {
 
 //////////////////////////////////////////////////////////////////
 RefData*  move_to_next_point(RefData*& point, ThisId id, Session* s) {
-    do point = point->next_point(id, s);
+    do {
+        //std::cout << "\nmove_to_next_point: [" << point->toString() << "] -> [";
+        point = point->next_point(id, s);
+        /*std::cout
+            << (point?point->toString():"\\x0000")
+            << "]" << "\n";*/
+
+    }
     while (point && point->is_system);
     return point;
 };
@@ -240,11 +247,11 @@ RefChain* RefChain::Copy(Session *s){
             if (tmplnk->getPath() != EmptyUniString){
                     tbody = tbody->folowByWay(tmplnk->getPath());
             }
-            #ifdef DEBUG
+            //#ifdef DEBUG ///todo: когда препроцессор будет определять корявые ссылки правых частей предложений, раскомментировать
             if (!tbody ) {
                 s->showStatus(); SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
             }
-            #endif
+            //#endif
             if (!(tbody->first)){
                 src = move_to_next_point(src, 0, 0);
                 continue;
@@ -328,8 +335,6 @@ RefChain* RefChain::Copy(Session *s){
 
 void RefChain::clear(){
         //std::cout << "\n\n---RefChain::clear() - zaglushka---: " << this->toString() << "\n\n" << std::flush;
-        if (first) first->pred = 0;
-        if (second) second->next = 0;
         delChain(first, second);
         return;
 };
@@ -614,27 +619,35 @@ unistring RefChain::toString(){ return sss = vectorToString(first, second); };
 unistring RefChain::explode(){ return sss = vectorExplode(first, second); };
 
 
+/// todo: оптимизировать грязный код
 void delChain(RefData*a, RefData*b){
-return;
+    //std::cout << "\ndelChain: " << vectorToString(a, b) << "\n";
+//return;
     if (!a && !b) return;
     //if (!a) return;
     #ifdef DEBUG
     if ((!a && b)) SYSTEMERROR("Delete Chain error: !a && b, b=" << b->toString());
     #endif
-    /**/
-    a->pred = 0;
-    if (b) b->next = 0;
-    while (a=a->next){
-       delete a->pred;
-       a->pred = 0;
-    }
-    /**/
-    /*while ( (a=a->next) && (a->pred!=b->next) ){
-       delete a->pred;
-    }
-    */
 
+    if (a->pred) {
+        a->pred->next = 0;
+    }
+    a->pred = 0; // ???
+    if (b) {
+        if (b->next) {
+            b->next->pred = 0;
+        }
+        b->next = 0;
+    }
+    while (a->next){
+       a = a->next;
+       delete a->pred;
+    }
+    delete a;
 };
+
+
+
 
 
 RefVariable::~RefVariable(){ co::varcount--;};

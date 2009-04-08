@@ -3,6 +3,7 @@ InputFile{='fn.ref';}
 //InputFile{='t.ref';}
 
 $Entry Go { = 
+
 		<Prout<PostScan 
 			<P2_Builder MODULE 
 				<P1_Prescaning 
@@ -11,7 +12,9 @@ $Entry Go { =
 					><Prout 'P1_Prescaning'>
 				><Prout 'P2_Builder'>
 			>
-		>>; }
+		>>; 
+
+		}
 
 
 
@@ -166,13 +169,37 @@ P2_Builder {
    CONDITION e.cond1   "$," END.condN = <P2_Builder  CONDITION @.cond1> <P2_Builder  CONDITION @.condN>;
    CONDITION e.obrazec "$:" e.result  = ("if" <P2_Builder  RIGHT_PART @.obrazec> ("left-part" <P2_Builder  OBRAZEC @.result>));
 
-   BLOCK   e.predl "$;" END.next    =    <P2_Builder  SENTENCE @.result>  <P2_Builder  BLOCK @.next>;
-   BLOCK   END.predl     =    <P2_Builder  SENTENCE @.predl>;
-
+   BLOCK   e.predl "$;" END.next    =    <P2_Builder  SENTENCE @.predl>  <P2_Builder  BLOCK @.next> ;
+   BLOCK  {"$separator" |} = ; // пропускает когда блок пуст!
+   BLOCK   END.predl    =    <P2_Builder  SENTENCE @.predl>;
    //SENTENCE e.left "$=" e.rigth  =  ();
    
-   SENTENCE e. = SENTENCE;
-   OBRAZEC e.    = obrazec;
+   SENTENCE e.leftpart "$=" END.rightpart = ("sentence" <P2_Builder  LEFT_PART @.leftpart><P2_Builder  RIGHT_PART @.rightpart>);
+
+// ===== Переменные =====
+   OBRAZEC  ("word" e.word)"$." ("word" e.name) END.next	= 	(var (e.name) e.word) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " e.chain) "$." ("word" e.name) END.next	=	(group (@.name) <P2_Builder OBRAZEC @.chain>) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " e.chain)("[ " e.from ".." e.to) "$." ("word" e.name)  END.next	
+								=	(group (@.name) (repeat (@.from) (@.to) <P2_Builder OBRAZEC @.chain>)) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("word" e.word)("[ " e.from ".." e.to) "$." ("word" e.name)  END.next
+								=	(group (@.name) (repeat (@.from) (@.to) (var () @.word))) <P2_Builder  OBRAZEC @.next>;
+
+// ===== Ссылки =====
+   OBRAZEC "$@" "$." ("word" e.name) END.next	= 	 (lnk @.name) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC {"$@" | ("word" e.)} "$." ("word" e.name) { "::" ("word" e.) }[inf].path END.next	= 	 (lnk @.name @.path) <P2_Builder  OBRAZEC @.next>;
+
+// ===== Данные =====
+   OBRAZEC целое ? (int целое) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC вещ-е ? (real вещ-е) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC слово ? (word слово) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC «литеры» ? (word литеры) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC '~~~' ? (text ~~~) <P2_Builder  OBRAZEC @.next>;
+
+// ===== Скобки =====
+   OBRAZEC (~~~) ? (B ~~~) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC <слово ~~~> ? (exec (слово) ~~~) <P2_Builder  OBRAZEC @.next>;
+   
+   
    RIGHT_PART e. = right_part;
 
    word.state "$separator" END.next   =	<P2_Builder @.state @.next>;	   
@@ -181,7 +208,7 @@ P2_Builder {
 	   =	@.t <P2_Builder @.state @.next>;
 
 
-   /* Обработка ошибок */
+   // Обработка ошибок 
    MODULE e.text word.ln e. ,
 	   <Explode word.ln> : '$line:' Digits.line
 		   =  <DoError <Numb @.line> ' temlpate or function defenition expected here: `' e.text '`'>;

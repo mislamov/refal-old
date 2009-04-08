@@ -301,7 +301,8 @@ bool system_PRINT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* 
             << "\n######################################################################\n"
     #endif
             ;
-    result = new RefChain(lft, rht); //todo: подобрать сборкой мусора или продумать эффективнее
+
+    result = RefChain(lft, rht).Copy(s); //todo: подобрать сборкой мусора или продумать эффективнее
     return true;
 };
 

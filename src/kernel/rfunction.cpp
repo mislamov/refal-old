@@ -101,9 +101,12 @@ unistring RefUserFunction::toString() {
 };
 
 
-
 /// аргументы - концы чистого ОВ
 bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s){
+
+    long &dc = co::datacount;
+
+
 s->fcalls++;
         RefData *ldot;
         RefData *rdot;
@@ -137,7 +140,7 @@ s->fcalls++;
         /// todo: создать тут точку отката сессии для очистки последствий функции
         SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
 
-        if (s->matching( (*sent)->leftPart, argfirst, argsecond, false, false)){
+        if (s->matching(*sent, (*sent)->leftPart, argfirst, argsecond, false, false)){
             LOG(s->step++ <<  "\tsucessfull!");
             //s->showStatus();
 
@@ -167,7 +170,9 @@ s->fcalls++;
                 ldot->next = rdot;
                 rdot->pred = ldot;
             }
-            delete newoe; // больше незачем хранить старую оболочку - новый вектор встроен в поле зрения
+
+            // тут не надо удалять содержимое newoe! Его содержимое встроено в поле зрения
+            delete newoe; // удаляем старую _оболочку_ вектора - новый вектор встроен в поле зрения
 
             reslt = true;
         } else {
@@ -247,6 +252,7 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
         // на всякий случай
         lold->next = rold;
         rold->pred = lold;
+        delete result; // ?
         return true;
     };
 
@@ -256,6 +262,7 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
     result->second->next = rold;
 
     delete result;
+    return true;
 };
 
 
@@ -267,7 +274,8 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
 
     if (dynamic_cast<RefFunctionBase *>(own)){
-        // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце
+        // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце,
+        // в отличие от условия в конце пользовательского шаблона
         RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
         if (!d){
             return BACK;
@@ -283,29 +291,30 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 
     //std::cout << "\nCOND-EVALUTE-OO:\t" << newpz->toString() << " : " << this->leftPart->toString();
 
-    if (s->matching( this->leftPart, newpz->first, newpz->second, false, isReverse )){
+    if (s->matching(this, this->leftPart, newpz->first, newpz->second, false, isReverse )){
+        /// Go->Go
         //std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
         //std::cout << "s.sopost.top: " << s->getCurrentSopostStack()->top()->toString() << flush;
         return (GO);
     } else {
-        newpz->clear(); // сопоставление неуспешно - удаляем
+        /// Go->Back
+        //std::cout << "\nCLEAR: " << newpz->toString() << "\n\n" << flush;
+        //уже. в деструкторе субсессии: newpz->clear(); // сопоставление неуспешно - удаляем
         delete newpz;
-
         //std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";
-
         //s->showStatus();
-
         return (BACK);
     }
 
 };
 
 TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
-
-    if (!isReverse && s->matching( this->leftPart, 0, 0, true, false)){ // продолжаем поиск вариантов
+    if (!isReverse && s->matching( this, this->leftPart, 0, 0, true, false)){ // продолжаем поиск вариантов
+        /// Back->Go
         //std::cout << "\n\nCOND-RETURN:::\tback-> GO" << std::flush << "\n\n\n";
         return GO;
     } else {
+        /// Back->Back
         //std::cout << "\n\nCOND-RETURN:::\tback-> BACK" << std::flush << "\n\n\n";
         return BACK;
     }

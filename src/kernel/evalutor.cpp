@@ -26,6 +26,7 @@
 // вычисляет цепочку до тех пор, пока в ней есть функциональные вызовы <>
 // концами цепочки не могут быть датадоты
 RefChain* evalutor(RefChain *argline, Session *s){
+    long &dc = co::datacount;
         /*
         #ifdef DEBUG
         if (! dynamic_cast<RefData_DOT *>(argline->first) )
@@ -58,7 +59,7 @@ if (! argline->first) return argline;
             if (exec && !exec->isOpen()){    // поиск >
                 it = exec->getOther()->pred; // получение точки перед <  (может быть 0)
 
-                // плучение ссылки на функцию
+                // получение ссылки на функцию
                 fn = dynamic_cast<RefWord *>(exec->getOther()->next->next);
                 if (fn){
                     unistring fname = fn->getValue();
@@ -82,12 +83,14 @@ if (! argline->first) return argline;
                         SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue() ) << " " << RefChain(fn->next, exec->pred).toString() << ">\nView: " << argline->toString());
                 }
 
+//std::cout << "\n\n" << fn->getValue() << "  :  " << dc << "\n";
+
                 delete exec->getOther()->next->next; // удаляем вызов - остается только результат вызова
                 delete exec->getOther()->next;
                 delete exec->getOther();
                 delete exec;
 
-                //std::cout << "\n#### VIEWPOLE :: " << argline->toString() << std::flush;
+//                std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
             }
         }
 

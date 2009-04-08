@@ -356,6 +356,16 @@ ScanObjectExprWithExecs {
 	=	"<LNK>" <Symb t.2>
 		<ScanObjectExprWithExecs "$path" ('/') e.next>;
 
+	/*ссылка на переменную c @-именем*/
+	('@')('.')(t.2)('/') e.next,
+	<Type t.2> : 'N' s.sub2 t.2
+	=	"<LNK>" <Symb t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+	('@')('.')(t.2)('/') e.next,
+	<Type t.2> : 'W' s.sub2 t.2
+	=	"<LNK>" <Explode t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+
 	/*переменная*/
 	(t.1)('.')(t.2) e.next,
 	<Type t.1> : 'W' s.sub1 t.1,

@@ -97,6 +97,7 @@ int main ( int argv, char **argc ) {
     time ( &starttime );
 
 //    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
+    std::cout << "program-data-size: " << co::datacount << "\n============================================\n" << std::flush;
 
     RefExecBracket
     *lb = new RefExecBracket(),
@@ -118,5 +119,8 @@ int main ( int argv, char **argc ) {
     time ( &stoptime );
     std::cout << "============================================\nTime: " /*<< stringtime(localtime (&stoptime)) << "\n"*/ << difftime(stoptime, starttime) << " sec.\n" << std::flush;
     std::cout << "Result: " << result->toString() << "\n";
+
+    result->clear();
+    std::cout << "datas in mem: " << co::datacount << "\n";
     return 0;
 }
