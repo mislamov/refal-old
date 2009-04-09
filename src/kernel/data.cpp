@@ -228,7 +228,8 @@ RefChain* RefChain::Copy(Session *s){
             }
             #endif
             dst     = br->Copy(dst);      // это NULLDOT
-            dstHlp  =  (br->Copy( dynamic_cast<RefBracketBase *>(dst->pred), dst)); // other, rp    }
+            //dstHlp  =  (br->Copy( dynamic_cast<RefBracketBase *>(dst->pred), dst)); // other, rp    }
+            dstHlp  =  (br->Copy( (RefBracketBase *)(dst->pred), dst)); // other, rp    }
 
 
             #ifdef DEBUG

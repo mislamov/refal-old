@@ -133,7 +133,8 @@ try {
     if ( theCommand.compare(_L("GROUP")) == 0) {
             if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("GROUP WITHOUT name-attribute");
             RefGroupBracket *gbropen = new RefGroupBracket(toWstring(attributes.getValue("name")), 0);
-            loader->putValueToStack( theCommand, dynamic_cast<RefObject *>(gbropen) );
+            //loader->putValueToStack( theCommand, dynamic_cast<RefObject *>(gbropen) );
+            loader->putValueToStack( theCommand, (RefObject *)(gbropen) );
             *(loader->getCurrChain()) += gbropen;
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {
@@ -258,7 +259,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             #ifdef DEBUG
             if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERROR("not TEMPLATE in TEMPLATE-stack !!!");
             #endif
-            RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
+            //RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
+            RefUserTemplate *t =  (RefUserTemplate*)( loader->extractValueFromStack("TEMPLATE") );
             //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
             loader->getCurrChain()->dearoundByDots(); // шаблону доты не нужны
             t->setLeftPart( loader->extractCurrChainFromStack() );
@@ -299,7 +301,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             //std::cout << "EndElement:" << theCommand;
             //std::cout << " stack["<<"BRACKET"<<"]:" << loader->getValueFromStack("BRACKET")->toString();
 
-            RefExecBracket *br = dynamic_cast<RefExecBracket *>(loader->extractValueFromStack("BRACKET"));
+            //RefExecBracket *br = dynamic_cast<RefExecBracket *>(loader->extractValueFromStack("BRACKET"));
+            RefExecBracket *br = (RefExecBracket *)(loader->extractValueFromStack("BRACKET"));
             #ifdef DEBUG
             if (! br) SYSTEMERROR("not EXEC BRACKET in BRACKET-stack !!!");
             #endif
@@ -346,7 +349,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             #ifdef DEBUG
             if (! dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefGroupBracket in GROUP-stack !!!");
             #endif
-            RefGroupBracket *gbrclose =  dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
+            //RefGroupBracket *gbrclose =  dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
+            RefGroupBracket *gbrclose =  (RefGroupBracket*)( loader->extractValueFromStack(theCommand) );
             *(loader->getCurrChain()) += new RefGroupBracket(gbrclose, 0);
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {  //   | => x ?
@@ -377,7 +381,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             if (loader->templateOrSent == "S"){ // if for sentense
                 cond->own = (RefUserFunction *) loader->getValueFromStack("FUNCTION");
             } else {   // if for template
-                cond->own = dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"));
+                //cond->own = dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"));
+                cond->own = (RefUserTemplate *)(loader->getValueFromStack("TEMPLATE"));
             }
             *(loader->getCurrChain()) += cond;
     } else

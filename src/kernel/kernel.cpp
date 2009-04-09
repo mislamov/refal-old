@@ -86,7 +86,8 @@ TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
         SYSTEMERROR("may be unnormal situation: r = " << r->toString());
     }
     #endif
-    s->getStackOfDataSkob()->push( dynamic_cast<RefBracketBase*>( r ) );
+    //s->getStackOfDataSkob()->push( dynamic_cast<RefBracketBase*>( r ) );
+    s->getStackOfDataSkob()->push( (RefBracketBase*)( r ) );
     //return FORCEBACK; - не надо, т к ситуация мб такая: (e.1 e.all)
     return BACK;
 };
@@ -275,13 +276,16 @@ void	RefVariable_E::print_inf() {
 };*/
 
 bool	RefVariable_e::operator==(RefData &rd) {
-    return dynamic_cast<RefVariable_e *>(&rd);
+    //return dynamic_cast<RefVariable_e *>(&rd);
+    return (RefVariable_e *)(&rd);
 };
 bool	RefVariable_E::operator==(RefData &rd) {
-    return dynamic_cast<RefVariable_E *>(&rd);
+    //return dynamic_cast<RefVariable_E *>(&rd);
+    return (RefVariable_E *)(&rd);
 };
 bool	RefVariable_END::operator==(RefData &rd) {
-    return dynamic_cast<RefVariable_END *>(&rd);
+    //return dynamic_cast<RefVariable_END *>(&rd);
+    return (RefVariable_END *)(&rd);
 };
 
 unistring vectorToString(RefData *f, RefData *g){

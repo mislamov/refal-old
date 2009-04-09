@@ -25,8 +25,10 @@
 
 
 RefChain* Dec (RefData* beg, RefData* end, Session* s){
-    RefInteger *a = dynamic_cast<RefInteger *>(beg);
-    RefInteger *b = dynamic_cast<RefInteger *>(end);
+    //RefInteger *a = dynamic_cast<RefInteger *>(beg);
+    //RefInteger *b = dynamic_cast<RefInteger *>(end);
+    RefInteger *a = (RefInteger *)(beg);
+    RefInteger *b = (RefInteger *)(end);
     if (beg->next != end){
         RUNTIMEERROR("Dec", "error arguments");
         return 0;
@@ -38,8 +40,10 @@ RefChain* Dec (RefData* beg, RefData* end, Session* s){
 };
 
 RefChain* Div (RefData* beg, RefData* end, Session* s){
-    RefInteger *a = dynamic_cast<RefInteger *>(beg);
-    RefInteger *b = dynamic_cast<RefInteger *>(end);
+    //RefInteger *a = dynamic_cast<RefInteger *>(beg);
+    //RefInteger *b = dynamic_cast<RefInteger *>(end);
+    RefInteger *a = (RefInteger *)(beg);
+    RefInteger *b = (RefInteger *)(end);
     if (beg->next != end){
         RUNTIMEERROR("Div", "error arguments");
         return 0;
@@ -57,6 +61,7 @@ RefChain* Sum (RefData* beg, RefData* end, Session* s){
     //std::cout << "\n\nSum: ";
     while(beg != end->next){
         a = dynamic_cast<RefInteger *>(beg);
+
         if (! a){
             RUNTIMEERROR("Sum", "error arguments");
             return 0;
@@ -78,6 +83,7 @@ RefChain* Mul (RefData* beg, RefData* end, Session* s){
     //std::cout << "\n\nMul: ";
     while(beg != end->next){
         a = dynamic_cast<RefInteger *>(beg);
+
         if (! a){
             RUNTIMEERROR("Mul", "error arguments");
             return 0;
@@ -251,6 +257,7 @@ bool system_IMPLODE::eval(RefData* lft, RefData* rht, RefChain* &result, Session
 bool system_EXPLODE::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     if (lft != rht) return false;
     RefWord* ww = dynamic_cast<RefWord*>(lft);
+
     if (! ww) return false;
 
     long i = 0;
