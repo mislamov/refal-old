@@ -29,6 +29,7 @@ public:
     unistring toString(){ return "DEC"; };
     unistring getName(){ return "Dec"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_DEC(){};
 };
 
 class system_DIV : public RefBuildInFunction {
@@ -37,6 +38,7 @@ public:
     unistring toString(){ return "DIV"; };
     unistring getName(){ return "Div"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_DIV(){};
 };
 
 class system_MUL : public RefBuildInFunction {
@@ -45,6 +47,7 @@ public:
     unistring toString(){ return "MUL"; };
     unistring getName(){ return "Mul"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_MUL(){};
 };
 
 class system_SUM : public RefBuildInFunction {
@@ -53,6 +56,7 @@ public:
     unistring toString(){ return "SUM"; };
     unistring getName(){ return "Sum"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_SUM(){};
 };
 
 class system_LENW : public RefBuildInFunction {
@@ -61,6 +65,7 @@ public:
     unistring toString(){ return "LENW"; };
     unistring getName(){ return "Lenw"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_LENW(){};
 };
 
 class system_NUMB : public RefBuildInFunction {
@@ -69,6 +74,7 @@ public:
     unistring toString(){ return "NUMB"; };
     unistring getName(){ return "Numb"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_NUMB(){};
 };
 
 class system_COMPARE : public RefBuildInFunction {
@@ -77,6 +83,7 @@ public:
     unistring toString(){ return "COMPARE"; };
     unistring getName(){ return "Compare"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_COMPARE(){};
 };
 
 class system_IMPLODE : public RefBuildInFunction {
@@ -85,6 +92,7 @@ public:
     unistring toString(){ return "IMPLODE"; };
     unistring getName(){ return "Implode"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_IMPLODE(){};
 };
 
 class system_EXPLODE : public RefBuildInFunction {
@@ -93,6 +101,16 @@ public:
     unistring toString(){ return "EXPLODE"; };
     unistring getName(){ return "Explode"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_EXPLODE(){};
+};
+
+class system_EXPLODE_ALL : public RefBuildInFunction {
+public:
+    system_EXPLODE_ALL(RefDllModule *m) : RefBuildInFunction("Explode-all", m) {}
+    unistring toString(){ return "EXPLODE-ALL"; };
+    unistring getName(){ return "Explode-all"; };
+    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_EXPLODE_ALL(){};
 };
 
 
@@ -102,6 +120,7 @@ public:
     unistring toString(){ return "MOUNT"; };
     unistring getName() { return "Mount"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_MOUNT(){};
 };
 
 class system_CARD : public RefBuildInFunction {
@@ -110,6 +129,7 @@ public:
     unistring toString(){ return "CARD"; };
     unistring getName() { return "Card"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_CARD(){};
 };
 
 class system_PROUT : public RefBuildInFunction {
@@ -118,6 +138,7 @@ public:
     unistring toString(){ return "PROUT"; };
     unistring getName() { return "Prout"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_PROUT(){};
 };
 
 class system_PRINT : public RefBuildInFunction {
@@ -126,6 +147,8 @@ public:
     unistring toString(){ return "PRINT"; };
     unistring getName() { return "Print"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_PRINT(){};
+
 };
 
 class system_EXIT : public RefBuildInFunction {
@@ -134,6 +157,7 @@ public:
     unistring toString(){ return "EXIT"; };
     unistring getName() { return "Exit"; };
     bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
+    virtual ~system_EXIT(){};
 };
 
 
@@ -154,6 +178,7 @@ public:
         setObjectByName("Compare",  new system_COMPARE(this));
         setObjectByName("Implode",  new system_IMPLODE(this));
         setObjectByName("Explode",  new system_EXPLODE(this));
+        setObjectByName("Explode-all",  new system_EXPLODE_ALL(this));
 
         setObjectByName("Add",  getObjectByName("Sum"));
         setObjectByName("Sub",  getObjectByName("Dec"));

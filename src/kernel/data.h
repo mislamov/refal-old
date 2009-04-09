@@ -60,7 +60,7 @@ class RefObject {
 
         //static long ocount;
         RefObject();
-        ~RefObject();
+        virtual ~RefObject();
         virtual unistring toString() = 0;//{ return "@RefObject.toString()"; }
         virtual unistring explode() { return toString(); }
 };
@@ -78,7 +78,7 @@ class RefData : public RefObject {
         bool  is_system;
         //bool  is_symbol; // сопостовимость с s-перемеенной
 
-        virtual RefData*  next_point( ThisId var_id, Session *s); // на соседнйи элемени
+        virtual RefData*  next_point( ThisId var_id, Session *s); // на соседнйи элемен
         virtual RefData*  pred_point( ThisId var_id, Session *s);
         virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
         virtual RefData*  pred_term( ThisId var_id, Session *s);
@@ -114,10 +114,31 @@ class RefData : public RefObject {
 };
 
 
-RefData*  move_to_next_point(RefData*&, ThisId , Session* );
-RefData*  move_to_pred_point(RefData*&, ThisId , Session* );
-void  move_to_next_term(RefData* &, ThisId , Session *);
-void  move_to_pred_term(RefData* &, ThisId , Session *);
+
+inline RefData*  move_to_next_point(RefData*& point, ThisId id, Session* s) {
+    do point = point->next_point(id, s);
+    while (point && point->is_system);
+    return point;
+};
+
+inline RefData*  move_to_pred_point(RefData*& point, ThisId id, Session *s) {
+    do point = point->pred_point(id, s);
+    while (point && point->is_system);
+    return point;
+};
+
+inline void  move_to_next_term(RefData* &point, ThisId id, Session *s) {
+    do point = point->next_term(id, s);
+    while (point && point->is_system);
+    return;
+};
+
+inline void  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
+    do point = point->pred_term(id, s);
+    while (point && point->is_system);
+    return;
+};
+
 
 
 
@@ -148,6 +169,7 @@ class RefalNameSpace {
         virtual void setName(unistring s){ name = s; }
 
         RefalNameSpace(unistring name = EmptyUniString) { setName(name); };
+        virtual ~RefalNameSpace(){};
 
 };
 
@@ -204,23 +226,7 @@ class RefLinkToPartOfVariable : public RefLinkToVariable {
 
 class RefUserTemplate;
 
-/*
-class RefUserVar: public RefVariable {
-    private:
-        RefUserTemplate *body;      // ссылка на описание шаблона
-        unistring typeDescription;  // изначально имя на описание шаблона. Используется для поддержки позднего связывания с телом
-    public:
-        unistring toString();
-        bool operator==(RefData&);
-        virtual TResult init(Session* s, RefData *&currentPoint);
-        virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
-        virtual RefData*  Copy(RefData* where=0);
 
-        RefUserTemplate *getBody(); // возвращает тело. Если нужно - ищет его (todo: стоит сделать поиск сразу после загрузки модуля)
-
-        RefUserVar(unistring typeDescription, unistring name = EmptyUniString, RefData *rp = 0);
-};
-*/
 class RefSmplVarType : public RefVariable {
     public:
         RefSmplVarType(unistring name = EmptyUniString, RefData *rp = 0) : RefVariable(name, rp){};
@@ -236,7 +242,7 @@ class RefBracketBase : /*public IRefVarStacked, */ public RefData {
     public:
         RefBracketBase*  other;
 
-        virtual RefData *Clone(){};
+        virtual RefData *Clone(){ SYSTEMERROR("unexpected call"); };
         RefBracketBase( RefData *rp = 0); // открывающая
         RefBracketBase( RefBracketBase *dr, RefData *rp=0); // закрывающая
         virtual bool isOpen();

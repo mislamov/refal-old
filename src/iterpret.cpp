@@ -97,7 +97,8 @@ int main ( int argv, char **argc ) {
     time ( &starttime );
 
 //    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
-    std::cout << "program-data-size: " << co::datacount << "\n============================================\n" << std::flush;
+    std::cout << "program-data-size: " << co::datacount << "\n" << std::flush;
+    std::cout << "program-obj-size : " << co::ocount << "\n============================================\n" << std::flush;
 
     RefExecBracket
     *lb = new RefExecBracket(),
@@ -122,5 +123,6 @@ int main ( int argv, char **argc ) {
 
     result->clear();
     std::cout << "datas in mem: " << co::datacount << "\n";
+    std::cout << "objts in mem: " << co::ocount << "\n";
     return 0;
 }

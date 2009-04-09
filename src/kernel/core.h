@@ -19,7 +19,7 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define REFVERSION "D-Refal 0.0.5 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
+#define REFVERSION "D-Refal 0.0.6 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 //#define DEBUG
 
 #define _UNICODE
@@ -35,7 +35,7 @@
     #define SYSTEMERROR(msg) { \
         std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
         std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
-        abort(); \
+        exit(-1); \
         };
 
     #define LOG(msg) { \
@@ -45,11 +45,11 @@
     #define SYSTEMERROR(msg) { \
         std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
         std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
-        abort(); \
+        exit(-1); \
         };
     /*#define SYSTEMERROR(msg) { \
         std::cout << "\n\n######## SYSTEM ERROR ########:: " << msg << "\n\n" << std::flush; \
-        abort(); \
+        exit(-1); \
         };*/
 
     #define LOG(msg) {}
@@ -57,7 +57,7 @@
 
 #define RUNTIMEERROR(fname, msg) { \
     std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
-    abort(); \
+    exit(-1); \
     };
 
 #include <stdlib.h>

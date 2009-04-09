@@ -195,7 +195,7 @@ class LoaderHeap {
             std::cout<<", ";
             std::cout<<(long)o;
             std::cout << o->toString();
-            std::cout << ")";/**/
+            std::cout << ")";// */
             stackstags[name].push(o);
             //std::cout << "\n"<< "++stackstags["<<name<<"].count="<< (stackstags[name].size()) <<"\n";
             return o;

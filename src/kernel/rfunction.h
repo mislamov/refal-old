@@ -36,8 +36,10 @@ public:
     RefChain *leftPart;
     RefChain *rightPart;
     virtual unistring toString();
+
     RefSentence();
     RefSentence(RefChain* l, RefChain *r);
+    virtual ~RefSentence(){};
 };
 
 
@@ -45,7 +47,7 @@ class RefFunctionBase : public RefObject {
     unistring name;
 public:
     RefFunctionBase();
-    ~RefFunctionBase();
+    virtual ~RefFunctionBase();
     virtual unistring getName() = 0;
     virtual bool execute(RefData*, RefData*, Session*)=0;
 };
@@ -60,6 +62,7 @@ public:
     virtual unistring getName()  { return name; };
     virtual unistring toString();
     RefUserFunction(unistring nname){ name = nname; }
+    virtual ~RefUserFunction(){};
 };
 
 
@@ -70,6 +73,7 @@ class RefModuleBase : public RefalNameSpace, public RefObject {
     //virtual void setName(unistring s){ name = s; };
 
     RefModuleBase(unistring nname = EmptyUniString) : RefalNameSpace(nname) {};
+    virtual ~RefModuleBase(){};
     virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
     virtual void initilizeAll(Session *){ LOG("not realized!"); };
 };
@@ -97,7 +101,6 @@ class RefUserVarNotInit : public RefVariable, public NeedInitilize {
         RefData*  Copy(RefData* where=0){ return 0; };
 
         ~RefUserVarNotInit(){
-            int i=0;
         };
 };
 
@@ -106,7 +109,10 @@ class RefUserModule : public RefModuleBase {
 public:
     std::map<unistring, RefObject*> objects;
     unistring getName(){ return name; };
+
     RefUserModule() : RefModuleBase(){}
+    virtual ~RefUserModule(){};
+
     unistring toString();
     RefObject* getObjectByName(unistring name, Session *s=0);
 
@@ -135,6 +141,7 @@ class RefBuildInFunction : public RefFunctionBase {
     bool execute(RefData*, RefData*, Session*);
 public:
     RefBuildInFunction(unistring name, RefDllModule *m);
+    virtual ~RefBuildInFunction(){};
     virtual bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0) = 0;
 
 };
@@ -197,7 +204,7 @@ class RefMatchingCutter : public RefData {
 class RefTemplateBase : public RefModuleBase {
 public:
     RefTemplateBase (unistring name);
-    ~RefTemplateBase (){};
+    virtual ~RefTemplateBase (){};
 };
 
 // пользовательский шаблон
@@ -212,6 +219,7 @@ class RefUserTemplate : public RefTemplateBase {
         unistring toString(){
             return (getName()+"$RefUserTemplate_::=_"+(leftPart?leftPart->toString():"$void"));
         }
+        virtual ~RefUserTemplate(){};
 };
 
 class RefTemplateBridgeTmpl;

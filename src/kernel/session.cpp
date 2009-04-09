@@ -240,7 +240,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     std::cout << "#######################################################\n";
     //std::cout << s->varTableToText();
     //s->showStatus();
-    /**/
+    // */
 
 //    std::cout << "\n\nMATCHING:\ntmpl: " << tmplate->toString();
 //    std::cout << "\nargs: " << s->pole_zrenija.top()->toString();
@@ -252,7 +252,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
 
     result_sost = isdemaching?BACK:GO;
 
-    RefChain *args = s->getPole_zrenija();
+    //RefChain *args = s->getPole_zrenija();
     #ifdef DEBUG
     if (!args || !args->first || !args->second) {
         SYSTEMERROR("unexpected NULLs in session::matching arguments!");
@@ -262,12 +262,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     // запускается вне матчинга: initialization(args->first, args->second);
     RefData *l=0, *r=0,
                      //*activeTemplate,
-                     *&activeTemplate = s->matchSessions.back()->activeTemplate,
-                                        *preCurrentPoint=0;
+                     *&activeTemplate = s->matchSessions.back()->activeTemplate;
 
     activeTemplate = isdemaching?tmplate->second:tmplate->first; // было: tmplate->second->pred - это потому что последний датадот. сделал tmplate->second чтоб откат обработал скобки
 
-    RefVariable * ifvar=0;
     l=r=s->getPole_zrenija()->first; // для isdemaching не важно - все равно сначала будет restore
 
     while (activeTemplate) {
@@ -402,7 +400,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             #endif
             return true;
 
-        case FORCEBACK: // откат правых скобок или отсечения
+        case FORCEBACK: {// откат правых скобок или отсечения
             RefData *finish = 0;
 
             RefMatchingCutter* cutter = dynamic_cast<RefMatchingCutter*>(activeTemplate);
@@ -455,7 +453,11 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             //this->getCurrentSopostStack().pop(); /// clean pered pop ? // - for (
             //move_to_pred_point(activeTemplate, 0, this);
             result_sost = BACK;
-        };
+        }
+        break;
+
+        default: break;
+        }
     };
 
     /*
@@ -481,118 +483,7 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src) { // готовит праву
 
 };
 
-/*
-//  завершение работы с текущим полем зрения. удаление датадот и возврат устаревшего поля зрения как вектора
-RefChain* Session::deinitializationArg() {
-    RefChain *pz = pole_zrenija.top();
-    //std::cout << "\ndeinitializationArg::\t" << pz->toString();
-    RefData* pleft  = pz->first;
-    RefData* pright = pz->second;
-    /*
-    #ifdef DEBUG
-    if (! dynamic_cast<RefData_DOT *>(StackOfDataSkob.top()) )
-        SYSTEMERROR("StackOfDataSkob.top() != DataDOT");
-    #endif
-    StackOfDataSkob.pop(); //???  а если удачное сопост-е
-    std::cout << "\n\n% % % after.pop: " << StackOfDataSkob.size() << "\n\n" << std::flush;
-    * /
-    pole_zrenija.pop();
 
-    #ifdef DEBUG
-    if (! pleft || ! pright || !dynamic_cast<RefData_DOT *>(pleft) || !dynamic_cast<RefData_DOT *>(pright) || !(pleft->next) || !(pright->pred)) {
-        SYSTEMERROR("polezrenija ne emeet vida  DOT[ - ... - ]DOT libo narusheni ssilki next-pred!!!");
-    }
-    #endif
-
-    if (pleft->next == pright){ // если пустое поле зрения  dot[ <-> dot]
-        if (pleft  ->pred) pleft  ->pred->next = pright ->next;
-        if (pright ->next) pright ->next->pred = pleft  ->pred;
-        pright = pleft->pred;
-        pleft = 0;
-    } else {    // не пустое поле зрения  dot[ - ... - ]dot
-        /*if (pleft  ->next) * / pleft  ->next->pred = pleft  ->pred;
-        /*if (pright ->pred) * / pright ->pred->next = pright ->next;
-        if (pleft  ->pred) pleft  ->pred->next = pleft  ->next;
-        if (pright ->next) pright ->next->pred = pright ->pred;
-        pleft  = pleft->next;
-        pright = pright->pred;
-    }
-
-    pz->first  ->next = pz->first  ->pred = pz->second ->next = pz->second ->pred = 0;
-    delete pz->first;
-    delete pz->second;
-    pz->first  = pleft;
-    pz->second = pright;
-    //std::cout << "\t->\t" << pz->toString();
-    return pz;
-};
-*/
-
-
-
-/*void Session::initializationTemplate(RefChain *tpl) { //  оснащение дотами шаблона
-    RefData * l =  tpl->first;
-    RefData * r =  tpl->second;
-    //std::cout << "\ninitializationTemplate::\t" << tpl->toString();
-
-    #ifdef DEBUG
-    //if (!r || !l) SYSTEMERROR("r or l is NULL !!! l="<<l<< " r="<<r);
-    #endif
-    // снабжаем область зрения датадотами
-    RefData_DOT *leftd = new RefData_DOT();
-    RefData_DOT *rightd = new RefData_DOT(leftd, 0);
-    if (l) {
-        #ifdef DEBUG
-        if (!r) SYSTEMERROR("!r && l  !!! l="<<l<< " r="<<r);
-        #endif
-        l->predInsert(leftd);
-        r->afterInsert(rightd);
-    } else {
-        if (r){
-            r->afterInsert(leftd);
-            leftd->afterInsert(rightd);
-        } else {
-            leftd->afterInsert( rightd );
-        }
-    }
-    tpl->first = leftd;
-    tpl->second = rightd;
-    //std::cout << "\t->\t" << tpl->toString();
-};
-
-
-void Session::deinitializationTemplate(RefChain *&tpl) { //  удаление дот шаблона
-    //std::cout << "\ndeinitializationTemplate::\t" << tpl->toString();
-
-    RefData * l =  tpl->first;
-    RefData * r =  tpl->second;
-    #ifdef DEBUG
-    if (!r || !l) SYSTEMERROR("r or l is NULL !!!");
-    RefData_DOT *tmp;
-    /*tmp = dynamic_cast<RefData_DOT *>(tpl->second->next);
-    if (!tmp) SYSTEMERROR("tpl->second->next not a DOT : " << ((tpl->second->next)?tpl->second->next->toString():"0"));
-    tmp = dynamic_cast<RefData_DOT *>(tpl->first->pred);
-    if (!tmp) SYSTEMERROR("tpl->first->pred not a DOT : " << ((tpl->first->pred)?tpl->first->pred->toString():"0"));* /
-
-    tmp = dynamic_cast<RefData_DOT *>(tpl->second);
-    if (!tmp) SYSTEMERROR("tpl->second not a DOT : " << ((tpl->second)?tpl->second->toString():"0"));
-    tmp = dynamic_cast<RefData_DOT *>(tpl->first);
-    if (!tmp) SYSTEMERROR("tpl->first not a DOT : " << ((tpl->first)?tpl->first->toString():"0"));
-    #endif
-
-    if (tpl->first->next == tpl->second){ // пустой
-        tpl->first = tpl->second = 0;
-    } else {
-        tpl->first  = tpl->first->next;
-        tpl->second = tpl->second->pred;
-    }
-
-    delete l;
-    delete r;
-
-    //std::cout << "\t->\t" << tpl->toString();
-
-};*/
 
 
 
@@ -828,7 +719,7 @@ RefFunctionBase * Session::findMethodFromModule(unistring fname) {
     RefFunctionBase *f = 0;
 
     // поиск по модулям
-    for (it = modules.end(); it!=modules.begin(); it) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
+    for (it = modules.end(); it!=modules.begin(); ) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
         it--;
         //std::cout << "\n\n:::: " << it->first << " ::::\n\n" << std::flush;
         if (f = dynamic_cast<RefFunctionBase *>( it->second->getObjectByName(fname) )) {

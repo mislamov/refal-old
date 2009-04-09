@@ -104,7 +104,7 @@ unistring RefUserFunction::toString() {
 /// аргументы - концы чистого ОВ
 bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s){
 
-    long &dc = co::datacount;
+    //long &dc = co::datacount;
 
 
 s->fcalls++;
@@ -221,7 +221,7 @@ RefBuildInFunction::RefBuildInFunction(unistring name, RefDllModule *m) : RefFun
 bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
     LOG( "\n====================================\n< " << this->getName() << std::flush << " " << vectorToString(lp, rp) << " >" );
     // сохраним границы
-    RefData *lold, *rold;
+    RefData *lold, *rold=0;
     if (! lp){ // пустой вектор
         #ifdef DEBUG
         if (!rp) SYSTEMERROR("!lp && !rp");

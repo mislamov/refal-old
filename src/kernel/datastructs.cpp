@@ -58,7 +58,7 @@ unistring  RefData_DOT::toString() {
         #endif
         std::ostringstream s;
         s << (is_opened?" [":" ]")
-        /**/<< "." << std::hex << (unsigned short)this << ' '; /*<< ":other=" << (long)this->other << " ";/**/
+        /*  << "." << std::hex << (unsigned short)this << ' '; //<< ":other=" << (long)this->other << " ";// */
 //        s << "." << (long)this << ' ';
         ;
         return sss = s.str();
@@ -193,16 +193,22 @@ TResult  ref_repeater::back(Session *s, RefData *&l, RefData *&r){
     return BACK;
 };
 RefData*  ref_repeater::next_point (ThisId id, Session*s){
-    if (s->message4nextpred == mNEXT) return next;
-    if (s->message4nextpred == mPRED) return pred;
-    if (s->message4nextpred == mOTHER_next) return other->next;
-    if (s->message4nextpred == mOTHER_pred) return other->pred;
+    switch (s->message4nextpred){
+        case mNEXT: return next;
+        case mPRED: return pred;
+        case mOTHER_next: return other->next;
+        case mOTHER_pred: return other->pred;
+        default:;
+    }
     SYSTEMERROR("unexpected message");
 };
 RefData*  ref_repeater::pred_point (ThisId id, Session*s){
-    if (s->message4nextpred == mNEXT) return next;
-    if (s->message4nextpred == mPRED) return pred;
-    if (s->message4nextpred == mOTHER_next) return other->next;
-    if (s->message4nextpred == mOTHER_pred) return other->pred;
+    switch (s->message4nextpred){
+        case mNEXT: return next;
+        case mPRED: return pred;
+        case mOTHER_next: return other->next;
+        case mOTHER_pred: return other->pred;
+        default:;
+    }
     SYSTEMERROR("unexpected message");
 };

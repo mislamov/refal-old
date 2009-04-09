@@ -131,7 +131,7 @@ class Session : public RefObject {
     unistring varTableToText();
 
     Session();
-    ~Session();
+    virtual ~Session();
 
     void  SaveTemplItem   (RefData* var, RefData* l, RefData* r); // если аргумент - переменная, то добавляем ее состояние
     void  RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ); // извлекаем последнее сохраненное сост-е

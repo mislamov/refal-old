@@ -78,7 +78,7 @@ class RefVariable_s : public RefVariable {
     public:
         RefVariable_s(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp){};
         //void     dropall(Session *);
-        bool operator==(RefData &rd){};
+        bool operator==(RefData &rd){ return false; };
 
         TResult  init(Session *, RefData *&);
         TResult  back(Session *, RefData *&, RefData *&);
@@ -90,7 +90,7 @@ class RefVariable_t : public RefVariable {
     public:
         RefVariable_t(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp){ return; };
 
-        bool operator==(RefData &rd){};
+        bool operator==(RefData &rd){ return false; };
 
         TResult  init(Session *, RefData *&);//{ SYSTEMERROR(""); };
         TResult  back(Session *, RefData *&, RefData *&);//{ SYSTEMERROR(""); };

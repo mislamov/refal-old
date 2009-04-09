@@ -107,62 +107,17 @@ void       RefData::drop   ( ThisId ThisId) {
 
 
 //////////////////////////////////////////////////////////////////
-RefData*  move_to_next_point(RefData*& point, ThisId id, Session* s) {
-    do {
-        //std::cout << "\nmove_to_next_point: [" << point->toString() << "] -> [";
-        point = point->next_point(id, s);
-        /*std::cout
-            << (point?point->toString():"\\x0000")
-            << "]" << "\n";*/
-
-    }
-    while (point && point->is_system);
-    return point;
-};
-
-RefData*  move_to_pred_point(RefData*& point, ThisId id, Session *s) {
-    do point = point->pred_point(id, s);
-    while (point && point->is_system);
-    return point;
-};
-
-
-void  move_to_next_term(RefData* &point, ThisId id, Session *s) {
-    do point = point->next_term(id, s);
-    while (point && point->is_system);
-    return;
-};
-
-void  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
-    do point = point->pred_term(id, s);
-    while (point && point->is_system);
-    return;
-};
-
 
 TResult RefData::init(Session* s, RefData *&) {
-    #ifdef DEBUG
-    SYSTEMERROR("RefData::init() called - is must nr undefibed!");
-    #endif
+    SYSTEMERROR("unexpected called for " << toString());
+    return ERROR;
 }
 
 TResult RefData::back(Session* s, RefData *&, RefData *&) {
-    #ifdef DEBUG
-    SYSTEMERROR("RefData::back() called - is must nr undefibed!");
-    #endif
+    SYSTEMERROR("unexpected called for " << toString());
+    return ERROR;
 }
 
-///todo:
-/*
-void 	   RefData::dropall( Session*) {
-    return;
-};
-
-
-bool RefData::dynamic_same(RefData *p) {
-    return p==this;
-};
-*/
 
 RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // открывающая
     other = 0;
@@ -600,7 +555,7 @@ TResult RefUserVar::back(Session* s, RefData *&currentRight, RefData *&currentLe
 RefData*  RefUserVar::Copy(RefData* where){
     SYSTEMERROR("zagluska!"); // определить в каких случаях используется и что именно возвращать в качестве копии
     RefUserVar *v = new RefUserVar(typeDescription, getName(), where);
-    /*v->body = body->Copy();* /
+    //v->body = body->Copy();
     return v;
 };
 
@@ -632,7 +587,7 @@ void delChain(RefData*a, RefData*b){
     if (a->pred) {
         a->pred->next = 0;
     }
-    a->pred = 0; // ???
+    a->pred = 0;
     if (b) {
         if (b->next) {
             b->next->pred = 0;

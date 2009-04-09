@@ -263,6 +263,17 @@ bool system_EXPLODE::eval(RefData* lft, RefData* rht, RefChain* &result, Session
 };
 
 
+bool system_EXPLODE_ALL::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
+    unistring str = RefChain(lft, rht).explode();
+    result = new RefChain();
+    size_t i = 0;
+    while(str[i]){
+        *result += new RefAlpha(str[i++]);
+    }
+    return true;
+};
+
+
 
 bool system_MOUNT::eval(RefData* lft, RefData* rht, RefChain* &result, Session* s){
     result = Mount(lft, rht, s);

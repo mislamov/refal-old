@@ -74,39 +74,15 @@ static SAXParser::ValSchemes    valScheme       = SAXParser::Val_Never;
 
 
 
-// ---------------------------------------------------------------------------
-//  Local helper methods
-// ---------------------------------------------------------------------------
-static void usage()
-{
-    XERCES_STD_QUALIFIER cout << "\nUsage:\n"
-            "    SAXPrint [options] <XML file>\n\n"
-            "This program invokes the SAX Parser, and then prints the\n"
-            "data returned by the various SAX handlers for the specified\n"
-            "XML file.\n\n"
-            "Options:\n"
-             "    -u=xxx      Handle unrepresentable chars [fail | rep | ref*].\n"
-             "    -v=xxx      Validation scheme [always | never | auto*].\n"
-             "    -n          Enable namespace processing.\n"
-             "    -s          Enable schema processing.\n"
-             "    -f          Enable full schema constraint checking.\n"
-             "    -x=XXX      Use a particular encoding for output (LATIN1*).\n"
-             "    -?          Show this help.\n\n"
-             "  * = Default if not provided explicitly.\n\n"
-             "The parser has intrinsic support for the following encodings:\n"
-             "    UTF-8, USASCII, ISO8859-1, UTF-16[BL]E, UCS-4[BL]E,\n"
-             "    WINDOWS-1252, IBM1140, IBM037, IBM1047.\n"
-         <<  XERCES_STD_QUALIFIER endl;
-};
+
 
 
 
 
 
 RefChain *str2chain(std::wstring s){
-
         RefAlpha *beg = new RefAlpha(s[0]),  *end = beg;
-        for(int i=1; i<s.size(); i++){
+        for(size_t i=1; i<s.size(); i++){
                 end = new RefAlpha(s[i], end);
         };
 
@@ -159,7 +135,7 @@ int loadModuleFromXmlFile(RefUserModule *mod, char* xmlFile)
     //  Create a SAX parser object. Then, according to what we were told on
     //  the command line, set it to validate or not.
     //
-    SAXParser* parser = new SAXParser();
+    SAXParser *parser = new SAXParser();
     parser->setValidationScheme(valScheme);
     parser->setDoNamespaces(doNamespaces); // false
     parser->setDoSchema(doSchema); // false

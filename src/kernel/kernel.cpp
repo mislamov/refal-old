@@ -332,7 +332,6 @@ unistring vectorExplode(RefData *f, RefData *g){
     unistring a = EmptyUniString;
     if (f) {
         while (f && (!g || f!=g->next)) {
-                RefData *ff = f;
                 a += f->explode();
                 f = f->next;
         }
@@ -377,12 +376,8 @@ RefData*  RefNULL::Copy(RefData *d) {
 }
 
 TResult RefNULL::init(Session* s, RefData *&){
-#ifdef DEBUG
     SYSTEMERROR("RefNULL::init() tring!");
-#endif
 };
 TResult RefNULL::back(Session* s, RefData *&, RefData *&){
-#ifdef DEBUG
     SYSTEMERROR("RefNULL::RefNULL() tring!");
-#endif
 };

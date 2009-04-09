@@ -234,7 +234,7 @@ unistring getVarName(unistring &str){
 void SAXPrintHandlers::endElement(const XMLCh* const name)
 {
     //LOG( _L("SAXPrintHandlers::endElement:: [") << toWstring(name) << "]" );
-    RefObject *tmpobj = 0;
+    //RefObject *tmpobj = 0;
     RefValuedData *tmpvdata = 0;
     unistring theCommand = toWstring(name);
 
@@ -316,7 +316,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     if ( theCommand.compare(_L("LNK")) == 0) {  //
         // берем по текущему тексту и получаем ссылку на переменную
         // ссылка на часть внешней ли переменной?
-        int i;
+        size_t i;
         if ((i = loader->currentchars.find( varPathSeparator ))!=unistring::npos){
             // ссылка на часть внешней переменной
             unistring name = loader->currentchars.substr(0, i);
@@ -330,7 +330,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("TEXT")) == 0) {  //
         unistring text = loader->currentchars;
-        for (int i=0; i<text.length(); i++){
+        for (size_t i=0; i<text.length(); i++){
             *(loader->getCurrChain()) += new RefAlpha(text[i], 0);
         }
     } else
