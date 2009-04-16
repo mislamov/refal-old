@@ -9,7 +9,7 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNEFOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License along
@@ -27,6 +27,12 @@
 #include "kernel\evalutor.h"
 #include "modules\system.h"
 
+#ifdef WIN32
+#include <time.h>
+#endif
+
+
+
 
 RefUserModule *mod; // модуль
 mSYSTEM msystem;
@@ -40,12 +46,12 @@ std::string stringtime(struct tm * tt) {
 }
 
 int main ( int argv, char **argc ) {
-    std::cout << REFVERSION << "\n" << flush;
+    std::cout << REFVERSION << "\n" << std::flush;
     if (argv == 1) {
-        std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << flush;
+        std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << std::flush;
         //return 0;
         argc[1] = //"minitest.ref";
-                "fn.ref";
+            "fn.ref";
     }
 
     char
@@ -55,22 +61,34 @@ int main ( int argv, char **argc ) {
     if (binpath == NULL) {
         SYSTEMERROR("Define REFAL_HOME variable into your environment");
     }
-    std::string homedir = binpath;
+    std::string refal_dir = binpath;
 
-    if (homedir.at(homedir.length()-1) != '\\') {
-        homedir += '\\';
+    if (refal_dir.at(refal_dir.length()-1) != '\\') {
+        refal_dir += '\\';
     }
 
-    std::ostringstream ss;
-    ss << homedir << "refgo -e " /*<< homedir*/ << "refal_scaner " << pname << "\n";
-    //std::cout << ss.str() << flush;
-    int err = system(ss.str().c_str());
+    std::ostringstream ss0, ss1, ss2;
+    //std::cout << ss.str() << std::flush;
+
+    int err = 0;
+    if (! strstr(pname, ".xml")) {
+        ss0 << ".\\refgo.exe -e " /*<< refal_dir*/ << "refal_scaner " << pname << "\n";
+        ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << "refal_scaner " << pname << "\n";
+        ss2 << pname << ".xml";
+    } else {
+        ss2 << pname;
+    }
+
+    err =  system(ss1.str().c_str());
     if (err) {
-        return err;
+        err = system(ss0.str().c_str());
+        if (err) {
+            std::cout << ss0.str().c_str() << std::flush;
+            std::cout << ss1.str().c_str() << "\n" << std::flush;
+            return err;
+        }
     }
 
-    std::ostringstream ss2;
-    ss2 << pname << ".xml";
     xmlFile = new char[256];
     strncpy(xmlFile, ss2.str().c_str(), 255);
 

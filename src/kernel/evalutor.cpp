@@ -40,6 +40,8 @@ if (! argline->first) return argline;
         RefWordBase *fn         = 0;
         RefFunctionBase *funk   = 0;
         TVarBodyTable *vars     = 0;
+		bool succes;
+
         for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_point(it, 0, s)){
             exec = dynamic_cast<RefExecBracket *>(it);
             if (exec && !exec->isOpen()){    // поиск >
@@ -57,13 +59,13 @@ if (! argline->first) return argline;
                     SYSTEMERROR("Function name is not RefWord! : " << exec->getOther()->next->next->toString());
                 }
 
-                bool succes = funk; // результат поиска функции по имени
+                //succes = funk; // результат поиска функции по имени
 
                 if (fn->next == exec){ // выполнить с пустым аргументом  (  <fn >  )
-                    succes = succes && funk->execute(0, fn, s);
+                    succes = funk && funk->execute(0, fn, s);
                 } else {
                     // выполнить с аргументом
-                    succes = succes && funk->execute(fn->next, exec->pred, s);  //   <fn  fn_next..exec_pred>
+                    succes = funk && funk->execute(fn->next, exec->pred, s);  //   <fn  fn_next..exec_pred>
                 }
                 if (!succes){
                         SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue() ) << " " << RefChain(fn->next, exec->pred).toString() << ">\nView: " << argline->toString());

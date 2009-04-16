@@ -4,7 +4,7 @@ InputFile{='fn.ref';}
 
 $Entry Go { = 
 
-	<Prout <P4_Out
+	<P4_Out
 		<PostScan 
 			<P2_Builder MODULE 
 				<P1_Prescaning 
@@ -14,8 +14,8 @@ $Entry Go { =
 				><Prout 'P2_Builder'>
 			>
 		><Prout 'P4_Out'>
-	  >
-	> ; 
+	>
+	; 
 
 		}
 
@@ -30,7 +30,8 @@ Template Letter	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|
 
 Cut {
 	0 END. = ;
-	int.n END.e = s.s <Cut <- @.n 1> @.e>;
+	int.n t.s END.e = @.s <Cut <- @.n 1> @.e>;
+	e. = ;
 }
 
 DoError { 
@@ -38,12 +39,15 @@ DoError {
 		<Explode-all @.ln> : '$line:' Digits.line	=	
 			<Prout '#### ERROR [ line '<- @.line 1>']: ' <Replace "$separator" ' ' @.text>> 
 			<Prout '#### Code: ' @.linetext>
-			<Exit>; 
+			<Exit>
+			; 
 			
 	(END.text) END.arg =
 			<Prout '#### ERROR [ line ? ]: ' <Replace "$separator" ' ' @.text>>
-			<Prout '#### Code: ' <Cut 256 <Explode-all @.arg>> '...'>
-			<Exit>; 
+			<Prout '#### Code: ' <Cut 256 @.arg> '...'>
+			/*<Prout '#### Code: ' <Cut 256 <Explode-all @.arg>> '...'>*/
+			<Exit>
+			;
 }
 Replace { t.1 t.2 e.A t.1 END.B = e.A t.2 <Replace t.1 t.2 @.B>; t.1 t.2 END.e=END.e; }
 
@@ -133,6 +137,11 @@ Unescape {
 //   2.      структуризация и синтаксический анализ (генерация структуры программы)
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+// (template word. (left-part e.))
+// (template word. (left-part e.))
+// (func     word. (sentence (left-part e.)(right-part e.))[...])
+// (if (right-part e.) (left-part e.))
+//
 // ===== Переменные =====
 // слово.имя ? (var (имя) слово)
 // {цепь}.имя ? (group (имя) <S цепь>)
@@ -151,7 +160,7 @@ Unescape {
 // '~~~' ? (text ~~~)
 
 // ===== Скобки =====
-// (~~~) ? (B ~~~)
+// (~~~) ? ("( " ~~~)
 // <слово ~~~> ? (exec (слово) ~~~)
 
 
@@ -162,10 +171,10 @@ Template VarPath ::= { "::" ("word" END. ) VarPath. | } !;
 
 ParseFromTo{
 	e.from ".." END.to,
-		<P2_Builder @.from> : { ({lnk|var|int} END. ) }.tfrom,
-		<P2_Builder @.to  > : { ({lnk|var|int} END. ) }.tto  =  @.tfrom @.tto;
+		<P2_Builder OBRAZEC @.from> : { ({lnk|var|int} END. ) }.tfrom,
+		<P2_Builder OBRAZEC @.to  > : { ({lnk|var|int} END. ) }.tto  =  @.tfrom @.tto;
 	e.from "...",
-		<P2_Builder @.from> : { ({lnk|var|int} END. ) }.tfrom = @.tfrom (int "inf");
+		<P2_Builder OBRAZEC @.from> : { ({lnk|var|int} END. ) }.tfrom = @.tfrom (int "inf");
 	(word "inf") = (int "inf")(int "inf");
 }
 
@@ -184,16 +193,16 @@ P2_Builder {
 		<P2_Builder  MODULE  @.next> ;
 
    ///  todo блоком
-   LEFT_PART e.obr "$," END.if							=	("left-part" <P2_Builder  OBRAZEC @.obr> <P2_Builder  CONDITION @.if>);
-   LEFT_PART END.obr								=	("left-part" <P2_Builder  OBRAZEC @.obr>);
+   LEFT_PART e.obr "$," END.if				=	("left-part" <P2_Builder  OBRAZEC @.obr> <P2_Builder  CONDITION @.if>);
+   LEFT_PART END.obr					=	("left-part" <P2_Builder  OBRAZEC @.obr>);
 
-   CONDITION e.cond1   "$," END.condN 						= 	<P2_Builder  CONDITION @.cond1> <P2_Builder  CONDITION @.condN>;
-   CONDITION e.obrazec "$:" END.result  						= 	("if" ("right-part" <P2_Builder  RIGHT_PART @.obrazec>) ("left-part" <P2_Builder  OBRAZEC @.result>));
+   CONDITION e.cond1   "$," END.condN 			= 	<P2_Builder  CONDITION @.cond1> <P2_Builder  CONDITION @.condN>;
+   CONDITION e.obrazec "$:" END.result  		= 	("if" ("right-part" <P2_Builder  RIGHT_PART @.obrazec>) ("left-part" <P2_Builder  OBRAZEC @.result>));
 
-   BLOCK   e.predl "$;" END.next						=    	<P2_Builder  SENTENCE @.predl>  <P2_Builder  BLOCK @.next> ;
-   BLOCK  {"$separator" |} 							= 	;	// пропускает когда блок пуст!
+   BLOCK   e.predl "$;" END.next			=    	<P2_Builder  SENTENCE @.predl>  <P2_Builder  BLOCK @.next> ;
+   BLOCK  {"$separator" |} 				= 	;	// пропускает когда блок пуст!
    
-   SENTENCE e.leftpart "$=" END.rightpart 					=	("sentence" <P2_Builder  LEFT_PART @.leftpart> ("right-part" <P2_Builder  RIGHT_PART @.rightpart>));
+   SENTENCE e.leftpart "$=" END.rightpart 		=	("sentence" <P2_Builder  LEFT_PART @.leftpart> ("right-part" <P2_Builder  RIGHT_PART @.rightpart>));
 // ===== Переменные =====
    {OBRAZEC|RIGHT_PART}.state ("word" END.word)"$." VarName.vname END.next	= 	(var (@.vname::text) @.word) <P2_Builder  @.state @.next>;
    OBRAZEC  ("{ " END.chain) "$." VarName.vname END.next				=	(group (@.vname::text) <P2_Builder OBRAZEC @.chain>) <P2_Builder  OBRAZEC @.next>;
@@ -238,37 +247,87 @@ P2_Builder {
 //   3.      семантический анализ и оптимизация (перестройка структуры программы)
 P3_Semantic {
 	END.a = @.a;
+	END.else = <DoError ('Problem after semantic!') @.else>;
 }
 
 
 //   4.      построение байт/xml-кода
-P4_Out {
-//	()  END.next = '' <P4_Out  @.next>;
-	(func)  END.next = '' <P4_Out  @.next>;
-	(sentense)  END.next = '' <P4_Out  @.next>;
-	
-	(template)  END.next = '' <P4_Out  @.next>;
-	(left-part )  END.next = '' <P4_Out  @.next>;
 
-	(right-part)  END.next = '' <P4_Out  @.next>;
-	(exec)  END.next = '' <P4_Out  @.next>;
-	
-	(if)  END.next = '' <P4_Out  @.next>;
-	
-	(var)  END.next = '' <P4_Out  @.next>;
-	(group)  END.next = '' <P4_Out  @.next>;
-	(cutter)  END.next = '' <P4_Out  @.next>;
-	(the-variant)  END.next = '' <P4_Out  @.next>;
-	(lnk)  END.next = '' <P4_Out  @.next>;
-	(int)  END.next = '' <P4_Out  @.next>;
-	(real)  END.next = '' <P4_Out  @.next>;
-	(word)  END.next = '' <P4_Out  @.next>;
-	(text)  END.next = '' <P4_Out  @.next>;
-	("( ")  END.next = '' <P4_Out  @.next>;
+// (template word. (left-part e.))
+// (func     word. (sentence (left-part e.)(right-part e.))[...])
+// (if (right-part e.) (left-part e.))
+//
+// (var (имя) слово)
+// (group (имя) <S цепь>)
+// (group (имя) (repeat F T <S цепь>))
+// (group (имя) (repeat F T (var () слово)))
+// (lnk имя)
+// (lnk имя @.путь)
+// (int целое)
+// (real вещ-е)
+// (word слово)
+// (word литеры)
+// (text ~~~)
+// ("( " ~~~)
+// (exec (слово) ~~~)
+
+P4_Out {
+	(template  ("word" word.name) (left-part END.lp))  END.next = 
+						'<Template name="'@.name'">'
+							'<LEFT-PART>'
+								<P4_Out @.lp>
+							'</LEFT-PART>'
+						'</Template>' 
+						<P4_Out  @.next>;
+						
+	(func   word.name {(sentence END.sent)}[1..100].sents)  END.next = 
+						'<Function name="'@.name'">' 
+							<P4_Out  @.sents>
+						'</Function>'
+						<P4_Out  @.next>;
+						
+	(sentence (left-part END.lp)(right-part END.rp))  END.next =
+						'<Sentence>' 
+							'<LEFT-PART>'
+								<P4_Out @.lp>
+							'</LEFT-PART>'
+							'<RIGHT_PART>'
+								<P4_Out @.rp>
+							'</RIGHT_PART>'
+						'</Sentence>' 
+						<P4_Out  @.next>;
+						
+	/*( left-part END.)  END.next = '' <P4_Out  @.next>;  // самостоятельно не появляются 
+	  (right-part END.)  END.next = '' <P4_Out  @.next>; */
+	  
+	(exec  (word.name) END.arg)  END.next = 
+						'<EXEC>'
+							'<WORD>'@.name'</WORD>'
+							<P4_Out  @.arg>
+						'</EXEC>'
+						<P4_Out  @.next>;
+// (if (right-part e.) (left-part e.))						
+	(if     (right-part END.rp) (left-part END.lp))  END.next = 
+						'<IF>'
+							'<RIGHT-PART>' <P4_Out  @.rp> '</RIGHT-PART>'
+							'<LEFT-PART>'  <P4_Out  @.lp> '</LEFT-PART>'
+						'</IF>'
+						<P4_Out  @.next>;
+
+	(var    END.)  END.next = 'var' <P4_Out  @.next>;
+	(group  END.)  END.next = 'group' <P4_Out  @.next>;
+	(cutter END.)  END.next = 'cutter' <P4_Out  @.next>;
+	(the-variant END.)  END.next = 'the-variant' <P4_Out  @.next>;
+	(lnk  END.)  END.next = 'lnk'  <P4_Out  @.next>;
+	(int  END.)  END.next = 'int'  <P4_Out  @.next>;
+	(real END.)  END.next = 'real' <P4_Out  @.next>;
+	(word END.)  END.next = 'word' <P4_Out  @.next>;
+	(text END.)  END.next = 'text' <P4_Out  @.next>;
+	("( " END.)  END.next = '()' <P4_Out  @.next>;
 	
 	=;
 
-	END.else = <DoError ('Problem after semantic!') @.else>;
+	END.else = <DoError ('Problem while build byte-code: ' @.else) @.else>;
 }
 
 

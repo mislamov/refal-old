@@ -149,7 +149,7 @@ class LoaderHeap {
 
         RefObject *extractValueFromStack(unistring name){
             std::stack<RefObject*>  &svalue   = stackstags[name];
-            //std::cout << "\n--stackstags["<<name<<"]("<< stackstags[name].size() <<")" << flush;
+            //std::cout << "\n--stackstags["<<name<<"]("<< stackstags[name].size() <<")" << std::flush;
             #ifdef DEBUG
             if (svalue.empty()) SYSTEMERROR("unexpected extracter query: " << name);
             #endif

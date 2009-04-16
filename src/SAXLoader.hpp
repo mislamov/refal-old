@@ -26,7 +26,7 @@
 #if defined(XERCES_NEW_IOSTREAMS)
 #include <iostream>
 #else
-#include <iostream.h>
+#include <iostream>
 #endif
 #include <stdlib.h>
 

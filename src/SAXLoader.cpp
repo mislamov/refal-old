@@ -30,12 +30,12 @@
 
 #include "SAXLoader.hpp"
 
-#include "function.h"
+//#include "function.h"
 #include "kernel/kernel.h"
 #include "kernel/session.h"
 #include "kernel/RefSymbolBase.hxx"
 
-#include <strings.h>
+#include <string>
 // ---------------------------------------------------------------------------
 //  Local data
 //

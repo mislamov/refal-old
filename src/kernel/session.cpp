@@ -16,7 +16,10 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include <pair.h>
+#ifndef WIN32
+	#include <pair.h>   // for MSVC 6.0 that doens't have a proper <utility>
+#endif /* WIN32 */
+
 #include <list>
 #include <sstream>
 

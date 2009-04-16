@@ -19,9 +19,9 @@
 #ifndef REF_DATA_H_INCLUDED
 #define REF_DATA_H_INCLUDED
 
-#include <iostream.h>
+#include <iostream>
 #include <stdlib.h>
-#include <strings.h>
+#include <string>
 #include <map>
 
 #include "core.h"

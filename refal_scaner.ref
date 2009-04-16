@@ -572,7 +572,6 @@ Scan{
 		<IsSeparatorChar s.0> : true,
 		<IsSeparatorChar s.1> : true	=	"$separator" ('.') "$separator" <Scan e.e>;
 
-
 	'[' e.all = "[" <Scan e.all>;
 	']' e.all = "]" <Scan e.all>;
 	'...' e.all = "..." <Scan e.all>;
@@ -609,6 +608,10 @@ Scan{
 				'"'  = (e.e) <Scan e.all>;
 		};
 	(s.quo (e.e)) s.sym e.all = <Scan (s.quo (e.e s.sym)) e.all>;
+
+	'.' s.s e.e,
+		<Type s.s> : 'P' e.x  =  ('.') "$separator" <Scan s.s e.e>;
+
 
 	e.all, <Type e.all> : {
 			'L's.sub e.all, <Implode  e.all > : t.word e.else = (t.word) <Scan e.else>;

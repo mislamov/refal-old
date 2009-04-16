@@ -276,16 +276,13 @@ void	RefVariable_E::print_inf() {
 };*/
 
 bool	RefVariable_e::operator==(RefData &rd) {
-    //return dynamic_cast<RefVariable_e *>(&rd);
-    return (RefVariable_e *)(&rd);
+    return dynamic_cast<RefVariable_e *>(&rd);
 };
 bool	RefVariable_E::operator==(RefData &rd) {
-    //return dynamic_cast<RefVariable_E *>(&rd);
-    return (RefVariable_E *)(&rd);
+    return dynamic_cast<RefVariable_E *>(&rd);
 };
 bool	RefVariable_END::operator==(RefData &rd) {
-    //return dynamic_cast<RefVariable_END *>(&rd);
-    return (RefVariable_END *)(&rd);
+    return dynamic_cast<RefVariable_END *>(&rd);
 };
 
 unistring vectorToString(RefData *f, RefData *g){

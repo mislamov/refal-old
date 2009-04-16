@@ -22,7 +22,10 @@
 #include <map>
 #include <stack>
 #include <list>
-#include <pair.h>
+
+#ifndef WIN32
+#include <pair.h>   // for MSVC 6.0 that doens't have a proper <utility>
+#endif /* WIN32 */
 
 //#include "kernel.h"
 //#include "datastructs.h"
@@ -42,7 +45,7 @@ class RefTemplateBridgeVar;
 class TVarBodyTable : public std::map<unistring, TVarBody*>{};
 
 // тело сопоставленной переменной
-class TVarBody : public pair<RefData *, RefData *>{
+class TVarBody : public std::pair<RefData*, RefData*>{
     unistring sss;
 
 public:

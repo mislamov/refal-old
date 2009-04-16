@@ -19,7 +19,7 @@
 #ifndef REFFUNCTION_H_INCLUDED
 #define REFFUNCTION_H_INCLUDED
 
-#include <iostream.h>
+#include <iostream>
 #include <sstream>
 #include <list>
 

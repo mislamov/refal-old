@@ -26,6 +26,12 @@
 #include "kernel.h"
 #include "data.h"
 
+#ifdef WIN32
+#define strtof(f1,f2) ((float)strtod(f1,f2))
+#endif
+
+
+
 // счетчик для контроля утечек памяти
 //long RefValuedData::getCount(){ return symcount; };
 
