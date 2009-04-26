@@ -79,6 +79,7 @@ TVarBody * TVarBody::folowByWay(unistring path) {
 
 Session::Session() {
     fcalls = 1;
+	step = 0;
 };
 
 Session::~Session() {
@@ -92,7 +93,7 @@ TVarBody* Session::setVarBody( unistring vname, TVarBody* vb) {
     }
     #endif
     ( matchSessions.back()->varTable )[ vname ] = vb;
-    //std::cout << "\nSET " << vname << " := " << flush << (vb?vb->toString():"$null") << flush;
+    //std::cout << "\nSET " << vname << " := " << std::flush << (vb?vb->toString():"$null") << std::flush;
     return vb;
 };
 
@@ -127,11 +128,11 @@ RefObject*  Session::getObjectByName(unistring name, Session *s) {
     ///todo: проверить указан ли модуль явно и если указан, то искать только в нем
     std::map<unistring, RefModuleBase*>::reverse_iterator mod;
     RefObject* result = 0;
-    //std::cout << "\n\n" << modules.size() << flush << "\n\n";
+    //std::cout << "\n\n" << modules.size() << std::flush << "\n\n";
 
 
     for ( mod=this->modules.rbegin() ; mod != this->modules.rend(); ++mod ) {
-        //std::cout << "\n\n" << mod->second->getName() << flush << "\n\n";
+        //std::cout << "\n\n" << mod->second->getName() << std::flush << "\n\n";
 
         if (result = mod->second->getObjectByName(name, s)) {
             return result;
@@ -255,7 +256,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
 
     result_sost = isdemaching?BACK:GO;
 
-    //RefChain *args = s->getPole_zrenija();
+    RefChain *args = s->getPole_zrenija();
     #ifdef DEBUG
     if (!args || !args->first || !args->second) {
         SYSTEMERROR("unexpected NULLs in session::matching arguments!");
@@ -324,8 +325,8 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                     move_to_next_point(l, 0, s);  ///
                     s->SaveTemplItem(activeTemplate, l, r);
                 }
-                //std::cout << "A: " << activeTemplate->toString() << "\n" << flush;
-                //std::cout << "B: " << activeTemplate->next << "\n" << flush;
+                //std::cout << "A: " << activeTemplate->toString() << "\n" << std::flush;
+                //std::cout << "B: " << activeTemplate->next << "\n" << std::flush;
                 move_to_next_point(activeTemplate, 0, s);
             } else
                 if (result_sost == BACK) {
@@ -377,7 +378,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                         // Может создать ошибки для varBridge, если тот наследуется от RefVariableBase
                         RefVariableBase* vart = dynamic_cast <RefVariableBase *>(activeTemplate);
                         if (vart && vart->getName() != EmptyUniString) {
-                            //std::cout << "\n::::: del map for : " << vart->getName() << flush << "\n";
+                            //std::cout << "\n::::: del map for : " << vart->getName() << std::flush << "\n";
                             s->setVarBody(vart->getName(), 0);
                         }
                         move_to_pred_point(activeTemplate, 0, s);
@@ -679,9 +680,9 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
 
     #ifdef DEBUG
     if (varBody->owner != owner) {
-        std::cout << "\n\n\size=" << getCurrentSopostStack()->size() << flush ;
-        std::cout << "\ncall owner=" << owner << flush << owner->toString() << std::flush;
-        std::cout << "\ntop  owner=" << varBody->owner << flush << varBody->owner->toString() << "\n\n" << std::flush;
+        std::cout << "\n\n\size=" << getCurrentSopostStack()->size() << std::flush ;
+        std::cout << "\ncall owner=" << owner << std::flush << owner->toString() << std::flush;
+        std::cout << "\ntop  owner=" << varBody->owner << std::flush << varBody->owner->toString() << "\n\n" << std::flush;
         printf("\n");
 
         std::cout << "\n=======\nGetCurrentSopostStack::\n";
@@ -689,7 +690,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
             std::cout << getCurrentSopostStack()->top()->toString() << "\n";
             getCurrentSopostStack()->pop();
         }
-        std::cout << flush;
+        std::cout << std::flush;
 
         showStatus();
         SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << varBody->owner->toString() << "[" << varBody->owner << "] expected!");
@@ -731,13 +732,15 @@ RefFunctionBase * Session::findMethodFromModule(unistring fname) {
 
     /// todo: поддержку разименования namespace:   < mymodule:myfunction   E.args >
 
-    std::map<unistring, RefModuleBase*>::iterator it;
+    //std::map<unistring, RefModuleBase*>::iterator it;
+    std::map<unistring, RefModuleBase*>::reverse_iterator it;
     RefFunctionBase *f = 0;
 
     // поиск по модулям
-    for (it = modules.end(); it!=modules.begin(); ) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
-        it--;
-        //std::cout << "\n\n:::: " << it->first << " ::::\n\n" << std::flush;
+    //for (it = modules.end(); it!=modules.begin(); ) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
+    //    it--;
+    for (it = modules.rbegin(); it!=modules.rend(); ++it) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
+        std::cout << "\n\n:::: " << it->first << " ::::\n\n" << std::flush;
         if (f = dynamic_cast<RefFunctionBase *>( it->second->getObjectByName(fname) )) {
             //LOG("implementation of " << fname << " finded (" << f << ") in " << it->first);
             return f;
@@ -844,7 +847,7 @@ SessionOfMaching::SessionOfMaching(RefObject *own, Session *s){
 // очищает точку восстановления с удалением мусора
 SessionOfMaching::~SessionOfMaching(){
                     if (!isfar){ // не чужое поле зрения (не внешний шаблон)
-                        //std::cout << "\nown: " << owner->toString() << "\n\n" << flush ;
+                        //std::cout << "\nown: " << owner->toString() << "\n\n" << std::flush ;
                         if (dynamic_cast<RefCondition *>(owner)){
                             //std::cout << "\ndel: " << pole_zrenija->toString();
                             pole_zrenija->clear();

@@ -216,7 +216,7 @@ TResult  RefVariable_END::init(Session *s, RefData *&a) {
 };
 
 TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
-    //std::cout << "\n## restore for e.e: " << std::flush; if (l) l->print_inf(); std::cout << " , "; if (r) r->print_inf(); std::cout << " next: " << r->next->toString() << "\n" << flush;
+    //std::cout << "\n## restore for e.e: " << std::flush; if (l) l->print_inf(); std::cout << " , "; if (r) r->print_inf(); std::cout << " next: " << r->next->toString() << "\n" << std::flush;
     if (l) {
         if (r==s->getStackOfDataSkob()->top()) {
             //std::cout << "\n\n[r] back: " << r->toString() << ' ' << s->getStackOfDataSkob()->size() << std::flush;
@@ -232,7 +232,7 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
     }
 
     //std::cout << "\ns->getStackOfDataSkob()->top() = " << s->getStackOfDataSkob()->top()->toString();
-    //std::cout << "\n\n" << s->getStackOfDataSkob()->size() << "\n\n" << flush;
+    //std::cout << "\n\n" << s->getStackOfDataSkob()->size() << "\n\n" << std::flush;
     #ifdef DEBUG
     if (! s->getStackOfDataSkob()->size()) SYSTEMERROR("empty stack!");
     #endif

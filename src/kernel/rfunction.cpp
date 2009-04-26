@@ -138,7 +138,8 @@ s->fcalls++;
         // s->showStatus();
 
         /// todo: создать тут точку отката сессии для очистки последствий функции
-        SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
+        //SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
+		SessionOfMaching* stateBeforeMatch = s->matchSessions.empty() ? 0 : s->matchSessions.back();
 
         if (s->matching(*sent, (*sent)->leftPart, argfirst, argsecond, false, false)){
             LOG(s->step++ <<  "\tsucessfull!");
@@ -148,7 +149,8 @@ s->fcalls++;
 
             /// todo: откатиться до созданной точки, оставив только newoe и глобальные данные. Созданные переменные удалить.
             // сейчас дилетантский откат:
-            while (s->matchSessions.back() != stateBeforeMatch){
+            //while (s->matchSessions.back() != stateBeforeMatch){
+            while ((s->matchSessions.empty() ? 0 : s->matchSessions.back()) != stateBeforeMatch){
                 delete s->matchSessions.back();
                 s->matchSessions.pop_back();
             } // конец дилетантского отката
@@ -294,11 +296,11 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     if (s->matching(this, this->leftPart, newpz->first, newpz->second, false, isReverse )){
         /// Go->Go
         //std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
-        //std::cout << "s.sopost.top: " << s->getCurrentSopostStack()->top()->toString() << flush;
+        //std::cout << "s.sopost.top: " << s->getCurrentSopostStack()->top()->toString() << std::flush;
         return (GO);
     } else {
         /// Go->Back
-        //std::cout << "\nCLEAR: " << newpz->toString() << "\n\n" << flush;
+        //std::cout << "\nCLEAR: " << newpz->toString() << "\n\n" << std::flush;
         //уже. в деструкторе субсессии: newpz->clear(); // сопоставление неуспешно - удаляем
         delete newpz;
         //std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";

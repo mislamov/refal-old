@@ -155,7 +155,10 @@ RefChain* Mount (RefData* beg, RefData* end, Session* s){
       is.seekg (0, std::ios::end);
       length = is.tellg();
       is.seekg (0, std::ios::beg);
-      if (length < 0) return 0;
+	  if (length < 0) {
+		  std::cerr << "Can`r open file: " << RefChain(beg, end).explode() << std::flush;
+		  return 0;
+	  }
 
       // allocate memory:
       buffer = new char [length];
