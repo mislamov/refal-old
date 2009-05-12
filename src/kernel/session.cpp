@@ -741,7 +741,7 @@ RefFunctionBase * Session::findMethodFromModule(unistring fname) {
     //for (it = modules.end(); it!=modules.begin(); ) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
     //    it--;
     for (it = modules.rbegin(); it!=modules.rend(); ++it) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
-        std::cout << "\n\n:::: " << it->first << " ::::\n\n" << std::flush;
+        //std::cout << "\n\n:::: " << it->first << " ::::\n\n" << std::flush;
         if (f = dynamic_cast<RefFunctionBase *>( it->second->getObjectByName(fname) )) {
             //LOG("implementation of " << fname << " finded (" << f << ") in " << it->first);
             return f;
