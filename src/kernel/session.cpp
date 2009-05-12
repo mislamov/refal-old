@@ -299,9 +299,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
         std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
         std::cout << "\t";
         print_vector(r->next);
-        s->message4nextpred = mERROR;
         #endif
-        //*/
+
+		s->message4nextpred = mERROR;
+		//*/
         pre_sost = result_sost;
         // даны l и r  (l=r=pred)
         if (pre_sost==GO) {
