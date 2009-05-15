@@ -237,8 +237,8 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
 
         TResult init(Session* s, RefData *&currentPoint);
         TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
-        RefData*  next_point( ThisId var_id, Session *s);
-        RefData*  pred_point( ThisId var_id, Session *s);
+        RefData*  next_term( ThisId var_id, Session *s);
+        RefData*  pred_term( ThisId var_id, Session *s);
 
         unistring getName(){
             if (isOpen())
@@ -281,8 +281,8 @@ class RefTemplateBridgeTmpl : public RefBracketBase, public IRefVarStacked {
 
         TResult init(Session* s, RefData *&currentPoint);
         TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
-        RefData*  next_point( ThisId var_id, Session *s);
-        RefData*  pred_point( ThisId var_id, Session *s);
+        RefData*  next_term( ThisId var_id, Session *s);
+        RefData*  pred_term( ThisId var_id, Session *s);
 
         RefData* Copy(RefBracketBase *b, RefData *rp=0){
             SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");

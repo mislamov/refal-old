@@ -83,7 +83,7 @@ TResult  RefGroupBracket::back(Session *s, RefData *&l, RefData *&r){
 //-----------  o  -----------
 ref_variant_dot::ref_variant_dot( RefData* rp) : RefData(rp) { is_system=false; };
 
-RefData*   ref_variant_dot::pred_point (ThisId id, Session *s) {
+RefData*   ref_variant_dot::pred_term (ThisId id, Session *s) {
     if (s->result_sost == FORCEBACK){ return krest; };
     return nextffwd;
 };
@@ -104,7 +104,7 @@ bool	   ref_variant_dot::operator==(RefData&rd){ return false; };
 ref_variant_vert::ref_variant_vert( RefData* rp) : RefData(rp) { is_system=false; };
 TResult	   ref_variant_vert::init(Session *s, RefData *&l)	{ s->matchSessions.back()->StackOfVariants.push(this); return GO;};
 TResult	   ref_variant_vert::back(Session *s, RefData *&l, RefData *&r)	{ s->matchSessions.back()->StackOfVariants.pop(); return BACK;};
-RefData*   ref_variant_vert::next_point (ThisId id, Session*) { return vopr->next; }; //  return "}.vname"
+RefData*   ref_variant_vert::next_term (ThisId id, Session*) { return vopr->next; }; //  return "}.vname"
 void       ref_variant_vert::forceback (Session *s)	{ s->matchSessions.back()->StackOfVariants.pop(); };
 bool	   ref_variant_vert::operator==(RefData&rd){ return false; };
 
@@ -118,7 +118,7 @@ bool	 ref_variant_ffwd::operator==(RefData&rd){ return false; };
 ref_variant_vopr::ref_variant_vopr( RefData* rp) : RefData(rp) { is_system=false; };
 TResult		ref_variant_vopr::init(Session *, RefData *&l) { return BACK; };
 TResult     ref_variant_vopr::back(Session* s, RefData *&l, RefData *&r){ return BACK; }; //
-RefData*	ref_variant_vopr::pred_point (ThisId id, Session *s) {
+RefData*	ref_variant_vopr::pred_term (ThisId id, Session *s) {
         //if (s->message4nextpred == mFORCEBACK){ return pred; } - закрыл, так как откатывать надо не последний вариант а сопоставленный
 		ref_variant_vert *rvv = s->matchSessions.back()->StackOfVariants.top();
 		return rvv;
@@ -131,7 +131,7 @@ void ref_variant_vopr::forceback(Session* s){
 //----------  x  ------------
 ref_variant_krest::ref_variant_krest( RefData* rp) : RefData(rp) { is_system=false; };
 TResult		ref_variant_krest::init(Session *, RefData *&l) { return BACK; };
-RefData*	ref_variant_krest::pred_point (ThisId id, Session *s) { return begbr; };
+RefData*	ref_variant_krest::pred_term (ThisId id, Session *s) { return begbr; };
 bool ref_variant_krest::operator==(RefData&rd){ return false; };
 
 
@@ -192,7 +192,8 @@ TResult  ref_repeater::back(Session *s, RefData *&l, RefData *&r){
     s->message4nextpred = mPRED;
     return BACK;
 };
-RefData*  ref_repeater::next_point (ThisId id, Session*s){
+
+RefData*  ref_repeater::next_term (ThisId id, Session*s){
     switch (s->message4nextpred){
         case mNEXT: return next;
         case mPRED: return pred;
@@ -202,7 +203,7 @@ RefData*  ref_repeater::next_point (ThisId id, Session*s){
     }
     SYSTEMERROR("unexpected message");
 };
-RefData*  ref_repeater::pred_point (ThisId id, Session*s){
+RefData*  ref_repeater::pred_term (ThisId id, Session*s){
     switch (s->message4nextpred){
         case mNEXT: return next;
         case mPRED: return pred;

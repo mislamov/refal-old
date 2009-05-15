@@ -107,7 +107,8 @@ template <class T>
 
 template <class T>
     TResult RefVarForSymbol<T>::init(Session* s, RefData *&l){
-        move_to_next_point(l, 0/*myid()*/, s);
+        move_to_next_term(l, 0/*myid()*/, s);
+
         if (dynamic_cast<T *>(l))
             return GO;
         else

@@ -68,7 +68,7 @@ RefChain* Sum (RefData* beg, RefData* end, Session* s){
         }
         thesum += a->getValue();
         //std::cout << a->getValue() << ", ";
-        move_to_next_point(beg, 0, s);
+        move_to_next_term(beg, 0, s);
     }
 
     //std::cout << a->getValue() << " = " << thesum ;
@@ -90,7 +90,7 @@ RefChain* Mul (RefData* beg, RefData* end, Session* s){
         }
         thesum *= a->getValue();
         //std::cout << a->getValue() << " * ";
-        move_to_next_point(beg, 0, s);
+        move_to_next_term(beg, 0, s);
     }
     a = new RefInteger(thesum);
     //std::cout << " = " << thesum;
@@ -105,7 +105,7 @@ RefChain* Lenw (RefData* beg, RefData* end, Session* s){
     RefInteger *a;
     if (beg) while(beg != end->next){
         thecount++;
-        move_to_next_point(beg, 0, s);
+        move_to_next_term(beg, 0, s);
     }
 
     a = new RefInteger(thecount);

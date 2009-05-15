@@ -133,7 +133,6 @@ try {
     if ( theCommand.compare(_L("GROUP")) == 0) {
             if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("GROUP WITHOUT name-attribute");
             RefGroupBracket *gbropen = new RefGroupBracket(toWstring(attributes.getValue("name")), 0);
-            //loader->putValueToStack( theCommand, dynamic_cast<RefObject *>(gbropen) );
             loader->putValueToStack( theCommand, (RefObject *)(gbropen) );
             *(loader->getCurrChain()) += gbropen;
     } else

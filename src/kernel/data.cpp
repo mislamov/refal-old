@@ -61,12 +61,6 @@ RefData::~RefData(){
     if (pred) pred->next = next;
 };
 
-RefData*  RefData::next_point( ThisId ThisId, Session *s) {
-    return next;
-};
-RefData*  RefData::pred_point( ThisId ThisId, Session *s) {
-    return pred;
-};
 RefData*  RefData::next_term( ThisId ThisId, Session *s) {
     return next;
 };
@@ -186,7 +180,7 @@ RefChain* RefChain::Copy(Session *s){
     RefData *a, *b, *dstHlp, *dst = newChain->first;
 
 
-    while(src != srcR->next_point(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
+    while(src != srcR->next_term(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
 
         RefLinkToVariable *tmplnk = dynamic_cast<RefLinkToVariable *>(src);
 
@@ -208,7 +202,7 @@ RefChain* RefChain::Copy(Session *s){
             }
             //#endif
             if (!(tbody->first)){
-                src = move_to_next_point(src, 0, 0);
+                src = move_to_next_term(src, 0, 0);
                 continue;
             };
             RefChain *ch = RefChain(tbody->first, tbody->second).Copy();
@@ -216,7 +210,7 @@ RefChain* RefChain::Copy(Session *s){
             ch->first->pred = dst;
             dst = ch->second;
             delete ch;
-            move_to_next_point(src, 0, 0);
+            move_to_next_term(src, 0, 0);
             continue;
         }
 
@@ -268,7 +262,7 @@ RefChain* RefChain::Copy(Session *s){
         } else {
             dst = src->Copy(dst);
         }
-        src = move_to_next_point(src, 0, 0);
+        src = move_to_next_term(src, 0, 0);
     }
     newChain->second = dst;
 
@@ -502,8 +496,8 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
             //currentPoint->drop(myid);
             return BACK;
         } //std::cout << '^' << dynamic_cast<ref_BYTE *>(a)->get_ch();
-        move_to_next_point(ldata, 0/*myid()*/, s);
-        currentPoint = move_to_next_point(currentPoint, 0/*myid()*/, s);
+        move_to_next_term(ldata, 0/*myid()*/, s);
+        currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
     };
     if (!(*currentPoint == *ldata)){ // сравниваем последние элементы
             //ldata->drop(myid);

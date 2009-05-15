@@ -118,8 +118,8 @@ class Session : public RefObject {
     int fcalls;
     unsigned long step;
 
-    TResult result_sost;     // последний статус в сопоставлении. Внешнее изменение: ref_variant_dot::pred_point
-    TMessage message4nextpred; // через эту переменную методы init и back могут передавать указание методам next_point и pred_point
+    TResult result_sost;     // последний статус в сопоставлении. Внешнее изменение: ref_variant_dot::pred_
+    TMessage message4nextpred; // через эту переменную методы init и back могут передавать указание методам next_ и pred_
 
     // данные
     std::map <unistring, RefModuleBase*>  modules;  //  подгруженные модули

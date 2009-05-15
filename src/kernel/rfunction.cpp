@@ -378,7 +378,7 @@ TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
     }
 };
 
-RefData*  RefTemplateBridgeVar::next_point( ThisId var_id, Session *s){
+RefData*  RefTemplateBridgeVar::next_term( ThisId var_id, Session *s){
     if (this->isOpen()){
         // указывает на открывающую скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
@@ -416,7 +416,7 @@ TResult  RefTemplateBridgeVar::back(Session* s, RefData *&l, RefData *&r){
     }
 };
 
-RefData*  RefTemplateBridgeVar::pred_point( ThisId var_id, Session *s){
+RefData*  RefTemplateBridgeVar::pred_term( ThisId var_id, Session *s){
     if (this->isOpen()){
         return pred; //?
     } else {
@@ -445,7 +445,7 @@ TResult  RefTemplateBridgeTmpl::init(Session* s, RefData *&l){
     }
 };
 
-RefData*  RefTemplateBridgeTmpl::next_point( ThisId var_id, Session *s){
+RefData*  RefTemplateBridgeTmpl::next_term( ThisId var_id, Session *s){
     if (this->isOpen()){  //  {
         return next;
     } else {              //  }
@@ -473,7 +473,7 @@ TResult  RefTemplateBridgeTmpl::back(Session* s, RefData *&l, RefData *&r){
     }
 };
 
-RefData*  RefTemplateBridgeTmpl::pred_point( ThisId var_id, Session *s){
+RefData*  RefTemplateBridgeTmpl::pred_term( ThisId var_id, Session *s){
     if (this->isOpen()){
         #ifdef DEBUG
         if (! s->matchSessions.back()->templReturnBackPoint)

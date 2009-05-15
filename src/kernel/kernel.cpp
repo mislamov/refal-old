@@ -253,10 +253,10 @@ TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
 
     if (l==r){
         l = 0;
-        r = move_to_pred_point(r, 0/*myid()*/, s);
+        r = move_to_pred_term(r, 0/*myid()*/, s);
         return GO;
     }
-    r = move_to_pred_point(r, 0/*myid()*/, s);
+    r = move_to_pred_term(r, 0/*myid()*/, s);
     //SYSTEMERROR("not yet");
     return GO;
 };

@@ -42,7 +42,7 @@ if (! argline->first) return argline;
         TVarBodyTable *vars     = 0;
 		bool succes;
 
-        for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_point(it, 0, s)){
+        for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_term(it, 0, s)){
             exec = dynamic_cast<RefExecBracket *>(it);
             if (exec && !exec->isOpen()){    // поиск >
                 it = exec->getOther()->pred; // получение точки перед <  (может быть 0)

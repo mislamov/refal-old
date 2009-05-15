@@ -78,8 +78,6 @@ class RefData : public RefObject {
         bool  is_system;
         //bool  is_symbol; // сопостовимость с s-перемеенной
 
-        virtual RefData*  next_point( ThisId var_id, Session *s); // на соседнйи элемен
-        virtual RefData*  pred_point( ThisId var_id, Session *s);
         virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
         virtual RefData*  pred_term( ThisId var_id, Session *s);
         virtual RefData*  beginOfTerm(){ return this; };
@@ -114,29 +112,16 @@ class RefData : public RefObject {
 };
 
 
-
-inline RefData*  move_to_next_point(RefData*& point, ThisId id, Session* s) {
-    do point = point->next_point(id, s);
-    while (point && point->is_system);
-    return point;
-};
-
-inline RefData*  move_to_pred_point(RefData*& point, ThisId id, Session *s) {
-    do point = point->pred_point(id, s);
-    while (point && point->is_system);
-    return point;
-};
-
-inline void  move_to_next_term(RefData* &point, ThisId id, Session *s) {
+inline RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
     do point = point->next_term(id, s);
     while (point && point->is_system);
-    return;
+    return point;
 };
 
-inline void  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
+inline RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
     do point = point->pred_term(id, s);
     while (point && point->is_system);
-    return;
+    return point;
 };
 
 

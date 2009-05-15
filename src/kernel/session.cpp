@@ -323,12 +323,12 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 if (l==r) { // r не изменилось => пустое
                     s->SaveTemplItem(activeTemplate, 0, l);
                 } else {
-                    move_to_next_point(l, 0, s);  ///
+                    move_to_next_term(l, 0, s);  ///
                     s->SaveTemplItem(activeTemplate, l, r);
                 }
                 //std::cout << "A: " << activeTemplate->toString() << "\n" << std::flush;
                 //std::cout << "B: " << activeTemplate->next << "\n" << std::flush;
-                move_to_next_point(activeTemplate, 0, s);
+                move_to_next_term(activeTemplate, 0, s);
             } else
                 if (result_sost == BACK) {
                     /// INIT -> BACK
@@ -352,7 +352,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                     #endif
 
                     //r = 0;
-                    move_to_pred_point(activeTemplate, 0, s);
+                    move_to_pred_term(activeTemplate, 0, s);
                 }
 
         } else
@@ -369,7 +369,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
 
                     s->SaveTemplItem(activeTemplate, l, r);
                     //s->showStatus();
-                    move_to_next_point(activeTemplate, 0, s);
+                    move_to_next_term(activeTemplate, 0, s);
                 } else
                     if (result_sost == BACK) {
                         /// BACK -> BACK
@@ -382,7 +382,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                             //std::cout << "\n::::: del map for : " << vart->getName() << std::flush << "\n";
                             s->setVarBody(vart->getName(), 0);
                         }
-                        move_to_pred_point(activeTemplate, 0, s);
+                        move_to_pred_term(activeTemplate, 0, s);
                     }
             }
 
@@ -458,7 +458,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             while (activeTemplate != finish) {
                 LOG( ">> BACKFORSE forceback: " << activeTemplate->toString() );
                 activeTemplate->forceback(s);  // принудительный откат переменной
-                move_to_pred_point(activeTemplate, 0, s);
+                move_to_pred_term(activeTemplate, 0, s);
             }
             ; // (
 
