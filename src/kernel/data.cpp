@@ -262,7 +262,7 @@ RefChain* RefChain::Copy(Session *s){
         } else {
             dst = src->Copy(dst);
         }
-        src = move_to_next_term(src, 0, 0);
+        src = move_to_next_term(src, 0, s);
     }
     newChain->second = dst;
 
@@ -602,3 +602,45 @@ void delChain(RefData*a, RefData*b){
 
 RefVariable::~RefVariable(){ co::varcount--;};
 RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(), RefData(rp), RefalNameSpace(name){ co::varcount++; is_system = false;  };
+
+
+
+
+
+
+RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
+    #ifdef DEBUG
+    if (!point) SYSTEMERROR("point is null");
+    if (!(s->subChainFrom) && !(s->subChainTo)) SYSTEMERROR("subChain links not set!!!");
+    #endif
+/*
+    // самый частый случай
+    point = point->next_term(id, s);
+    #ifdef DEBUG
+    if (!point) SYSTEMERROR("point is null");
+    #endif
+    if (! point->is_system) return point;
+
+
+    while(point && s->subChainTo->point!=point && point->is_system){
+        point = point->next_term(id, s);
+    }
+    if (s->subChainTo->point==point){
+
+    }
+*/
+    do point = point->next_term(id, s);
+    while (point && point->is_system);
+    return point;
+};
+
+RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
+    #ifdef DEBUG
+    if (!point) SYSTEMERROR("point is null");
+    if (!s->subChainFrom && !s->subChainTo) SYSTEMERROR("subChain links not set!!!");
+    #endif
+
+    do point = point->pred_term(id, s);
+    while (point && point->is_system);
+    return point;
+};

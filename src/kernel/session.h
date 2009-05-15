@@ -113,8 +113,12 @@ class Session : public RefObject {
   private:
     RefChain*  deinitializationArg();               //  откат регистрации ОО в initialization
     void  initializationArg(RefData*, RefData*);    //  регистрация ОО для сапостовления. приставка дот
+    RefChain* globalData;   // глобальные данные для цепочек
 
   public:
+    RefChainPointFrom *subChainFrom;
+    RefChainPointTo   *subChainTo;
+
     int fcalls;
     unsigned long step;
 

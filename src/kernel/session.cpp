@@ -78,6 +78,7 @@ TVarBody * TVarBody::folowByWay(unistring path) {
 
 
 Session::Session() {
+    globalData = new RefChain();
     fcalls = 1;
 	step = 0;
 };
@@ -326,9 +327,13 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                     move_to_next_term(l, 0, s);  ///
                     s->SaveTemplItem(activeTemplate, l, r);
                 }
-                //std::cout << "A: " << activeTemplate->toString() << "\n" << std::flush;
-                //std::cout << "B: " << activeTemplate->next << "\n" << std::flush;
-                move_to_next_term(activeTemplate, 0, s);
+                // std::cout << "A: " << activeTemplate->toString() << "\n" << std::flush;
+                // std::cout << "B: " << activeTemplate->next << "\n" << std::flush;
+
+                // move_to_next_term(activeTemplate, 0, s);
+                // перемещение по шаблонам
+                do { activeTemplate = activeTemplate->next_template(0, s); }
+                while (activeTemplate && activeTemplate->is_system);
             } else
                 if (result_sost == BACK) {
                     /// INIT -> BACK
@@ -351,8 +356,12 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
 
                     #endif
 
-                    //r = 0;
-                    move_to_pred_term(activeTemplate, 0, s);
+                    // r = 0;
+                    // move_to_pred_term(activeTemplate, 0, s);
+                    // перемещение по шаблонам
+                    do { activeTemplate = activeTemplate->pred_template(0, s); }
+                    while (activeTemplate && activeTemplate->is_system);
+
                 }
 
         } else
@@ -369,7 +378,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
 
                     s->SaveTemplItem(activeTemplate, l, r);
                     //s->showStatus();
-                    move_to_next_term(activeTemplate, 0, s);
+                    //move_to_next_term(activeTemplate, 0, s);
+                    // перемещение по шаблонам
+                    do { activeTemplate = activeTemplate->next_template(0, s); }
+                    while (activeTemplate && activeTemplate->is_system);
                 } else
                     if (result_sost == BACK) {
                         /// BACK -> BACK
@@ -382,7 +394,10 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                             //std::cout << "\n::::: del map for : " << vart->getName() << std::flush << "\n";
                             s->setVarBody(vart->getName(), 0);
                         }
-                        move_to_pred_term(activeTemplate, 0, s);
+                        //move_to_pred_term(activeTemplate, 0, s);
+                        // перемещение по шаблонам
+                        do { activeTemplate = activeTemplate->pred_template(0, s); }
+                        while (activeTemplate && activeTemplate->is_system);
                     }
             }
 

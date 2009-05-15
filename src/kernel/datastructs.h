@@ -66,7 +66,7 @@ class ref_variant_dot : public RefData/*, public IRefVarStacked*/ { // IRefVarSt
         ref_variant_krest *krest;
 
         ref_variant_dot( RefData* rp=0);
-        RefData*  pred_term (ThisId id, Session *s);
+        RefData*  pred_template (ThisId id, Session *s);
         TResult	   init	      (Session *s, RefData *&l);
         TResult	   back	      (Session *s, RefData *&l, RefData *&r);
         bool operator==(RefData&rd);
@@ -91,7 +91,7 @@ class ref_variant_vert : public RefData {
         RefData *vopr;
 
         ref_variant_vert( RefData* rp=0);
-        RefData*  next_term (ThisId id, Session*);
+        RefData*  next_template (ThisId id, Session*);
         bool operator==(RefData&rd);
         void forceback (Session *s);
 
@@ -123,7 +123,7 @@ class ref_variant_ffwd : public RefData {
 class ref_variant_vopr : public RefData {
     public:
         ref_variant_vopr( RefData* rp=0);
-        RefData*	pred_term (ThisId id, Session *s);
+        RefData*	pred_template (ThisId id, Session *s);
         bool operator==(RefData&rd);
 
 	TResult  init(Session* s, RefData *&l); //
@@ -140,7 +140,7 @@ class ref_variant_krest : public RefData {
 
         ref_variant_krest(RefData* rp=0);
         virtual ~ref_variant_krest(){};
-        RefData*	pred_term (ThisId id, Session *s);
+        RefData*	pred_template (ThisId id, Session *s);
         bool operator==(RefData&rd);
 
 	TResult  init(Session* s, RefData *&l); //
@@ -193,8 +193,8 @@ class ref_repeater : public RefBracketBase {
         //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
         TResult  init(Session *, RefData *&l);
         TResult  back(Session *, RefData *&l, RefData *&r);
-        RefData*  next_term (ThisId id, Session*);
-        RefData*  pred_term (ThisId id, Session*);
+        RefData*  next_template (ThisId id, Session*);
+        RefData*  pred_template (ThisId id, Session*);
 
         bool operator==(RefData&rd){ SYSTEMERROR("unexpected call"); };
 

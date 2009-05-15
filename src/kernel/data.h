@@ -26,7 +26,6 @@
 
 #include "core.h"
 
-
 /************************************************
 * KERNEL - ядро рефал-машины
 * ядро определяет
@@ -80,6 +79,9 @@ class RefData : public RefObject {
 
         virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
         virtual RefData*  pred_term( ThisId var_id, Session *s);
+        virtual RefData*  next_template( ThisId var_id, Session *s){ return next_term(var_id, s); }; // следующий шаблон при сопоставлении
+        virtual RefData*  pred_template( ThisId var_id, Session *s){ return pred_term(var_id, s); };
+
         virtual RefData*  beginOfTerm(){ return this; };
         virtual RefData*  endOfTerm () { return this; };
 //        virtual RefData*  take_copy ( ThisId var_id); // возвращает копию если новый создатель
@@ -112,18 +114,20 @@ class RefData : public RefObject {
 };
 
 
-inline RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
-    do point = point->next_term(id, s);
-    while (point && point->is_system);
-    return point;
+RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s);
+RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s);
+
+
+
+class RefChainPointFrom : public RefData {
+    public:
+        RefData *point;
 };
 
-inline RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
-    do point = point->pred_term(id, s);
-    while (point && point->is_system);
-    return point;
+class RefChainPointTo : public RefData {
+    public:
+        RefData *point;
 };
-
 
 
 
