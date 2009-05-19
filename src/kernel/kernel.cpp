@@ -106,12 +106,15 @@ void RefStructBracket::forceback(Session *s){
 
 
 RefExecBracket::RefExecBracket(RefData* rp) : RefBracketBase(rp) {
+    regCast(RefExecBracket);
     is_system = false;
 };
 
 RefExecBracket::RefExecBracket(RefExecBracket *br, RefData* rp) : RefBracketBase(br, rp) {
+    regCast(RefExecBracket);
     is_system = false;
 };
+
 RefData*  RefExecBracket::next_term( ThisId var_id ) {
     if (is_opened) {
         return other->next;//

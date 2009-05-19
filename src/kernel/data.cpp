@@ -37,6 +37,7 @@ RefObject::RefObject(){ co::ocount++;
 RefObject::~RefObject(){ co::ocount--; };
 
 RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
+    this->typeCast = castDefault;
     co::datacount++;
 
     sss = "";
@@ -132,6 +133,7 @@ RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ 
         is_opened = false;
         dr->other = this;
         is_system = false;
+        this->typeCast = castRefBracketBase;
 //        if (name == EmptyUniString) { /*name == other->getName();*/ }
 };
 
@@ -611,26 +613,12 @@ RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(), RefDa
 RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
     #ifdef DEBUG
     if (!point) SYSTEMERROR("point is null");
-    if (!(s->subChainFrom) && !(s->subChainTo)) SYSTEMERROR("subChain links not set!!!");
+    //if (!(s->subChainFrom) && !(s->subChainTo)) SYSTEMERROR("subChain links not set!!!");
     #endif
-/*
-    // самый частый случай
-    point = point->next_term(id, s);
-    #ifdef DEBUG
-    if (!point) SYSTEMERROR("point is null");
-    #endif
-    if (! point->is_system) return point;
 
-
-    while(point && s->subChainTo->point!=point && point->is_system){
-        point = point->next_term(id, s);
-    }
-    if (s->subChainTo->point==point){
-
-    }
-*/
-    do point = point->next_term(id, s);
-    while (point && point->is_system);
+    while ((point = point->next_term(id, s)) && point->is_system);
+    //do point = point->next_term(id, s);
+    //while (point && point->is_system);
     return point;
 };
 
@@ -644,3 +632,9 @@ RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
     while (point && point->is_system);
     return point;
 };
+
+RefData* move_to_next_real_template(RefData* &point, Session *s){
+    point->next_term(0, s);
+};
+
+

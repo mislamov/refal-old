@@ -42,13 +42,15 @@ if (! argline->first) return argline;
         TVarBodyTable *vars     = 0;
 		bool succes;
 
-        for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_term(it, 0, s)){
-            exec = dynamic_cast<RefExecBracket *>(it);
+        for (RefData *it=argline->first; it&&it!=argline->second->next; ){
+        //for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_term(it, 0, s)){
+            exec = data_dynamic_cast(RefExecBracket, it);
+            ////exec = dynamic_cast<RefExecBracket *>(it);
             if (exec && !exec->isOpen()){    // поиск >
                 it = exec->getOther()->pred; // получение точки перед <  (может быть 0)
 
                 // получение ссылки на функцию
-                fn = dynamic_cast<RefWord *>(exec->getOther()->next->next);
+                fn = dynamic_cast<RefWord*>( exec->getOther()->next->next);
                 if (fn){
                     unistring fname = fn->getValue();
                     funk = s->findMethodFromModule( fname );
@@ -80,6 +82,8 @@ if (! argline->first) return argline;
 
 //                std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
             }
+
+            while((it = it->next_term(0, s)) && it->is_system); // итерация
         }
 
 

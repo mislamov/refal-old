@@ -42,8 +42,6 @@ unistring RefSentence::toString(){
 };
 
 
-
-
 RefObject* RefUserModule::getObjectByName(unistring name, Session *s){
     return objects[name];
 };
@@ -180,7 +178,7 @@ s->fcalls++;
         } else {
             // по идее если матчинг закончился не удачно, то в нем происходит откат к исходному состоянию и удаление мусора
             #ifdef DEBUG
-            if (stateBeforeMatch != s->matchSessions.back()) SYSTEMERROR("unbalansed sub-sessions and recover-dots"); // хм...
+            if (stateBeforeMatch  && stateBeforeMatch != s->matchSessions.back()) SYSTEMERROR("unbalansed sub-sessions and recover-dots"); // хм...
             #endif
             sent++;
         }
@@ -202,7 +200,9 @@ RefDllModule::~RefDllModule() {
 //        std::cout << "\nRefDllModule::~RefDllModule() : " << (long)this << "\n";
 };
 
+
 RefObject* RefDllModule::getObjectByName(unistring nm, Session *s){ return objects[nm]; };
+
 
 void RefDllModule::setObjectByName(unistring name, RefObject* o){
     objects[name] = o;
@@ -214,6 +214,7 @@ unistring RefDllModule::toString(){
         s << "RefDllModule[ objects: " << (objects.size()) << " ]" ;
         return sss = s.str();
 };
+
 
 RefBuildInFunction::RefBuildInFunction(unistring name, RefDllModule *m) : RefFunctionBase() {
     m->setObjectByName(name, this);
@@ -307,8 +308,8 @@ TResult  RefCondition::init(Session* s, RefData *&l){
         //s->showStatus();
         return (BACK);
     }
-
 };
+
 
 TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
     if (!isReverse && s->matching( this, this->leftPart, 0, 0, true, false)){ // продолжаем поиск вариантов

@@ -44,13 +44,19 @@ class RefLinkToVariable;
 class RefNameSpace; // именованное поле переменных и функций
 class RefChain;     // цепочка
 class RefVarTable;  // таблица сопоставленных переменных
-class TVarBodyTable;  // таблица сопоставленных переменных
+class TVarBodyTable;  // таблица сопоставленных переменных   RefExecBracket
 
 class Session;
 
 
 const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
 
+enum RefDataTypesForCast {
+    castDefault = B8(00000000),
+    castRefBracketBase = B8(00000001),
+    castRefExecBracket = B8(00000010)
+//  castRef = B8(00000000),
+};
 
 // Родитель всего в Рефале
 class RefObject {
@@ -64,6 +70,10 @@ class RefObject {
         virtual unistring explode() { return toString(); }
 };
 
+#define data_dynamic_cast(CastType, obj) ( (cast##CastType & obj->typeCast) ? static_cast<CastType *>(obj) : 0 )
+
+#define regCast(CastType) this->typeCast = static_cast<RefDataTypesForCast>(this->typeCast | cast##CastType);
+
 
 // Абстрактный класс - предок всех термов языка
 class RefData : public RefObject {
@@ -75,6 +85,7 @@ class RefData : public RefObject {
         virtual ~RefData();
         //ThisId  0/*myid()*/{  return (ThisId)(this); };
         bool  is_system;
+        RefDataTypesForCast typeCast;
         //bool  is_symbol; // сопостовимость с s-перемеенной
 
         virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
@@ -112,7 +123,6 @@ class RefData : public RefObject {
 //      virtual RefData*  getCopyAsData(RefData*);//= 0;  // клон без ссылок. Важно перегружать везде где нужно и правильно!
 
 };
-
 
 RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s);
 RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s);

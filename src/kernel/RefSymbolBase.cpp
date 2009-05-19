@@ -73,17 +73,23 @@ template <class T>
 */
 template <class T>
     bool RefSymbolBase<T>::operator ==(RefData &rd){
-        RefSymbolBase<T> *t = dynamic_cast<RefSymbolBase<T>*>(&rd);
+        RefSymbolBase<T> *t = dynamic_cast<RefSymbolBase<T>*>(&rd); //// static_cast
         return t && (t->getValue()==this->getValue());
     };
 
 
+/* общие  */
+template <class T>
+    RefSymbol<T>::RefSymbol(T i, RefData *rp) : RefSymbolBase<T>(rp){
+        this->setValue(i);
+        /*this->is_system = false;*/
+        };
 
 template <class T>
-    RefSymbol<T>::RefSymbol(T i, RefData *rp) : RefSymbolBase<T>(rp){ this->setValue(i); /*this->is_system = false;*/ };
-
-template <class T>
-    RefSymbol<T>::RefSymbol(RefData *rp) : RefSymbolBase<T>(rp){ return;/*this->is_system = false;*/ };
+    RefSymbol<T>::RefSymbol(RefData *rp) : RefSymbolBase<T>(rp){
+        return;
+        /*this->is_system = false;*/
+        };
 
 template <class T>
     T RefSymbol<T>::getValue() { return value; };
