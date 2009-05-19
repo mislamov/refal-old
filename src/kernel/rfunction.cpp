@@ -53,7 +53,7 @@ unistring RefUserModule::toString(){
             RefUserFunction *f = 0;
             for (it = objects.begin(); it!=objects.end(); it++){
                 result += it->first;
-                if (f = dynamic_cast<RefUserFunction *>(it->second)){
+                if (f = _dynamic_cast<RefUserFunction *>(it->second)){
                     result += " {\n";
                     std::list<RefSentence *>::iterator sit;
                     for (sit = f->body.begin(); sit!=f->body.end(); sit++){
@@ -279,7 +279,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     if (dynamic_cast<RefFunctionBase *>(own)){
         // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце,
         // в отличие от условия в конце пользовательского шаблона
-        RefData_DOT *d = dynamic_cast<RefData_DOT *>(l->next);
+        RefData_DOT *d = _dynamic_cast<RefData_DOT *>(l->next);
         if (!d){
             return BACK;
         }
@@ -358,7 +358,7 @@ void RefUserTemplate::setLeftPart(RefChain *lp){
 TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
     if (this->isOpen()){  //  {
         #ifdef DEBUG
-        if (! dynamic_cast<RefTemplateBridgeVar*>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
+        if (! _dynamic_cast<RefTemplateBridgeVar*>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
         #endif
         /// начало сопоставления переменной
         /* --== перенесено в Session::SaveTemplItem, т.к. там изменяется varMap, которую надо делать еще для преждней субсесии а не для новой
@@ -494,7 +494,7 @@ RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s){
 // класс - непроинициализированная переменная внешнего типа.
 // После инициализации заменяется на пару   {RefTemplateBridgeVar   RefTemplateBridgeVar}
 bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
-    RefUserTemplate *utempl =  dynamic_cast<RefUserTemplate *>( s->getObjectByName(this->getType()) );
+    RefUserTemplate *utempl =  _dynamic_cast<RefUserTemplate *>( s->getObjectByName(this->getType()) );
     if (! utempl) SYSTEMERROR("User $Template '" << getType() << "' not defined!"); //     return false;
     // шаблон найден
     RefTemplateBridgeVar
@@ -517,11 +517,11 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     rightBridge->setName(this->getName());
     // нацеливаем на тело шаблона
     #ifdef DEBUG
-    if (! dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->first) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the first");
-    if (! dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->second) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the second");
+    if (! _dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->first) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the first");
+    if (! _dynamic_cast<RefTemplateBridgeTmpl *>(utempl->getLeftPart()->second) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the second");
     #endif
-    //leftBridge ->bridge = dynamic_cast<RefTemplateBridgeTmpl *>( utempl->getLeftPart()->first );  // должно быть уже RefTemplateBridgeTmpl
-    //rightBridge->bridge = dynamic_cast<RefTemplateBridgeTmpl *>( utempl->getLeftPart()->second ); // должно быть уже RefTemplateBridgeTmpl
+    //leftBridge ->bridge = _dynamic_cast<RefTemplateBridgeTmpl *>( utempl->getLeftPart()->first );  // должно быть уже RefTemplateBridgeTmpl
+    //rightBridge->bridge = _dynamic_cast<RefTemplateBridgeTmpl *>( utempl->getLeftPart()->second ); // должно быть уже RefTemplateBridgeTmpl
     leftBridge ->bridge = (RefTemplateBridgeTmpl *)( utempl->getLeftPart()->first );  // должно быть уже RefTemplateBridgeTmpl
     rightBridge->bridge = (RefTemplateBridgeTmpl *)( utempl->getLeftPart()->second ); // должно быть уже RefTemplateBridgeTmpl
 

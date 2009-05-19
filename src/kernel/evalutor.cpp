@@ -45,12 +45,12 @@ if (! argline->first) return argline;
         for (RefData *it=argline->first; it&&it!=argline->second->next; ){
         //for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_term(it, 0, s)){
             exec = data_dynamic_cast(RefExecBracket, it);
-            ////exec = dynamic_cast<RefExecBracket *>(it);
+            ////exec = _dynamic_cast<RefExecBracket *>(it);
             if (exec && !exec->isOpen()){    // поиск >
                 it = exec->getOther()->pred; // получение точки перед <  (может быть 0)
 
                 // получение ссылки на функцию
-                fn = dynamic_cast<RefWord*>( exec->getOther()->next->next);
+                fn = _dynamic_cast<RefWord*>( exec->getOther()->next->next);
                 if (fn){
                     unistring fname = fn->getValue();
                     funk = s->findMethodFromModule( fname );

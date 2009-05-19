@@ -49,7 +49,7 @@ public:
     virtual RefData* Copy(RefData *where=0){ return new RefData_DOT(where); };
     virtual RefData* Copy(RefBracketBase *b, RefData *where=0){
             #ifdef DEBUG
-            if (! dynamic_cast<RefData_DOT *>(b)) SYSTEMERROR(" unexpected bracket type: " << b->toString() << " ~ " << this->toString());
+            if (! _dynamic_cast<RefData_DOT *>(b)) SYSTEMERROR(" unexpected bracket type: " << b->toString() << " ~ " << this->toString());
             #endif
             return new RefData_DOT((RefData_DOT *)b, where);
     };

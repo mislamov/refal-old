@@ -140,7 +140,7 @@ try {
             ref_variant_krest *krest = new ref_variant_krest();
             ref_variant_ffwd  *ffwd  = new ref_variant_ffwd();
             #ifdef DEBUG
-            if (! dynamic_cast<RefGroupBracket *>(loader->getCurrChain()->second)) SYSTEMERROR("bad variant build");
+            if (! _dynamic_cast<RefGroupBracket *>(loader->getCurrChain()->second)) SYSTEMERROR("bad variant build");
             #endif
             krest->begbr = loader->getCurrChain()->second;
             loader->putValueToStack( "VARIANTS-krest", krest); //  добавим позже в конец цепочки
@@ -249,16 +249,16 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("FUNCTION")) == 0) {
             #ifdef DEBUG
-            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
+            if (! _dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
             #endif
             RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
             loader->currentModule->objects[f->getName()] = f;
     } else
     if ( theCommand.compare(_L("TEMPLATE")) == 0) {
             #ifdef DEBUG
-            if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERROR("not TEMPLATE in TEMPLATE-stack !!!");
+            if (! _dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERROR("not TEMPLATE in TEMPLATE-stack !!!");
             #endif
-            //RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
+            //RefUserTemplate *t =  _dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
             RefUserTemplate *t =  (RefUserTemplate*)( loader->extractValueFromStack("TEMPLATE") );
             //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
             loader->getCurrChain()->dearoundByDots(); // шаблону доты не нужны
@@ -267,8 +267,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("SENTENCE")) == 0) {
             #ifdef DEBUG
-            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
-            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not FUNCTION in FUNCTION-stack !!!");
+            if (! _dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
+            if (! _dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not FUNCTION in FUNCTION-stack !!!");
             #endif
             RefSentence     *s =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
             s->rightPart = loader->extractCurrChainFromStack();
@@ -281,7 +281,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
 
         /*
             #ifdef DEBUG
-            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
+            if (! _dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
             #endif
             RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
             s->leftPart = loader->extractCurrChainFromStack();
@@ -290,7 +290,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
         /*
             #ifdef DEBUG
-            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
+            if (! _dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
             #endif
             RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
             s->rightPart = loader->extractCurrChainFromStack();
@@ -300,7 +300,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             //std::cout << "EndElement:" << theCommand;
             //std::cout << " stack["<<"BRACKET"<<"]:" << loader->getValueFromStack("BRACKET")->toString();
 
-            //RefExecBracket *br = dynamic_cast<RefExecBracket *>(loader->extractValueFromStack("BRACKET"));
+            //RefExecBracket *br = _dynamic_cast<RefExecBracket *>(loader->extractValueFromStack("BRACKET"));
             RefExecBracket *br = (RefExecBracket *)(loader->extractValueFromStack("BRACKET"));
             #ifdef DEBUG
             if (! br) SYSTEMERROR("not EXEC BRACKET in BRACKET-stack !!!");
@@ -337,7 +337,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
         }
     } else
     if ( theCommand.compare(_L("BRACKET")) == 0 ) {
-            RefStructBracket *br = dynamic_cast<RefStructBracket *>(loader->extractValueFromStack("BRACKET"));
+            RefStructBracket *br = _dynamic_cast<RefStructBracket *>(loader->extractValueFromStack("BRACKET"));
             #ifdef DEBUG
             if (! br) SYSTEMERROR("not STRUCT BRACKET in BRACKET-stack !!!");
             #endif
@@ -346,9 +346,9 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
             #ifdef DEBUG
-            if (! dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefGroupBracket in GROUP-stack !!!");
+            if (! _dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefGroupBracket in GROUP-stack !!!");
             #endif
-            //RefGroupBracket *gbrclose =  dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
+            //RefGroupBracket *gbrclose =  _dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
             RefGroupBracket *gbrclose =  (RefGroupBracket*)( loader->extractValueFromStack(theCommand) );
             *(loader->getCurrChain()) += new RefGroupBracket(gbrclose, 0);
     } else
@@ -380,7 +380,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             if (loader->templateOrSent == "S"){ // if for sentense
                 cond->own = (RefUserFunction *) loader->getValueFromStack("FUNCTION");
             } else {   // if for template
-                //cond->own = dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"));
+                //cond->own = _dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"));
                 cond->own = (RefUserTemplate *)(loader->getValueFromStack("TEMPLATE"));
             }
             *(loader->getCurrChain()) += cond;
@@ -395,7 +395,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     //if (tmp = getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ
     //    loader->putValueToStack(theCommand, tmp);
     //} else
-    if (tmpvdata = dynamic_cast<RefValuedData *> (loader->extractValueFromStack(theCommand))){
+    if (tmpvdata = _dynamic_cast<RefValuedData *> (loader->extractValueFromStack(theCommand))){
         tmpvdata->setValueFromString(loader->currentchars);
         *(loader->getCurrChain()) += tmpvdata;
     } else

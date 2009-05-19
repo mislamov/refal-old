@@ -58,6 +58,16 @@ enum RefDataTypesForCast {
 //  castRef = B8(00000000),
 };
 
+
+template <class T>
+    T _dynamic_cast(RefObject *d){
+        #ifdef DEBUG
+        if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call _dynamic_cast not for RefData !!!");
+        #endif
+        return dynamic_cast<T>(d);
+}
+
+
 // Родитель всего в Рефале
 class RefObject {
     public:

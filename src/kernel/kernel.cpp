@@ -48,13 +48,13 @@ RefData*  RefStructBracket::pred_term( ThisId var_id ) {
     return pred;
 };
 bool RefStructBracket::operator ==(RefData &rd) {
-    RefStructBracket *aux = dynamic_cast<RefStructBracket *>(&rd);
+    RefStructBracket *aux = _dynamic_cast<RefStructBracket *>(&rd);
     return  aux && (aux->is_opened == is_opened);
 };
 
 TResult RefStructBracket::init(Session* s, RefData *&l) {
     move_to_next_term(l,0/*myid()*/,s);
-    RefStructBracket* aux = dynamic_cast<RefStructBracket *>(l);
+    RefStructBracket* aux = _dynamic_cast<RefStructBracket *>(l);
     if (!aux || (isOpen()!=aux->isOpen()))  return BACK; //   )  (
     if (isOpen()) {  //    (  (
         //std::cout << "\n% % % : " << std::flush;
@@ -82,11 +82,11 @@ TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
 
     // )
     #ifdef DEBUG
-    if (! dynamic_cast<RefBracketBase *>(r) ){
+    if (! _dynamic_cast<RefBracketBase *>(r) ){
         SYSTEMERROR("may be unnormal situation: r = " << r->toString());
     }
     #endif
-    //s->getStackOfDataSkob()->push( dynamic_cast<RefBracketBase*>( r ) );
+    //s->getStackOfDataSkob()->push( _dynamic_cast<RefBracketBase*>( r ) );
     s->getStackOfDataSkob()->push( (RefBracketBase*)( r ) );
     //return FORCEBACK; - не надо, т к ситуация мб такая: (e.1 e.all)
     return BACK;
@@ -128,7 +128,7 @@ RefData*  RefExecBracket::pred_term( ThisId var_id ) {
     return pred;
 };
 bool RefExecBracket::operator ==(RefData &rd) {
-    RefExecBracket *aux = dynamic_cast<RefExecBracket *>(&rd);
+    RefExecBracket *aux = _dynamic_cast<RefExecBracket *>(&rd);
     return  aux && (aux->is_opened == is_opened);
 };
 
@@ -136,7 +136,7 @@ TResult RefExecBracket::init(Session* s, RefData *&l) {
     SYSTEMERROR("RefExecBracket::init! Exec bracket can't to match!");
     move_to_next_term(l,0/*myid()*/,s);
     RefData*  a   = l;
-    RefExecBracket* aux = dynamic_cast<RefExecBracket *>(a);
+    RefExecBracket* aux = _dynamic_cast<RefExecBracket *>(a);
 //    if (a)  a->drop(0/*myid()*/); //   удаляет старую ссылку если создатель
     if (!aux || (is_opened!=aux->is_opened))  return BACK; //   )  (
     if (is_opened) {  //    (  (
@@ -171,7 +171,7 @@ TResult RefExecBracket::back(Session* s, RefData *&l, RefData *&r) {
 
 TResult  RefVariable_s::init(Session *s, RefData *&a) {
     move_to_next_term(a, 0/*myid()*/, s);
-    if (! dynamic_cast<RefBracketBase *>(a) ){
+    if (! _dynamic_cast<RefBracketBase *>(a) ){
         return GO;
     } else {
         return BACK;
@@ -279,13 +279,13 @@ void	RefVariable_E::print_inf() {
 };*/
 
 bool	RefVariable_e::operator==(RefData &rd) {
-    return dynamic_cast<RefVariable_e *>(&rd);
+    return _dynamic_cast<RefVariable_e *>(&rd);
 };
 bool	RefVariable_E::operator==(RefData &rd) {
-    return dynamic_cast<RefVariable_E *>(&rd);
+    return _dynamic_cast<RefVariable_E *>(&rd);
 };
 bool	RefVariable_END::operator==(RefData &rd) {
-    return dynamic_cast<RefVariable_END *>(&rd);
+    return _dynamic_cast<RefVariable_END *>(&rd);
 };
 
 unistring vectorToString(RefData *f, RefData *g){
