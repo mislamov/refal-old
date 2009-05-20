@@ -100,8 +100,8 @@ class RefData : public RefObject {
         unsigned long castInfo;
 
     public:
-        bool  is_system(){ return castInfo&castIsSystemData; };
-        void  is_system(bool ss){ castInfo = ss ? castInfo|castIsSystemData : castInfo&~castIsSystemData; };
+        inline bool  is_system(){ return castInfo&castIsSystemData; };
+        inline void  is_system(bool ss){ castInfo = ss ? castInfo|castIsSystemData : castInfo&~castIsSystemData; };
 
         RefData(RefData *rp=0); // pr вставляем после себя
         virtual ~RefData();

@@ -428,8 +428,9 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching)
         if (pre_sost==GO)
         {
             l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
-
+            lWay = rWay;
             result_sost = activeTemplate->init(s, r); /// ШАГ ВПЕРЕД
+            rWay = s->currentLWay;
         }
         else
             if (pre_sost==BACK)

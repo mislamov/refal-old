@@ -623,8 +623,5 @@ RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
     return point;
 };
 
-RefData* move_to_next_real_template(RefData* &point, Session *s){
-    point->next_term(0, s);
-};
 
 
