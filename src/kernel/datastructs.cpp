@@ -24,14 +24,14 @@
 /**-----------------  границы  --------------------------**/
 
 bool RefData_DOT::operator ==(RefData &rd) {
-        RefData_DOT *aux = _dynamic_cast<RefData_DOT *>(&rd);
+        RefData_DOT *aux = ref_dynamic_cast<RefData_DOT *>(&rd);
         return  aux && (aux->is_opened == is_opened);
 };
 
 TResult RefData_DOT::init(Session* s, RefData *&l){
         RefData_DOT* aux;
 		if (is_opened){ // (
-			aux = _dynamic_cast<RefData_DOT *>(l);
+			aux = ref_dynamic_cast<RefData_DOT *>(l);
 
 			if (aux && aux->is_opened){ return GO;}; // DOT не двигает указатель на след. аргумент
 			return ERROR;
@@ -39,7 +39,7 @@ TResult RefData_DOT::init(Session* s, RefData *&l){
 
 		// )
 		move_to_next_term(l, 0/*this->myid()*/, s);
-		aux = _dynamic_cast<RefData_DOT *>(l);
+		aux = ref_dynamic_cast<RefData_DOT *>(l);
 		if ( !aux || aux->is_opened) { return BACK; }
 		return SUCCESS;
 };
@@ -90,8 +90,8 @@ RefData*   ref_variant_dot::pred_template (ThisId id, Session *s) {
 
 TResult	   ref_variant_dot::init(Session *s, RefData *&l) {
     #ifdef DEBUG
-    TVarBody* vb = _dynamic_cast<TVarBody *>( s->matchSessions.back()->StackOfSopost.top());
-    if ((!vb) || (! _dynamic_cast<RefBracketBase *>(vb->owner)))
+    TVarBody* vb = ref_dynamic_cast<TVarBody *>( s->matchSessions.back()->StackOfSopost.top());
+    if ((!vb) || (! ref_dynamic_cast<RefBracketBase *>(vb->owner)))
         SYSTEMERROR("net ozhifaemoj skobki na vershine steka sopostavlenij");
     #endif
     l = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()))->second;

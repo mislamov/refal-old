@@ -389,7 +389,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                         //r = 0;
                         // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
                         // Может создать ошибки для varBridge, если тот наследуется от RefVariableBase
-                        RefVariableBase* vart = _dynamic_cast <RefVariableBase *>(activeTemplate);
+                        RefVariableBase* vart = ref_dynamic_cast <RefVariableBase *>(activeTemplate);
                         if (vart && vart->getName() != EmptyUniString) {
                             //std::cout << "\n::::: del map for : " << vart->getName() << std::flush << "\n";
                             s->setVarBody(vart->getName(), 0);
@@ -423,7 +423,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
         case FORCEBACK: {// откат правых скобок или отсечения
             RefData *finish = 0;
 
-            RefMatchingCutter* cutter = _dynamic_cast<RefMatchingCutter*>(activeTemplate);
+            RefMatchingCutter* cutter = ref_dynamic_cast<RefMatchingCutter*>(activeTemplate);
             if (cutter) {
                 /// отсечение
                 #ifdef DEBUG
@@ -432,22 +432,22 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 // выгребаем стек сопоставлений субсессии
                 // в finish сохраняем последний (точнее первый) элемент сопоставления в субсессии
                 while (s->getCurrentSopostStack()->size() != 1) {
-                    //finish = _dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
+                    //finish = ref_dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
                     finish = (RefData *)( s->getCurrentSopostStack()->top()->owner );
                     LOG( ">> CUTTER BACKFORSE DROP: " << finish->toString() );
                     s->getCurrentSopostStack()->pop(); /// clean pered pop ?
                 }
-                //finish = _dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
+                //finish = ref_dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
                 finish = (RefData *)( s->getCurrentSopostStack()->top()->owner );
 
 
             } else {
                 /// скобка
-                //RefBracketBase* br = _dynamic_cast<RefBracketBase *>(activeTemplate);
+                //RefBracketBase* br = ref_dynamic_cast<RefBracketBase *>(activeTemplate);
                 RefBracketBase* br = (RefBracketBase *)(activeTemplate);
 
                 #ifdef DEBUG
-                br = _dynamic_cast<RefBracketBase *>(activeTemplate);
+                br = ref_dynamic_cast<RefBracketBase *>(activeTemplate);
                 if (!br) {
                     SYSTEMERROR("FORCEBACK not for barcket! But for : " << activeTemplate->toString());
                 }
@@ -518,11 +518,11 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src) { // готовит праву
 
 // сохраняет состояние переменной во время сопоставления
 void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
-    if (! _dynamic_cast<IRefVarStacked *>(v)) return; /// тест. попытка сохранять не все
+    if (! ref_dynamic_cast<IRefVarStacked *>(v)) return; /// тест. попытка сохранять не все
     //std::cout << "\n+++::\t" << v->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
 
     // если входит открывающая скобка, значит вся пара
-    RefBracketBase *rb = _dynamic_cast<RefBracketBase *>(r);
+    RefBracketBase *rb = ref_dynamic_cast<RefBracketBase *>(r);
 
     if (rb && (rb->isOpen()) && (!dynamic_cast<RefData_DOT *>(r))) {
         r = rb->getOther();
@@ -531,7 +531,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     TVarBody *varBody = new TVarBody(l, r, v);      /// todo ... сохранять состояние только переменных
 
     // переменные внешнего типа обрабатываются персонально
-    RefTemplateBridgeVar *bridge = _dynamic_cast<RefTemplateBridgeVar *>(v);
+    RefTemplateBridgeVar *bridge = ref_dynamic_cast<RefTemplateBridgeVar *>(v);
 
     if (bridge) {
 
@@ -581,7 +581,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
         //showStatus();
     } else {
         /// не внешняя переменная
-        RefGroupBracket *group = _dynamic_cast<RefGroupBracket *>(v);
+        RefGroupBracket *group = ref_dynamic_cast<RefGroupBracket *>(v);
 
         if (group) { /// групповая скобка
             if (group->isOpen()) { ///      {
@@ -602,7 +602,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
             }
         } else {
             // если элемент является переменной (наследуется от соотв интерфейса - это признак), то ...
-            RefVariableBase* vart = _dynamic_cast <RefVariableBase *>(v);
+            RefVariableBase* vart = ref_dynamic_cast <RefVariableBase *>(v);
 
             if (vart && vart->getName() != EmptyUniString) {
                 // если переменная с именем, то сохр. в карте переменных и в стеке
@@ -619,10 +619,10 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
 
 
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
-    if (! _dynamic_cast<IRefVarStacked *>(owner)) return; /// тест. попытка сохранять не все
+    if (! ref_dynamic_cast<IRefVarStacked *>(owner)) return; /// тест. попытка сохранять не все
     //std::cout << "\n---::\t" << owner->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
 
-    RefTemplateBridgeVar *bridge = _dynamic_cast<RefTemplateBridgeVar *>(owner);
+    RefTemplateBridgeVar *bridge = ref_dynamic_cast<RefTemplateBridgeVar *>(owner);
 
 
     if (bridge) {
@@ -682,7 +682,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
     }
 
     /// для групповых скобок корректируем таблицу переменных
-    RefGroupBracket *group = _dynamic_cast<RefGroupBracket *>(owner);
+    RefGroupBracket *group = ref_dynamic_cast<RefGroupBracket *>(owner);
 
     if (group && !group->isOpen()) { /// }
         if (varBody->first) {
@@ -757,7 +757,7 @@ RefFunctionBase * Session::findMethodFromModule(unistring fname) {
     //    it--;
     for (it = modules.rbegin(); it!=modules.rend(); ++it) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
         //std::cout << "\n\n:::: " << it->first << " ::::\n\n" << std::flush;
-        if (f = _dynamic_cast<RefFunctionBase *>( it->second->getObjectByName(fname) )) {
+        if (f = ref_dynamic_cast<RefFunctionBase *>( it->second->getObjectByName(fname) )) {
             //LOG("implementation of " << fname << " finded (" << f << ") in " << it->first);
             return f;
         }

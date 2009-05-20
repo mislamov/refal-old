@@ -58,15 +58,16 @@ enum RefDataTypesForCast {
 //  castRef = B8(00000000),
 };
 
+#define dataref_dynamic_cast(CastType, obj) ( (cast##CastType & obj->typeCast) ? static_cast<CastType *>(obj) : 0 )
 
 template <class T>
-    T _dynamic_cast(RefObject *d){
+    T ref_dynamic_cast(RefObject *d){
         #ifdef DEBUG
-        if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call _dynamic_cast not for RefData !!!");
+        if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call ref_dynamic_cast not for RefData !!!");
         #endif
         return dynamic_cast<T>(d);
-}
-
+        //return dataref_dynamic_cast(T, d);
+};
 
 // Родитель всего в Рефале
 class RefObject {
@@ -80,7 +81,6 @@ class RefObject {
         virtual unistring explode() { return toString(); }
 };
 
-#define data_dynamic_cast(CastType, obj) ( (cast##CastType & obj->typeCast) ? static_cast<CastType *>(obj) : 0 )
 
 #define regCast(CastType) this->typeCast = static_cast<RefDataTypesForCast>(this->typeCast | cast##CastType);
 

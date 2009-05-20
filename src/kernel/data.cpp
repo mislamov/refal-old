@@ -184,7 +184,7 @@ RefChain* RefChain::Copy(Session *s){
 
     while(src != srcR->next_term(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
 
-        RefLinkToVariable *tmplnk = _dynamic_cast<RefLinkToVariable *>(src);
+        RefLinkToVariable *tmplnk = ref_dynamic_cast<RefLinkToVariable *>(src);
 
         ///todo: определиться
         //#ifdef DEBUG
@@ -216,7 +216,7 @@ RefChain* RefChain::Copy(Session *s){
             continue;
         }
 
-        RefBracketBase *br = _dynamic_cast<RefBracketBase *>(src);
+        RefBracketBase *br = ref_dynamic_cast<RefBracketBase *>(src);
         if (br){ // копируем скобки
             #ifdef DEBUG
             if (! br->isOpen()){
@@ -224,7 +224,7 @@ RefChain* RefChain::Copy(Session *s){
             }
             #endif
             dst     = br->Copy(dst);      // это NULLDOT
-            //dstHlp  =  (br->Copy( _dynamic_cast<RefBracketBase *>(dst->pred), dst)); // other, rp    }
+            //dstHlp  =  (br->Copy( ref_dynamic_cast<RefBracketBase *>(dst->pred), dst)); // other, rp    }
             dstHlp  =  (br->Copy( (RefBracketBase *)(dst->pred), dst)); // other, rp    }
 
 
@@ -376,7 +376,7 @@ RefChain* RefChain::aroundByDots(){
     //std::cout << "\ninitializationTemplate::\t" << tpl->toString();
 
     #ifdef DEBUG
-    if (dynamic_cast<RefData_DOT *>(l) || _dynamic_cast<RefData_DOT *>(r)){
+    if (dynamic_cast<RefData_DOT *>(l) || ref_dynamic_cast<RefData_DOT *>(r)){
         SYSTEMERROR(" situation : l or r already DataDOTs !");
     }
     #endif
@@ -497,7 +497,7 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
             //rdata->drop(myid);
             //currentPoint->drop(myid);
             return BACK;
-        } //std::cout << '^' << _dynamic_cast<ref_BYTE *>(a)->get_ch();
+        } //std::cout << '^' << ref_dynamic_cast<ref_BYTE *>(a)->get_ch();
         move_to_next_term(ldata, 0/*myid()*/, s);
         currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
     };

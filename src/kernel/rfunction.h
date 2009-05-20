@@ -250,7 +250,7 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
         RefData* Copy(RefBracketBase *bb, RefData *rp=0){
             RefTemplateBridgeVar *b = (RefTemplateBridgeVar *)(bb);
             #ifdef DEBUG
-            b = _dynamic_cast<RefTemplateBridgeVar *>(bb);
+            b = ref_dynamic_cast<RefTemplateBridgeVar *>(bb);
             if (!b) SYSTEMERROR("not RefTemplateBridgeVar !");
             #endif
             RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(b, rp);

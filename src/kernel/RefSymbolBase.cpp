@@ -73,7 +73,7 @@ template <class T>
 */
 template <class T>
     bool RefSymbolBase<T>::operator ==(RefData &rd){
-        RefSymbolBase<T> *t = _dynamic_cast<RefSymbolBase<T>*>(&rd); //// static_cast
+        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase<T>*>(&rd); //// static_cast
         return t && (t->getValue()==this->getValue());
     };
 

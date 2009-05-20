@@ -46,7 +46,7 @@ class RefSymbolBase : public RefValuedData {
             virtual void setValue(T) = 0;
             virtual bool operator ==(RefData &rd);
             virtual bool operator >(RefData &rd){
-                RefSymbolBase<T> *t = _dynamic_cast<RefSymbolBase*>(&rd);
+                RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase*>(&rd);
                 if (!t) RUNTIMEERROR("operator >", "different types for compare");
                 return (getValue() > t->getValue());
                 };
