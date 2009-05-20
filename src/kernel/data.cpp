@@ -38,7 +38,7 @@ RefObject::~RefObject(){ co::ocount--; };
 
 
 
-RefDataTypesForCast RefData::getTypeCast(){ return castUseRTTI; }; // инфотип для объекта
+RefDataTypesForCast RefObject::getTypeCast(){ return castUseRTTI; }; // инфотип для объекта
 
 
 
@@ -188,11 +188,11 @@ RefChain* RefChain::Copy(Session *s){
 
     while(src != srcR->next_term(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
 
-        RefLinkToVariable *tmplnk = ref_dynamic_cast<RefLinkToVariable *>(src);
+        RefLinkToVariable *tmplnk = ref_dynamic_cast<RefLinkToVariable >(src);
 
         ///todo: определиться
         //#ifdef DEBUG
-        if (ref_dynamic_cast<RefVariable *>(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
+        if (ref_dynamic_cast<RefVariable >(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
         if(!s && tmplnk) SYSTEMERROR("UNEXPECTED LINK to variable when Copy: " << tmplnk->toString());
         //#endif
 
@@ -220,7 +220,7 @@ RefChain* RefChain::Copy(Session *s){
             continue;
         }
 
-        RefBracketBase *br = ref_dynamic_cast<RefBracketBase *>(src);
+        RefBracketBase *br = ref_dynamic_cast<RefBracketBase >(src);
         if (br){ // копируем скобки
             #ifdef DEBUG
             if (! br->isOpen()){
@@ -380,7 +380,7 @@ RefChain* RefChain::aroundByDots(){
     //std::cout << "\ninitializationTemplate::\t" << tpl->toString();
 
     #ifdef DEBUG
-    if (dynamic_cast<RefData_DOT *>(l) || ref_dynamic_cast<RefData_DOT *>(r)){
+    if (dynamic_cast<RefData_DOT *>(l) || dynamic_cast<RefData_DOT >(r)){
         SYSTEMERROR(" situation : l or r already DataDOTs !");
     }
     #endif

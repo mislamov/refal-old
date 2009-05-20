@@ -44,8 +44,16 @@ class RefTemplateBridgeVar;
 
 class TVarBodyTable : public std::map<unistring, TVarBody*>{};
 
+template <class T1,class T2,class T3,class T4>
+struct quadL {
+    T1 first;
+    T2 firstWay;
+    T3 second;
+    T4 secondWay;
+};
+
 // тело сопоставленной переменной
-class TVarBody : public std::pair<RefData*, RefData*>{
+class TVarBody : public quadL<RefData*, RefLChain*, RefData*, RefLChain*>{
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
 
@@ -140,8 +148,8 @@ class Session : public RefObject {
     Session();
     virtual ~Session();
 
-    void  SaveTemplItem   (RefData* var, RefData* l, RefData* r); // если аргумент - переменная, то добавляем ее состояние
-    void  RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ); // извлекаем последнее сохраненное сост-е
+    void  SaveTemplItem   (RefData* var, RefData* l, RefLChain* lWay, RefData* r, RefLChain* rWay); // если аргумент - переменная, то добавляем ее состояние
+    void  RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, RefData* &r, RefLChain* &rWay); // извлекаем последнее сохраненное сост-е
 
     bool  matching(RefObject *initer, RefChain *tmplate, RefData*l, RefData*r, bool isdemaching, bool isRevers); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 

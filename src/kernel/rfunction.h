@@ -45,6 +45,7 @@ public:
 class RefFunctionBase : public RefObject {
     unistring name;
 public:
+    CLASSCAST_INIT_RTTI;
     RefFunctionBase();
     virtual ~RefFunctionBase();
     virtual unistring getName() = 0;
@@ -54,6 +55,8 @@ public:
 class RefUserFunction : public RefFunctionBase {
     unistring name;
 public:
+    CLASSCAST_INIT_RTTI;
+
     std::list<RefSentence *> body; // предложени€
 
     /// аргументы - концы чистого ќ¬   // замен€ет в объектном выражении участок(перед. в аргум)
@@ -173,7 +176,7 @@ class RefCondition : public RefConditionBase {
         virtual ~RefCondition(){};
         unistring toString(){
             std::ostringstream s;
-            s << " @Condition/" << (isReverse?"$not$":"") <<  (ref_dynamic_cast<RefUserFunction *>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
+            s << " @Condition/" << (isReverse?"$not$":"") <<  (ref_dynamic_cast<RefUserFunction>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
             return s.str();
         }
         RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected try to Copy REF-condition"); return 0; };
@@ -210,6 +213,8 @@ public:
 class RefUserTemplate : public RefTemplateBase {
         RefChain *leftPart;
     public:
+        CLASSCAST_INIT_RTTI;
+
         inline unistring getName(){ return name; };
         RefUserTemplate(unistring name, RefChain *lp=0);
         inline RefChain* getLeftPart(){ return leftPart;};
@@ -228,6 +233,8 @@ class RefTemplateBridgeTmpl;
 class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
         unistring name;
     public:
+    CLASSCAST_INIT_RTTI;
+
         RefTemplateBridgeTmpl* bridge; // указатель на соедин€ющий мост тела шаблона. ѕрисвоить до сопоставлени€ - при инициализации загруженного модул€
 
         RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
@@ -249,7 +256,7 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
         RefData* Copy(RefBracketBase *bb, RefData *rp=0){
             RefTemplateBridgeVar *b = (RefTemplateBridgeVar *)(bb);
             #ifdef DEBUG
-            b = ref_dynamic_cast<RefTemplateBridgeVar *>(bb);
+            b = ref_dynamic_cast<RefTemplateBridgeVar >(bb);
             if (!b) SYSTEMERROR("not RefTemplateBridgeVar !");
             #endif
             RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(b, rp);
@@ -274,6 +281,8 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
 // мосты между лев.частью и внешним шаблоном. —о стороны внешнего шаблона
 class RefTemplateBridgeTmpl : public RefBracketBase, public IRefVarStacked {
     public:
+    CLASSCAST_INIT_RTTI;
+
         RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){ };
         RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ };
         unistring toString() { if (isOpen()) return "{[}"; else return "{]}"; };

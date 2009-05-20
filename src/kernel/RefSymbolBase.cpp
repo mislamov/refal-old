@@ -72,8 +72,8 @@ template <class T>
     void RefSymbolBase<T>::setValue(T i){};
 */
 template <class T>
-    bool RefSymbolBase<T>::operator ==(RefData &rd){
-        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase<T>*>(&rd); //// static_cast
+    bool RefSymbolBase<T>::operator ==(RefData& rd){
+        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase<T> >(& rd); //// static_cast
         return t && (t->getValue()==this->getValue());
     };
 
@@ -115,7 +115,7 @@ template <class T>
     TResult RefVarForSymbol<T>::init(Session* s, RefData *&l){
         move_to_next_term(l, 0/*myid()*/, s);
 
-        if (ref_dynamic_cast<T *>(l))
+        if (ref_dynamic_cast<T >(l))
             return GO;
         else
             return BACK;

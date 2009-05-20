@@ -45,13 +45,13 @@ RefChain* evalutor(RefChain *argline, Session *s){
 
         for (RefData *it=argline->first; it&&it!=argline->second->next; ){
         //for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_term(it, 0, s)){
-            exec = ref_dynamic_cast<RefExecBracket*>(it);
+            exec = ref_dynamic_cast<RefExecBracket>(it);
             ////exec = ref_dynamic_cast<RefExecBracket *>(it);
             if (exec && !exec->isOpen()){    // поиск >
                 it = exec->getOther()->pred; // получение точки перед <  (может быть 0)
 
                 // получение ссылки на функцию
-                fn = ref_dynamic_cast<RefWord*>( exec->getOther()->next->next);
+                fn = ref_dynamic_cast<RefWord>( exec->getOther()->next->next);
                 if (fn){
                     unistring fname = fn->getValue();
                     funk = s->findMethodFromModule( fname );

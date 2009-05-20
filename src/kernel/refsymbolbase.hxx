@@ -44,7 +44,6 @@ template <class T>
 class RefSymbolBase : public RefValuedData
 {
 public:
-    CLASSCAST_INIT_RTTI;
 
     ~RefSymbolBase();
     RefSymbolBase(RefData *rp = 0);
@@ -54,7 +53,7 @@ public:
     virtual bool operator ==(RefData &rd);
     virtual bool operator >(RefData &rd)
     {
-        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase*>(&rd);
+        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase>(&rd);
         if (!t) RUNTIMEERROR("operator >", "different types for compare");
         return (getValue() > t->getValue());
     };
@@ -88,6 +87,8 @@ class RefSymbol : public RefSymbolBase<T>
 {
     T value;
 public:
+    CLASSCAST_INIT_RTTI;
+
     RefSymbol(T i, RefData *rp = 0);
     RefSymbol(RefData *rp = 0);
     virtual T getValue();
