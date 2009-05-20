@@ -65,7 +65,7 @@ template <class T>
 
 template <class T>
     RefSymbolBase<T>::RefSymbolBase(RefData *rp) : RefValuedData(rp){
-        this->is_system = false;
+        is_system (false);
         co::symcount++;
 };
 /*template <class T>
@@ -82,13 +82,13 @@ template <class T>
 template <class T>
     RefSymbol<T>::RefSymbol(T i, RefData *rp) : RefSymbolBase<T>(rp){
         this->setValue(i);
-        /*this->is_system = false;*/
+        /*this->is_system() (false);*/
         };
 
 template <class T>
     RefSymbol<T>::RefSymbol(RefData *rp) : RefSymbolBase<T>(rp){
         return;
-        /*this->is_system = false;*/
+        /*this->is_system() (false);*/
         };
 
 template <class T>

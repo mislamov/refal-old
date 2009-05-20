@@ -81,7 +81,7 @@ TResult  RefGroupBracket::back(Session *s, RefData *&l, RefData *&r){
 /**-------------------  варианты  ---------------------**/
 
 //-----------  o  -----------
-ref_variant_dot::ref_variant_dot( RefData* rp) : RefData(rp) { is_system=false; };
+ref_variant_dot::ref_variant_dot( RefData* rp) : RefData(rp) { is_system (false); };
 
 RefData*   ref_variant_dot::pred_template (ThisId id, Session *s) {
     if (s->result_sost == FORCEBACK){ return krest; };
@@ -101,7 +101,7 @@ TResult	   ref_variant_dot::back(Session *s, RefData *&l, RefData *&r) { /*l = r
 bool	   ref_variant_dot::operator==(RefData&rd){ return false; };
 
 //----------  |  ------------
-ref_variant_vert::ref_variant_vert( RefData* rp) : RefData(rp) { is_system=false; };
+ref_variant_vert::ref_variant_vert( RefData* rp) : RefData(rp) { is_system (false); };
 TResult	   ref_variant_vert::init(Session *s, RefData *&l)	{ s->matchSessions.back()->StackOfVariants.push(this); return GO;};
 TResult	   ref_variant_vert::back(Session *s, RefData *&l, RefData *&r)	{ s->matchSessions.back()->StackOfVariants.pop(); return BACK;};
 RefData*   ref_variant_vert::next_template (ThisId id, Session*) { return vopr->next; }; //  return "}.vname"
@@ -109,13 +109,13 @@ void       ref_variant_vert::forceback (Session *s)	{ s->matchSessions.back()->S
 bool	   ref_variant_vert::operator==(RefData&rd){ return false; };
 
 //----------  =>  ------------
-ref_variant_ffwd::ref_variant_ffwd(RefData *rp) : RefData (rp) { is_system=false; };
+ref_variant_ffwd::ref_variant_ffwd(RefData *rp) : RefData (rp) { is_system (false);};
 TResult	 ref_variant_ffwd::init(Session *, RefData *&l) { return GO; };
 TResult	 ref_variant_ffwd::back(Session *, RefData *&l, RefData *&r) { return GO; };
 bool	 ref_variant_ffwd::operator==(RefData&rd){ return false; };
 
 //----------  ?  ------------
-ref_variant_vopr::ref_variant_vopr( RefData* rp) : RefData(rp) { is_system=false; };
+ref_variant_vopr::ref_variant_vopr( RefData* rp) : RefData(rp) { is_system (false);};
 TResult		ref_variant_vopr::init(Session *, RefData *&l) { return BACK; };
 TResult     ref_variant_vopr::back(Session* s, RefData *&l, RefData *&r){ return BACK; }; //
 RefData*	ref_variant_vopr::pred_template (ThisId id, Session *s) {
@@ -129,7 +129,7 @@ void ref_variant_vopr::forceback(Session* s){
 };
 
 //----------  x  ------------
-ref_variant_krest::ref_variant_krest( RefData* rp) : RefData(rp) { is_system=false; };
+ref_variant_krest::ref_variant_krest( RefData* rp) : RefData(rp) { is_system (false);};
 TResult		ref_variant_krest::init(Session *, RefData *&l) { return BACK; };
 RefData*	ref_variant_krest::pred_template (ThisId id, Session *s) { return begbr; };
 bool ref_variant_krest::operator==(RefData&rd){ return false; };

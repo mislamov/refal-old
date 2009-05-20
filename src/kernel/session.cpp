@@ -372,7 +372,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching)
                         }
 
                         do { activeTemplate = activeTemplate->next_template(0, s); }
-                        while (activeTemplate && activeTemplate->is_system);
+                        while (activeTemplate && activeTemplate->is_system());
 
                     } else
                         if (result_sost == BACK) {
@@ -392,7 +392,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching)
                             #endif
 
                             do { activeTemplate = activeTemplate->pred_template(0, s); }
-                            while (activeTemplate && activeTemplate->is_system);
+                            while (activeTemplate && activeTemplate->is_system());
                         }
 
                 } else
@@ -405,7 +405,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching)
                             s->SaveTemplItem(activeTemplate, l, r);
 
                             do { activeTemplate = activeTemplate->next_template(0, s); }
-                            while (activeTemplate && activeTemplate->is_system);
+                            while (activeTemplate && activeTemplate->is_system());
                         } else
                             if (result_sost == BACK) {
                                 /// BACK -> BACK
@@ -420,7 +420,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching)
                                 #endif
 
                                 do { activeTemplate = activeTemplate->pred_template(0, s); }
-                                while (activeTemplate && activeTemplate->is_system);
+                                while (activeTemplate && activeTemplate->is_system());
                             }
                     }
             ***/
@@ -464,7 +464,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching)
             {
                 activeTemplate = activeTemplate->next_template(0, s);
             }
-            while (activeTemplate && activeTemplate->is_system);
+            while (activeTemplate && activeTemplate->is_system());
         }
         else
             if (result_sost == BACK)
@@ -477,7 +477,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching)
                 {
                     activeTemplate = activeTemplate->pred_template(0, s);
                 }
-                while (activeTemplate && activeTemplate->is_system);
+                while (activeTemplate && activeTemplate->is_system());
             }
 
 

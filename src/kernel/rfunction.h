@@ -168,8 +168,8 @@ class RefCondition : public RefConditionBase {
         virtual TResult  init(Session* , RefData *&); //
         virtual TResult  back(Session* , RefData *&, RefData *&); //
 
-        RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r){ isReverse = withnot; rightPart = leftPart = 0; is_system = false; }
-        //RefCondition(RefObject *owner, RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system = false; own = owner; }
+        RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r){ isReverse = withnot; rightPart = leftPart = 0; is_system (false); }
+        //RefCondition(RefObject *owner, RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system (false); own = owner; }
         virtual ~RefCondition(){};
         unistring toString(){
             std::ostringstream s;
@@ -185,7 +185,7 @@ class RefCondition : public RefConditionBase {
 /* отсечение шаблона. его откат приводит к откату всего субмачинга */
 class RefMatchingCutter : public RefData {
     public:
-        RefMatchingCutter(RefData *d=0) : RefData(d){ is_system = false; }
+        RefMatchingCutter(RefData *d=0) : RefData(d){ is_system( false ); }
         virtual TResult  init(Session* , RefData *&){ return GO; }
         virtual TResult  back(Session* , RefData *&, RefData *&){ return FORCEBACK; }
 

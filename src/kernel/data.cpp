@@ -46,7 +46,7 @@ RefDataTypesForCast RefData::getTypeCast(){ return castUseRTTI; }; // инфот
 RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
     co::datacount++;
 
-	is_system = true;
+	is_system (true);
 //	is_symbol = true;
     if (pr) {
         this->next = pr->next;
@@ -122,7 +122,7 @@ TResult RefData::back(Session* s, RefData *&, RefData *&) {
 RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // открывающая
     other = 0;
     is_opened = true;
-    is_system = false;
+    is_system (false);
 };
 
 
@@ -137,7 +137,7 @@ RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ 
         other = dr;
         is_opened = false;
         dr->other = this;
-        is_system = false;
+        is_system (false);
 //        if (name == EmptyUniString) { /*name == other->getName();*/ }
 };
 
@@ -405,7 +405,7 @@ RefChain* RefChain::aroundByDots(){
     this->second = rightd;
 
     return this;
-}
+};
 
 
 RefChain* RefChain::dearoundByDots(){
@@ -443,7 +443,7 @@ RefChain* RefChain::dearoundByDots(){
 
 
 RefNULL::RefNULL(RefData *pr) : RefData(pr) {
-    is_system = true;
+    is_system (true);
 };
 bool RefNULL::operator==(RefData&) {
     return false;
@@ -524,12 +524,8 @@ RefData*  RefLinkToVariable::Copy(RefData* where){
 };
 
 RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp), RefalNameSpace(name) {
-    is_system = false;
+    is_system (false);
 };
-
-
-
-
 
 
 
@@ -597,7 +593,7 @@ RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
 
 
 RefVariable::~RefVariable(){ co::varcount--;};
-RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(), RefData(rp), RefalNameSpace(name){ co::varcount++; is_system = false;  };
+RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(), RefData(rp), RefalNameSpace(name){ co::varcount++; is_system (false);  };
 
 
 
@@ -610,9 +606,9 @@ RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
     //if (!(s->subChainFrom) && !(s->subChainTo)) SYSTEMERROR("subChain links not set!!!");
     #endif
 
-    while ((point = point->next_term(id, s)) && point->is_system);
+    while ((point = point->next_term(id, s)) && point->is_system());
     //do point = point->next_term(id, s);
-    //while (point && point->is_system);
+    //while (point && point->is_system());
     return point;
 };
 
@@ -623,7 +619,7 @@ RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
     #endif
 
     do point = point->pred_term(id, s);
-    while (point && point->is_system);
+    while (point && point->is_system());
     return point;
 };
 

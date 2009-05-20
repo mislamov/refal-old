@@ -26,11 +26,12 @@
 // вычисляет цепочку до тех пор, пока в ней есть функциональные вызовы <>
 // концами цепочки не могут быть датадоты
 RefChain* evalutor(RefChain *argline, Session *s){
-//    long &dc = co::datacount;
+        // long &dc = co::datacount;
 
-///todo: следующая строка экспериментальная - когда игрался с уловиями (отключил откат если сопоствление не с концом аргумента)
-if (! argline->first) return argline;
+        ///todo: следующая строка экспериментальная - когда игрался с уловиями (отключил откат если сопоствление не с концом аргумента)
+        if (! argline->first) return argline;
 
+        RefData *tmpA, *tmpB;
         //std::cout << "\n#### EVALUTOR  " << ((argline->first->pred)?(argline->first->pred->toString()):"$null") << " <--\t\t" << argline->toString() << "\t\t--> " << ((argline->second->next)?(argline->second->next->toString()):"$null") << "\n";
 
         argline->aroundByDots(); // окружаем дотами чтоб не потерять концы при удалении угловых скобок
@@ -61,29 +62,27 @@ if (! argline->first) return argline;
                     SYSTEMERROR("Function name is not RefWord! : " << exec->getOther()->next->next->toString());
                 }
 
-                //succes = funk; // результат поиска функции по имени
-
                 if (fn->next == exec){ // выполнить с пустым аргументом  (  <fn >  )
-                    succes = funk && funk->execute(0, fn, s);
+                    tmpA=0;
+                    tmpB=fn;
                 } else {
+                    tmpA=fn->next;
+                    tmpB=exec->pred;
                     // выполнить с аргументом
-                    succes = funk && funk->execute(fn->next, exec->pred, s);  //   <fn  fn_next..exec_pred>
                 }
+                succes = funk && funk->execute(tmpA, tmpB, s);
                 if (!succes){
                         SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue() ) << " " << RefChain(fn->next, exec->pred).toString() << ">\nView: " << argline->toString());
                 }
-
-//std::cout << "\n\n" << fn->getValue() << "  :  " << dc << "\n";
 
                 delete exec->getOther()->next->next; // удаляем вызов - остается только результат вызова
                 delete exec->getOther()->next;
                 delete exec->getOther();
                 delete exec;
-
-//                std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
+                // std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
             }
 
-            while((it = it->next_term(0, s)) && it->is_system); // итерация
+            while((it = it->next_term(0, s)) && it->is_system()); // итерация
         }
 
 

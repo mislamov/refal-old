@@ -53,8 +53,9 @@ const char varPathSeparator = '/';  // разделитель в пути к п�
 
 /* системный маппинг иерархии классов-данных для минимального использования RTTI. Если не определен, то castNeedSystemCast */
 enum RefDataTypesForCast {
-                        /*   сист      ???       ветка     лист    */
-    castUseRTTI        = B32(10000000, 00000000, 00000000, 00000000), // для объектов требуется сисемный dynamic_cast
+                       /*   доп.      сист      ветка     лист    */
+    castUseRTTI       = B32(00000000, 10000000, 00000000, 00000000), // для объектов требуется сисемный dynamic_cast
+    castIsSystemData  = B32(10000000, 00000000, 00000000, 00000000),
 
     /*рефал-символы*/
     castRefSymbolBase = B32(00000000, 00000000, 00000001, 00000000),
@@ -95,8 +96,12 @@ class RefData : public RefObject {
     public:
     	RefData*  next;
         RefData*  pred;
+        //RefDataTypesForCast castInfo;
+        unsigned long castInfo;
+
     public:
-        bool  is_system;
+        bool  is_system(){ return castInfo&castIsSystemData; };
+        void  is_system(bool ss){ castInfo = ss ? castInfo|castIsSystemData : castInfo&~castIsSystemData; };
 
         RefData(RefData *rp=0); // pr вставляем после себя
         virtual ~RefData();
@@ -303,7 +308,7 @@ class RefLChain : public RefData {
         virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft){ SYSTEMERROR("undefined"); };
 
         virtual bool operator ==(RefData &rd){ SYSTEMERROR("undefined"); };
-        RefLChain(RefData *rp = 0):RefData(rp){ is_system = true; };
+        RefLChain(RefData *rp = 0):RefData(rp){ is_system(true); };
 };
 
 
