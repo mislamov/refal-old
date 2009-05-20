@@ -51,28 +51,33 @@ class Session;
 
 const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
 
+/* системный маппинг иерархии классов-данных для минимального использования RTTI. Если не определен, то castNeedSystemCast */
 enum RefDataTypesForCast {
-    castDefault = B8(00000000),
-    castRefBracketBase = B8(00000001),
-    castRefExecBracket = B8(00000010)
-//  castRef = B8(00000000),
+                        /*   сист      ???       ветка     лист    */
+    castUseRTTI        = B32(10000000, 00000000, 00000000, 00000000), // для объектов требуется сисемный dynamic_cast
+
+    /*рефал-символы*/
+    castRefSymbolBase = B32(00000000, 00000000, 00000001, 00000000),
+
+    castRefInteger    = B32(00000000, 00000000, 00000000, 00000001) | castRefSymbolBase,
+    castRefReal       = B32(00000000, 00000000, 00000000, 00000010) | castRefSymbolBase,
+    castRefAlpha      = B32(00000000, 00000000, 00000000, 00000100) | castRefSymbolBase,
+    castRefByte       = B32(00000000, 00000000, 00000000, 00001000) | castRefSymbolBase,
+    castRefWord       = B32(00000000, 00000000, 00000000, 00010000) | castRefSymbolBase,
+
+    castRefBracketBase = B32(00000000, 00000000, 00000000, 00000000), //// базовая скобка
+    castRefExecBracket = B32(00000000, 00000000, 00000000, 00000000)  //// <>
+
+//  castRef            = B32(00000000, 00000000, 00000000, 00000000)  ////
+//  castRef            = B8 (00000000)
 };
 
-#define dataref_dynamic_cast(CastType, obj) ( (cast##CastType & obj->typeCast) ? static_cast<CastType *>(obj) : 0 )
 
-template <class T>
-    T ref_dynamic_cast(RefObject *d){
-        #ifdef DEBUG
-        if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call ref_dynamic_cast not for RefData !!!");
-        #endif
-        return dynamic_cast<T>(d);
-        //return dataref_dynamic_cast(T, d);
-};
+
 
 // Родитель всего в Рефале
 class RefObject {
     public:
-        unistring sss;
 
         //static long ocount;
         RefObject();
@@ -91,11 +96,14 @@ class RefData : public RefObject {
     	RefData*  next;
         RefData*  pred;
     public:
+        bool  is_system;
+
         RefData(RefData *rp=0); // pr вставляем после себя
         virtual ~RefData();
         //ThisId  0/*myid()*/{  return (ThisId)(this); };
-        bool  is_system;
-        RefDataTypesForCast typeCast;
+
+        virtual RefDataTypesForCast getTypeCast();           // инфотип для объекта
+        static  RefDataTypesForCast getClassTypeCast(){ return castUseRTTI; };      // инфотип для класса
         //bool  is_symbol; // сопостовимость с s-перемеенной
 
         virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
@@ -120,17 +128,14 @@ class RefData : public RefObject {
         virtual bool operator <=(RefData &rd) { return ! (*this>rd); };
         virtual bool operator >=(RefData &rd) { return ! (*this<rd); };
 */
-//        virtual bool dynamic_same(RefData *); // для динамических точек - признак эквивалентности
         virtual TResult init(Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
         virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
         virtual void    forceback(Session* s){
             SYSTEMERROR("RefData.forceback NOT DEFINE for "
             << toString()); };; // принудительный откат. Точка убирает из сессии свое состояние
 
-        //virtual void print_inf(){ std::cout << "[" << (sss=toString()) << "]" << this << " "; };
 
         virtual RefData*  Copy(RefData* where=0) = 0;
-//      virtual RefData*  getCopyAsData(RefData*);//= 0;  // клон без ссылок. Важно перегружать везде где нужно и правильно!
 
 };
 
@@ -138,16 +143,6 @@ RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s);
 RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s);
 
 
-
-class RefChainPointFrom : public RefData {
-    public:
-        RefData *point;
-};
-
-class RefChainPointTo : public RefData {
-    public:
-        RefData *point;
-};
 
 
 
@@ -271,7 +266,6 @@ class RefBracketBase : /*public IRefVarStacked, */ public RefData {
 
 
 class RefChain : public std::pair<RefData*, RefData*> {
-    unistring sss;
   public:
 
 	void clear(); // уничтожение всего что ммежду first и second включительно
@@ -293,8 +287,49 @@ class RefChain : public std::pair<RefData*, RefData*> {
         unistring explode(); // голый текст без форматирования
 };
 
-
 void delChain(RefData*, RefData*);
 
+
+class RefLChain : public RefData {
+    public:
+        RefData *from;
+        RefData *to  ;
+
+        virtual RefData*  next_term( ThisId var_id, Session *s);
+        virtual RefData*  pred_term( ThisId var_id, Session *s);
+        virtual RefData*  Copy(RefData* where=0){ SYSTEMERROR("undefined"); };
+
+        virtual TResult init(Session* s, RefData *&currentPoint){ SYSTEMERROR("undefined"); };
+        virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft){ SYSTEMERROR("undefined"); };
+
+        virtual bool operator ==(RefData &rd){ SYSTEMERROR("undefined"); };
+        RefLChain(RefData *rp = 0):RefData(rp){ is_system = true; };
+};
+
+
+template <class T>
+    T ref_dynamic_cast(RefObject *d){
+        #ifdef DEBUG
+        if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call ref_dynamic_cast not for RefData !!!");
+        #endif
+
+return dynamic_cast<T>(d);
+
+        if (static_cast<RefData*>(d)->getTypeCast() & castUseRTTI) {
+            return dynamic_cast<T>(d);
+        }
+        //if (static_cast<RefData*>(d)->getTypeCast() & T::getClassTypeCast()) return static_cast<T>(d);
+
+        return 0;
+        //return dataref_dynamic_cast(T, d);
+};
+
+
+
+#define CLASSCAST_INIT_RTTI  \
+    static  RefDataTypesForCast getClassTypeCast(){ return castUseRTTI; };
+
+#define CLASSCAST_INIT_bitmap(ClassName) \
+    static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; };
 
 #endif // REF_KERNEL_H_INCLUDED

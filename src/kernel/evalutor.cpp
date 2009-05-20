@@ -44,7 +44,7 @@ if (! argline->first) return argline;
 
         for (RefData *it=argline->first; it&&it!=argline->second->next; ){
         //for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_term(it, 0, s)){
-            exec = dataref_dynamic_cast(RefExecBracket, it);
+            exec = ref_dynamic_cast<RefExecBracket*>(it);
             ////exec = ref_dynamic_cast<RefExecBracket *>(it);
             if (exec && !exec->isOpen()){    // поиск >
                 it = exec->getOther()->pred; // получение точки перед <  (может быть 0)

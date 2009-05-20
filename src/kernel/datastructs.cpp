@@ -61,7 +61,7 @@ unistring  RefData_DOT::toString() {
         /*  << "." << std::hex << (unsigned short)this << ' '; //<< ":other=" << (long)this->other << " ";// */
 //        s << "." << (long)this << ' ';
         ;
-        return sss = s.str();
+        return s.str();
 };
 RefData* RefData_DOT::next_term( ThisId var_id, Session *s ) { return next; };
 RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) { return pred; };

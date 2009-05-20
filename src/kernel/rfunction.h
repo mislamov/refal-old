@@ -31,7 +31,6 @@
 
 class RefSentence : public RefObject {
 public:
-    unistring sss;
 
     RefChain *leftPart;
     RefChain *rightPart;
@@ -174,7 +173,7 @@ class RefCondition : public RefConditionBase {
         virtual ~RefCondition(){};
         unistring toString(){
             std::ostringstream s;
-            s << " @Condition/" << (isReverse?"$not$":"") <<  (dynamic_cast<RefUserFunction *>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
+            s << " @Condition/" << (isReverse?"$not$":"") <<  (ref_dynamic_cast<RefUserFunction *>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
             return s.str();
         }
         RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected try to Copy REF-condition"); return 0; };
@@ -233,7 +232,7 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
 
         RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
         RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ bridge=0;  name="NOT SET";};
-        unistring toString() { if (isOpen()) return sss = ("[{]." + getName()); else return sss =  name+".[}]"; };
+        unistring toString() { if (isOpen()) return ("[{]." + getName()); else return  name+".[}]"; };
 
         TResult init(Session* s, RefData *&currentPoint);
         TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
@@ -277,7 +276,7 @@ class RefTemplateBridgeTmpl : public RefBracketBase, public IRefVarStacked {
     public:
         RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){ };
         RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ };
-        unistring toString() { if (isOpen()) return sss = "{[}"; else return sss = "{]}"; };
+        unistring toString() { if (isOpen()) return "{[}"; else return "{]}"; };
 
         TResult init(Session* s, RefData *&currentPoint);
         TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);

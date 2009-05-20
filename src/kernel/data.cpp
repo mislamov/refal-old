@@ -36,11 +36,16 @@ RefObject::RefObject(){ co::ocount++;
 };
 RefObject::~RefObject(){ co::ocount--; };
 
+
+
+RefDataTypesForCast RefData::getTypeCast(){ return castUseRTTI; }; // инфотип для объекта
+
+
+
+
 RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
-    this->typeCast = castDefault;
     co::datacount++;
 
-    sss = "";
 	is_system = true;
 //	is_symbol = true;
     if (pr) {
@@ -133,7 +138,6 @@ RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ 
         is_opened = false;
         dr->other = this;
         is_system = false;
-        this->typeCast = castRefBracketBase;
 //        if (name == EmptyUniString) { /*name == other->getName();*/ }
 };
 
@@ -188,7 +192,7 @@ RefChain* RefChain::Copy(Session *s){
 
         ///todo: определиться
         //#ifdef DEBUG
-        if (dynamic_cast<RefVariable *>(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
+        if (ref_dynamic_cast<RefVariable *>(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
         if(!s && tmplnk) SYSTEMERROR("UNEXPECTED LINK to variable when Copy: " << tmplnk->toString());
         //#endif
 
@@ -451,7 +455,7 @@ bool RefNULL::operator==(RefData&) {
 unistring RefLinkToVariable::toString(){
     std::ostringstream s;
     s << "[LNK::name=" << getName() << "/" << getPath() << "]." << (long)this ;
-    return RefData::sss = s.str();
+    return s.str();
 };
 
 bool RefLinkToVariable::operator==(RefData&){
@@ -524,51 +528,15 @@ RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp),
 };
 
 
-/*
-unistring RefUserVar::toString(){
-    //return _L("[Var::name="+getName()+", type="+typeDescription+"]");
-    return RefData::sss = "USERVAR::type=" + typeDescription + ", name=" + getName() + ", body=" + (body?body->toString():"null") ;
-};
-bool RefUserVar::operator==(RefData&){
-    return false;
-};
-
-
-
-
-TResult RefUserVar::init(Session* s, RefData *&currentPoint){
-    //SYSTEMERROR("user templates not yet realised!");
-    return GO;
-};
-TResult RefUserVar::back(Session* s, RefData *&currentRight, RefData *&currentLeft){
-    //SYSTEMERROR("user templates not yet realised!");
-    return BACK;
-};
-
-
-
-
-
-RefData*  RefUserVar::Copy(RefData* where){
-    SYSTEMERROR("zagluska!"); // определить в каких случаях используется и что именно возвращать в качестве копии
-    RefUserVar *v = new RefUserVar(typeDescription, getName(), where);
-    //v->body = body->Copy();
-    return v;
-};
-
-RefUserVar::RefUserVar(unistring typeName, unistring name, RefData *rp) : RefVariable(name, rp){
-    body = 0;
-    typeDescription = typeName;
-};
-*/
 
 
 
 
 
 
-unistring RefChain::toString(){ return sss = vectorToString(first, second); };
-unistring RefChain::explode(){ return sss = vectorExplode(first, second); };
+
+unistring RefChain::toString(){ return vectorToString(first, second); };
+unistring RefChain::explode() { return vectorExplode(first, second); };
 
 
 /// todo: оптимизировать грязный код
@@ -596,6 +564,32 @@ void delChain(RefData*a, RefData*b){
        delete a->pred;
     }
     delete a;
+};
+
+
+
+RefData*  RefLChain::next_term( ThisId var_id, Session *s){
+    #ifdef DEBUG
+    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
+    #endif
+    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
+        s->currentLWay = 0;
+        return next;
+    }
+    s->currentLWay = this;
+    return from;
+};
+
+RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
+    #ifdef DEBUG
+    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
+    #endif
+    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
+        s->currentLWay = 0;
+        return pred;
+    }
+    s->currentLWay = this;
+    return to;
 };
 
 

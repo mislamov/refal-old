@@ -106,7 +106,7 @@ template <class T>
     unistring RefSymbol<T>::toString(){
         std::ostringstream s;
         s << this->getValue();
-        return sss = s.str();
+        return s.str();
 };
 
 
@@ -115,7 +115,7 @@ template <class T>
     TResult RefVarForSymbol<T>::init(Session* s, RefData *&l){
         move_to_next_term(l, 0/*myid()*/, s);
 
-        if (dynamic_cast<T *>(l))
+        if (ref_dynamic_cast<T *>(l))
             return GO;
         else
             return BACK;
@@ -185,27 +185,27 @@ unistring RefSymbol<unichar>::toString(){
             s << '\'' << this->getValue();// << '_' <<(long)this << ' ';
             //s << this->getValue();
         }
-        return sss = s.str();
+        return s.str();
 }
 
 unistring RefSymbol<infint>::toString(){
 //    return getValue() + " ";
     std::ostringstream s;
     s << getValue() << " ";
-    return sss = s.str();
+    return s.str();
 
 }
 
 unistring RefSymbol<infreal>::toString(){
     std::ostringstream s;
     s << getValue() << " ";
-    return sss = s.str();
+    return s.str();
 }
 
 unistring RefSymbol<char>::toString(){
     std::ostringstream s;
     s << "\\x" << std::hex << (int)getValue();
-    return sss = s.str();
+    return s.str();
 }
 
 

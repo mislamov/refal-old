@@ -106,12 +106,10 @@ void RefStructBracket::forceback(Session *s){
 
 
 RefExecBracket::RefExecBracket(RefData* rp) : RefBracketBase(rp) {
-    regCast(RefExecBracket);
     is_system = false;
 };
 
 RefExecBracket::RefExecBracket(RefExecBracket *br, RefData* rp) : RefBracketBase(br, rp) {
-    regCast(RefExecBracket);
     is_system = false;
 };
 
@@ -187,7 +185,7 @@ TResult  RefVariable_s::back(Session *s, RefData *&l, RefData *&r) {
 
 TResult  RefVariable_t::init(Session *s, RefData *&a) {
     move_to_next_term(a, 0/*myid()*/, s);
-    if (dynamic_cast<RefData_DOT *>(a) ){
+    if (ref_dynamic_cast<RefData_DOT *>(a) ){
         return BACK;
     } else {
         // *a оставляем на открытой скобке в надежде на то, что move_to_next_term будет перекидывать за закрытую скобку

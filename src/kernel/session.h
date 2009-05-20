@@ -46,8 +46,6 @@ class TVarBodyTable : public std::map<unistring, TVarBody*>{};
 
 // тело сопоставленной переменной
 class TVarBody : public std::pair<RefData*, RefData*>{
-    unistring sss;
-
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
 
@@ -111,13 +109,15 @@ class SessionOfMaching  : public RefObject {
 class Session : public RefObject {
 
   private:
-    RefChain*  deinitializationArg();               //  откат регистрации ОО в initialization
-    void  initializationArg(RefData*, RefData*);    //  регистрация ОО для сапостовления. приставка дот
     RefChain* globalData;   // глобальные данные для цепочек
 
+    RefChain*  deinitializationArg();               //  откат регистрации ОО в initialization
+    void  initializationArg(RefData*, RefData*);    //  регистрация ОО для сапостовления. приставка дот
+
   public:
-    RefChainPointFrom *subChainFrom;
-    RefChainPointTo   *subChainTo;
+
+    /* путешествие по цепочкам данных сканирующей головки */
+    RefLChain *currentLWay;
 
     int fcalls;
     unsigned long step;

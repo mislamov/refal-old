@@ -38,7 +38,7 @@ RefSentence::RefSentence(RefChain *l, RefChain *r) : RefObject() {
 };
 unistring RefSentence::toString(){
     //return "$RefSentence: Lp="+(leftPart?leftPart->toString():"$notset")+"   Rp="+(rightPart?rightPart->toString():"$noset");
-    return sss = "\t\t\t"+(leftPart?leftPart->toString():"$notset")+"   ::==   "+(rightPart?rightPart->toString():"$noset");
+    return "\t\t\t"+(leftPart?leftPart->toString():"$notset")+"   ::==   "+(rightPart?rightPart->toString():"$noset");
 };
 
 
@@ -68,7 +68,7 @@ unistring RefUserModule::toString(){
                 }
 
             };
-            return sss = result;
+            return result;
 };
 
 
@@ -94,7 +94,7 @@ unistring RefUserFunction::toString() {
         };
         result += "}\n\n";
 
-        return sss = "RefUserFunction::" + name + result;
+        return "RefUserFunction::" + name + result;
 
 };
 
@@ -212,7 +212,7 @@ void RefDllModule::setObjectByName(unistring name, RefObject* o){
 unistring RefDllModule::toString(){
         std::ostringstream s;
         s << "RefDllModule[ objects: " << (objects.size()) << " ]" ;
-        return sss = s.str();
+        return s.str();
 };
 
 
@@ -276,7 +276,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     /// однако для условия в предложении очень важно проверять, что оно сопост-ся с концом аргумента
     /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
 
-    if (dynamic_cast<RefFunctionBase *>(own)){
+    if (ref_dynamic_cast<RefFunctionBase *>(own)){
         // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце,
         // в отличие от условия в конце пользовательского шаблона
         RefData_DOT *d = ref_dynamic_cast<RefData_DOT *>(l->next);

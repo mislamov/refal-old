@@ -75,15 +75,10 @@ static SAXParser::ValSchemes    valScheme       = SAXParser::Val_Never;
 
 
 
-
-
-
-
-
 RefChain *str2chain(std::wstring s){
         RefAlpha *beg = new RefAlpha(s[0]),  *end = beg;
         for(size_t i=1; i<s.size(); i++){
-                end = new RefAlpha(s[i], end);
+            end = new RefAlpha(s[i], end);
         };
 
         return new RefChain(beg, end);

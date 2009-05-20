@@ -24,12 +24,16 @@
 #include <sstream>
 
 
-class RefValuedData : public RefData {
-    public:
-        virtual void setValueFromString(unistring) = 0;
-        RefValuedData(RefData *rd) : RefData(rd){};
-        static long getCount();
-        virtual unistring toString(){ return "~RefValuedData~"; };
+class RefValuedData : public RefData
+{
+public:
+    virtual void setValueFromString(unistring) = 0;
+    RefValuedData(RefData *rd) : RefData(rd){};
+    static long getCount();
+    virtual unistring toString()
+    {
+        return "~RefValuedData~";
+    };
 };
 
 
@@ -37,55 +41,63 @@ class RefValuedData : public RefData {
 
 
 template <class T>
-class RefSymbolBase : public RefValuedData {
-        public:
-            ~RefSymbolBase();
-            RefSymbolBase(RefData *rp = 0);
-            RefSymbolBase(T i, RefData *rp = 0);
-            virtual T getValue() = 0;
-            virtual void setValue(T) = 0;
-            virtual bool operator ==(RefData &rd);
-            virtual bool operator >(RefData &rd){
-                RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase*>(&rd);
-                if (!t) RUNTIMEERROR("operator >", "different types for compare");
-                return (getValue() > t->getValue());
-                };
+class RefSymbolBase : public RefValuedData
+{
+public:
+    CLASSCAST_INIT_RTTI;
 
-            virtual TResult init(Session* s, RefData *&currentPoint); //  --> operator==() => [return GO] else [return BACK]
-            virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+    ~RefSymbolBase();
+    RefSymbolBase(RefData *rp = 0);
+    RefSymbolBase(T i, RefData *rp = 0);
+    virtual T getValue() = 0;
+    virtual void setValue(T) = 0;
+    virtual bool operator ==(RefData &rd);
+    virtual bool operator >(RefData &rd)
+    {
+        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase*>(&rd);
+        if (!t) RUNTIMEERROR("operator >", "different types for compare");
+        return (getValue() > t->getValue());
+    };
 
-            virtual void setValueFromString(unistring) = 0;
-            virtual unistring toString(){
-                std::ostringstream s;
-                s << getValue() ;
-                return s.str();
-            };
-            virtual unistring explode(){
-                std::ostringstream s;
-                s << getValue() ;
-                return s.str();            }
+    virtual TResult init(Session* s, RefData *&currentPoint); //  --> operator==() => [return GO] else [return BACK]
+    virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+
+    virtual void setValueFromString(unistring) = 0;
+    virtual unistring toString()
+    {
+        std::ostringstream s;
+        s << getValue() ;
+        return s.str();
+    };
+    virtual unistring explode()
+    {
+        std::ostringstream s;
+        s << getValue() ;
+        return s.str();
+    }
 
 };
+
 
 
 /**********************
 // основные данные
 ***********************/
 template <class T>
-class RefSymbol : public RefSymbolBase<T>{
-            T value;
-        public:
-            unistring sss;
-            RefSymbol(T i, RefData *rp = 0);
-            RefSymbol(RefData *rp = 0);
-            virtual T getValue();
-            virtual void setValue(T i);
-            virtual RefData* Copy(RefData *where=0);
-            virtual unistring toString();
-            //virtual void setValueFromString(unistring) = 0;
-            virtual void setValueFromString(unistring);
+class RefSymbol : public RefSymbolBase<T>
+{
+    T value;
+public:
+    RefSymbol(T i, RefData *rp = 0);
+    RefSymbol(RefData *rp = 0);
+    virtual T getValue();
+    virtual void setValue(T i);
+    virtual RefData* Copy(RefData *where=0);
+    virtual unistring toString();
+    //virtual void setValueFromString(unistring) = 0;
+    virtual void setValueFromString(unistring);
 
-            void forceback(Session *){};
+    void forceback(Session *){};
 };
 
 
@@ -94,42 +106,73 @@ class RefSymbol : public RefSymbolBase<T>{
 /***********************
 *   Переменные
 ************************/
-template <class T> class RefVarForSymbol : public RefVariable {
-    public:
-        TResult init(Session* s, RefData *&l);
-        TResult back(Session* s, RefData *&l, RefData *&r);
-        RefVarForSymbol (unistring name, RefData *rp=0);
+template <class T> class RefVarForSymbol : public RefVariable
+{
+public:
+    TResult init(Session* s, RefData *&l);
+    TResult back(Session* s, RefData *&l, RefData *&r);
+    RefVarForSymbol (unistring name, RefData *rp=0);
 
-        //virtual void setValueFromString(unistring) = 0;
-        bool operator ==(RefData &rd);
-        virtual void setValueFromString(unistring){};
-        virtual RefData* Copy(RefData *where=0){
-            RefVarForSymbol<T> *t = new RefVarForSymbol<T>(getName(), where);
-            t->setName(this->getName());
-            return t;
-        };
-        virtual unistring toString(){ return "RefVarForSymbol<T>."+getName();}
+    //virtual void setValueFromString(unistring) = 0;
+    bool operator ==(RefData &rd);
+    virtual void setValueFromString(unistring){};
+    virtual RefData* Copy(RefData *where=0)
+    {
+        RefVarForSymbol<T> *t = new RefVarForSymbol<T>(getName(), where);
+        t->setName(this->getName());
+        return t;
+    };
+    virtual unistring toString()
+    {
+        return "RefVarForSymbol<T>."+getName();
+    }
 };
 
+#define typedefSymbolClass(P, T, N) \
+    typedef  P<T>    N;             \
+    RefDataTypesForCast P<T>::getClassTypeCast(){ return cast##N; };
+    //template <> class P<T> { CLASSCAST_INIT_bitmap(N); }
 
+//*
 typedef  RefSymbolBase<infint>    RefIntegerBase;
 typedef  RefSymbolBase<infreal>   RefRealBase;
 typedef  RefSymbolBase<unichar>   RefAlphaBase;
 typedef  RefSymbolBase<unichar>   RefByteBase;
 typedef  RefSymbolBase<unistring> RefWordBase;
+/*/
+typedefSymbolClass(RefSymbolBase,  infint,    RefIntegerBase);
+typedefSymbolClass(RefSymbolBase,  infreal,   RefRealBase);
+typedefSymbolClass(RefSymbolBase,  unichar,   RefAlphaBase);
+typedefSymbolClass(RefSymbolBase,  char,   RefByteBase);
+typedefSymbolClass(RefSymbolBase,  unistring, RefWordBase);
+//*/
+
+//*
 typedef  RefSymbol<infint>    RefInteger;
 typedef  RefSymbol<infreal>   RefReal;
 typedef  RefSymbol<unichar>   RefAlpha;
 typedef  RefSymbol<char>      RefByte;
-typedef  RefSymbol<unistring> RefWord;
-
-
+typedef  RefSymbol<unistring> RefWord;/*/
+typedefSymbolClass(RefSymbol,  infint,    RefInteger);
+typedefSymbolClass(RefSymbol,  infreal,   RefReal);
+typedefSymbolClass(RefSymbol,  unichar,   RefAlpha);
+typedefSymbolClass(RefSymbol,  char,      RefByte);
+typedefSymbolClass(RefSymbol,  unistring, RefWord);
+//*/
+//*
 typedef RefVarForSymbol<RefIntegerBase>  RefVarInteger;
 typedef RefVarForSymbol<RefRealBase>     RefVarReal;
 typedef RefVarForSymbol<RefWordBase>     RefVarWord;
 typedef RefVarForSymbol<RefAlphaBase>    RefVarAlpha;
 typedef RefVarForSymbol<RefByteBase>     RefVarByte;
-
+//*/
+/*
+typedefSymbolClass(RefVarForSymbol,  RefIntegerBase, RefVarInteger);
+typedefSymbolClass(RefVarForSymbol,  RefRealBase,    RefVarReal);
+typedefSymbolClass(RefVarForSymbol,  RefWordBase,    RefVarWord);
+typedefSymbolClass(RefVarForSymbol,  RefAlphaBase,   RefVarAlpha);
+typedefSymbolClass(RefVarForSymbol,  RefByteBase,    RefVarByte);
+//*/
 
 RefData     *createNewEmptyRefSymbolByTypeName(unistring);
 RefVariable *createVariableByTypename(unistring vtype, unistring vname);
