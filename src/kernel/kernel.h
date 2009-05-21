@@ -177,7 +177,7 @@ public:
 
 class RefExecBracket : public RefBracketBase {
 public:
-    CLASSCAST_INIT_RTTI;
+    CLASSCAST_INIT_bitmap(RefExecBracket);
 
     RefExecBracket(RefData* rp=0);
     RefExecBracket(RefExecBracket *br, RefData* rp=0);

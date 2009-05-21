@@ -1,114 +1,256 @@
-/*
-   Парсер главного сайта rbc.ru
-*/
+// **********************************************
+InputFile{='fn.ref';}
+//InputFile{='t.ref';}
 
-$ENTRY Go { = <Run <Mount 'rbc.html'>> ; };
+$Entry Go { = 
 
+	<P4_Out
+		<PostScan 
+			<P2_Builder MODULE 
+				<P1_Prescaning 
+					()<P1_Prescaning_pre <Prout 'P1_Prescaning_pre'>
+						0 '\n' <Mount <InputFile>>'\n' 
+					><Prout 'P1_Prescaning'>
+				><Prout 'P2_Builder'>
+			>
+		><Prout 'P4_Out'>
+	>
+	; 
 
-Template rbc  ::= e.rbc1 HTMLdoc.doc e.rbc2 ;
-
-Template HTMLdoc   ::=  '<html>'  e.HTMLdoc1 HTMLhead.head  e.HTMLdoc2  HTMLbody.body  e.HTMLdoc3 '</html>' ;
-Template HTMLhead  ::=  '<head>'  e.HTMLhead1 HTMLtitle.title e.HTMLhead2 '</head>' ;
-Template HTMLbody  ::=  '<body>'  e.b1 rbcbody.rbc e.b2 '</body>' ;
-Template HTMLtitle ::=  '<title>' e.text '</title>' ;
-
-Template rbcbody  ::=  
-		DIV.fullContainer e.2 DIV.otherBlocks, 
-		DIV.fullContainer::classname : 'fullContainer',
-		DIV.otherBlocks::classname   : 'otherBlocks',
-
-		DIV.fullContainer	 : '<div' e.4 DIV.mainNewsDiv e.5 '</div>',
-		DIV.mainNewsDiv::classname : 'ulList mainNews thin';
-		
-
-
-/* тест переменной - имени переменной:
-Template DIV	::= '<div class="' $varName '">' html.body '</div>' ;	
-*/
+		}
 
 
 
+Template comment  ::= { '/*' e. '*/' | '//' e. '\n' } ! ;
+Template Digit ::= { '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '0' };
+Template Digits	  ::= Digit. { Digits. | } ! ;
+Template Letter	  ::= { 'z'|'x'|'c'|'v'|'b'|'n'|'m'|'a'|'s'|'d'|'f'|'g'|'h'|'j'|'k'|'l'|'q'|'w'|'e'|'r'|'t'|'y'|'u'|'i'|'o'|'p'|
+			'Z'|'X'|'C'|'V'|'B'|'N'|'M'|'A'|'S'|'D'|'F'|'G'|'H'|'J'|'K'|'L'|'Q'|'W'|'E'|'R'|'T'|'Y'|'U'|'I'|'O'|'P'| '-' | '_' 
+			};
 
-
-
-Template DIV	::= '<div class="' e.uniq12344 '"' ! '>' e.insidediv '</div>' ,
-			<Prout 'div: 'e.uniq12344>:,
-			e.uniq12344 : Tword.classname;
-
-Template Tword	::=  
-	e.text, 
-	<OnlyLettersDig e.text> : "true";
-
-
-
-
-
-
-
-Template html	::=
-	e.text,
-	<IsHTML e.text> : "true";
-
-
-OnlyLettersDig {
-	'fullContainer' = "true";
-	'otherBlocks'   = "true";
-	'ulList mainNews thin' = "true";
-	e.e= "false";
+Cut {
+	0 END. = ;
+	int.n t.s END.e = @.s <Cut <- @.n 1> @.e>;
+	e. = ;
 }
-/*
-OnlyLettersDig {
-	s.letter, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890 ' : e.1 s.letter e.2 = "true";
-	s.notletter = "false";
-	s.1 e.e, <OnlyLettersDig s.1> : "true" = <OnlyLettersDig e.e>;
-	e.else = "false";
-}
-*/
 
-IsHTML {
-	'<' e.e = <ScanTag '<' e.e>;
-	'>' e.else = "false";
-	s.s e.e = s.s <IsHTML e.e>;
-	= "true";
-	e.else = "false";
+DoError { 
+	(END.text) e.linetext word.ln END. ,
+		<Explode-all @.ln> : '$line:' Digits.line	=	
+			<Prout '#### ERROR [ line '<- @.line 1>']: ' <Replace "$separator" ' ' @.text>> 
+			<Prout '#### Code: ' @.linetext>
+			<Exit>
+			; 
+			
+	(END.text) END.arg =
+			<Prout '#### ERROR [ line ? ]: ' <Replace "$separator" ' ' @.text>>
+			<Prout '#### Code: ' <Cut 256 @.arg> '...'>
+			/*<Prout '#### Code: ' <Cut 256 <Explode-all @.arg>> '...'>*/
+			<Exit>
+			;
+}
+Replace { t.1 t.2 e.A t.1 END.B = e.A t.2 <Replace t.1 t.2 @.B>; t.1 t.2 END.e=END.e; }
+
+// счет строк для сообщений об ошбках
+P1_Prescaning_pre {
+	int.line  e.pred '\n' END.next,
+		<+ 1 int.line> : int.newline 
+		=	@.pred  '\n'<Implode '$line:' @.newline> <P1_Prescaning_pre @.newline @.next>;
+	int.line  END.next =  @.next <Implode '$line:' <+ 1 @.line>>;
 }
 
 
+Template separate  ::= { ' ' | '\t' | comment. | '\r' | '\n' | '$Entry' };
+Template separateS ::= separate. { separateS. | } ! ;
 
 
+/////////////////////////////////////////////////////////////
+//   1.      prescaning-парсинг (чтение знаков языка)
+/////////////////////////////////////////////////////////////
+OtherBrack { '>'='<';'}'='{';']'='[';')'='('; }
+ImplodeMeta { '+'=(word plus);'-'=(word minus);'*'=(word mul);'/'=(word div);  s.e=<Implode '$' s.e>; END.e=<Implode END.e>; }
+P1_Prescaning0 { END.e = <Prout 'P1_Prescaning: [' @.e ']'><P1_Prescaning0 @.e>; }
+P1_Prescaning {
+	(END.code) separateS. END.next  
+					=   <P1_Prescaning  (@.code "$separator") @.next>;
+					
+	(END.code) 
+	{';'|'...'|'..'|'.'|'::='|'::'|':'|'='|'|'|'!'|'@'|','
+	 |'+'|'-'|'*'|'/'
+	 | '$NOT' | '$not'
+	}.item  END.next 
+					=  <P1_Prescaning  (@.code <ImplodeMeta @.item>) @.next>;
+					
+	(END.code) Digits.num  END.next  
+					=  <P1_Prescaning  (@.code (int <Numb @.num>)) @.next>; /// todo: вещественные в разных форматах
+	(END.code) { Letter. e. }.word { s.notletter END.nn }.next,
+		$NOT s.notletter : Letter. ,
+		$NOT s.notletter : Digit.
+					=   <P1_Prescaning  (@.code ("word" <Implode @.word>)) @.next>;
+					
+	(END.code) '\'' END.all,
+		<P1_Prescaning_quote ('\'') @.all> : (END.text) END.next
+					=  <P1_Prescaning  (@.code ("text" @.text)) @.next>;
 
-/* проверка $not * /
-ScanTag {
-	'<' Tword.tag e.nobraks '>' html.tagbody '</' Tword.tag '>',
-		$not e.nobraks : e.1 '>' e.2,
-		$not e.nobraks : e.3 '<' e.4	=	"true";
-}/**/
+	(END.code) '"'  END.all,
+		<P1_Prescaning_quote ( '"') @.all> : (END.text) END.next
+					=  <P1_Prescaning  (@.code ("word" <Implode @.text>)) @.next>;
 
-ScanTag {
-	'<' Tword.tag e.nobraks '>' html.tagbody '</' Tword.tag '>' html.nexttag = <NoBraks e.nobraks>;
-	e.else = "false";
+	// начало скобочного выражения
+	(END.code) {'{'|'['|'('|'<'}.br  END.next
+					=  <P1_Prescaning  (@.code <Implode @.br' '>) @.next>;
+	// конец скобочного выражения
+	(END.code) {'}'|']'|')'|'>'}.br  END.next,
+		<Implode <OtherBrack @.br>' '> : s.obr,
+		@.code : E.A  s.obr  END.B
+					=  <P1_Prescaning  (@.A (s.obr @.B)) @.next>;
+
+	// проброс метакодов
+	(END.code) word.l END.next,
+		<Explode word.l> : '$' END.
+					=  <P1_Prescaning  (@.code @.l) @.next>;
+	
+	(END.code) t.unknown  END.next	=  <DoError ('Unexpected item `' @.unknown '`') @.unknown @.next>;
+
+	(END.code)  =  @.code; 
 }
 
-NoBraks {
-	'>' e.2 = "false";
-	'<' e.2 = "false";
-	s.s e.2 = <NoBraks e.2>;
-	= "true";
+P1_Prescaning_quote {
+	(t.qu END.text) t.qu END.next = (@.text) @.next;
+	(t.qu END.text) '\\' s.metas END.next = <P1_Prescaning_quote (@.qu @.text <Unescape @.metas>) @.next>;
+	(t.qu END.text) s.sym END.next = <P1_Prescaning_quote (@.qu @.text @.sym) @.next>;
+	(t.qu END.text) t.t END.else
+		=	<DoError ('Unecpected text-symbol `' t.t '`') t.t @.else>;
+	END.e = <DoError ('<P1_Prescaning_quote  ' @.e ' > - ???')>;
 }
 
-/* проверка ссылки на часть шаблона * /
-
-Run {
-	rbc.site,
-		rbc.site::doc::body::rbc::mainNewsDiv::html::text  =  <Prout rbc.site>;
-	e.else = <Prout 'error'>;
+Unescape {
+	'\'' = '\'';
+	'"' = '"';
+	'n' = '\n';
+	't' = '\t';
+	'r' = '\r';
+	'\\' = '\\';
 }
-/*=*/
 
-/* проверка на шаболны */
-Run {
-	rbc.site  =  <Prout rbc.site::doc::body::rbc::mainNewsDiv>;
-	e.else 	  =  <Prout 'error'>;
+//////////////////////////////////////////////////////////////////////////////////////////////
+//   2.      структуризация и синтаксический анализ (генерация структуры программы)
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+// (template word. (left-part e.))
+// (template word. (left-part e.))
+// (func     word. (sentence (left-part e.)(right-part e.))[...])
+// (if (right-part e.) (left-part e.))
+//
+// ===== Переменные =====
+// слово.имя ? (var (имя) слово)
+// {цепь}.имя ? (group (имя) <S цепь>)
+// {цепь}[F..T].имя ? (group (имя) (repeat F T <S цепь>))
+// слово[F..T].имя ? (group (имя) (repeat F T (var () слово)))
+
+// ===== Ссылки =====
+// @.имя ? (lnk имя)
+// {@ | слово}.имя {::слово}[inf].путь ? (lnk имя @.путь)
+
+// ===== Данные =====
+// целое ? (int целое)
+// вещ-е ? (real вещ-е)
+// слово ? (word слово)
+// «литеры» ? (word литеры)
+// '~~~' ? (text ~~~)
+
+// ===== Скобки =====
+// (~~~) ? ("( " ~~~)
+// <слово ~~~> ? (exec (слово) ~~~)
+
+
+Template FunctionName ::= (word word.fname) ; ///todo: словность?
+Template TemplateName ::= (word word.fname) ; ///todo: словность?
+Template VarName ::= ({word|int} END.text) ;
+Template VarPath ::= { "::" ("word" END. ) VarPath. | } !;
+
+ParseFromTo{
+	e.from ".." END.to,
+		<P2_Builder OBRAZEC @.from> : { ({lnk|var|int} END. ) }.tfrom,
+		<P2_Builder OBRAZEC @.to  > : { ({lnk|var|int} END. ) }.tto  =  @.tfrom @.tto;
+	e.from "...",
+		<P2_Builder OBRAZEC @.from> : { ({lnk|var|int} END. ) }.tfrom = @.tfrom (int "inf");
+	(word "inf") = (int "inf")(int "inf");
 }
-/*=*/
 
+P2_Builder0  { END.e = <Prout '<P2_Builder ' @.e '>'> <P2_Builder0 @.e>; }
+P2_Builder {
+
+   { MODULE | LEFT_PART | OBRAZEC } = ;
+
+   // шаблон  /// todo: проверку на словность имени
+   MODULE (word "Template") {"$separator" |} TemplateName.tname {"$separator" |} "::=" e.leftPart "$;" END.next
+	   =	( "template" @.tname <P2_Builder  "LEFT_PART"  @.leftPart> ) 
+		<P2_Builder  "MODULE"  @.next> ;
+   // функция
+   MODULE  FunctionName.fname {"$separator" |} ("{ " END.block ) {"$separator"|} { "$;" |} END.next
+	   =	( "func" @.fname  <P2_Builder  BLOCK  @.block> )
+		<P2_Builder  MODULE  @.next> ;
+
+   ///  todo блоком
+   LEFT_PART e.obr "$," END.if				=	("left-part" <P2_Builder  OBRAZEC @.obr> <P2_Builder  CONDITION @.if>);
+   LEFT_PART END.obr					=	("left-part" <P2_Builder  OBRAZEC @.obr>);
+
+   CONDITION e.cond1   "$," END.condN 			= 	<P2_Builder  CONDITION @.cond1> <P2_Builder  CONDITION @.condN>;
+   CONDITION e.obrazec "$:" END.result  		= 	("if" ("right-part" <P2_Builder  RIGHT_PART @.obrazec>) ("left-part" <P2_Builder  OBRAZEC @.result>));
+
+   BLOCK   e.predl "$;" END.next			=    	<P2_Builder  SENTENCE @.predl>  <P2_Builder  BLOCK @.next> ;
+   BLOCK  {"$separator" |} 				= 	;	// пропускает когда блок пуст!
+   
+   SENTENCE e.leftpart "$=" END.rightpart 		=	("sentence" <P2_Builder  LEFT_PART @.leftpart> ("right-part" <P2_Builder  RIGHT_PART @.rightpart>));
+// ===== Переменные =====
+   {OBRAZEC|RIGHT_PART}.state ("word" END.word)"$." VarName.vname END.next	= 	(var (@.vname::text) @.word) <P2_Builder  @.state @.next>;
+   OBRAZEC  ("{ " END.chain) "$." VarName.vname END.next				=	(group (@.vname::text) <P2_Builder OBRAZEC @.chain>) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " END.chain)("[ " END.fromto) "$." ("word" END.name)  END.next	=	(group (@.name) (repeat <ParseFromTo @.fromto> <P2_Builder OBRAZEC @.chain>)) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " END.chain)("[ " END.fromto)  END.next				=	(group () (repeat <ParseFromTo @.fromto> <P2_Builder OBRAZEC @.chain>)) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("{ " END.chain) END.next						=	(group () <P2_Builder OBRAZEC @.chain>) <P2_Builder  OBRAZEC @.next>;
+   OBRAZEC  ("word" END.word)"$." END.next					= 	(var () @.word) <P2_Builder OBRAZEC  @.next>;
+								
+/// todo нормальные варианты
+   OBRAZEC  "$|"  END.next  							=	(the-variant) <P2_Builder  OBRAZEC @.next> ;
+   OBRAZEC  "$!"  END.next  							=	(cutter) <P2_Builder  OBRAZEC @.next> ;
+   OBRAZEC  ("word" END.word)("[ " END.fromto) "$." ("word" END.name)  END.next	=	(group (@.name) (repeat <ParseFromTo @.fromto> (var () @.word))) <P2_Builder  OBRAZEC @.next>;
+// ===== Ссылки =====
+   {OBRAZEC|RIGHT_PART}.state { "$@" | ("word" END. )} "$." VarName.vname VarPath.path END.next
+										= 	 (lnk @.vname::text @.path) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state "$@" "$." VarName.vname END.next			= 	 (lnk @.vname::text) <P2_Builder  @.state @.next>;
+// ===== Данные =====
+   {OBRAZEC|RIGHT_PART}.state ("int" int.n)	END.next			=	(int  @.n) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("real" real.n)	END.next			=	(real @.n) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("word" END.w)	END.next			=	(word @.w) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state ("text" END.t)	END.next			=	(text @.t) <P2_Builder  @.state @.next>;
+   {OBRAZEC|RIGHT_PART}.state "$NOT"		END.next			=	"$not" <P2_Builder  @.state @.next>;
+
+// ===== Скобки =====
+   {OBRAZEC|RIGHT_PART}.state ("( " END.chain)	 END.next			=	("( " <P2_Builder  @.state @.chain>) <P2_Builder  @.state @.next>;
+   RIGHT_PART ("< " {"$separator"|} ("word" word.fname) END.chain) END.next	=	(exec (@.fname) <P2_Builder  RIGHT_PART @.chain>) <P2_Builder  RIGHT_PART @.next>;
+   {OBRAZEC|RIGHT_PART} {"$separator"|} 					= ;
+   
+
+   word.state "$separator" END.next   =	<P2_Builder @.state @.next>;	   
+   word.state word.t       END.next, 
+			<Explode word.t> : '$line:' Digits.
+			=	@.t <P2_Builder @.state @.next>;
+   BLOCK   END.predl    =    <P2_Builder  SENTENCE @.predl>;
+
+   // Обработка ошибок 
+   MODULE END.next	   =  <DoError ('temlpate or function defenition expected') @.next>;
+   word.state  END.next 	   =  <DoError (word.state '-item expected') @.next>;
+}
+
+
+//   3.      семантический анализ и оптимизация (перестройка структуры программы)
+P3_Semantic {
+	END.a = @.a;
+	END.else = <DoError ('Problem after semantic!') @.else>;
+}
+
+
+//   4.      построение байт/xml-кода// (template word. (left-part e.))// (func     word. (sentence (left-part e.)(right-part e.))[...])// (if (right-part e.) (left-part e.))//// (var (имя) слово)// (group (имя) <S цепь>)// (group (имя) (repeat F T <S цепь>))// (group (имя) (repeat F T (var () слово)))// (lnk имя)// (lnk имя @.путь)// (int целое)// (real вещ-е)// (word слово)// (word литеры)// (text ~~~)// ("( " ~~~)// (exec (слово) ~~~)P4_Out {	END.ff = @.ff;	(template  ("word" word.name) (left-part END.lp))  END.next = 						'<Template name="'@.name'">'							'<LEFT-PART>'								<P4_Out @.lp>							'</LEFT-PART>'						'</Template>' 						<P4_Out  @.next>;							(func   word.name {(sentence END.sent)}[1..100].sents)  END.next = 						'<Function name="'@.name'">' 							<P4_Out  @.sents>						'</Function>'						<P4_Out  @.next>;							(sentence (left-part END.lp)(right-part END.rp))  END.next =						'<Sentence>' 							'<LEFT-PART>'								<P4_Out @.lp>							'</LEFT-PART>'							'<RIGHT_PART>'								<P4_Out @.rp>							'</RIGHT_PART>'						'</Sentence>' 						<P4_Out  @.next>;							/*( left-part END.)  END.next = '' <P4_Out  @.next>;  // самостоятельно не появляются 	  (right-part END.)  END.next = '' <P4_Out  @.next>; */	  	(exec  (word.name) END.arg)  END.next = 						'<EXEC>'							'<WORD>'@.name'</WORD>'							<P4_Out  @.arg>						'</EXEC>'						<P4_Out  @.next>;// (if (right-part e.) (left-part e.))							(if     (right-part END.rp) (left-part END.lp))  END.next = 						'<IF>'							'<RIGHT-PART>' <P4_Out  @.rp> '</RIGHT-PART>'							'<LEFT-PART>'  <P4_Out  @.lp> '</LEFT-PART>'						'</IF>'						<P4_Out  @.next>;	(var    END.)  END.next = 'var' <P4_Out  @.next>;	(group  END.)  END.next = 'group' <P4_Out  @.next>;	(cutter END.)  END.next = 'cutter' <P4_Out  @.next>;	(the-variant END.)  END.next = 'the-variant' <P4_Out  @.next>;	(lnk  END.)  END.next = 'lnk'  <P4_Out  @.next>;	(int  END.)  END.next = 'int'  <P4_Out  @.next>;	(real END.)  END.next = 'real' <P4_Out  @.next>;	(word END.)  END.next = 'word' <P4_Out  @.next>;	(text END.)  END.next = 'text' <P4_Out  @.next>;	("( " END.)  END.next = '()' <P4_Out  @.next>;		=;	END.else = <DoError ('Problem while build byte-code: ' @.else) @.else>;}
+
+// почееPostScan {	word.A END.next,		<Explode word.A> : '$line:' END. = <PostScan @.next>;	(END.A) END.next	=	(<PostScan @.A>) <PostScan @.next>;		t.A  END.next		=	@.A <PostScan @.next>;				= ;}

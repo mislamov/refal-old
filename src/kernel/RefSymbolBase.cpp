@@ -182,8 +182,8 @@ unistring RefSymbol<unichar>::toString(){
             s << "\n";
             #endif
         } else {
-            s << '\'' << this->getValue();// << '_' <<(long)this << ' ';
-            //s << this->getValue();
+            //s << '\'' << this->getValue();// << '_' <<(long)this << ' ';
+            s << this->getValue();
         }
         return s.str();
 }

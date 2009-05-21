@@ -46,6 +46,7 @@ std::string stringtime(struct tm * tt) {
 }
 
 int main ( int argv, char **argc ) {
+
     std::cout << REFVERSION << "\n" << std::flush;
     if (argv == 1) {
         std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << std::flush;

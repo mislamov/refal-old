@@ -37,13 +37,8 @@ RefObject::RefObject(){ co::ocount++;
 RefObject::~RefObject(){ co::ocount--; };
 
 
-
-RefDataTypesForCast RefObject::getTypeCast(){ return castUseRTTI; }; // инфотип для объекта
-
-
-
-
 RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
+    this->castInfo = 0;
     co::datacount++;
 
 	is_system (true);
@@ -380,7 +375,7 @@ RefChain* RefChain::aroundByDots(){
     //std::cout << "\ninitializationTemplate::\t" << tpl->toString();
 
     #ifdef DEBUG
-    if (dynamic_cast<RefData_DOT *>(l) || dynamic_cast<RefData_DOT >(r)){
+    if (dynamic_cast<RefData_DOT *>(l) || dynamic_cast<RefData_DOT *>(r)){
         SYSTEMERROR(" situation : l or r already DataDOTs !");
     }
     #endif
@@ -615,7 +610,7 @@ RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
 RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
     #ifdef DEBUG
     if (!point) SYSTEMERROR("point is null");
-    if (!s->subChainFrom && !s->subChainTo) SYSTEMERROR("subChain links not set!!!");
+    //if (!s->subChainFrom && !s->subChainTo) SYSTEMERROR("subChain links not set!!!");
     #endif
 
     do point = point->pred_term(id, s);

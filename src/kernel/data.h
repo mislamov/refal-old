@@ -58,33 +58,39 @@ enum RefDataTypesForCast {
     castIsSystemData  = B32(10000000, 00000000, 00000000, 00000000),
 
     /*рефал-символы*/
-    castRefSymbolBase = B32(00000000, 00000000, 00000001, 00000000), // рефал-символ
+    castRefSymbolBase   = B32(00000000, 00000000, 00000001, 00000000), // рефал-символ
+    castRefBracketBase  = B32(00000000, 00000000, 00000010, 00000000), // базовая скобка
+    castRefVariableBase = B32(00000000, 00000000, 00000100, 00000000), // базовая открытая переменная
+    castRefLinkToVariable=B32(00000000, 00000000, 00001000, 00000000), // закрытая переменная
+
     castRefInteger    = B32(00000000, 00000000, 00000000, 00000001) | castRefSymbolBase,
     castRefReal       = B32(00000000, 00000000, 00000000, 00000010) | castRefSymbolBase,
     castRefAlpha      = B32(00000000, 00000000, 00000000, 00000100) | castRefSymbolBase,
     castRefByte       = B32(00000000, 00000000, 00000000, 00001000) | castRefSymbolBase,
     castRefWord       = B32(00000000, 00000000, 00000000, 00010000) | castRefSymbolBase,
 
-    castRefBracketBase   = B32(00000000, 00000000, 00000010, 00000000), // базовая скобка
     castRefStructBracket = B32(00000000, 00000000, 00000000, 00000001) | castRefBracketBase,
-    castRefExecBracket   = B32(00000000, 00000000, 00000000, 00000010) | castRefBracketBase
+    castRefExecBracket   = B32(00000000, 00000000, 00000000, 00000010) | castRefBracketBase,
+
+    castRefVariable         = B32(00000000, 00000000, 00000000, 00000001) | castRefVariableBase // переменная
+    //сastRef               = B32(00000000, 00000000, 00000000, 00000000)  ////
 
 //  castRef            = B32(00000000, 00000000, 00000000, 00000000)  ////
 //  castRef            = B8 (00000000)
 };
 
 #define CLASSCAST_INIT_RTTI  \
-inline static  RefDataTypesForCast getClassTypeCast(){ return castUseRTTI; };
+inline static  RefDataTypesForCast getClassTypeCast(){ return castUseRTTI; }; \
+virtual RefDataTypesForCast getTypeCast(){ return castUseRTTI; };
 
 #define CLASSCAST_INIT_bitmap(ClassName) \
-inline static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; };
-
+inline static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; }; \
+virtual RefDataTypesForCast getTypeCast(){ return cast##ClassName; };
 
 // Родитель всего в Рефале
 class RefObject {
 public:
     CLASSCAST_INIT_RTTI;
-    virtual RefDataTypesForCast getTypeCast();           // инфотип для объекта
 
     //static long ocount;
     RefObject();
@@ -230,7 +236,7 @@ RefVariableBase() : IRefVarStacked() { };
 
 class RefVariable : public RefVariableBase, public RefData , public RefalNameSpace { // Простая переменная
 public:
-    CLASSCAST_INIT_RTTI;
+    CLASSCAST_INIT_bitmap(RefVariable);
 
     ~RefVariable();
 
@@ -250,6 +256,8 @@ class RefLinkToVariable : public RefData, public RefalNameSpace {
     // в name хранится адрес ссылочной переменной в виде varname:varname:varname
     /// todo: сделать ссылаемость на конкретную переменную + карту сопоставлений сделать по адресу ссылки а не по имени
 public:
+    CLASSCAST_INIT_bitmap(RefLinkToVariable);
+
     unistring toString();
     bool operator==(RefData&);
     virtual TResult init(Session* s, RefData *&currentPoint);
@@ -291,6 +299,7 @@ protected:
     bool        is_opened; // true = begin- ; false = end-
 
 public:
+    CLASSCAST_INIT_bitmap(RefBracketBase);
     RefBracketBase*  other;
 
     virtual RefData *Clone() {
@@ -372,20 +381,25 @@ RefLChain(RefData *rp = 0):RefData(rp) {
 
 
 template <class T>
-T* ref_dynamic_cast(RefObject *d) {
+inline T* ref_dynamic_cast(RefObject *d) {
+    if (!d)
+        return 0;
+
     #ifdef DEBUG
-    if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call ref_dynamic_cast not for RefData !!!");
+    //if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call ref_dynamic_cast not for RefData !!!: " << d->toString());
     #endif
 
     //return dynamic_cast<T*>(d);
-    if (!d) return 0;
-
     if (d->getTypeCast() & castUseRTTI) {
         return dynamic_cast<T*>(d);
     }
     if (d->getTypeCast() & T::getClassTypeCast()) {
         return reinterpret_cast<T*>(d);
     }
+
+    #ifdef DEBUG
+    LOG(d->toString() << "("<< d->getTypeCast() <<") not RTTI and NOT casted with " << T::getClassTypeCast());
+    #endif
     return 0;
     //return dataref_dynamic_cast(T, d);
 };
