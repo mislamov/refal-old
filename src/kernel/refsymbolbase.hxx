@@ -44,7 +44,6 @@ template <class T>
 class RefSymbolBase : public RefValuedData
 {
 public:
-
     ~RefSymbolBase();
     RefSymbolBase(RefData *rp = 0);
     RefSymbolBase(T i, RefData *rp = 0);
@@ -87,7 +86,7 @@ class RefSymbol : public RefSymbolBase<T>
 {
     T value;
 public:
-    CLASSCAST_INIT_RTTI;
+
 
     RefSymbol(T i, RefData *rp = 0);
     RefSymbol(RefData *rp = 0);
@@ -107,9 +106,15 @@ public:
 /***********************
 *   Переменные
 ************************/
-template <class T> class RefVarForSymbol : public RefVariable
+template <class T>
+class RefVarForSymbol : public RefVariable
 {
 public:
+//
+//    CLASS_CAST(RefVarForSymbol);
+    virtual RefDataTypesForCast object_cast(); // OBJECT_CAST
+
+
     TResult init(Session* s, RefData *&l);
     TResult back(Session* s, RefData *&l, RefData *&r);
     RefVarForSymbol (unistring name, RefData *rp=0);
@@ -131,14 +136,14 @@ public:
 
 #define typedefSymbolClass(P, T, N) \
     typedef  P<T>    N;             \
-    RefDataTypesForCast P<T>::getClassTypeCast(){ return cast##N; };
-    //template <> class P<T> { CLASSCAST_INIT_bitmap(N); }
+    RefDataTypesForCast P<T>::object_cast(){ return cast##N; }
+
 
 //*
 typedef  RefSymbolBase<infint>    RefIntegerBase;
 typedef  RefSymbolBase<infreal>   RefRealBase;
 typedef  RefSymbolBase<unichar>   RefAlphaBase;
-typedef  RefSymbolBase<unichar>   RefByteBase;
+typedef  RefSymbolBase<char>   RefByteBase;
 typedef  RefSymbolBase<unistring> RefWordBase;
 /*/
 typedefSymbolClass(RefSymbolBase,  infint,    RefIntegerBase);
@@ -160,14 +165,13 @@ typedefSymbolClass(RefSymbol,  unichar,   RefAlpha);
 typedefSymbolClass(RefSymbol,  char,      RefByte);
 typedefSymbolClass(RefSymbol,  unistring, RefWord);
 //*/
-//*
+/*
 typedef RefVarForSymbol<RefIntegerBase>  RefVarInteger;
 typedef RefVarForSymbol<RefRealBase>     RefVarReal;
 typedef RefVarForSymbol<RefWordBase>     RefVarWord;
 typedef RefVarForSymbol<RefAlphaBase>    RefVarAlpha;
 typedef RefVarForSymbol<RefByteBase>     RefVarByte;
-//*/
-/*
+/*/
 typedefSymbolClass(RefVarForSymbol,  RefIntegerBase, RefVarInteger);
 typedefSymbolClass(RefVarForSymbol,  RefRealBase,    RefVarReal);
 typedefSymbolClass(RefVarForSymbol,  RefWordBase,    RefVarWord);

@@ -150,7 +150,7 @@ class LoaderHeap {
         RefObject *extractValueFromStack(unistring name){
             std::stack<RefObject*>  &svalue   = stackstags[name];
             //std::cout << "\n--stackstags["<<name<<"]("<< stackstags[name].size() <<")" << std::flush;
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (svalue.empty()) SYSTEMERROR("unexpected extracter query: " << name);
             #endif
             RefObject* value = svalue.top();
@@ -163,7 +163,7 @@ class LoaderHeap {
             std::stack<RefObject*>  &svalue   = stackstags[name];
             //std::cout << "\n~~getValueFromStack[" << name << "] " << stackstags[name].size() << std::flush;
             //std::cout << "\n~~getValueFromStack[" << name << "] " << svalue.size() << std::flush;
-            #ifdef DEBUG
+            #ifdef TESTCODE
             //std::cout << "\nsvalue.size()==" << svalue.size() << "   svalue.size()==0:" << bool(svalue.size()==0);
             if ( svalue.size()==0 )
                 SYSTEMERROR("unexpected extracter query: " << name << std::flush);
@@ -178,7 +178,7 @@ class LoaderHeap {
             stckChains.push(new RefChain());
         }
         RefChain* extractCurrChainFromStack(){
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
             #endif
             RefChain *r = stckChains.top();

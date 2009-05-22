@@ -37,9 +37,9 @@ namespace co {
 
 class RefVariable_e : public RefVariable {
 public:
-    CLASSCAST_INIT_RTTI;
+    OBJECT_CAST(RefVariable_e);
 
-RefVariable_e(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
+RefVariable_e(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) { };
 
     TResult  init(Session *, RefData *&);
     TResult  back(Session *, RefData *&, RefData *&);
@@ -56,8 +56,8 @@ RefVariable_e(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 
 class RefVariable_E : public RefVariable {
 public:
-    CLASSCAST_INIT_RTTI;
-
+//
+    OBJECT_CAST(RefVariable_E);
 RefVariable_E(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
 
     void     dropall(Session *);
@@ -75,8 +75,8 @@ RefVariable_E(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 
 class RefVariable_END : public RefVariable {
 public:
-    CLASSCAST_INIT_RTTI;
-
+//
+    OBJECT_CAST(RefVariable_END);
 RefVariable_END(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
 
     void     dropall(Session *);
@@ -94,8 +94,8 @@ RefVariable_END(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(na
 
 class RefVariable_s : public RefVariable {
 public:
-    CLASSCAST_INIT_RTTI;
-
+//
+    OBJECT_CAST(RefVariable_s);
 RefVariable_s(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
     //void     dropall(Session *);
     bool operator==(RefData &rd) {
@@ -114,8 +114,8 @@ RefVariable_s(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 
 class RefVariable_t : public RefVariable {
 public:
-    CLASSCAST_INIT_RTTI;
-
+//
+    OBJECT_CAST(RefVariable_t);
 RefVariable_t(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {
         return;
     };
@@ -138,9 +138,11 @@ RefVariable_t(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 /*************************
 *   Скобки
 **************************/
-class RefStructBracket : public RefBracketBase, public IRefVarStacked {  // IRefVarStacked нужно для back(l, r) - работает с getStackOfDataSkob
+class RefStructBracket : public RefBracketBase {  // IRefVarStacked нужно для back(l, r) - работает с getStackOfDataSkob
 public:
-    CLASSCAST_INIT_RTTI;
+    OBJECT_CAST(RefStructBracket);
+
+virtual bool IsRefVarStacked(){return true; };
 
     RefStructBracket(RefData* rp=0);
     RefStructBracket(RefStructBracket *br, RefData* rp=0);
@@ -162,7 +164,7 @@ public:
         return new RefNULL(br);
     };
     RefData* Copy(RefBracketBase *b, RefData *rp) {
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (!dynamic_cast<RefStructBracket *>(b)) SYSTEMERROR("Closed brackets error: " << b->toString() << " with " << this->toString());
         #endif
         return new RefStructBracket((RefStructBracket *)b, rp);
@@ -177,7 +179,8 @@ public:
 
 class RefExecBracket : public RefBracketBase {
 public:
-    CLASSCAST_INIT_bitmap(RefExecBracket);
+    CLASS_CAST(RefExecBracket);
+    OBJECT_CAST(RefExecBracket);
 
     RefExecBracket(RefData* rp=0);
     RefExecBracket(RefExecBracket *br, RefData* rp=0);
@@ -198,7 +201,7 @@ public:
         return new RefNULL(br);
     };
     RefData* Copy(RefBracketBase *b, RefData *rp) {
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (!dynamic_cast<RefExecBracket *>(b)) SYSTEMERROR("Closed brackets error: " << b->toString() << " with " << this->toString());
         #endif
         return new RefExecBracket((RefExecBracket *)b, rp);

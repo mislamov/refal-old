@@ -36,7 +36,7 @@ TVarBody::TVarBody(RefData* l, RefData* r, RefObject* o) {
 };
 
 TVarBody * TVarBody::folowByWay(unistring path) {
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (path == EmptyUniString) SYSTEMERROR("mpty subVar path : " + toString());
     #endif
 
@@ -87,7 +87,7 @@ Session::~Session() {
 };
 
 TVarBody* Session::setVarBody( unistring vname, TVarBody* vb) {
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (! matchSessions.size()) {
         showStatus();
         SYSTEMERROR("matchSessions is EMPTY!");
@@ -100,7 +100,7 @@ TVarBody* Session::setVarBody( unistring vname, TVarBody* vb) {
 
 
 TVarBody* Session::getVarBody( unistring vname ) {
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (this->matchSessions.empty()) SYSTEMERROR("matchSessions is EMPTY!");
     #endif
 
@@ -119,7 +119,7 @@ TVarBody* Session::getVarBody( unistring vname ) {
         ++som;
     }
     #ifdef DEBUG
-    SYSTEMERROR("varieble not found in maps: " << vname);
+    SYSTEMERROR("variable not found in maps: " << vname);
     #endif
     return 0;
 };
@@ -220,7 +220,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, 
 
     if (isRevers || !succmatch) {
         // если реверс или не реверс но провал, то очистить все последствия (откатиться до точки, очистить созданное после точки и саму точку)
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (! this->matchSessions.size()) SYSTEMERROR("alarm");
         #endif
         delete this->matchSessions.back();
@@ -257,7 +257,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     result_sost = isdemaching?BACK:GO;
 
     RefChain *args = s->getPole_zrenija();
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (!args || !args->first || !args->second) {
         SYSTEMERROR("unexpected NULLs in session::matching arguments!");
     }
@@ -267,7 +267,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     RefData  *&activeTemplate = s->matchSessions.back()->activeTemplate, *tmpA, *tmpB;
     RefData   *l=0, *r=0;           // указатели на конечные точки в данных
     RefLChain *lWay=0, *rWay=0     // указатели на ссылочные пары для l и r
-                ,*tmpAway, *tmpBway;
+                             ,*tmpAway, *tmpBway;
 
 
     activeTemplate = isdemaching?tmplate->second:tmplate->first; // было: tmplate->second->pred - это потому что последний датадот. сделал tmplate->second чтоб откат обработал скобки
@@ -278,40 +278,40 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     while (activeTemplate) {
         /* */
         #ifdef DEBUG
-        {
-            std::cout << "\n" << s->step++ << ":>>   ";
+
+        std::cout << "\n" << s->step++ << ":>>   ";
         for (int i=1; i<s->fcalls; i++) {
-        for (int j=1; j<i; j++) {
+            for (int j=1; j<i; j++) {
                 std::cout << "\t";
             }
         }
         switch (result_sost) {
-    case GO :
-        std::cout << "GO   ";
-        break;
-    case BACK :
-        std::cout << "BACK ";
-        break;
-    case ERROR :
-        std::cout << "ERROR";
-        break;
-    default:
-        std::cout << "???? ";
-    }
-    std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
-    //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
-    std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
-    std::cout << "\t";
-    print_vector(r->next);
-    }
-    #endif
+        case GO :
+            std::cout << "GO   ";
+            break;
+        case BACK :
+            std::cout << "BACK ";
+            break;
+        case ERROR :
+            std::cout << "ERROR";
+            break;
+        default:
+            std::cout << "???? ";
+        }
+        std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
+        //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
+        std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
+        std::cout << "\t";
+        print_vector(r->next);
 
-    s->message4nextpred = mERROR;
-    //*/
-    pre_sost = result_sost;
+        #endif
+
+        s->message4nextpred = mERROR;
+        //*/
+        pre_sost = result_sost;
 
 
-    if (pre_sost==GO) {
+        if (pre_sost==GO) {
             l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
             lWay = rWay;
             result_sost = activeTemplate->init(s, r); /// ШАГ ВПЕРЕД
@@ -344,6 +344,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             do {
                 activeTemplate = activeTemplate->next_template(0, s);
             } while (activeTemplate && activeTemplate->is_system());
+
         } else
             if (result_sost == BACK) {
                 /// ... -> BACK
@@ -401,7 +402,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 //RefBracketBase* br = ref_dynamic_cast<RefBracketBase *>(activeTemplate);
                 RefBracketBase* br = (RefBracketBase *)(activeTemplate);
 
-                #ifdef DEBUG
+                #ifdef TESTCODE
                 br = ref_dynamic_cast<RefBracketBase >(activeTemplate);
                 if (!br) {
                     SYSTEMERROR("FORCEBACK not for barcket! But for : " << activeTemplate->toString());
@@ -411,7 +412,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 finish = br->getOther();
 
                 while ( (! s->getCurrentSopostStack()->empty())  && s->getCurrentSopostStack()->top()->owner != finish) {
-                    #ifdef DEBUG
+                    #ifdef TESTCODE
                     if ( s->getCurrentSopostStack()->empty()) SYSTEMERROR("Empty getCurrentSopostStack() while FORCEBACKing when finish<>0");
                     #endif
                     LOG( ">> BACKFORSE DROP: " << s->getCurrentSopostStack()->top()->owner->toString() << " != " << (finish?finish->toString():"$null"));
@@ -474,7 +475,7 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src) { // готовит праву
 
 // сохраняет состояние переменной во время сопоставления
 void Session::SaveTemplItem(RefData* v, RefData* l, RefLChain* lWay, RefData* r, RefLChain* rWay) {
-    if (! ref_dynamic_cast<IRefVarStacked >(v)) return; /// тест. попытка сохранять не все
+    if (v->IsRefVarStacked()) return; /// тест. попытка сохранять не все
     //std::cout << "\n+++::\t" << v->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
 
     // если входит открывающая скобка, значит вся пара
@@ -497,7 +498,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefLChain* lWay, RefData* r,
             SessionOfMaching *sess;
             do {
                 sess = this->matchSessions.back();
-                #ifdef DEBUG
+                #ifdef TESTCODE
                 if (! sess) {
                     SYSTEMERROR("alarm!");
                 }
@@ -510,7 +511,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefLChain* lWay, RefData* r,
             // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
             // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second
             RefData *leftSecond = getVarBody(bridge->getName())->second; /// todo сделать эффективнее. Без использования промежуточного сохранения в map
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (getVarBody(bridge->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа завязано на том, что скобки внешней переменной сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
             #endif
             if (leftSecond != r) { // взор на НЕ пустое выражение
@@ -544,7 +545,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefLChain* lWay, RefData* r,
                 getCurrentSopostStack()->push( setVarBody(group->getName(), varBody) );
             } else {    ///      }.name
                 RefData *leftSecond = getVarBody(group->getName())->second; /// todo сделать эффективнее. Без использования промежуточного сохранения в map
-                #ifdef DEBUG
+                #ifdef TESTCODE
                 if (getVarBody(group->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа  и групп завязано на том, что скобки внешней переменной или группы сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
                 #endif
                 if (leftSecond != r) { // взор на НЕ пустое выражение
@@ -576,7 +577,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefLChain* lWay, RefData* r,
 
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, RefData* &r, RefLChain* &rWay) {
 //void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
-    if (! ref_dynamic_cast<IRefVarStacked >(owner)) return; /// тест. попытка сохранять не все
+    if (! owner->IsRefVarStacked() ) return; /// тест. попытка сохранять не все
     //std::cout << "\n---::\t" << owner->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
 
     RefTemplateBridgeVar *bridge = ref_dynamic_cast<RefTemplateBridgeVar >(owner);
@@ -586,7 +587,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, Re
             delete matchSessions.back();   // удаление субсессии для внешней переменной
             matchSessions.pop_back();
 
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (getCurrentSopostStack()->empty()) SYSTEMERROR("empty sopost stack!");
             if (getCurrentSopostStack()->top()->owner != owner) SYSTEMERROR("wrong owner for " << owner->toString() << " : " << getCurrentSopostStack()->top()->owner->toString() );
             #endif
@@ -598,7 +599,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, Re
         }
     }
 
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if ( getCurrentSopostStack()->empty() ) {
         showStatus();
         SYSTEMERROR("empty stak!!!  " );
@@ -650,8 +651,9 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, Re
         }
     }
 
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (varBody->owner != owner) {
+        #ifdef DEBUG
         std::cout << "\n\n\size=" << getCurrentSopostStack()->size() << std::flush ;
         std::cout << "\ncall owner=" << owner << std::flush << owner->toString() << std::flush;
         std::cout << "\ntop  owner=" << varBody->owner << std::flush << varBody->owner->toString() << "\n\n" << std::flush;
@@ -665,6 +667,7 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, Re
         std::cout << std::flush;
 
         showStatus();
+        #endif
         SYSTEMERROR("RestoreTemplItem for INCORRECT OWNER: " << std::flush << owner->toString() << "[" << owner << "] but " << varBody->owner->toString() << "[" << varBody->owner << "] expected!");
     }
     #endif
@@ -694,7 +697,7 @@ void Session::regModule(RefModuleBase *m) {
 
 // извлечение функции по имени из модулей
 RefFunctionBase * Session::findMethodFromModule(unistring fname) {
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (modules.empty()) {
         SYSTEMERROR("No modules loaded!");
     }

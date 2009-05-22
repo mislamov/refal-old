@@ -154,9 +154,10 @@ class Session : public RefObject {
     bool  matching(RefObject *initer, RefChain *tmplate, RefData*l, RefData*r, bool isdemaching, bool isRevers); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 
     std::stack<TVarBody*> *getCurrentSopostStack(){
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (matchSessions.empty()){
-            showStatus(); SYSTEMERROR("matchSessions is EMPTY !");
+            showStatus();
+            SYSTEMERROR("matchSessions is EMPTY !");
         }
         #endif
         return &(matchSessions.back()->StackOfSopost);

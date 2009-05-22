@@ -41,7 +41,7 @@ template <class T>
 TResult RefSymbolBase <T>::init(Session* s, RefData *&l) {
     move_to_next_term(l,0/*myid()*/,s);
     RefData* aux = l;
-    #ifdef DEBUG
+    #ifdef TESTCODE
         if (!aux) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
     #endif
     //std::cout << "\n?::: "; print_inf(); std::cout << "=="; aux->print_inf(); std::cout << std::flush;

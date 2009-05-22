@@ -40,13 +40,7 @@
 typedef std::basic_string<XMLCh> XercesString;
 
 unistring toWstring(const XercesString& str, unsigned int len){
-    #ifdef DEBUG
-    unistring result(str.begin( ), str.end( ));
-    //std::cout << "\t#### WARNING: toWstring(" << result << ", " << len << ")\t";
-    return result;
-    #else
     return unistring(str.begin( ), str.end( ));
-    #endif
 }
 unistring toWstring(const XercesString& str){
     return unistring(str.begin( ), str.end( ));
@@ -79,9 +73,6 @@ void SAXPrintHandlers::startElement(const   XMLCh* const  name,  AttributeList& 
     //LOG( _L("SAXPrintHandlers::startElement::[") << theCommand << "] (attr: "<< attributes.getLength() << " )" );
     loader->activeTag.push(theCommand);
 
-#ifdef DEBUG
-try {
-#endif
     loader->currentchars = _L("");  // поскольку чтение строк, содержащих перенос - разделено в этом SAX, то строки набираются накоплением (конкатенациями) и обнуляются для новых тегов
 
     if ( theCommand.compare(_L("BEGIN")) == 0 ) {
@@ -139,7 +130,7 @@ try {
     if ( theCommand.compare(_L("VARIANTS")) == 0) {
             ref_variant_krest *krest = new ref_variant_krest();
             ref_variant_ffwd  *ffwd  = new ref_variant_ffwd();
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! dynamic_cast<RefGroupBracket *>(loader->getCurrChain()->second)) SYSTEMERROR("bad variant build");
             #endif
             krest->begbr = loader->getCurrChain()->second;
@@ -187,11 +178,6 @@ try {
     } else
 
     SYSTEMERROR("unknown tag name: " << theCommand);
-#ifdef DEBUG
-} catch(int i) {
-    SYSTEMERROR("excepion!");
-}
-#endif
 }
 
 void SAXPrintHandlers::characters(const     XMLCh* const    chars
@@ -238,9 +224,6 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     RefValuedData *tmpvdata = 0;
     unistring theCommand = toWstring(name);
 
-    #ifdef DEBUG
-    try {
-    #endif
     if (! theCommand.compare(_L("ERROR"))) {
         SYSTEMERROR(loader->currentchars);
     } else
@@ -248,14 +231,14 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
         // модуль прочитан полностью
     } else
     if ( theCommand.compare(_L("FUNCTION")) == 0) {
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
             #endif
             RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
             loader->currentModule->objects[f->getName()] = f;
     } else
     if ( theCommand.compare(_L("TEMPLATE")) == 0) {
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERROR("not TEMPLATE in TEMPLATE-stack !!!");
             #endif
             //RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
@@ -266,7 +249,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             loader->currentModule->objects[ t->getName() ] = t;
     } else
     if ( theCommand.compare(_L("SENTENCE")) == 0) {
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
             if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not FUNCTION in FUNCTION-stack !!!");
             #endif
@@ -280,7 +263,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
 
         /*
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
             #endif
             RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
@@ -289,7 +272,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
         /*
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
             #endif
             RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
@@ -302,7 +285,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
 
             //RefExecBracket *br = dynamic_cast<RefExecBracket *>(loader->extractValueFromStack("BRACKET"));
             RefExecBracket *br = (RefExecBracket *)(loader->extractValueFromStack("BRACKET"));
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! br) SYSTEMERROR("not EXEC BRACKET in BRACKET-stack !!!");
             #endif
             RefExecBracket *brclose = new RefExecBracket(br, 0);
@@ -338,14 +321,14 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("BRACKET")) == 0 ) {
             RefStructBracket *br = dynamic_cast<RefStructBracket *>(loader->extractValueFromStack("BRACKET"));
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! br) SYSTEMERROR("not STRUCT BRACKET in BRACKET-stack !!!");
             #endif
             RefStructBracket *brclose = new RefStructBracket(br, 0);
             *(loader->getCurrChain()) += brclose;
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (! dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefGroupBracket in GROUP-stack !!!");
             #endif
             //RefGroupBracket *gbrclose =  dynamic_cast<RefGroupBracket*>( loader->extractValueFromStack(theCommand) );
@@ -401,11 +384,6 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
 
     SYSTEMERROR("unknown tag name: " << theCommand);
-    #ifdef DEBUG
-    } catch(int i) {
-        SYSTEMERROR("excepion!");
-    }
-    #endif
 
 
     loader->activeTag.pop();

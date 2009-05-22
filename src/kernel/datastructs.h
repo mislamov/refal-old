@@ -32,9 +32,13 @@ class ref_variant_vert;
 class ref_variant_vopr;
 
 //---------- $[  $] ----------
-class RefData_DOT : public IRefVarStacked, public RefBracketBase { // begin- Рё end-
+class RefData_DOT : public RefBracketBase { // begin- Рё end-
 public:
-    CLASSCAST_INIT_RTTI;
+    virtual bool IsRefVarStacked() {
+        return true;
+    };
+
+    OBJECT_CAST(RefData_DOT);
 
     //~RefData_DOT(){ if(pred)next->pred=pred; if(pred)pred->next=next; };
 RefData_DOT(RefData* rp = 0) : RefBracketBase(rp) {};
@@ -54,7 +58,7 @@ RefData_DOT(RefData_DOT *nd, RefData* rp = 0) : RefBracketBase(nd, rp) {};
         return new RefData_DOT(where);
     };
     virtual RefData* Copy(RefBracketBase *b, RefData *where=0) {
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (! dynamic_cast<RefData_DOT *>(b)) SYSTEMERROR(" unexpected bracket type: " << b->toString() << " ~ " << this->toString());
         #endif
         return new RefData_DOT((RefData_DOT *)b, where);
@@ -66,9 +70,9 @@ RefData_DOT(RefData_DOT *nd, RefData* rp = 0) : RefBracketBase(nd, rp) {};
 
 
 //-----------  o  -----------
-class ref_variant_dot : public RefData/*, public IRefVarStacked*/ { // IRefVarStacked чтоб срабаытвал restoreTempl и saveTempl
+class ref_variant_dot : public RefData {
 public:
-    CLASSCAST_INIT_RTTI;
+
 
     ref_variant_ffwd  *nextffwd;
     ref_variant_krest *krest;
@@ -98,7 +102,7 @@ public:
 //----------  |  ------------
 class ref_variant_vert : public RefData {
 public:
-    CLASSCAST_INIT_RTTI;
+
 
     RefData *vopr;
 
@@ -119,7 +123,7 @@ public:
 };
 //----------  =>  ------------
 class ref_variant_ffwd : public RefData {
-    CLASSCAST_INIT_RTTI;
+
 
 public:
     ref_variant_ffwd(RefData *rp=0);
@@ -142,7 +146,7 @@ public:
 //----------  ?  ------------
 class ref_variant_vopr : public RefData {
 public:
-    CLASSCAST_INIT_RTTI;
+
 
     ref_variant_vopr( RefData* rp=0);
     RefData*	pred_template (ThisId id, Session *s);
@@ -162,7 +166,7 @@ public:
 //----------  x  ------------
 class ref_variant_krest : public RefData {
 public:
-    CLASSCAST_INIT_RTTI;
+
 
     RefData *begbr;
 
@@ -188,9 +192,11 @@ public:
 
 ////////////////  {o      | => o      | => o      | => x ?} ///////////////////
 //---------- {  } ----------
-class RefGroupBracket : public RefBracketBase, public IRefVarStacked, public RefalNameSpace {
+class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
 public:
-    CLASSCAST_INIT_RTTI;
+    OBJECT_CAST(RefGroupBracket);
+
+virtual bool IsRefVarStacked(){return true; };
 
     virtual ~RefGroupBracket() {};
 RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) {
@@ -236,7 +242,7 @@ class ref_repeater : public RefBracketBase {
     infint min; /// todo: экономить. вообще используются толька в ]
     infint max;
 public:
-    CLASSCAST_INIT_RTTI;
+    OBJECT_CAST(ref_repeater);
 
     virtual ~ref_repeater() {};
 

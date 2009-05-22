@@ -116,7 +116,7 @@ s->fcalls++;
             ldot = argfirst ->pred;
         }
         rdot = argsecond->next;
-        #ifdef DEBUG
+        #ifdef TESTCODE
         // должно вызываться только для части цепочки => окружено чем-то. Нужно чтоб не потерять место изменения
         if (! ldot )
             SYSTEMERROR("RefUserFunction::execute( argfirst->pred != RefDATA not null, ...) !\RefUserFunction::execute( " << RefChain(argfirst, argsecond).toString() << " )");
@@ -161,7 +161,7 @@ s->fcalls++;
             if (newoe->first){
                 ldot->next = newoe->first;
                 newoe->first->pred = ldot;
-                #ifdef DEBUG
+                #ifdef TESTCODE
                 if (!newoe->second) SYSTEMERROR("newoe->first && ! newoe->second ");
                 #endif
                 rdot->pred = newoe->second;
@@ -177,7 +177,7 @@ s->fcalls++;
             reslt = true;
         } else {
             // по идее если матчинг закончился не удачно, то в нем происходит откат к исходному состоянию и удаление мусора
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (stateBeforeMatch  && stateBeforeMatch != s->matchSessions.back()) SYSTEMERROR("unbalansed sub-sessions and recover-dots"); // хм...
             #endif
             sent++;
@@ -226,7 +226,7 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
     // сохраним границы
     RefData *lold, *rold=0;
     if (! lp){ // пустой вектор
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (!rp) SYSTEMERROR("!lp && !rp");
         #endif
         lold = rp;
@@ -357,7 +357,7 @@ void RefUserTemplate::setLeftPart(RefChain *lp){
 **************************************************************/
 TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
     if (this->isOpen()){  //  {
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (! ref_dynamic_cast<RefTemplateBridgeVar>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
         #endif
         /// начало сопоставления переменной
@@ -383,7 +383,7 @@ RefData*  RefTemplateBridgeVar::next_template( ThisId var_id, Session *s){
     if (this->isOpen()){
         // указывает на открывающую скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
         #endif
         return this->bridge;
@@ -423,7 +423,7 @@ RefData*  RefTemplateBridgeVar::pred_template( ThisId var_id, Session *s){
     } else {
         // указывает на закр скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
         #endif
         if (s->message4nextpred == mFORCEBACK) return pred;
@@ -450,7 +450,7 @@ RefData*  RefTemplateBridgeTmpl::next_template( ThisId var_id, Session *s){
     if (this->isOpen()){  //  {
         return next;
     } else {              //  }
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (s->matchSessions.empty()) SYSTEMERROR("no sessions!");
         if (! s->getTemplReturnBackPoint()) {
             s->showStatus(); SYSTEMERROR("bridge back-dot not found!");
@@ -476,7 +476,7 @@ TResult  RefTemplateBridgeTmpl::back(Session* s, RefData *&l, RefData *&r){
 
 RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s){
     if (this->isOpen()){
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (! s->matchSessions.back()->templReturnBackPoint)
             SYSTEMERROR("bridge back-dot not found!");
         #endif
@@ -500,7 +500,7 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     RefTemplateBridgeVar
         *leftBridge  = new RefTemplateBridgeVar(),
         *rightBridge = new RefTemplateBridgeVar(leftBridge, leftBridge);
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (! (this->pred && this->next) ) {
         SYSTEMERROR("@RefUserVarNotInit around by $null !");
     }
@@ -516,7 +516,7 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     leftBridge->setName(this->getName());
     rightBridge->setName(this->getName());
     // нацеливаем на тело шаблона
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (! ref_dynamic_cast<RefTemplateBridgeTmpl >(utempl->getLeftPart()->first) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the first");
     if (! ref_dynamic_cast<RefTemplateBridgeTmpl >(utempl->getLeftPart()->second) ) SYSTEMERROR("Template body error: no RefTemplateBridgeTmpl in the second");
     #endif

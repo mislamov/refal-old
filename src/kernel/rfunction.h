@@ -45,7 +45,7 @@ public:
 class RefFunctionBase : public RefObject {
     unistring name;
 public:
-    CLASSCAST_INIT_RTTI;
+
     RefFunctionBase();
     virtual ~RefFunctionBase();
     virtual unistring getName() = 0;
@@ -55,7 +55,7 @@ public:
 class RefUserFunction : public RefFunctionBase {
     unistring name;
 public:
-    CLASSCAST_INIT_RTTI;
+
 
     std::list<RefSentence *> body; // предложения
 
@@ -92,6 +92,8 @@ class NeedInitilize {
 class RefUserVarNotInit : public RefVariable, public NeedInitilize {
         unistring type;
     public:
+        OBJECT_CAST(RefUserVarNotInit);
+
         bool initize(Session *); // замещается на пару
         void setType(unistring ttype){ type = ttype; };
         unistring getType(){ return type; };
@@ -213,7 +215,7 @@ public:
 class RefUserTemplate : public RefTemplateBase {
         RefChain *leftPart;
     public:
-        CLASSCAST_INIT_RTTI;
+
 
         inline unistring getName(){ return name; };
         RefUserTemplate(unistring name, RefChain *lp=0);
@@ -230,10 +232,12 @@ class RefTemplateBridgeTmpl;
 
 
 // мосты между лев.частью и внешним шаблоном. Со стороны левой части
-class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
+class RefTemplateBridgeVar : public RefBracketBase  {
         unistring name;
     public:
-    CLASSCAST_INIT_RTTI;
+        OBJECT_CAST(RefTemplateBridgeVar);
+
+virtual bool IsRefVarStacked(){return true; };
 
         RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
 
@@ -255,7 +259,7 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
 
         RefData* Copy(RefBracketBase *bb, RefData *rp=0){
             RefTemplateBridgeVar *b = (RefTemplateBridgeVar *)(bb);
-            #ifdef DEBUG
+            #ifdef TESTCODE
             b = ref_dynamic_cast<RefTemplateBridgeVar >(bb);
             if (!b) SYSTEMERROR("not RefTemplateBridgeVar !");
             #endif
@@ -279,9 +283,12 @@ class RefTemplateBridgeVar : public IRefVarStacked, public RefBracketBase  {
 };
 
 // мосты между лев.частью и внешним шаблоном. Со стороны внешнего шаблона
-class RefTemplateBridgeTmpl : public RefBracketBase, public IRefVarStacked {
+class RefTemplateBridgeTmpl : public RefBracketBase {
     public:
-    CLASSCAST_INIT_RTTI;
+        CLASS_CAST (RefTemplateBridgeTmpl);
+        OBJECT_CAST(RefTemplateBridgeTmpl);
+
+virtual bool IsRefVarStacked(){return true; };
 
         RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){ };
         RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ };

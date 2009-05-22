@@ -81,7 +81,7 @@ TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
     }
 
     // )
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (! ref_dynamic_cast<RefBracketBase >(r) ){
         SYSTEMERROR("may be unnormal situation: r = " << r->toString());
     }
@@ -234,7 +234,7 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
 
     //std::cout << "\ns->getStackOfDataSkob()->top() = " << s->getStackOfDataSkob()->top()->toString();
     //std::cout << "\n\n" << s->getStackOfDataSkob()->size() << "\n\n" << std::flush;
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (! s->getStackOfDataSkob()->size()) SYSTEMERROR("empty stack!");
     #endif
     if (r==s->getStackOfDataSkob()->top()) {
@@ -246,7 +246,7 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
 
 TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
     if (!l) return BACK;
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (! r)SYSTEMERROR("alarm!");
     #endif
     r = r->beginOfTerm();
@@ -307,6 +307,7 @@ unistring vectorToString(RefData *f, RefData *g){
                 RefData *ff = f;
                 a += f->toString();
                 f = f->next;
+                #ifdef TESTCODE
                 if (f && f->pred != ff){
                     #ifdef DEBUG
                     std::cout << a << std::flush;
@@ -315,9 +316,10 @@ unistring vectorToString(RefData *f, RefData *g){
                     #endif
                     SYSTEMERROR(" next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
                 };
+                #endif
         };
 
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (g && f!=g->next){
                 SYSTEMERROR("f!=g after vectorToString! f=" << f << " and g=" << g->toString());
         };
@@ -327,7 +329,7 @@ unistring vectorToString(RefData *f, RefData *g){
 }
 
 unistring vectorExplode(RefData *f, RefData *g){
-    #ifdef DEBUG
+    #ifdef TESTCODE
         vectorToString(f, g); // проверка ошибок
     #endif
 
@@ -352,7 +354,7 @@ template <class T>
 TResult RefSymbol<T>::init(Session* s) {
     RefData* aux = s->get_moved_to_next_current_term(this->myid);
 
-#ifdef DEBUG
+#ifdef TESTCODE
     if (!aux) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
 #endif
 

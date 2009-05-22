@@ -37,7 +37,7 @@ RefObject::RefObject(){ co::ocount++;
 RefObject::~RefObject(){ co::ocount--; };
 
 
-RefData::RefData(RefData *pr) : RefObject() { // СЃРѕР·РґР°РµРјСЃСЏ РїРѕСЃР»Рµ pr
+RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
     this->castInfo = 0;
     co::datacount++;
 
@@ -90,11 +90,11 @@ RefData* RefData::afterInsert(RefData *whom){
 RefData*  RefData::take_copy ( ThisId ThisId) {
     return this;
 }
-; // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РµСЃР»Рё РЅРѕРІС‹Р№ СЃРѕР·РґР°С‚РµР»СЊ
+; // возвращает копию если новый создатель
 RefData*  RefData::take_copy_force ( ThisId ThisId) {
     return this;
 }
-; // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ - РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ СЃРѕР·РґР°С‚РµР»СЏ
+; // возвращает копию - независимо от создателя
 void       RefData::drop   ( ThisId ThisId) {
     return;
 };
@@ -114,7 +114,7 @@ TResult RefData::back(Session* s, RefData *&, RefData *&) {
 }
 
 
-RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // РѕС‚РєСЂС‹РІР°СЋС‰Р°СЏ
+RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // открывающая
     other = 0;
     is_opened = true;
     is_system (false);
@@ -124,11 +124,11 @@ RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // РѕС‚РєСЂС‹РІР°СЋС
 
 
 /*
-RefData* RefBracketBase::Copy( RefData *rp){ // РѕС‚РєСЂС‹РІР°СЋС‰Р°СЏ
+RefData* RefBracketBase::Copy( RefData *rp){ // открывающая
     return new RefBracketBase(rp, getName());
 };
 */
-RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ // Р·Р°РєСЂС‹РІР°СЋС‰Р°СЏ
+RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ // закрывающая
         other = dr;
         is_opened = false;
         dr->other = this;
@@ -159,8 +159,8 @@ RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 
 
 
-// only for ObjectExpressions !!! Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ С†РµРїРѕС‡РєРё. Р’РјРµСЃС‚Рѕ СЃСЃС‹Р»РѕРє РЅР° РїРµСЂРµРјРµРЅРЅС‹Рµ - Р·РЅР°С‡РµРЅРёСЏ. РўР°Рє РєР°Рє РїСЂРёРјРµРЅСЏРµС‚СЃСЏ РґР»СЏ РїСЂР°РІС‹С… С‡Р°СЃС‚РµР№
-// С‚Рѕ РѕС‚РєСЂС‹С‚С‹С… РїРµСЂРµРјРµРЅРЅС‹С… Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ!
+// only for ObjectExpressions !!! Возвращает копию цепочки. Вместо ссылок на переменные - значения. Так как применяется для правых частей
+// то открытых переменных быть не должно!
 RefChain* RefChain::Copy(Session *s){
     //std::cout << "\n{ RefChain for copy: " << this->toString();
     RefData  *srcL = this->first;
@@ -169,7 +169,7 @@ RefChain* RefChain::Copy(Session *s){
     if (!srcL) {
         return new RefChain(0, 0);
     }
-    #ifdef DEBUG
+    #ifdef TESTCODE
         if (!srcL)
             SYSTEMERROR("trying to take a Copy of empty Chian: this->first=NULL");
         if (!srcR)
@@ -181,12 +181,12 @@ RefChain* RefChain::Copy(Session *s){
     RefData *a, *b, *dstHlp, *dst = newChain->first;
 
 
-    while(src != srcR->next_term(0,0)){ /// todo: РєРѕРіРґР° Р±СѓРґСѓС‚ РјРѕРЅС‚РёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ - РґРѕР±Р°РІРёС‚СЊ СЃРµСЃСЃРёСЋ
+    while(src != srcR->next_term(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
 
         RefLinkToVariable *tmplnk = ref_dynamic_cast<RefLinkToVariable >(src);
 
-        ///todo: РѕРїСЂРµРґРµР»РёС‚СЊСЃСЏ
-        //#ifdef DEBUG
+        ///todo: определиться
+        //#ifdef TESTCODE
         if (ref_dynamic_cast<RefVariable >(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
         if(!s && tmplnk) SYSTEMERROR("UNEXPECTED LINK to variable when Copy: " << tmplnk->toString());
         //#endif
@@ -197,9 +197,10 @@ RefChain* RefChain::Copy(Session *s){
             if (tmplnk->getPath() != EmptyUniString){
                     tbody = tbody->folowByWay(tmplnk->getPath());
             }
-            //#ifdef DEBUG ///todo: РєРѕРіРґР° РїСЂРµРїСЂРѕС†РµСЃСЃРѕСЂ Р±СѓРґРµС‚ РѕРїСЂРµРґРµР»СЏС‚СЊ РєРѕСЂСЏРІС‹Рµ СЃСЃС‹Р»РєРё РїСЂР°РІС‹С… С‡Р°СЃС‚РµР№ РїСЂРµРґР»РѕР¶РµРЅРёР№, СЂР°СЃРєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ
+            //#ifdef TESTCODE ///todo: когда препроцессор будет определять корявые ссылки правых частей предложений, раскомментировать
             if (!tbody ) {
-                s->showStatus(); SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
+                //s->showStatus();
+                SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
             }
             //#endif
             if (!(tbody->first)){
@@ -216,41 +217,41 @@ RefChain* RefChain::Copy(Session *s){
         }
 
         RefBracketBase *br = ref_dynamic_cast<RefBracketBase >(src);
-        if (br){ // РєРѕРїРёСЂСѓРµРј СЃРєРѕР±РєРё
-            #ifdef DEBUG
+        if (br){ // копируем скобки
+            #ifdef TESTCODE
             if (! br->isOpen()){
                 SYSTEMERROR("unexpected closed bracket : " << br->toString());
             }
             #endif
-            dst     = br->Copy(dst);      // СЌС‚Рѕ NULLDOT
+            dst     = br->Copy(dst);      // это NULLDOT
             //dstHlp  =  (br->Copy( ref_dynamic_cast<RefBracketBase *>(dst->pred), dst)); // other, rp    }
             dstHlp  =  (br->Copy( (RefBracketBase *)(dst->pred), dst)); // other, rp    }
 
 
-            #ifdef DEBUG
+            #ifdef TESTCODE
             if (!br->other) SYSTEMERROR("br->other == NULL  br=" << br->toString());
             if (!br->next ) SYSTEMERROR("br->next == NULL  br=" << br->toString());
             if (!br->next->next) SYSTEMERROR("br->next->next == NULL  br->next="  << br->next->toString());
             #endif
 
 
-            if (br->next->next != br->other) { // РЅРµ РїСѓСЃС‚С‹Рµ СЃРєРѕР±РєРё
+            if (br->next->next != br->other) { // не пустые скобки
                 hlpChain  = new RefChain(br->next->next, br->other->pred);
                 hlpChain2 = hlpChain->Copy(s);
-                // С‚СѓС‚ РЅРµР»СЊР·СЏ СѓРґР°Р»СЏС‚СЊ СЃРѕРґРµСЂР¶РёРјРѕРµ С†РµРїРѕС‡РєРё - С‚Р°Рє РєР°Рє С‚СѓС‚ Р¶Рµ РїРѕСЃС‚РѕСЏРЅРЅС‹Р№ С€Р°Р±Р»РѕРЅ С„СѓРЅРєС†РёРё!
+                // тут нельзя удалять содержимое цепочки - так как тут же постоянный шаблон функции!
                 delete hlpChain;
-                // С‚РµРїРµСЂСЊ РІ hlpChain2 РЅСѓР¶РЅР°СЏ РїРѕРґС†РµРїСЊ
+                // теперь в hlpChain2 нужная подцепь
                 a = hlpChain2->first;
                 b = hlpChain2->second;
                 delete hlpChain2;
 
                 if (!a){
-                    /// РїСѓСЃС‚Р°СЏ С†РµРїСЊ
-                    /// todo РїСЂРѕР°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ Рё РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅС‹ Р»Рё СЌС‚Рё 2 СЃС‚СЂРѕРєРё
+                    /// пустая цепь
+                    /// todo проанализировать и проверить нужны ли эти 2 строки
                     dst->next = dstHlp;
                     dstHlp->pred = dst;
                 } else {
-                    /// С†РµРїСЊ РЅРµ РїСѓСЃС‚Р°
+                    /// цепь не пуста
                     a->pred = dst;
                     dst->next = a;
                     b->next = dstHlp;
@@ -267,13 +268,13 @@ RefChain* RefChain::Copy(Session *s){
     }
     newChain->second = dst;
 
-    if( dst == newChain->first){ // РїСѓСЃС‚Р°СЏ
+    if( dst == newChain->first){ // пустая
         delete dst;
         newChain->first = newChain->second = 0;
     } else {
-        // СѓС…РѕРґРёРј РѕС‚ RefNULL РІ РЅР°С‡Р°Р»Рµ С†РµРїРѕС‡РєРё
+        // уходим от RefNULL в начале цепочки
         newChain->first = newChain->first->next;
-        // СѓРґР°Р»СЏРµРј RefNULL РІ РЅР°С‡Р°Р»Рµ С†РµРїРѕС‡РєРё
+        // удаляем RefNULL в начале цепочки
         delete newChain->first->pred;
         ///newChain->first->pred = 0;
     }
@@ -298,7 +299,7 @@ RefChain& RefChain::operator+=(RefData *ch){
                     return *this;
             }
 
-#ifdef DEBUG
+#ifdef TESTCODE
             if ((this->first->pred) || (ch->next) || (this->second->next) || (ch->pred)){
                 SYSTEMERROR("not nulled outboards of summed chain and [" << ch->toString() << "]");
             }
@@ -318,14 +319,14 @@ RefChain& RefChain::operator+=(RefData *ch){
 
 RefChain& RefChain::operator+=(RefChain &ch){
             //std::cout << "\n\n"; print_vector(this->first); std::cout << " + "; print_vector(ch.first);
-#ifdef DEBUG
+#ifdef TESTCODE
             if ((this->first && this->first->pred) || (ch.second && ch.second->next) || (this->second && this->second->next) || (ch.first && ch.first->pred)){
                 SYSTEMERROR("not nulled outboards of summed chains!");
                 //return 0;
             }
 #endif
-            if (! ch.first) return *this; // РїСѓСЃС‚РѕР№ РІРµРєС‚РѕСЂ РЅРµ РїСЂРёР±Р°РІР»СЏРµРј
-            if (! this->first){ // РїСЂРёР±Р°РІР»СЏРµРј Рє РїСѓСЃС‚РѕРјСѓ РІРµРєС‚РѕСЂСѓ.
+            if (! ch.first) return *this; // пустой вектор не прибавляем
+            if (! this->first){ // прибавляем к пустому вектору.
                 RefChain *cop = ch.Copy();
                 if (! this->second) {
                     this->first  = cop->first;
@@ -344,7 +345,7 @@ RefChain& RefChain::operator+=(RefChain &ch){
             this->second->next = b->first;
             if (b->first) b->first->pred  = this->second;
             this->second  =  b->second;
-            //b->first = b->second = 0; // РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
+            //b->first = b->second = 0; // на всякий случай
             delete b;
             //std::cout << "\n\n = "; print_vector(this->first);
 
@@ -374,16 +375,16 @@ RefChain* RefChain::aroundByDots(){
     RefData * r =  this->second;
     //std::cout << "\ninitializationTemplate::\t" << tpl->toString();
 
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (dynamic_cast<RefData_DOT *>(l) || dynamic_cast<RefData_DOT *>(r)){
         SYSTEMERROR(" situation : l or r already DataDOTs !");
     }
     #endif
-    // СЃРЅР°Р±Р¶Р°РµРј РѕР±Р»Р°СЃС‚СЊ Р·СЂРµРЅРёСЏ РґР°С‚Р°РґРѕС‚Р°РјРё
+    // снабжаем область зрения датадотами
     RefData_DOT *leftd = new RefData_DOT();
     RefData_DOT *rightd = new RefData_DOT(leftd, 0);
     if (l) {
-        #ifdef DEBUG
+        #ifdef TESTCODE
         if (!r) SYSTEMERROR("!r && l  !!! l="<<l<< " r="<<r);
         #endif
         l->predInsert(leftd);
@@ -405,20 +406,20 @@ RefChain* RefChain::aroundByDots(){
 
 RefChain* RefChain::dearoundByDots(){
 
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (! first || ! second || !dynamic_cast<RefData_DOT *>(first) || !dynamic_cast<RefData_DOT *>(second) || !(first->next) || !(second->pred)) {
         SYSTEMERROR("polezrenija ne emeet vida  DOT[ - ... - ]DOT libo narusheni ssilki next-pred!!!");
     }
     #endif
 
-    RefData *d1 = first, *d2=second; // СЃРѕС…СЂР°РЅСЏРµРј РґРѕС‚С‹ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
+    RefData *d1 = first, *d2=second; // сохраняем доты для удаления
 
-    if (first->next == second){ // РµСЃР»Рё РїСѓСЃС‚РѕРµ РїРѕР»Рµ Р·СЂРµРЅРёСЏ  dot[ <-> dot]
+    if (first->next == second){ // если пустое поле зрения  dot[ <-> dot]
         if (first  ->pred) first  ->pred->next = second ->next;
         if (second ->next) second ->next->pred = first  ->pred;
         second = first->pred;
         first = 0;
-    } else {    // РЅРµ РїСѓСЃС‚РѕРµ РїРѕР»Рµ Р·СЂРµРЅРёСЏ  dot[ - ... - ]dot
+    } else {    // не пустое поле зрения  dot[ - ... - ]dot
         /*if (first  ->next) */ first  ->next->pred = first  ->pred;
         /*if (second ->pred) */ second ->pred->next = second ->next;
         if (first  ->pred) first  ->pred->next = first  ->next;
@@ -427,7 +428,7 @@ RefChain* RefChain::dearoundByDots(){
         second = second->pred;
     }
 
-    d1  ->next = d1  ->pred = d2 ->next = d2 ->pred = 0; // РѕР±СЂСѓР±Р°РµРј СЃСЃС‹Р»РєРё РґРѕС‚ С‡С‚РѕР± Р±РµР·РѕРїР°СЃРЅРѕ РёС… СѓРґР°Р»РёС‚СЊ, РёРЅР°С‡Рµ СЃСЃС‹Р»РєРё РІС‹СЂРѕРІРЅСЏСЋС‚СЃСЏ
+    d1  ->next = d1  ->pred = d2 ->next = d2 ->pred = 0; // обрубаем ссылки дот чтоб безопасно их удалить, иначе ссылки выровняются
     delete d1;
     delete d2;
 
@@ -461,9 +462,9 @@ bool RefLinkToVariable::operator==(RefData&){
 TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
 
 
-    TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: РµСЃР»Рё РґРµР»Р°С‚СЊ СЃСЃС‹Р»РєРё С‡РµСЂРµР· РёРјРµРЅР° Р° РЅРµ С‡РµСЂРµР· Р°РґСЂРµСЃР° С‚Рѕ РґРѕР±Р°РІРёС‚СЊ Рё РІС‹Р·С‹РІР°С‚СЊ С‚СѓС‚ РјРµРЅРµРґР¶РµСЂ Р°РґСЂРµСЃРѕРІ РїРѕ РёРјРµРЅР°Рј
+    TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: если делать ссылки через имена а не через адреса то добавить и вызывать тут менеджер адресов по именам
     if (getPath() != EmptyUniString){
-        // РїРѕРёСЃРє РїРѕРґРїСѓС‚Рё
+        // поиск подпути
         pd = pd->folowByWay(getPath());
     }
 
@@ -480,16 +481,16 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
         *rdata = pd->second;
 
     if (!ldata ) {
-        return GO; // СЃСЃС‹Р»РєР° РЅР° РїСѓСЃС‚РѕР№ РѕС‚СЂРµР·РѕРє - РІРµСЂРЅР°
+        return GO; // ссылка на пустой отрезок - верна
     }
 
     move_to_next_term(currentPoint, 0/*myid()*/, s);
-    if (currentPoint/*->myid()*/==ldata/*->myid()*/){ // СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ СЃ СЃРѕР±РѕР№
+    if (currentPoint/*->myid()*/==ldata/*->myid()*/){ // сопоставление с собой
         currentPoint = rdata;
         return GO;
     }
 
-    while ((ldata!=rdata) /*&& !(ldata->dynamic_same(rdata))*/) { // РїСЂРѕРІРµСЂРєР° РЅР° РєРѕРЅРµС† СЃСЂР°РІРЅРёРІР°РµРјРѕРіРѕ
+    while ((ldata!=rdata) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
         if (!(*currentPoint == *ldata)) {
             //std::cout << "\n{ " << currentPoint->toString() << " != " << ldata->toString() << " }";
             //ldata->drop(myid);
@@ -500,7 +501,7 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
         move_to_next_term(ldata, 0/*myid()*/, s);
         currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
     };
-    if (!(*currentPoint == *ldata)){ // СЃСЂР°РІРЅРёРІР°РµРј РїРѕСЃР»РµРґРЅРёРµ СЌР»РµРјРµРЅС‚С‹
+    if (!(*currentPoint == *ldata)){ // сравниваем последние элементы
             //ldata->drop(myid);
             //rdata->drop(myid);
             //currentPoint->drop(myid);
@@ -530,13 +531,13 @@ unistring RefChain::toString(){ return vectorToString(first, second); };
 unistring RefChain::explode() { return vectorExplode(first, second); };
 
 
-/// todo: РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ РіСЂСЏР·РЅС‹Р№ РєРѕРґ
+/// todo: оптимизировать грязный код
 void delChain(RefData*a, RefData*b){
     //std::cout << "\ndelChain: " << vectorToString(a, b) << "\n";
 //return;
     if (!a && !b) return;
     //if (!a) return;
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if ((!a && b)) SYSTEMERROR("Delete Chain error: !a && b, b=" << b->toString());
     #endif
 
@@ -560,10 +561,10 @@ void delChain(RefData*a, RefData*b){
 
 
 RefData*  RefLChain::next_term( ThisId var_id, Session *s){
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
     #endif
-    if (s->currentLWay == this){ // СѓР¶Рµ РµСЃС‚СЊ С‚РѕС‡РєР° РІС…РѕРґР° - Р·РЅР°С‡РёС‚ РІС‹С…РѕРґРёРј
+    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
         s->currentLWay = 0;
         return next;
     }
@@ -572,10 +573,10 @@ RefData*  RefLChain::next_term( ThisId var_id, Session *s){
 };
 
 RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
     #endif
-    if (s->currentLWay == this){ // СѓР¶Рµ РµСЃС‚СЊ С‚РѕС‡РєР° РІС…РѕРґР° - Р·РЅР°С‡РёС‚ РІС‹С…РѕРґРёРј
+    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
         s->currentLWay = 0;
         return pred;
     }
@@ -596,7 +597,7 @@ RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(), RefDa
 
 
 RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (!point) SYSTEMERROR("point is null");
     //if (!(s->subChainFrom) && !(s->subChainTo)) SYSTEMERROR("subChain links not set!!!");
     #endif
@@ -608,7 +609,7 @@ RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
 };
 
 RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
-    #ifdef DEBUG
+    #ifdef TESTCODE
     if (!point) SYSTEMERROR("point is null");
     //if (!s->subChainFrom && !s->subChainTo) SYSTEMERROR("subChain links not set!!!");
     #endif
