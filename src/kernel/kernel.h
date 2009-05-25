@@ -37,7 +37,7 @@ namespace co {
 
 class RefVariable_e : public RefVariable {
 public:
-
+    CLASS_OBJECT_CAST(RefVariable_e);
 
 RefVariable_e(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
 
@@ -56,7 +56,7 @@ RefVariable_e(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 
 class RefVariable_E : public RefVariable {
 public:
-
+CLASS_OBJECT_CAST(RefVariable_E);
 
 RefVariable_E(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
 
@@ -75,7 +75,7 @@ RefVariable_E(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 
 class RefVariable_END : public RefVariable {
 public:
-
+    CLASS_OBJECT_CAST(RefVariable_END);
 
 RefVariable_END(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
 
@@ -94,7 +94,7 @@ RefVariable_END(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(na
 
 class RefVariable_s : public RefVariable {
 public:
-
+CLASS_OBJECT_CAST(RefVariable_s);
 
 RefVariable_s(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
     //void     dropall(Session *);
@@ -114,7 +114,7 @@ RefVariable_s(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 
 class RefVariable_t : public RefVariable {
 public:
-
+CLASS_OBJECT_CAST(RefVariable_t);
 
 RefVariable_t(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {
         return;
@@ -140,7 +140,7 @@ RefVariable_t(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
 **************************/
 class RefStructBracket : public RefBracketBase{  // IRefVarStacked нужно для back(l, r) - работает с getStackOfDataSkob
 public:
-
+CLASS_OBJECT_CAST(RefStructBracket);
     virtual bool IRefVarStacked(){ return true; };
 
     RefStructBracket(RefData* rp=0);
@@ -178,6 +178,7 @@ public:
 
 class RefExecBracket : public RefBracketBase {
 public:
+CLASS_OBJECT_CAST(RefExecBracket);
 
     RefExecBracket(RefData* rp=0);
     RefExecBracket(RefExecBracket *br, RefData* rp=0);

@@ -44,6 +44,9 @@ template <class T>
 class RefSymbolBase : public RefValuedData
 {
 public:
+//    RefDataTypesForCast object_cast();
+//    static RefDataTypesForCast getClassTypeCast();
+    CLASS_OBJECT_CAST(UseRTTI);
 
     ~RefSymbolBase();
     RefSymbolBase(RefData *rp = 0);
@@ -87,6 +90,8 @@ class RefSymbol : public RefSymbolBase<T>
 {
     T value;
 public:
+    RefDataTypesForCast object_cast();
+    static RefDataTypesForCast getClassTypeCast();
 
 
     RefSymbol(T i, RefData *rp = 0);
@@ -100,6 +105,13 @@ public:
 
     void forceback(Session *){};
 };
+template <class T> RefDataTypesForCast RefSymbol<T> ::getClassTypeCast(){
+    return castUseRTTI;
+};
+
+template <class T> RefDataTypesForCast RefSymbol<T> ::object_cast(){
+    return castUseRTTI;
+};
 
 
 
@@ -110,6 +122,9 @@ public:
 template <class T> class RefVarForSymbol : public RefVariable
 {
 public:
+    RefDataTypesForCast object_cast();
+    static RefDataTypesForCast getClassTypeCast();
+
     TResult init(Session* s, RefData *&l);
     TResult back(Session* s, RefData *&l, RefData *&r);
     RefVarForSymbol (unistring name, RefData *rp=0);
@@ -128,23 +143,30 @@ public:
         return "RefVarForSymbol<T>."+getName();
     }
 };
+/*
+template <class T> RefDataTypesForCast RefVarForSymbol<T> ::getClassTypeCast(){
+    return castUseRTTI;
+};
 
-#define typedefSymbolClass(P, T, N) \
-    typedef  P<T>    N;             \
-    RefDataTypesForCast P<T>::getClassTypeCast(){ return cast##N; };
+template <class T> RefDataTypesForCast RefVarForSymbol<T> ::object_cast(){
+    return castUseRTTI;
+};
+*/
+#define oCastSymbolClass(P, T, N) \
+        RefDataTypesForCast P<T>::object_cast(){return cast##N; }
 
 //*
 typedef  RefSymbolBase<infint>    RefIntegerBase;
 typedef  RefSymbolBase<infreal>   RefRealBase;
 typedef  RefSymbolBase<unichar>   RefAlphaBase;
-typedef  RefSymbolBase<unichar>   RefByteBase;
+typedef  RefSymbolBase<char>   RefByteBase;
 typedef  RefSymbolBase<unistring> RefWordBase;
 /*/
-typedefSymbolClass(RefSymbolBase,  infint,    RefIntegerBase);
-typedefSymbolClass(RefSymbolBase,  infreal,   RefRealBase);
-typedefSymbolClass(RefSymbolBase,  unichar,   RefAlphaBase);
-typedefSymbolClass(RefSymbolBase,  char,   RefByteBase);
-typedefSymbolClass(RefSymbolBase,  unistring, RefWordBase);
+oCastSymbolClass(RefSymbolBase,  infint,    RefIntegerBase);
+oCastSymbolClass(RefSymbolBase,  infreal,   RefRealBase);
+oCastSymbolClass(RefSymbolBase,  unichar,   RefAlphaBase);
+oCastSymbolClass(RefSymbolBase,  char,   RefByteBase);
+oCastSymbolClass(RefSymbolBase,  unistring, RefWordBase);
 //*/
 
 //*
@@ -153,11 +175,11 @@ typedef  RefSymbol<infreal>   RefReal;
 typedef  RefSymbol<unichar>   RefAlpha;
 typedef  RefSymbol<char>      RefByte;
 typedef  RefSymbol<unistring> RefWord;/*/
-typedefSymbolClass(RefSymbol,  infint,    RefInteger);
-typedefSymbolClass(RefSymbol,  infreal,   RefReal);
-typedefSymbolClass(RefSymbol,  unichar,   RefAlpha);
-typedefSymbolClass(RefSymbol,  char,      RefByte);
-typedefSymbolClass(RefSymbol,  unistring, RefWord);
+oCastSymbolClass(RefSymbol,  infint,    RefInteger);
+oCastSymbolClass(RefSymbol,  infreal,   RefReal);
+oCastSymbolClass(RefSymbol,  unichar,   RefAlpha);
+oCastSymbolClass(RefSymbol,  char,      RefByte);
+oCastSymbolClass(RefSymbol,  unistring, RefWord);
 //*/
 //*
 typedef RefVarForSymbol<RefIntegerBase>  RefVarInteger;
@@ -167,11 +189,11 @@ typedef RefVarForSymbol<RefAlphaBase>    RefVarAlpha;
 typedef RefVarForSymbol<RefByteBase>     RefVarByte;
 //*/
 /*
-typedefSymbolClass(RefVarForSymbol,  RefIntegerBase, RefVarInteger);
-typedefSymbolClass(RefVarForSymbol,  RefRealBase,    RefVarReal);
-typedefSymbolClass(RefVarForSymbol,  RefWordBase,    RefVarWord);
-typedefSymbolClass(RefVarForSymbol,  RefAlphaBase,   RefVarAlpha);
-typedefSymbolClass(RefVarForSymbol,  RefByteBase,    RefVarByte);
+oCastSymbolClass(RefVarForSymbol,  RefIntegerBase, RefVarInteger);
+oCastSymbolClass(RefVarForSymbol,  RefRealBase,    RefVarReal);
+oCastSymbolClass(RefVarForSymbol,  RefWordBase,    RefVarWord);
+oCastSymbolClass(RefVarForSymbol,  RefAlphaBase,   RefVarAlpha);
+oCastSymbolClass(RefVarForSymbol,  RefByteBase,    RefVarByte);
 //*/
 
 RefData     *createNewEmptyRefSymbolByTypeName(unistring);

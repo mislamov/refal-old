@@ -185,11 +185,11 @@ RefChain* RefChain::Copy(Session *s){
 
         RefLinkToVariable *tmplnk = ref_dynamic_cast<RefLinkToVariable >(src);
 
-        ///todo: определиться
-        //#ifdef TESTCODE
+
+        #ifdef TESTCODE
         if (ref_dynamic_cast<RefVariable >(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
         if(!s && tmplnk) SYSTEMERROR("UNEXPECTED LINK to variable when Copy: " << tmplnk->toString());
-        //#endif
+        #endif
 
 
         if (s && tmplnk){

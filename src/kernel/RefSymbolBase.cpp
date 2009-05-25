@@ -243,4 +243,24 @@ RefData* createNewEmptyRefSymbolByTypeName(unistring nametype){
     return 0;
 }
 
+//oCastSymbolClass(RefSymbolBase,  infint,    RefIntegerBase);
+//oCastSymbolClass(RefSymbolBase,  infreal,   RefRealBase);
+//oCastSymbolClass(RefSymbolBase,  unichar,   RefAlphaBase);
+//oCastSymbolClass(RefSymbolBase,  char,   RefByteBase);
+//oCastSymbolClass(RefSymbolBase,  unistring, RefWordBase);
+
+oCastSymbolClass(RefSymbol,  infint,    RefInteger);
+oCastSymbolClass(RefSymbol,  infreal,   RefReal);
+oCastSymbolClass(RefSymbol,  unichar,   RefAlpha);
+oCastSymbolClass(RefSymbol,  char,      RefByte);
+oCastSymbolClass(RefSymbol,  unistring, RefWord);
+
+oCastSymbolClass(RefVarForSymbol,  RefIntegerBase, RefVarInteger);
+oCastSymbolClass(RefVarForSymbol,  RefRealBase,    RefVarReal);
+oCastSymbolClass(RefVarForSymbol,  RefWordBase,    RefVarWord);
+oCastSymbolClass(RefVarForSymbol,  RefAlphaBase,   RefVarAlpha);
+oCastSymbolClass(RefVarForSymbol,  RefByteBase,    RefVarByte);
+
+
+
 #endif // REFSYMBOLBASE_HPP_INCLUDED

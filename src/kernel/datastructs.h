@@ -34,7 +34,7 @@ class ref_variant_vopr;
 //---------- $[  $] ----------
 class RefData_DOT : public RefBracketBase { // begin- Рё end-
 public:
-
+    CLASS_OBJECT_CAST(RefData_DOT);
     virtual bool IRefVarStacked(){ return true; };
 
     //~RefData_DOT(){ if(pred)next->pred=pred; if(pred)pred->next=next; };
@@ -191,7 +191,7 @@ public:
 //---------- {  } ----------
 class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
 public:
-
+CLASS_OBJECT_CAST(RefGroupBracket);
     virtual bool IRefVarStacked(){ return true; };
 
     virtual ~RefGroupBracket() {};
@@ -238,7 +238,7 @@ class ref_repeater : public RefBracketBase {
     infint min; /// todo: экономить. вообще используются толька в ]
     infint max;
 public:
-
+CLASS_OBJECT_CAST(ref_repeater);
 
     virtual ~ref_repeater() {};
 

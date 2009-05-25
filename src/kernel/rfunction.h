@@ -38,13 +38,14 @@ public:
 
     RefSentence();
     RefSentence(RefChain* l, RefChain *r);
-    virtual ~RefSentence(){};
+    virtual ~RefSentence() {};
 };
 
 
 class RefFunctionBase : public RefObject {
     unistring name;
 public:
+    CLASS_CAST(UseRTTI);
 
     RefFunctionBase();
     virtual ~RefFunctionBase();
@@ -56,74 +57,92 @@ class RefUserFunction : public RefFunctionBase {
     unistring name;
 public:
 
-
     std::list<RefSentence *> body; // предложения
 
     /// аргументы - концы чистого ОВ   // заменяет в объектном выражении участок(перед. в аргум)
     virtual bool execute(RefData *argfirst, RefData *argsecond, Session *s);
-    virtual unistring getName()  { return name; };
+    virtual unistring getName()  {
+        return name;
+    };
     virtual unistring toString();
-    RefUserFunction(unistring nname){ name = nname; }
-    virtual ~RefUserFunction(){};
+    RefUserFunction(unistring nname) {
+        name = nname;
+    }
+    virtual ~RefUserFunction() {};
 };
 
 
 class RefModuleBase : public RefalNameSpace, public RefObject {
-  public:
+public:
     virtual unistring getName()=0;
     //{ return name; };
     //virtual void setName(unistring s){ name = s; };
 
-    RefModuleBase(unistring nname = EmptyUniString) : RefalNameSpace(nname) {};
-    virtual ~RefModuleBase(){};
+RefModuleBase(unistring nname = EmptyUniString) : RefalNameSpace(nname) {};
+    virtual ~RefModuleBase() {};
     virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
-    virtual void initilizeAll(Session *){ LOG("not realized!"); };
+    virtual void initilizeAll(Session *) {
+        LOG("not realized!");
+    };
 };
 
 
 
 // интерфейс для элементов, которые необходимо проинициализировать после загрузки модуля
 class NeedInitilize {
-    public:
-        virtual bool initize(Session *) = 0;
+public:
+    virtual bool initize(Session *) = 0;
 };
 
 // класс - непроинициализированная переменная внешнего типа. После инициализации заменяется на пару {RefTemplateBridgeVar RefTemplateBridgeVar}
 class RefUserVarNotInit : public RefVariable, public NeedInitilize {
-        unistring type;
-    public:
-        bool initize(Session *); // замещается на пару
-        void setType(unistring ttype){ type = ttype; };
-        unistring getType(){ return type; };
+    unistring type;
+public:
+CLASS_OBJECT_CAST(RefUserVarNotInit);
+    bool initize(Session *); // замещается на пару
+    void setType(unistring ttype) {
+        type = ttype;
+    };
+    unistring getType() {
+        return type;
+    };
 
-        unistring toString() { return "@RefUserVarNotInit.toString()"; }
-        bool operator ==(RefData &rd) { return false; };
-        TResult init(Session*, RefData *&);
-        TResult back(Session*, RefData *&, RefData *&);
-        RefData*  Copy(RefData* where=0){ return 0; };
+    unistring toString() {
+        return "@RefUserVarNotInit.toString()";
+    }
+    bool operator ==(RefData &rd) {
+        return false;
+    };
+    TResult init(Session*, RefData *&);
+    TResult back(Session*, RefData *&, RefData *&);
+    RefData*  Copy(RefData* where=0) {
+        return 0;
+    };
 
-        ~RefUserVarNotInit(){
-        };
+    ~RefUserVarNotInit() {
+    };
 };
 
 
 class RefUserModule : public RefModuleBase {
 public:
     std::map<unistring, RefObject*> objects;
-    unistring getName(){ return name; };
+    unistring getName() {
+        return name;
+    };
 
-    RefUserModule() : RefModuleBase(){}
-    virtual ~RefUserModule(){};
+RefUserModule() : RefModuleBase() {}
+    virtual ~RefUserModule() {};
 
     unistring toString();
     RefObject* getObjectByName(unistring name, Session *s=0);
 
     std::stack<NeedInitilize *> initItems; // стек ссылок на неинициализированные данные (внешние переменные)
     void initilizeAll(Session *);
-/*  void print_inf(){
-        std::cout << this->toString();
-    }
-*/
+    /*  void print_inf(){
+            std::cout << this->toString();
+        }
+    */
 };
 
 
@@ -143,7 +162,7 @@ class RefBuildInFunction : public RefFunctionBase {
     bool execute(RefData*, RefData*, Session*);
 public:
     RefBuildInFunction(unistring name, RefDllModule *m);
-    virtual ~RefBuildInFunction(){};
+    virtual ~RefBuildInFunction() {};
     virtual bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0) = 0;
 
 };
@@ -151,35 +170,52 @@ public:
 
 class RefConditionBase : public RefData {
 public:
-    RefConditionBase(RefData *r=0) : RefData(r){};
-    ~RefConditionBase(){};
-    void forceback(Session *){ SYSTEMERROR("RefConditionBase.forceback NOT DEFINE"); };
+    BASE_CLASS_CAST(RefConditionBase);
+RefConditionBase(RefData *r=0) : RefData(r) {};
+    ~RefConditionBase() {};
+    void forceback(Session *) {
+        SYSTEMERROR("RefConditionBase.forceback NOT DEFINE");
+    };
 
 };
 
 class RefCondition : public RefConditionBase {
-        RefChain *rightPart;
-        RefChain *leftPart;
-        bool isReverse; // признак условия $NOT
-    public:
-        RefObject *own;  // RefCondition or RefFunctionBase
+    RefChain *rightPart;
+    RefChain *leftPart;
+    bool isReverse; // признак условия $NOT
+public:
+CLASS_OBJECT_CAST(RefCondition);
+    RefObject *own;  // RefCondition or RefFunctionBase
 
-        void setRightPart(RefChain *rp){ rightPart = rp; }
-        void setLeftPart(RefChain *lp) { leftPart  = lp; }
+    void setRightPart(RefChain *rp) {
+        rightPart = rp;
+    }
+    void setLeftPart(RefChain *lp) {
+        leftPart  = lp;
+    }
 
-        virtual bool operator ==(RefData &rd){return false; };
-        virtual TResult  init(Session* , RefData *&); //
-        virtual TResult  back(Session* , RefData *&, RefData *&); //
+    virtual bool operator ==(RefData &rd) {
+        return false;
+    };
+    virtual TResult  init(Session* , RefData *&); //
+    virtual TResult  back(Session* , RefData *&, RefData *&); //
 
-        RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r){ isReverse = withnot; rightPart = leftPart = 0; is_system (false); }
-        //RefCondition(RefObject *owner, RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system (false); own = owner; }
-        virtual ~RefCondition(){};
-        unistring toString(){
-            std::ostringstream s;
-            s << " @Condition/" << (isReverse?"$not$":"") <<  (ref_dynamic_cast<RefUserFunction>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
-            return s.str();
-        }
-        RefData* Copy(RefData *where=0){ SYSTEMERROR("unexpected try to Copy REF-condition"); return 0; };
+RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r) {
+        isReverse = withnot;
+        rightPart = leftPart = 0;
+        is_system (false);
+    }
+    //RefCondition(RefObject *owner, RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system (false); own = owner; }
+    virtual ~RefCondition() {};
+    unistring toString() {
+        std::ostringstream s;
+        s << " @Condition/" << (isReverse?"$not$":"") <<  (ref_dynamic_cast<RefUserFunction>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
+        return s.str();
+    }
+    RefData* Copy(RefData *where=0) {
+        SYSTEMERROR("unexpected try to Copy REF-condition");
+        return 0;
+    };
 
 
 
@@ -187,17 +223,29 @@ class RefCondition : public RefConditionBase {
 
 /* отсечение шаблона. его откат приводит к откату всего субмачинга */
 class RefMatchingCutter : public RefData {
-    public:
-        RefMatchingCutter(RefData *d=0) : RefData(d){ is_system( false ); }
-        virtual TResult  init(Session* , RefData *&){ return GO; }
-        virtual TResult  back(Session* , RefData *&, RefData *&){ return FORCEBACK; }
+public:
+    CLASS_OBJECT_CAST(RefMatchingCutter);
 
-        virtual unistring toString() { return " $CUTTER$ "; }
-        RefData* Copy(RefData *rp=0){
-            return new RefMatchingCutter(rp);
-        }
-        virtual bool operator ==(RefData &rd){ SYSTEMERROR("alarm"); };
-        virtual void    forceback(Session* s){};
+RefMatchingCutter(RefData *d=0) : RefData(d) {
+        is_system( false );
+    }
+    virtual TResult  init(Session* , RefData *&) {
+        return GO;
+    }
+    virtual TResult  back(Session* , RefData *&, RefData *&) {
+        return FORCEBACK;
+    }
+
+    virtual unistring toString() {
+        return " $CUTTER$ ";
+    }
+    RefData* Copy(RefData *rp=0) {
+        return new RefMatchingCutter(rp);
+    }
+    virtual bool operator ==(RefData &rd) {
+        SYSTEMERROR("alarm");
+    };
+    virtual void    forceback(Session* s) {};
 
 
 };
@@ -205,25 +253,32 @@ class RefMatchingCutter : public RefData {
 // абстрактный класс для всех сложных шаблонов
 class RefTemplateBase : public RefModuleBase {
 public:
+    BASE_CLASS_CAST(RefTemplateBase);
+
     RefTemplateBase (unistring name);
-    virtual ~RefTemplateBase (){};
+    virtual ~RefTemplateBase () {};
 };
 
 // пользовательский шаблон
 class RefUserTemplate : public RefTemplateBase {
-        RefChain *leftPart;
-    public:
-
-
-        inline unistring getName(){ return name; };
-        RefUserTemplate(unistring name, RefChain *lp=0);
-        inline RefChain* getLeftPart(){ return leftPart;};
-        void setLeftPart(RefChain *);
-        RefObject* getObjectByName(unistring name, Session *s){ SYSTEMERROR("--== ZAGLUSHKA ==--"); };
-        unistring toString(){
-            return (getName()+"$RefUserTemplate_::=_"+(leftPart?leftPart->toString():"$void"));
-        }
-        virtual ~RefUserTemplate(){};
+    RefChain *leftPart;
+public:
+CLASS_OBJECT_CAST(RefUserTemplate);
+    inline unistring getName() {
+        return name;
+    };
+    RefUserTemplate(unistring name, RefChain *lp=0);
+    inline RefChain* getLeftPart() {
+        return leftPart;
+    };
+    void setLeftPart(RefChain *);
+    RefObject* getObjectByName(unistring name, Session *s) {
+        SYSTEMERROR("--== ZAGLUSHKA ==--");
+    };
+    unistring toString() {
+        return (getName()+"$RefUserTemplate_::=_"+(leftPart?leftPart->toString():"$void"));
+    }
+    virtual ~RefUserTemplate() {};
 };
 
 class RefTemplateBridgeTmpl;
@@ -231,78 +286,100 @@ class RefTemplateBridgeTmpl;
 
 // мосты между лев.частью и внешним шаблоном. Со стороны левой части
 class RefTemplateBridgeVar : public RefBracketBase  {
-        unistring name;
-    public:
+    unistring name;
+public:
+    CLASS_OBJECT_CAST(RefTemplateBridgeVar);
 
-    virtual bool IRefVarStacked(){ return true; };
+    virtual bool IRefVarStacked() {
+        return true;
+    };
 
-        RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
+    RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
 
-        RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d){ bridge=0; name="NOT SET";};
-        RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ bridge=0;  name="NOT SET";};
-        unistring toString() { if (isOpen()) return ("[{]." + getName()); else return  name+".[}]"; };
+RefTemplateBridgeVar (RefData *d=0) : RefBracketBase(d) {
+        bridge=0;
+        name="NOT SET";
+    };
+RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase(nd, rp) {
+        bridge=0;
+        name="NOT SET";
+    };
+    unistring toString() {
+        if (isOpen()) return ("[{]." + getName());
+        else return  name+".[}]";
+    };
 
-        TResult init(Session* s, RefData *&currentPoint);
-        TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
-        RefData*  next_template( ThisId var_id, Session *s);
-        RefData*  pred_template( ThisId var_id, Session *s);
+    TResult init(Session* s, RefData *&currentPoint);
+    TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+    RefData*  next_template( ThisId var_id, Session *s);
+    RefData*  pred_template( ThisId var_id, Session *s);
 
-        unistring getName(){
-            if (isOpen())
-                return ((RefTemplateBridgeVar*) other)->name;
-            return name;
-        }
-        void setName(unistring nname){ name = nname; }
+    unistring getName() {
+        if (isOpen())
+            return ((RefTemplateBridgeVar*) other)->name;
+        return name;
+    }
+    void setName(unistring nname) {
+        name = nname;
+    }
 
-        RefData* Copy(RefBracketBase *bb, RefData *rp=0){
-            RefTemplateBridgeVar *b = (RefTemplateBridgeVar *)(bb);
-            #ifdef TESTCODE
-            b = ref_dynamic_cast<RefTemplateBridgeVar >(bb);
-            if (!b) SYSTEMERROR("not RefTemplateBridgeVar !");
-            #endif
-            RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(b, rp);
-            cp->setName(this->getName());
-            RUNTIMEERROR("RefTemplateBridgeVar::Copy", "zaglushka!");
-            /// ??? нужно ли копировать тело сопоставления с таблицей переменных
-            return cp;
-        };
+    RefData* Copy(RefBracketBase *bb, RefData *rp=0) {
+        RefTemplateBridgeVar *b = (RefTemplateBridgeVar *)(bb);
+        #ifdef TESTCODE
+        b = ref_dynamic_cast<RefTemplateBridgeVar >(bb);
+        if (!b) SYSTEMERROR("not RefTemplateBridgeVar !");
+        #endif
+        RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(b, rp);
+        cp->setName(this->getName());
+        RUNTIMEERROR("RefTemplateBridgeVar::Copy", "zaglushka!");
+        /// ??? нужно ли копировать тело сопоставления с таблицей переменных
+        return cp;
+    };
 
-        RefData* Copy(RefData *rp=0){
-            RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(rp);
-            cp->setName(this->getName());
-            RUNTIMEERROR("RefTemplateBridgeVar::Copy", "zaglushka!");
-            /// ??? нужно ли копировать тело сопоставления с таблицей переменных
-            return cp;
-        };
+    RefData* Copy(RefData *rp=0) {
+        RefTemplateBridgeVar *cp = new RefTemplateBridgeVar(rp);
+        cp->setName(this->getName());
+        RUNTIMEERROR("RefTemplateBridgeVar::Copy", "zaglushka!");
+        /// ??? нужно ли копировать тело сопоставления с таблицей переменных
+        return cp;
+    };
 
-        virtual void    forceback(Session* s){};
+    virtual void    forceback(Session* s) {};
 
 };
 
 // мосты между лев.частью и внешним шаблоном. Со стороны внешнего шаблона
-class RefTemplateBridgeTmpl : public RefBracketBase{
-    public:
+class RefTemplateBridgeTmpl : public RefBracketBase {
+public:
+    CLASS_OBJECT_CAST(RefTemplateBridgeTmpl);
 
-    virtual bool IRefVarStacked(){ return true; };
+    virtual bool IRefVarStacked() {
+        return true;
+    };
 
-        RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){ };
-        RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ };
-        unistring toString() { if (isOpen()) return "{[}"; else return "{]}"; };
+RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d) { };
+RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp) { };
+    unistring toString() {
+        if (isOpen()) return "{[}";
+        else return "{]}";
+    };
 
-        TResult init(Session* s, RefData *&currentPoint);
-        TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
-        RefData*  next_template( ThisId var_id, Session *s);
-        RefData*  pred_template( ThisId var_id, Session *s);
+    TResult init(Session* s, RefData *&currentPoint);
+    TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+    RefData*  next_template( ThisId var_id, Session *s);
+    RefData*  pred_template( ThisId var_id, Session *s);
 
-        RefData* Copy(RefBracketBase *b, RefData *rp=0){
-            SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");
-        };
-        RefData* Copy(RefData *rp=0){
-            SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");
-        };
+    RefData* Copy(RefBracketBase *b, RefData *rp=0) {
+        SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");
+    };
+    RefData* Copy(RefData *rp=0) {
+        SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");
+    };
 
-        unistring getName(){ SYSTEMERROR("unexpected call"); };
-        virtual void    forceback(Session* s){};
+    unistring getName() {
+        SYSTEMERROR("unexpected call");
+    };
+    virtual void    forceback(Session* s) {};
 
 };
 

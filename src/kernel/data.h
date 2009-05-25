@@ -75,7 +75,7 @@ enum RefDataTypesForCast {
     castref_repeater     =    B32(00000000, 00000000, 00000000, 01000000) | castRefBracketBase,
 
 
-    castRefVariableBase  =  B32(00000000, 00000000, 00000100, 00000000), // базовая открытая переменная
+    castRefVariableBase  =  B32(00000000, 00000100, 00000000, 00000000), // базовая открытая переменная
     castRefVariable      = castRefVariableBase, // переменная
     castRefVariable_E    =  B32(00000000, 00000000, 00000000, 00000001) | castRefVariable,
     castRefVariable_e    =  B32(00000000, 00000000, 00000000, 00000010) | castRefVariable,
@@ -90,8 +90,16 @@ enum RefDataTypesForCast {
     castRefVarWord       =  B32(00000000, 00000000, 00000100, 00000000) | castRefVariable,
 
 
-    castRefLinkToVariable       =   B32(00000000, 00000000, 00001000, 00000000), // закрытая переменная
-    castRefLinkToPartOfVariable =   B32(00000000, 00000000, 00000000, 00000001) | castRefLinkToVariable
+    castRefLinkToVariable       =   B32(00000000, 00001000, 00000000, 00000000), // закрытая переменная
+    castRefLinkToPartOfVariable =   B32(00000000, 00000000, 00000000, 00000001) | castRefLinkToVariable,
+
+    castRefTemplateBase  =  B32(00000000, 00010000, 00000000, 00000000),
+    castRefUserTemplate  =  B32(00000000, 00000000, 00000000, 00000001) | castRefTemplateBase,
+
+    castRefMatchingCutter=  B32(00000000, 00100000, 00000000, 00000000),
+
+    castRefConditionBase =  B32(00000000, 01000000, 00000000, 00000000),
+    castRefCondition     =  B32(00000000, 00000000, 00000000, 00000001) | castRefConditionBase
     //сastRef            = B32(00000000, 00000000, 00000000, 00000000)  ////
 
 
@@ -102,8 +110,8 @@ enum RefDataTypesForCast {
 
 
 #define BASE_CLASS_CAST(ClassName) \
-inline static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; }; \
-virtual RefDataTypesForCast object_cast()=0
+inline static  RefDataTypesForCast getClassTypeCast(){ return  cast##ClassName; }; \
+virtual RefDataTypesForCast object_cast()=0;
 
 #define CLASS_CAST(ClassName) \
 inline  static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; };
@@ -111,16 +119,16 @@ inline  static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; 
 #define OBJECT_CAST(ClassName) \
 virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
 
+#define CLASS_OBJECT_CAST(ClassName) \
+inline  static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; }; \
+virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
+
 
 // Родитель всего в Рефале
 class RefObject {
 public:
-    inline static  RefDataTypesForCast getClassTypeCast() {
-        return castUseRTTI;
-    };
-    virtual RefDataTypesForCast object_cast() {
-        return castUseRTTI;
-    }
+    OBJECT_CAST(UseRTTI);
+
     //static long ocount;
     RefObject();
     virtual ~RefObject();
@@ -129,9 +137,6 @@ public:
         return toString();
     }
 };
-
-
-#define regCast(CastType) this->typeCast = static_cast<RefDataTypesForCast>(this->typeCast | cast##CastType);
 
 
 // Абстрактный класс - предок всех термов языка
@@ -253,6 +258,7 @@ public:
 // Абстрактный класс - предок всех открытых переменных языка (простых и скобочных)
 class RefVariableBase :  public RefData {
 public:
+    BASE_CLASS_CAST(RefVariableBase);
 
     virtual bool IRefVarStacked(){ return true; };
     virtual unistring getName() = 0;
@@ -261,6 +267,7 @@ public:
 
 class RefVariable : public RefVariableBase, public RefalNameSpace { // Простая переменная
 public:
+    BASE_CLASS_CAST(RefVariable);
 
     ~RefVariable();
 
@@ -280,6 +287,7 @@ class RefLinkToVariable : public RefData, public RefalNameSpace {
     // в name хранится адрес ссылочной переменной в виде varname:varname:varname
     /// todo: сделать ссылаемость на конкретную переменную + карту сопоставлений сделать по адресу ссылки а не по имени
 public:
+    CLASS_OBJECT_CAST(RefLinkToVariable);
 
     unistring toString();
     bool operator==(RefData&);
@@ -322,6 +330,8 @@ protected:
     bool        is_opened; // true = begin- ; false = end-
 
 public:
+    BASE_CLASS_CAST(RefBracketBase);
+
     RefBracketBase*  other;
 
     virtual RefData *Clone() {
@@ -402,12 +412,13 @@ RefLChain(RefData *rp = 0):RefData(rp) {
 };
 
 
+RefDataTypesForCast classCast;
+RefDataTypesForCast objectCast;
+
 template <class T>
 inline T* ref_dynamic_cast(RefObject *d) {
     if (!d)
         return 0;
-
-    return dynamic_cast<T*>(d);
 
     #ifdef TESTCODE
     T
@@ -418,17 +429,37 @@ inline T* ref_dynamic_cast(RefObject *d) {
         testres2 = dynamic_cast<T*>(d);
     } else {
         if ((d->object_cast() | T::getClassTypeCast()) == d->object_cast()) {
-            testres2 = reinterpret_cast<T*>(d);
+            testres2 = (T*)(d);
         }
     }
 
     if ((testres?1:0) != (testres2?1:0)) {
-        SYSTEMERROR("\nCast fail for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast())<<">( " << d->toString() << " )["<<std::binary(d->object_cast())<<"]");
+        SYSTEMERROR(
+            "\nCast fail for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast())<<">( " << d->toString() << " )["<<std::binary(d->object_cast())<<"]"
+            << "\n  dynamic   : " << (dynamic_cast<T*>(d)?"ok":"fail")
+            << "\n  refal_cast: " << (testres2?"ok":"fail") << "\n"
+        );
     }
     return testres2;
     #endif
 
-    return dynamic_cast<T*>(d);
+    classCast  = T::getClassTypeCast();
+    objectCast = d->object_cast();
+
+//    if ((classCast & castUseRTTI)) {
+//        return dynamic_cast<T*>(d);
+//    } else {
+//        if ((objectCast | classCast) == objectCast) {
+//            return (T*)(d);
+//        }
+//    }
+//    return 0;
+
+    if ((classCast & castUseRTTI)) {
+        return dynamic_cast<T*>(d);
+    }
+
+    return (T*)((unsigned)d * (unsigned)((objectCast|classCast)==objectCast));
 };
 
 
