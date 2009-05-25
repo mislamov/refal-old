@@ -139,6 +139,8 @@ public:
 };
 
 
+
+
 // Абстрактный класс - предок всех термов языка
 class RefData : public RefObject {
 public:
@@ -168,10 +170,12 @@ public:
     virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
     virtual RefData*  pred_term( ThisId var_id, Session *s);
     virtual RefData*  next_template( ThisId var_id, Session *s) {
-        return next_term(var_id, s);
+        //return next_term(var_id, s);
+        return next;
     }; // следующий шаблон при сопоставлении
     virtual RefData*  pred_template( ThisId var_id, Session *s) {
-        return pred_term(var_id, s);
+        //return pred_term(var_id, s);
+        return pred;
     };
 
     virtual RefData*  beginOfTerm() {
