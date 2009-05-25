@@ -110,17 +110,17 @@ enum RefDataTypesForCast {
 
 
 #define BASE_CLASS_CAST(ClassName) \
-inline static  RefDataTypesForCast getClassTypeCast(){ return  cast##ClassName; }; \
+const static  RefDataTypesForCast getClassTypeCast = cast##ClassName; \
 virtual RefDataTypesForCast object_cast()=0;
 
 #define CLASS_CAST(ClassName) \
-inline  static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; };
+const static  RefDataTypesForCast getClassTypeCast = cast##ClassName; \
 
 #define OBJECT_CAST(ClassName) \
 virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
 
 #define CLASS_OBJECT_CAST(ClassName) \
-inline  static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; }; \
+const static  RefDataTypesForCast getClassTypeCast = cast##ClassName; \
 virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
 
 
@@ -412,9 +412,6 @@ RefLChain(RefData *rp = 0):RefData(rp) {
 };
 
 
-RefDataTypesForCast classCast;
-RefDataTypesForCast objectCast;
-
 template <class T>
 inline T* ref_dynamic_cast(RefObject *d) {
     if (!d)
@@ -425,17 +422,17 @@ inline T* ref_dynamic_cast(RefObject *d) {
         *testres = dynamic_cast<T*>(d),
         *testres2=0;
 
-    if ((T::getClassTypeCast() & castUseRTTI)) {
+    if ((T::getClassTypeCast & castUseRTTI)) {
         testres2 = dynamic_cast<T*>(d);
     } else {
-        if ((d->object_cast() | T::getClassTypeCast()) == d->object_cast()) {
+        if ((d->object_cast() | T::getClassTypeCast) == d->object_cast()) {
             testres2 = (T*)(d);
         }
     }
 
     if ((testres?1:0) != (testres2?1:0)) {
         SYSTEMERROR(
-            "\nCast fail for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast())<<">( " << d->toString() << " )["<<std::binary(d->object_cast())<<"]"
+            "\nCast fail for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast)<<">( " << d->toString() << " )["<<std::binary(d->object_cast())<<"]"
             << "\n  dynamic   : " << (dynamic_cast<T*>(d)?"ok":"fail")
             << "\n  refal_cast: " << (testres2?"ok":"fail") << "\n"
         );
@@ -443,23 +440,21 @@ inline T* ref_dynamic_cast(RefObject *d) {
     return testres2;
     #endif
 
-    classCast  = T::getClassTypeCast();
-    objectCast = d->object_cast();
+    #define POINTER_INT_TYPE unsigned long
 
-//    if ((classCast & castUseRTTI)) {
-//        return dynamic_cast<T*>(d);
-//    } else {
-//        if ((objectCast | classCast) == objectCast) {
+    RefDataTypesForCast objectCast = d->object_cast();
+
+    if ((T::getClassTypeCast & castUseRTTI)) {
+        return dynamic_cast<T*>(d);
+    }
+//     else {
+//        if ((objectCast | T::getClassTypeCast) == objectCast) {
 //            return (T*)(d);
 //        }
 //    }
+
+    return (T*)((RefObject *) ((POINTER_INT_TYPE)(d) * (POINTER_INT_TYPE)((objectCast|T::getClassTypeCast) == objectCast)));
 //    return 0;
-
-    if ((classCast & castUseRTTI)) {
-        return dynamic_cast<T*>(d);
-    }
-
-    return (T*)((unsigned)d * (unsigned)((objectCast|classCast)==objectCast));
 };
 
 

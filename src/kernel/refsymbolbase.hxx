@@ -91,7 +91,7 @@ class RefSymbol : public RefSymbolBase<T>
     T value;
 public:
     RefDataTypesForCast object_cast();
-    static RefDataTypesForCast getClassTypeCast();
+    const static RefDataTypesForCast getClassTypeCast;
 
 
     RefSymbol(T i, RefData *rp = 0);
@@ -105,9 +105,10 @@ public:
 
     void forceback(Session *){};
 };
-template <class T> RefDataTypesForCast RefSymbol<T> ::getClassTypeCast(){
-    return castUseRTTI;
-};
+//template <class T> RefDataTypesForCast RefSymbol<T> ::getClassTypeCast(){
+//    return castUseRTTI;
+//};
+template <class T> const RefDataTypesForCast RefSymbol<T> ::getClassTypeCast = castUseRTTI;
 
 template <class T> RefDataTypesForCast RefSymbol<T> ::object_cast(){
     return castUseRTTI;
@@ -123,7 +124,7 @@ template <class T> class RefVarForSymbol : public RefVariable
 {
 public:
     RefDataTypesForCast object_cast();
-    static RefDataTypesForCast getClassTypeCast();
+    const static RefDataTypesForCast getClassTypeCast;
 
     TResult init(Session* s, RefData *&l);
     TResult back(Session* s, RefData *&l, RefData *&r);
