@@ -118,8 +118,8 @@ TVarBody* Session::getVarBody( unistring vname ) {
 
         ++som;
     }
-    #ifdef DEBUG
-    SYSTEMERROR("variable not found in maps: " << vname);
+    #ifdef TESTCODE
+    SYSTEMERROR("varieble not found in maps: " << vname);
     #endif
     return 0;
 };
@@ -267,7 +267,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     RefData  *&activeTemplate = s->matchSessions.back()->activeTemplate, *tmpA, *tmpB;
     RefData   *l=0, *r=0;           // указатели на конечные точки в данных
     RefLChain *lWay=0, *rWay=0     // указатели на ссылочные пары для l и r
-                             ,*tmpAway, *tmpBway;
+                ,*tmpAway, *tmpBway;
 
 
     activeTemplate = isdemaching?tmplate->second:tmplate->first; // было: tmplate->second->pred - это потому что последний датадот. сделал tmplate->second чтоб откат обработал скобки
@@ -278,40 +278,40 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     while (activeTemplate) {
         /* */
         #ifdef DEBUG
-
-        std::cout << "\n" << s->step++ << ":>>   ";
+        {
+            std::cout << "\n" << s->step++ << ":>>   ";
         for (int i=1; i<s->fcalls; i++) {
-            for (int j=1; j<i; j++) {
+        for (int j=1; j<i; j++) {
                 std::cout << "\t";
             }
         }
         switch (result_sost) {
-        case GO :
-            std::cout << "GO   ";
-            break;
-        case BACK :
-            std::cout << "BACK ";
-            break;
-        case ERROR :
-            std::cout << "ERROR";
-            break;
-        default:
-            std::cout << "???? ";
-        }
-        std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
-        //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
-        std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
-        std::cout << "\t";
-        print_vector(r->next);
+    case GO :
+        std::cout << "GO   ";
+        break;
+    case BACK :
+        std::cout << "BACK ";
+        break;
+    case ERROR :
+        std::cout << "ERROR";
+        break;
+    default:
+        std::cout << "???? ";
+    }
+    std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
+    //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
+    std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t" /*<< getCurrentSopostStack().size()*/ << std::flush;
+    std::cout << "\t";
+    print_vector(r->next);
+    }
+    #endif
 
-        #endif
-
-        s->message4nextpred = mERROR;
-        //*/
-        pre_sost = result_sost;
+    s->message4nextpred = mERROR;
+    //*/
+    pre_sost = result_sost;
 
 
-        if (pre_sost==GO) {
+    if (pre_sost==GO) {
             l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
             lWay = rWay;
             result_sost = activeTemplate->init(s, r); /// ШАГ ВПЕРЕД
@@ -344,7 +344,6 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             do {
                 activeTemplate = activeTemplate->next_template(0, s);
             } while (activeTemplate && activeTemplate->is_system());
-
         } else
             if (result_sost == BACK) {
                 /// ... -> BACK
@@ -475,7 +474,7 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src) { // готовит праву
 
 // сохраняет состояние переменной во время сопоставления
 void Session::SaveTemplItem(RefData* v, RefData* l, RefLChain* lWay, RefData* r, RefLChain* rWay) {
-    if (v->IsRefVarStacked()) return; /// тест. попытка сохранять не все
+    if (! v->IRefVarStacked()) return; /// тест. попытка сохранять не все
     //std::cout << "\n+++::\t" << v->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
 
     // если входит открывающая скобка, значит вся пара
@@ -577,7 +576,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefLChain* lWay, RefData* r,
 
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, RefData* &r, RefLChain* &rWay) {
 //void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
-    if (! owner->IsRefVarStacked() ) return; /// тест. попытка сохранять не все
+    if (! owner->IRefVarStacked() ) return; /// тест. попытка сохранять не все
     //std::cout << "\n---::\t" << owner->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
 
     RefTemplateBridgeVar *bridge = ref_dynamic_cast<RefTemplateBridgeVar >(owner);

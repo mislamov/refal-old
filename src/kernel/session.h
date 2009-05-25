@@ -156,8 +156,7 @@ class Session : public RefObject {
     std::stack<TVarBody*> *getCurrentSopostStack(){
         #ifdef TESTCODE
         if (matchSessions.empty()){
-            showStatus();
-            SYSTEMERROR("matchSessions is EMPTY !");
+            showStatus(); SYSTEMERROR("matchSessions is EMPTY !");
         }
         #endif
         return &(matchSessions.back()->StackOfSopost);

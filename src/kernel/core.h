@@ -20,8 +20,8 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.0.7 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
+#define TESTCODE
 //#define DEBUG
-//#define TESTCODE
 
 //#define UNICODE
 /****************************************************************************************
@@ -33,33 +33,33 @@
 *****************************************************************************************/
 
 #ifdef DEBUG
-#define SYSTEMERROR(msg) { \
-    std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
-    std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
-    exit(-1); \
-};
+    #define SYSTEMERROR(msg) { \
+        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+        std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+        exit(-1); \
+        };
 
-#define LOG(msg) { \
-    std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
-};
+    #define LOG(msg) { \
+        std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
+        };
 #else
-#define SYSTEMERROR(msg) { \
-    std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
-    std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
-    exit(-1); \
-};
-/*#define SYSTEMERROR(msg) { \
-std::cout << "\n\n######## SYSTEM ERROR ########:: " << msg << "\n\n" << std::flush; \
-exit(-1); \
-};*/
+    #define SYSTEMERROR(msg) { \
+        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+        std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+        exit(-1); \
+        };
+    /*#define SYSTEMERROR(msg) { \
+        std::cout << "\n\n######## SYSTEM ERROR ########:: " << msg << "\n\n" << std::flush; \
+        exit(-1); \
+        };*/
 
-#define LOG(msg) {}
+    #define LOG(msg) {}
 #endif
 
 #define RUNTIMEERROR(fname, msg) { \
     std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
     exit(-1); \
-};
+    };
 
 #include <stdlib.h>
 #include <string>
@@ -108,13 +108,13 @@ typedef enum {
 
 /* 8-bit conversion function */
 #define B8__(x) ((x&0x0000000FLU)?1:0)      \
-+((x&0x000000F0LU)?2:0)      \
-+((x&0x00000F00LU)?4:0)      \
-+((x&0x0000F000LU)?8:0)      \
-+((x&0x000F0000LU)?16:0)     \
-+((x&0x00F00000LU)?32:0)     \
-+((x&0x0F000000LU)?64:0)     \
-+((x&0xF0000000LU)?128:0)
+               +((x&0x000000F0LU)?2:0)      \
+               +((x&0x00000F00LU)?4:0)      \
+               +((x&0x0000F000LU)?8:0)      \
+               +((x&0x000F0000LU)?16:0)     \
+               +((x&0x00F00000LU)?32:0)     \
+               +((x&0x0F000000LU)?64:0)     \
+               +((x&0xF0000000LU)?128:0)
 
 /* *** user macros *** /
 
@@ -127,9 +127,9 @@ typedef enum {
 
 /* for upto 32-bit binary constants, MSB first */
 #define B32(dmsb,db2,db3,dlsb) (((unsigned long)B8(dmsb)<<24)      \
-                                + ((unsigned long)B8(db2)<<16) \
-                                + ((unsigned long)B8(db3)<<8)    \
-                                + B8(dlsb))
+                                  + ((unsigned long)B8(db2)<<16) \
+                                  + ((unsigned long)B8(db3)<<8)    \
+                                  + B8(dlsb))
 
 /* Sample usage:
       B8(01010101) = 85

@@ -92,8 +92,6 @@ class NeedInitilize {
 class RefUserVarNotInit : public RefVariable, public NeedInitilize {
         unistring type;
     public:
-        OBJECT_CAST(RefUserVarNotInit);
-
         bool initize(Session *); // замещается на пару
         void setType(unistring ttype){ type = ttype; };
         unistring getType(){ return type; };
@@ -235,9 +233,8 @@ class RefTemplateBridgeTmpl;
 class RefTemplateBridgeVar : public RefBracketBase  {
         unistring name;
     public:
-        OBJECT_CAST(RefTemplateBridgeVar);
 
-virtual bool IsRefVarStacked(){return true; };
+    virtual bool IRefVarStacked(){ return true; };
 
         RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
 
@@ -283,12 +280,10 @@ virtual bool IsRefVarStacked(){return true; };
 };
 
 // мосты между лев.частью и внешним шаблоном. Со стороны внешнего шаблона
-class RefTemplateBridgeTmpl : public RefBracketBase {
+class RefTemplateBridgeTmpl : public RefBracketBase{
     public:
-        CLASS_CAST (RefTemplateBridgeTmpl);
-        OBJECT_CAST(RefTemplateBridgeTmpl);
 
-virtual bool IsRefVarStacked(){return true; };
+    virtual bool IRefVarStacked(){ return true; };
 
         RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d){ };
         RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp){ };

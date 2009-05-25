@@ -288,12 +288,9 @@ bool	RefVariable_END::operator==(RefData &rd) {
 
 unistring vectorToString(RefData *f, RefData *g){
     unistring a = EmptyUniString;
-    #ifdef DEBUG
-     if (!g && f){
-    }
-    #endif
+
     if (!f) {
-        #ifdef DEBUG
+        #ifdef TESTCODE
         a+= "$null, ";
         if (g){
             a+=" after "+g->toString();

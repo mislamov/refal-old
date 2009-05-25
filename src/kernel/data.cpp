@@ -37,7 +37,7 @@ RefObject::RefObject(){ co::ocount++;
 RefObject::~RefObject(){ co::ocount--; };
 
 
-RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
+RefData::RefData(RefData *pr) : RefObject() { // СЃРѕР·РґР°РµРјСЃСЏ РїРѕСЃР»Рµ pr
     this->castInfo = 0;
     co::datacount++;
 
@@ -90,11 +90,11 @@ RefData* RefData::afterInsert(RefData *whom){
 RefData*  RefData::take_copy ( ThisId ThisId) {
     return this;
 }
-; // возвращает копию если новый создатель
+; // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РµСЃР»Рё РЅРѕРІС‹Р№ СЃРѕР·РґР°С‚РµР»СЊ
 RefData*  RefData::take_copy_force ( ThisId ThisId) {
     return this;
 }
-; // возвращает копию - независимо от создателя
+; // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ - РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ СЃРѕР·РґР°С‚РµР»СЏ
 void       RefData::drop   ( ThisId ThisId) {
     return;
 };
@@ -114,7 +114,7 @@ TResult RefData::back(Session* s, RefData *&, RefData *&) {
 }
 
 
-RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // открывающая
+RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // РѕС‚РєСЂС‹РІР°СЋС‰Р°СЏ
     other = 0;
     is_opened = true;
     is_system (false);
@@ -124,11 +124,11 @@ RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // открывающая
 
 
 /*
-RefData* RefBracketBase::Copy( RefData *rp){ // открывающая
+RefData* RefBracketBase::Copy( RefData *rp){ // РѕС‚РєСЂС‹РІР°СЋС‰Р°СЏ
     return new RefBracketBase(rp, getName());
 };
 */
-RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ // закрывающая
+RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ // Р·Р°РєСЂС‹РІР°СЋС‰Р°СЏ
         other = dr;
         is_opened = false;
         dr->other = this;
@@ -159,8 +159,8 @@ RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 
 
 
-// only for ObjectExpressions !!! Возвращает копию цепочки. Вместо ссылок на переменные - значения. Так как применяется для правых частей
-// то открытых переменных быть не должно!
+// only for ObjectExpressions !!! Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ С†РµРїРѕС‡РєРё. Р’РјРµСЃС‚Рѕ СЃСЃС‹Р»РѕРє РЅР° РїРµСЂРµРјРµРЅРЅС‹Рµ - Р·РЅР°С‡РµРЅРёСЏ. РўР°Рє РєР°Рє РїСЂРёРјРµРЅСЏРµС‚СЃСЏ РґР»СЏ РїСЂР°РІС‹С… С‡Р°СЃС‚РµР№
+// С‚Рѕ РѕС‚РєСЂС‹С‚С‹С… РїРµСЂРµРјРµРЅРЅС‹С… Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ!
 RefChain* RefChain::Copy(Session *s){
     //std::cout << "\n{ RefChain for copy: " << this->toString();
     RefData  *srcL = this->first;
@@ -181,11 +181,11 @@ RefChain* RefChain::Copy(Session *s){
     RefData *a, *b, *dstHlp, *dst = newChain->first;
 
 
-    while(src != srcR->next_term(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
+    while(src != srcR->next_term(0,0)){ /// todo: РєРѕРіРґР° Р±СѓРґСѓС‚ РјРѕРЅС‚РёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ - РґРѕР±Р°РІРёС‚СЊ СЃРµСЃСЃРёСЋ
 
         RefLinkToVariable *tmplnk = ref_dynamic_cast<RefLinkToVariable >(src);
 
-        ///todo: определиться
+        ///todo: РѕРїСЂРµРґРµР»РёС‚СЊСЃСЏ
         //#ifdef TESTCODE
         if (ref_dynamic_cast<RefVariable >(src)) SYSTEMERROR("unexpected variable in RefChain::Copy : "<<src->toString());
         if(!s && tmplnk) SYSTEMERROR("UNEXPECTED LINK to variable when Copy: " << tmplnk->toString());
@@ -197,10 +197,9 @@ RefChain* RefChain::Copy(Session *s){
             if (tmplnk->getPath() != EmptyUniString){
                     tbody = tbody->folowByWay(tmplnk->getPath());
             }
-            //#ifdef TESTCODE ///todo: когда препроцессор будет определять корявые ссылки правых частей предложений, раскомментировать
+            //#ifdef TESTCODE ///todo: РєРѕРіРґР° РїСЂРµРїСЂРѕС†РµСЃСЃРѕСЂ Р±СѓРґРµС‚ РѕРїСЂРµРґРµР»СЏС‚СЊ РєРѕСЂСЏРІС‹Рµ СЃСЃС‹Р»РєРё РїСЂР°РІС‹С… С‡Р°СЃС‚РµР№ РїСЂРµРґР»РѕР¶РµРЅРёР№, СЂР°СЃРєРѕРјРјРµРЅС‚РёСЂРѕРІР°С‚СЊ
             if (!tbody ) {
-                //s->showStatus();
-                SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
+                s->showStatus(); SYSTEMERROR("VAR BODY NOT FOUND for " << tmplnk->toString());
             }
             //#endif
             if (!(tbody->first)){
@@ -217,13 +216,13 @@ RefChain* RefChain::Copy(Session *s){
         }
 
         RefBracketBase *br = ref_dynamic_cast<RefBracketBase >(src);
-        if (br){ // копируем скобки
+        if (br){ // РєРѕРїРёСЂСѓРµРј СЃРєРѕР±РєРё
             #ifdef TESTCODE
             if (! br->isOpen()){
                 SYSTEMERROR("unexpected closed bracket : " << br->toString());
             }
             #endif
-            dst     = br->Copy(dst);      // это NULLDOT
+            dst     = br->Copy(dst);      // СЌС‚Рѕ NULLDOT
             //dstHlp  =  (br->Copy( ref_dynamic_cast<RefBracketBase *>(dst->pred), dst)); // other, rp    }
             dstHlp  =  (br->Copy( (RefBracketBase *)(dst->pred), dst)); // other, rp    }
 
@@ -235,23 +234,23 @@ RefChain* RefChain::Copy(Session *s){
             #endif
 
 
-            if (br->next->next != br->other) { // не пустые скобки
+            if (br->next->next != br->other) { // РЅРµ РїСѓСЃС‚С‹Рµ СЃРєРѕР±РєРё
                 hlpChain  = new RefChain(br->next->next, br->other->pred);
                 hlpChain2 = hlpChain->Copy(s);
-                // тут нельзя удалять содержимое цепочки - так как тут же постоянный шаблон функции!
+                // С‚СѓС‚ РЅРµР»СЊР·СЏ СѓРґР°Р»СЏС‚СЊ СЃРѕРґРµСЂР¶РёРјРѕРµ С†РµРїРѕС‡РєРё - С‚Р°Рє РєР°Рє С‚СѓС‚ Р¶Рµ РїРѕСЃС‚РѕСЏРЅРЅС‹Р№ С€Р°Р±Р»РѕРЅ С„СѓРЅРєС†РёРё!
                 delete hlpChain;
-                // теперь в hlpChain2 нужная подцепь
+                // С‚РµРїРµСЂСЊ РІ hlpChain2 РЅСѓР¶РЅР°СЏ РїРѕРґС†РµРїСЊ
                 a = hlpChain2->first;
                 b = hlpChain2->second;
                 delete hlpChain2;
 
                 if (!a){
-                    /// пустая цепь
-                    /// todo проанализировать и проверить нужны ли эти 2 строки
+                    /// РїСѓСЃС‚Р°СЏ С†РµРїСЊ
+                    /// todo РїСЂРѕР°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ Рё РїСЂРѕРІРµСЂРёС‚СЊ РЅСѓР¶РЅС‹ Р»Рё СЌС‚Рё 2 СЃС‚СЂРѕРєРё
                     dst->next = dstHlp;
                     dstHlp->pred = dst;
                 } else {
-                    /// цепь не пуста
+                    /// С†РµРїСЊ РЅРµ РїСѓСЃС‚Р°
                     a->pred = dst;
                     dst->next = a;
                     b->next = dstHlp;
@@ -268,13 +267,13 @@ RefChain* RefChain::Copy(Session *s){
     }
     newChain->second = dst;
 
-    if( dst == newChain->first){ // пустая
+    if( dst == newChain->first){ // РїСѓСЃС‚Р°СЏ
         delete dst;
         newChain->first = newChain->second = 0;
     } else {
-        // уходим от RefNULL в начале цепочки
+        // СѓС…РѕРґРёРј РѕС‚ RefNULL РІ РЅР°С‡Р°Р»Рµ С†РµРїРѕС‡РєРё
         newChain->first = newChain->first->next;
-        // удаляем RefNULL в начале цепочки
+        // СѓРґР°Р»СЏРµРј RefNULL РІ РЅР°С‡Р°Р»Рµ С†РµРїРѕС‡РєРё
         delete newChain->first->pred;
         ///newChain->first->pred = 0;
     }
@@ -325,8 +324,8 @@ RefChain& RefChain::operator+=(RefChain &ch){
                 //return 0;
             }
 #endif
-            if (! ch.first) return *this; // пустой вектор не прибавляем
-            if (! this->first){ // прибавляем к пустому вектору.
+            if (! ch.first) return *this; // РїСѓСЃС‚РѕР№ РІРµРєС‚РѕСЂ РЅРµ РїСЂРёР±Р°РІР»СЏРµРј
+            if (! this->first){ // РїСЂРёР±Р°РІР»СЏРµРј Рє РїСѓСЃС‚РѕРјСѓ РІРµРєС‚РѕСЂСѓ.
                 RefChain *cop = ch.Copy();
                 if (! this->second) {
                     this->first  = cop->first;
@@ -345,7 +344,7 @@ RefChain& RefChain::operator+=(RefChain &ch){
             this->second->next = b->first;
             if (b->first) b->first->pred  = this->second;
             this->second  =  b->second;
-            //b->first = b->second = 0; // на всякий случай
+            //b->first = b->second = 0; // РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
             delete b;
             //std::cout << "\n\n = "; print_vector(this->first);
 
@@ -380,7 +379,7 @@ RefChain* RefChain::aroundByDots(){
         SYSTEMERROR(" situation : l or r already DataDOTs !");
     }
     #endif
-    // снабжаем область зрения датадотами
+    // СЃРЅР°Р±Р¶Р°РµРј РѕР±Р»Р°СЃС‚СЊ Р·СЂРµРЅРёСЏ РґР°С‚Р°РґРѕС‚Р°РјРё
     RefData_DOT *leftd = new RefData_DOT();
     RefData_DOT *rightd = new RefData_DOT(leftd, 0);
     if (l) {
@@ -412,14 +411,14 @@ RefChain* RefChain::dearoundByDots(){
     }
     #endif
 
-    RefData *d1 = first, *d2=second; // сохраняем доты для удаления
+    RefData *d1 = first, *d2=second; // СЃРѕС…СЂР°РЅСЏРµРј РґРѕС‚С‹ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
 
-    if (first->next == second){ // если пустое поле зрения  dot[ <-> dot]
+    if (first->next == second){ // РµСЃР»Рё РїСѓСЃС‚РѕРµ РїРѕР»Рµ Р·СЂРµРЅРёСЏ  dot[ <-> dot]
         if (first  ->pred) first  ->pred->next = second ->next;
         if (second ->next) second ->next->pred = first  ->pred;
         second = first->pred;
         first = 0;
-    } else {    // не пустое поле зрения  dot[ - ... - ]dot
+    } else {    // РЅРµ РїСѓСЃС‚РѕРµ РїРѕР»Рµ Р·СЂРµРЅРёСЏ  dot[ - ... - ]dot
         /*if (first  ->next) */ first  ->next->pred = first  ->pred;
         /*if (second ->pred) */ second ->pred->next = second ->next;
         if (first  ->pred) first  ->pred->next = first  ->next;
@@ -428,7 +427,7 @@ RefChain* RefChain::dearoundByDots(){
         second = second->pred;
     }
 
-    d1  ->next = d1  ->pred = d2 ->next = d2 ->pred = 0; // обрубаем ссылки дот чтоб безопасно их удалить, иначе ссылки выровняются
+    d1  ->next = d1  ->pred = d2 ->next = d2 ->pred = 0; // РѕР±СЂСѓР±Р°РµРј СЃСЃС‹Р»РєРё РґРѕС‚ С‡С‚РѕР± Р±РµР·РѕРїР°СЃРЅРѕ РёС… СѓРґР°Р»РёС‚СЊ, РёРЅР°С‡Рµ СЃСЃС‹Р»РєРё РІС‹СЂРѕРІРЅСЏСЋС‚СЃСЏ
     delete d1;
     delete d2;
 
@@ -462,9 +461,9 @@ bool RefLinkToVariable::operator==(RefData&){
 TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
 
 
-    TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: если делать ссылки через имена а не через адреса то добавить и вызывать тут менеджер адресов по именам
+    TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: РµСЃР»Рё РґРµР»Р°С‚СЊ СЃСЃС‹Р»РєРё С‡РµСЂРµР· РёРјРµРЅР° Р° РЅРµ С‡РµСЂРµР· Р°РґСЂРµСЃР° С‚Рѕ РґРѕР±Р°РІРёС‚СЊ Рё РІС‹Р·С‹РІР°С‚СЊ С‚СѓС‚ РјРµРЅРµРґР¶РµСЂ Р°РґСЂРµСЃРѕРІ РїРѕ РёРјРµРЅР°Рј
     if (getPath() != EmptyUniString){
-        // поиск подпути
+        // РїРѕРёСЃРє РїРѕРґРїСѓС‚Рё
         pd = pd->folowByWay(getPath());
     }
 
@@ -481,16 +480,16 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
         *rdata = pd->second;
 
     if (!ldata ) {
-        return GO; // ссылка на пустой отрезок - верна
+        return GO; // СЃСЃС‹Р»РєР° РЅР° РїСѓСЃС‚РѕР№ РѕС‚СЂРµР·РѕРє - РІРµСЂРЅР°
     }
 
     move_to_next_term(currentPoint, 0/*myid()*/, s);
-    if (currentPoint/*->myid()*/==ldata/*->myid()*/){ // сопоставление с собой
+    if (currentPoint/*->myid()*/==ldata/*->myid()*/){ // СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ СЃ СЃРѕР±РѕР№
         currentPoint = rdata;
         return GO;
     }
 
-    while ((ldata!=rdata) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
+    while ((ldata!=rdata) /*&& !(ldata->dynamic_same(rdata))*/) { // РїСЂРѕРІРµСЂРєР° РЅР° РєРѕРЅРµС† СЃСЂР°РІРЅРёРІР°РµРјРѕРіРѕ
         if (!(*currentPoint == *ldata)) {
             //std::cout << "\n{ " << currentPoint->toString() << " != " << ldata->toString() << " }";
             //ldata->drop(myid);
@@ -501,7 +500,7 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
         move_to_next_term(ldata, 0/*myid()*/, s);
         currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
     };
-    if (!(*currentPoint == *ldata)){ // сравниваем последние элементы
+    if (!(*currentPoint == *ldata)){ // СЃСЂР°РІРЅРёРІР°РµРј РїРѕСЃР»РµРґРЅРёРµ СЌР»РµРјРµРЅС‚С‹
             //ldata->drop(myid);
             //rdata->drop(myid);
             //currentPoint->drop(myid);
@@ -531,7 +530,7 @@ unistring RefChain::toString(){ return vectorToString(first, second); };
 unistring RefChain::explode() { return vectorExplode(first, second); };
 
 
-/// todo: оптимизировать грязный код
+/// todo: РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ РіСЂСЏР·РЅС‹Р№ РєРѕРґ
 void delChain(RefData*a, RefData*b){
     //std::cout << "\ndelChain: " << vectorToString(a, b) << "\n";
 //return;
@@ -564,7 +563,7 @@ RefData*  RefLChain::next_term( ThisId var_id, Session *s){
     #ifdef TESTCODE
     if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
     #endif
-    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
+    if (s->currentLWay == this){ // СѓР¶Рµ РµСЃС‚СЊ С‚РѕС‡РєР° РІС…РѕРґР° - Р·РЅР°С‡РёС‚ РІС‹С…РѕРґРёРј
         s->currentLWay = 0;
         return next;
     }
@@ -576,7 +575,7 @@ RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
     #ifdef TESTCODE
     if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
     #endif
-    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
+    if (s->currentLWay == this){ // СѓР¶Рµ РµСЃС‚СЊ С‚РѕС‡РєР° РІС…РѕРґР° - Р·РЅР°С‡РёС‚ РІС‹С…РѕРґРёРј
         s->currentLWay = 0;
         return pred;
     }
@@ -589,10 +588,7 @@ RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
 
 
 RefVariable::~RefVariable(){ co::varcount--;};
-RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(), RefData(rp), RefalNameSpace(name){ co::varcount++; is_system (false);  };
-
-
-
+RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(rp), RefalNameSpace(name){ co::varcount++; is_system (false);  };
 
 
 

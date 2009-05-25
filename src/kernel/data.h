@@ -27,12 +27,12 @@
 #include "core.h"
 
 /************************************************
-* KERNEL - ядро рефал-машины
-* ядро определяет
-*        типы данных на уровне рефал-термов,
-*        переменные,
-*        цепочки,
-*        поля данных
+* KERNEL - СЏРґСЂРѕ СЂРµС„Р°Р»-РјР°С€РёРЅС‹
+* СЏРґСЂРѕ РѕРїСЂРµРґРµР»СЏРµС‚
+*        С‚РёРїС‹ РґР°РЅРЅС‹С… РЅР° СѓСЂРѕРІРЅРµ СЂРµС„Р°Р»-С‚РµСЂРјРѕРІ,
+*        РїРµСЂРµРјРµРЅРЅС‹Рµ,
+*        С†РµРїРѕС‡РєРё,
+*        РїРѕР»СЏ РґР°РЅРЅС‹С…
 *************************************************/
 class RefObject;
 class RefData;
@@ -41,31 +41,31 @@ class RefData_DOT;
 class RefVariable;
 class RefLinkToVariable;
 
-class RefNameSpace; // именованное поле переменных и функций
-class RefChain;     // цепочка
-class RefVarTable;  // таблица сопоставленных переменных
-class TVarBodyTable;  // таблица сопоставленных переменных   RefExecBracket
+class RefNameSpace; // РёРјРµРЅРѕРІР°РЅРЅРѕРµ РїРѕР»Рµ РїРµСЂРµРјРµРЅРЅС‹С… Рё С„СѓРЅРєС†РёР№
+class RefChain;     // С†РµРїРѕС‡РєР°
+class RefVarTable;  // С‚Р°Р±Р»РёС†Р° СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С…
+class TVarBodyTable;  // С‚Р°Р±Р»РёС†Р° СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С…   RefExecBracket
 
 class Session;
 
 
-const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
+const char varPathSeparator = '/';  // СЂР°Р·РґРµР»РёС‚РµР»СЊ РІ РїСѓС‚Рё Рє РїРѕРґРїРµСЂРµРјРµРЅРЅРѕР№. Р’РЅСѓС‚СЂРµРЅРЅРµРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕС‚ РїР°СЂСЃРµСЂР°
 
-/* системный маппинг иерархии классов-данных для минимального использования RTTI. Если не определен, то castNeedSystemCast */
+/* СЃРёСЃС‚РµРјРЅС‹Р№ РјР°РїРїРёРЅРі РёРµСЂР°СЂС…РёРё РєР»Р°СЃСЃРѕРІ-РґР°РЅРЅС‹С… РґР»СЏ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ RTTI. Р•СЃР»Рё РЅРµ РѕРїСЂРµРґРµР»РµРЅ, С‚Рѕ castNeedSystemCast */
 enum RefDataTypesForCast {
-    /*   доп.      ветка     лист      -||-   */
-    castUseRTTI       = B32(01000000, 00000000, 00000000, 00000000), // для объектов требуется сисемный dynamic_cast
+    /*   РґРѕРї.      РІРµС‚РєР°     Р»РёСЃС‚      -||-   */
+    castUseRTTI       = B32(01000000, 00000000, 00000000, 00000000), // РґР»СЏ РѕР±СЉРµРєС‚РѕРІ С‚СЂРµР±СѓРµС‚СЃСЏ СЃРёСЃРµРјРЅС‹Р№ dynamic_cast
     castIsSystemData  = B32(10000000, 00000000, 00000000, 00000000),
 
-    /*рефал-символы*/
-    castRefSymbolBase = B32(00000000, 00000001, 00000000, 00000000), // рефал-символ
+    /*СЂРµС„Р°Р»-СЃРёРјРІРѕР»С‹*/
+    castRefSymbolBase = B32(00000000, 00000001, 00000000, 00000000), // СЂРµС„Р°Р»-СЃРёРјРІРѕР»
     castRefInteger    = B32(00000000, 00000000, 00000000, 00000001) | castRefSymbolBase,
     castRefReal       = B32(00000000, 00000000, 00000000, 00000010) | castRefSymbolBase,
     castRefAlpha      = B32(00000000, 00000000, 00000000, 00000100) | castRefSymbolBase,
     castRefByte       = B32(00000000, 00000000, 00000000, 00001000) | castRefSymbolBase,
     castRefWord       = B32(00000000, 00000000, 00000000, 00010000) | castRefSymbolBase,
 
-    castRefBracketBase   =    B32(00000000, 00000010, 00000000, 00000000), // базовая скобка
+    castRefBracketBase   =    B32(00000000, 00000010, 00000000, 00000000), // Р±Р°Р·РѕРІР°СЏ СЃРєРѕР±РєР°
     castRefStructBracket =    B32(00000000, 00000000, 00000000, 00000001) | castRefBracketBase,
     castRefExecBracket   =    B32(00000000, 00000000, 00000000, 00000010) | castRefBracketBase,
     castRefData_DOT      =    B32(00000000, 00000000, 00000000, 00000100) | castRefBracketBase,
@@ -75,8 +75,8 @@ enum RefDataTypesForCast {
     castref_repeater     =    B32(00000000, 00000000, 00000000, 01000000) | castRefBracketBase,
 
 
-    castRefVariableBase  =  B32(00000000, 00000000, 00000100, 00000000), // базовая открытая переменная
-    castRefVariable      = castRefVariableBase, // переменная
+    castRefVariableBase  =  B32(00000000, 00000000, 00000100, 00000000), // Р±Р°Р·РѕРІР°СЏ РѕС‚РєСЂС‹С‚Р°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ
+    castRefVariable      = castRefVariableBase, // РїРµСЂРµРјРµРЅРЅР°СЏ
     castRefVariable_E    =  B32(00000000, 00000000, 00000000, 00000001) | castRefVariable,
     castRefVariable_e    =  B32(00000000, 00000000, 00000000, 00000010) | castRefVariable,
     castRefVariable_s    =  B32(00000000, 00000000, 00000000, 00000100) | castRefVariable,
@@ -90,9 +90,9 @@ enum RefDataTypesForCast {
     castRefVarWord       =  B32(00000000, 00000000, 00000100, 00000000) | castRefVariable,
 
 
-    castRefLinkToVariable       =   B32(00000000, 00000000, 00001000, 00000000), // закрытая переменная
+    castRefLinkToVariable       =   B32(00000000, 00000000, 00001000, 00000000), // Р·Р°РєСЂС‹С‚Р°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ
     castRefLinkToPartOfVariable =   B32(00000000, 00000000, 00000000, 00000001) | castRefLinkToVariable
-    //сastRef            = B32(00000000, 00000000, 00000000, 00000000)  ////
+    //СЃastRef            = B32(00000000, 00000000, 00000000, 00000000)  ////
 
 
 
@@ -100,17 +100,19 @@ enum RefDataTypesForCast {
 //  castRef            = B8 (00000000)
 };
 
+
 #define BASE_CLASS_CAST(ClassName) \
 inline static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; }; \
 virtual RefDataTypesForCast object_cast()=0
 
-        #define CLASS_CAST(ClassName) \
+#define CLASS_CAST(ClassName) \
 inline  static  RefDataTypesForCast getClassTypeCast(){ return cast##ClassName; };
 
 #define OBJECT_CAST(ClassName) \
 virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
 
-// Родитель всего в Рефале
+
+// Р РѕРґРёС‚РµР»СЊ РІСЃРµРіРѕ РІ Р РµС„Р°Р»Рµ
 class RefObject {
 public:
     inline static  RefDataTypesForCast getClassTypeCast() {
@@ -132,37 +134,37 @@ public:
 #define regCast(CastType) this->typeCast = static_cast<RefDataTypesForCast>(this->typeCast | cast##CastType);
 
 
-// Абстрактный класс - предок всех термов языка
+// РђР±СЃС‚СЂР°РєС‚РЅС‹Р№ РєР»Р°СЃСЃ - РїСЂРµРґРѕРє РІСЃРµС… С‚РµСЂРјРѕРІ СЏР·С‹РєР°
 class RefData : public RefObject {
 public:
     RefData*  next;
     RefData*  pred;
+    //RefDataTypesForCast castInfo;
+    unsigned long castInfo;
 
-    unsigned long castInfo; // для is_system
+    virtual bool IRefVarStacked(){ return false; };
+
 
 public:
-    virtual bool IsRefVarStacked() {
-        return false;
-    }; // для всего, что в матчинге считается переменной со значением
     inline bool  is_system() {
         return castInfo&castIsSystemData;
     };
     inline void  is_system(bool ss) {
-        castInfo = (ss ? (castInfo|castIsSystemData) : (castInfo&~castIsSystemData) );
+        castInfo = (ss ? castInfo|castIsSystemData : castInfo&~castIsSystemData);
     };
 
-    RefData(RefData *rp=0); // pr вставляем после себя
+    RefData(RefData *rp=0); // pr РІСЃС‚Р°РІР»СЏРµРј РїРѕСЃР»Рµ СЃРµР±СЏ
     virtual ~RefData();
     //ThisId  0/*myid()*/{  return (ThisId)(this); };
 
-    //static  RefDataTypesForCast getClassTypeCast(){ return castUseRTTI; };      // инфотип для класса
-    //bool  is_symbol; // сопостовимость с s-перемеенной
+    //static  RefDataTypesForCast getClassTypeCast(){ return castUseRTTI; };      // РёРЅС„РѕС‚РёРї РґР»СЏ РєР»Р°СЃСЃР°
+    //bool  is_symbol; // СЃРѕРїРѕСЃС‚РѕРІРёРјРѕСЃС‚СЊ СЃ s-РїРµСЂРµРјРµРµРЅРЅРѕР№
 
-    virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
+    virtual RefData*  next_term( ThisId var_id, Session *s); // РЅР° РІРёСЂС‚СѓР°Р»СЊРЅРѕ-СЃРѕСЃРµРґРЅРёР№ СЌР»РµРјРµРЅС‚ (РґР»СЏ РїРµСЂРµРј.) РёР»Рё С‡РµСЂРµР· СЃРєРѕР±РєСѓ
     virtual RefData*  pred_term( ThisId var_id, Session *s);
     virtual RefData*  next_template( ThisId var_id, Session *s) {
         return next_term(var_id, s);
-    }; // следующий шаблон при сопоставлении
+    }; // СЃР»РµРґСѓСЋС‰РёР№ С€Р°Р±Р»РѕРЅ РїСЂРё СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРё
     virtual RefData*  pred_template( ThisId var_id, Session *s) {
         return pred_term(var_id, s);
     };
@@ -173,8 +175,8 @@ public:
     virtual RefData*  endOfTerm () {
         return this;
     };
-//        virtual RefData*  take_copy ( ThisId var_id); // возвращает копию если новый создатель
-//        virtual RefData*  take_copy_force ( ThisId var_id); // возвращает копию - независимо от создателя
+//        virtual RefData*  take_copy ( ThisId var_id); // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ РµСЃР»Рё РЅРѕРІС‹Р№ СЃРѕР·РґР°С‚РµР»СЊ
+//        virtual RefData*  take_copy_force ( ThisId var_id); // РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕРїРёСЋ - РЅРµР·Р°РІРёСЃРёРјРѕ РѕС‚ СЃРѕР·РґР°С‚РµР»СЏ
 //        virtual void       drop   ( ThisId var_id);
 
     virtual RefData* predInsert(RefData *);
@@ -195,7 +197,7 @@ public:
     virtual void    forceback(Session* s) {
         SYSTEMERROR("RefData.forceback NOT DEFINE for "
                     << toString());
-    };; // принудительный откат. Точка убирает из сессии свое состояние
+    };; // РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅС‹Р№ РѕС‚РєР°С‚. РўРѕС‡РєР° СѓР±РёСЂР°РµС‚ РёР· СЃРµСЃСЃРёРё СЃРІРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 
 
     virtual RefData*  Copy(RefData* where=0) = 0;
@@ -227,7 +229,7 @@ public:
 };
 
 
-// Именнованое поле методов и переменных
+// РРјРµРЅРЅРѕРІР°РЅРѕРµ РїРѕР»Рµ РјРµС‚РѕРґРѕРІ Рё РїРµСЂРµРјРµРЅРЅС‹С…
 class RefalNameSpace {
 protected:
     unistring name;
@@ -247,41 +249,37 @@ public:
 };
 
 
-// Абстрактный класс - предок всех открытых переменных языка (простых и скобочных)
-class RefVariableBase {
+
+// РђР±СЃС‚СЂР°РєС‚РЅС‹Р№ РєР»Р°СЃСЃ - РїСЂРµРґРѕРє РІСЃРµС… РѕС‚РєСЂС‹С‚С‹С… РїРµСЂРµРјРµРЅРЅС‹С… СЏР·С‹РєР° (РїСЂРѕСЃС‚С‹С… Рё СЃРєРѕР±РѕС‡РЅС‹С…)
+class RefVariableBase :  public RefData {
 public:
-    virtual bool IsRefVarStacked() {
-        return true;
-    };
+
+    virtual bool IRefVarStacked(){ return true; };
     virtual unistring getName() = 0;
+    RefVariableBase(RefData *rp) : RefData(rp) { };
 };
 
-
-
-class RefVariable : public RefVariableBase, public RefData , public RefalNameSpace { // Простая переменная
+class RefVariable : public RefVariableBase, public RefalNameSpace { // РџСЂРѕСЃС‚Р°СЏ РїРµСЂРµРјРµРЅРЅР°СЏ
 public:
-    BASE_CLASS_CAST(RefVariable);
 
     ~RefVariable();
 
-    virtual void    forceback(Session* s) { }; // принудительный откат. Точка убирает из сессии свое состоян
+    virtual void    forceback(Session* s) { }; // РїСЂРёРЅСѓРґРёС‚РµР»СЊРЅС‹Р№ РѕС‚РєР°С‚. РўРѕС‡РєР° СѓР±РёСЂР°РµС‚ РёР· СЃРµСЃСЃРёРё СЃРІРѕРµ СЃРѕСЃС‚РѕСЏРЅ
     RefVariable(unistring name = EmptyUniString, RefData *rp = 0);
     virtual unistring getName() {
         return RefalNameSpace::getName();
-    }; /// todo очень грязное решение. исправить
+    }; /// todo РѕС‡РµРЅСЊ РіСЂСЏР·РЅРѕРµ СЂРµС€РµРЅРёРµ. РёСЃРїСЂР°РІРёС‚СЊ
     virtual void setName(unistring name) {
         RefalNameSpace::setName(name);
-    }; /// todo очень грязное решение. исправить
+    }; /// todo РѕС‡РµРЅСЊ РіСЂСЏР·РЅРѕРµ СЂРµС€РµРЅРёРµ. РёСЃРїСЂР°РІРёС‚СЊ
 };
 
-// Ссылка на переменную
+// РЎСЃС‹Р»РєР° РЅР° РїРµСЂРµРјРµРЅРЅСѓСЋ
 class RefLinkToVariable : public RefData, public RefalNameSpace {
     //RefVariable *lnkData;
-    // в name хранится адрес ссылочной переменной в виде varname:varname:varname
-    /// todo: сделать ссылаемость на конкретную переменную + карту сопоставлений сделать по адресу ссылки а не по имени
+    // РІ name С…СЂР°РЅРёС‚СЃСЏ Р°РґСЂРµСЃ СЃСЃС‹Р»РѕС‡РЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№ РІ РІРёРґРµ varname:varname:varname
+    /// todo: СЃРґРµР»Р°С‚СЊ СЃСЃС‹Р»Р°РµРјРѕСЃС‚СЊ РЅР° РєРѕРЅРєСЂРµС‚РЅСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ + РєР°СЂС‚Сѓ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёР№ СЃРґРµР»Р°С‚СЊ РїРѕ Р°РґСЂРµСЃСѓ СЃСЃС‹Р»РєРё Р° РЅРµ РїРѕ РёРјРµРЅРё
 public:
-    CLASS_CAST(RefLinkToVariable);
-    OBJECT_CAST(RefLinkToVariable);
 
     unistring toString();
     bool operator==(RefData&);
@@ -294,13 +292,12 @@ public:
 
     virtual unistring getPath() {
         return EmptyUniString;
-    }; // для наследников класса - путь к подпеременной относитльно основной переменной
+    }; // РґР»СЏ РЅР°СЃР»РµРґРЅРёРєРѕРІ РєР»Р°СЃСЃР° - РїСѓС‚СЊ Рє РїРѕРґРїРµСЂРµРјРµРЅРЅРѕР№ РѕС‚РЅРѕСЃРёС‚Р»СЊРЅРѕ РѕСЃРЅРѕРІРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
 };
 
 class RefLinkToPartOfVariable : public RefLinkToVariable {
-    unistring path; // путь к подпеременной относитльно основной переменной
+    unistring path; // РїСѓС‚СЊ Рє РїРѕРґРїРµСЂРµРјРµРЅРЅРѕР№ РѕС‚РЅРѕСЃРёС‚Р»СЊРЅРѕ РѕСЃРЅРѕРІРЅРѕР№ РїРµСЂРµРјРµРЅРЅРѕР№
 public:
-    OBJECT_CAST(RefLinkToPartOfVariable);
     unistring getPath() {
         return path;
     };
@@ -320,19 +317,18 @@ RefSmplVarType(unistring name = EmptyUniString, RefData *rp = 0) : RefVariable(n
 class RefVarTable : public std::map<unistring, RefVariable*> {};
 
 
-class RefBracketBase : public RefData {
+class RefBracketBase : /*public IRefVarStacked, */ public RefData {
 protected:
     bool        is_opened; // true = begin- ; false = end-
 
 public:
-    BASE_CLASS_CAST(RefBracketBase);
     RefBracketBase*  other;
 
     virtual RefData *Clone() {
         SYSTEMERROR("unexpected call");
     };
-    RefBracketBase( RefData *rp = 0); // открывающая
-    RefBracketBase( RefBracketBase *dr, RefData *rp=0); // закрывающая
+    RefBracketBase( RefData *rp = 0); // РѕС‚РєСЂС‹РІР°СЋС‰Р°СЏ
+    RefBracketBase( RefBracketBase *dr, RefData *rp=0); // Р·Р°РєСЂС‹РІР°СЋС‰Р°СЏ
     virtual bool isOpen();
     virtual RefBracketBase * getOther();
 
@@ -352,28 +348,28 @@ public:
 class RefChain : public std::pair<RefData*, RefData*> {
 public:
 
-    void clear(); // уничтожение всего что ммежду first и second включительно
+    void clear(); // СѓРЅРёС‡С‚РѕР¶РµРЅРёРµ РІСЃРµРіРѕ С‡С‚Рѕ РјРјРµР¶РґСѓ first Рё second РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ
     ~RefChain();
 
 public:
     RefChain(RefData *l=0, RefData *r=0);
 
-    RefChain& operator+=(RefChain &ch); // к левому аргумент пристыковывается копия правого!
-    RefChain& operator+=(RefData *ch);  // рефдата ПОГЛАЩАЕТСЯ цепочкой!!!
-    RefChain* Copy(Session *);         // Если ссылка на сессию != 0, то вместо ссылок будут значения переменных
+    RefChain& operator+=(RefChain &ch); // Рє Р»РµРІРѕРјСѓ Р°СЂРіСѓРјРµРЅС‚ РїСЂРёСЃС‚С‹РєРѕРІС‹РІР°РµС‚СЃСЏ РєРѕРїРёСЏ РїСЂР°РІРѕРіРѕ!
+    RefChain& operator+=(RefData *ch);  // СЂРµС„РґР°С‚Р° РџРћР“Р›РђР©РђР•РўРЎРЇ С†РµРїРѕС‡РєРѕР№!!!
+    RefChain* Copy(Session *);         // Р•СЃР»Рё СЃСЃС‹Р»РєР° РЅР° СЃРµСЃСЃРёСЋ != 0, С‚Рѕ РІРјРµСЃС‚Рѕ СЃСЃС‹Р»РѕРє Р±СѓРґСѓС‚ Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅС‹С…
     RefChain* Copy( ) {
         return this->Copy(0);
-    }; // Только для объектных выражений!!!
+    }; // РўРѕР»СЊРєРѕ РґР»СЏ РѕР±СЉРµРєС‚РЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№!!!
 
-    RefChain* aroundByDots();            //  окружает цепочку датадотами
-    RefChain* dearoundByDots();          //  удаляет в цепочке крайние датадоты
+    RefChain* aroundByDots();            //  РѕРєСЂСѓР¶Р°РµС‚ С†РµРїРѕС‡РєСѓ РґР°С‚Р°РґРѕС‚Р°РјРё
+    RefChain* dearoundByDots();          //  СѓРґР°Р»СЏРµС‚ РІ С†РµРїРѕС‡РєРµ РєСЂР°Р№РЅРёРµ РґР°С‚Р°РґРѕС‚С‹
     inline void set(RefData *&l, RefData *&r) {
         l=first;
         r=second;
-    };  //  присваивает концы цепочки аргументам
+    };  //  РїСЂРёСЃРІР°РёРІР°РµС‚ РєРѕРЅС†С‹ С†РµРїРѕС‡РєРё Р°СЂРіСѓРјРµРЅС‚Р°Рј
 
     unistring toString();
-    unistring explode(); // голый текст без форматирования
+    unistring explode(); // РіРѕР»С‹Р№ С‚РµРєСЃС‚ Р±РµР· С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ
 };
 
 void delChain(RefData*, RefData*);
@@ -406,94 +402,35 @@ RefLChain(RefData *rp = 0):RefData(rp) {
 };
 
 
-
-
-
-/*
 template <class T>
 inline T* ref_dynamic_cast(RefObject *d) {
     if (!d)
         return 0;
 
-    //return dynamic_cast<T*>(d);
+    return dynamic_cast<T*>(d);
 
     #ifdef TESTCODE
-    if (!  ((d->OBJECT_CAST() & castUseRTTI) | (T::getClassTypeCast() & castUseRTTI))  ) {
-        T* t = dynamic_cast<T*>(d);
-        if (t) {
-            // динамик_каст пройден!
-            if (! (d->OBJECT_CAST() & T::getClassTypeCast())) {
-				// а каст битами не пройден
-                std::cout << "\n" << std::binary(d->OBJECT_CAST()) <<" try cast with " << std::binary(T::getClassTypeCast()) << "\n";
-				std::cout << "\ndynamic_cast: OK";
-                std::cout << "\n____bit_cast: fail";
-                SYSTEMERROR("\nbit cast fail for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast())<<">( " << d->toString() << " )");
-            } else {
-				//std::cout << "\ndynamic_cast: OK";
-                //std::cout << "\n____bit_cast: OK";
-            }
-		} else {
-			// динамик_каст НЕ пройден!
-            if ( (d->OBJECT_CAST() & T::getClassTypeCast())) {
-				// а каст битами пройден
-                std::cout << "\n" << std::binary(d->OBJECT_CAST()) <<" try cast with " << std::binary(T::getClassTypeCast()) << "\n";
-				std::cout << "\ndynamic_cast:fail";
-                std::cout << "\n____bit_cast: OK";
-                SYSTEMERROR("\nbit cast ERROR SUCCESS for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast())<<">(" << d->toString() << ")");
-            } else {
-				//std::cout << "\ndynamic_cast:fail";
-				//std::cout << "\n____bit_cast: fail";
-			}
-		}
-        return t;
-    }
-    #endif
-
-    #ifdef TESTCODE
-    //if (! dynamic_cast<RefData *>(d)) SYSTEMERROR("call ref_dynamic_cast not for RefData !!!: " << d->toString());
-    #endif
-
-    if ((d->OBJECT_CAST() & castUseRTTI) | (T::getClassTypeCast() & castUseRTTI)) {
-        return dynamic_cast<T*>(d);
-    }
-    if (d->OBJECT_CAST() & T::getClassTypeCast()) {
-        return reinterpret_cast<T*>(d);
-    }
-
-    return 0;
-    //return dataref_dynamic_cast(T, d);
-};
-*/
-template <class T>
-inline T* ref_dynamic_cast(RefObject *d) {
-    if (!d)
-        return 0;
-
-    #ifdef TESTCODE
-    T* testres = dynamic_cast<T*>(d), testres2=0;
+    T
+        *testres = dynamic_cast<T*>(d),
+        *testres2=0;
 
     if ((T::getClassTypeCast() & castUseRTTI)) {
         testres2 = dynamic_cast<T*>(d);
-    }
-    if (d->OBJECT_CAST() & T::getClassTypeCast()) {
-        testres2 = reinterpret_cast<T*>(d);
+    } else {
+        if ((d->object_cast() | T::getClassTypeCast()) == d->object_cast()) {
+            testres2 = reinterpret_cast<T*>(d);
+        }
     }
 
     if ((testres?1:0) != (testres2?1:0)) {
-        SYSTEMERROR("\nCast fail for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast())<<">( " << d->toString() << " )");
+        SYSTEMERROR("\nCast fail for ref_dynamic_cast<"<<std::binary(T::getClassTypeCast())<<">( " << d->toString() << " )["<<std::binary(d->object_cast())<<"]");
     }
     return testres2;
     #endif
 
-    if ((T::getClassTypeCast() & castUseRTTI)) {
-        return dynamic_cast<T*>(d);
-    }
-    if (d->object_cast() & T::getClassTypeCast()) {
-        return reinterpret_cast<T*>(d);
-    }
-
-    return 0;
+    return dynamic_cast<T*>(d);
 };
 
 
 #endif // REF_KERNEL_H_INCLUDED
+

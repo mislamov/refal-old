@@ -40,7 +40,13 @@
 typedef std::basic_string<XMLCh> XercesString;
 
 unistring toWstring(const XercesString& str, unsigned int len){
+    #ifdef TESTCODE
+    unistring result(str.begin( ), str.end( ));
+    //std::cout << "\t#### WARNING: toWstring(" << result << ", " << len << ")\t";
+    return result;
+    #else
     return unistring(str.begin( ), str.end( ));
+    #endif
 }
 unistring toWstring(const XercesString& str){
     return unistring(str.begin( ), str.end( ));
@@ -73,6 +79,9 @@ void SAXPrintHandlers::startElement(const   XMLCh* const  name,  AttributeList& 
     //LOG( _L("SAXPrintHandlers::startElement::[") << theCommand << "] (attr: "<< attributes.getLength() << " )" );
     loader->activeTag.push(theCommand);
 
+#ifdef TESTCODE
+try {
+#endif
     loader->currentchars = _L("");  // поскольку чтение строк, содержащих перенос - разделено в этом SAX, то строки набираются накоплением (конкатенациями) и обнуляются для новых тегов
 
     if ( theCommand.compare(_L("BEGIN")) == 0 ) {
@@ -178,6 +187,11 @@ void SAXPrintHandlers::startElement(const   XMLCh* const  name,  AttributeList& 
     } else
 
     SYSTEMERROR("unknown tag name: " << theCommand);
+#ifdef TESTCODE
+} catch(int i) {
+    SYSTEMERROR("excepion!");
+}
+#endif
 }
 
 void SAXPrintHandlers::characters(const     XMLCh* const    chars
@@ -186,7 +200,6 @@ void SAXPrintHandlers::characters(const     XMLCh* const    chars
     //std::setlocale(LC_ALL, "ru_RU.UTF-8");
     loader->currentchars += toWstring(chars, length);
     #ifdef DEBUG
-    unistring ss = loader->currentchars;
     //LOG( "SAXPrintHandlers::characters:: " << ss.c_str() << "\n");
     #endif
     //fFormatter.formatBuf(chars, length, XMLFormatter::CharEscapes);
@@ -224,6 +237,9 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     RefValuedData *tmpvdata = 0;
     unistring theCommand = toWstring(name);
 
+    #ifdef TESTCODE
+    try {
+    #endif
     if (! theCommand.compare(_L("ERROR"))) {
         SYSTEMERROR(loader->currentchars);
     } else
@@ -384,6 +400,11 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
 
     SYSTEMERROR("unknown tag name: " << theCommand);
+    #ifdef TESTCODE
+    } catch(int i) {
+        SYSTEMERROR("excepion!");
+    }
+    #endif
 
 
     loader->activeTag.pop();
