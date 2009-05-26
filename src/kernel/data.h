@@ -445,7 +445,6 @@ template <class T>
     RefDataTypesForCast objectCast = d->object_cast();
 
     if ((T::getClassTypeCast & castUseRTTI)) {
-        std::cout << "err";// << d->toString();
         return dynamic_cast<T*>(d);
     }
 //     else {
