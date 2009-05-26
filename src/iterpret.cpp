@@ -115,10 +115,11 @@ int main ( int argv, char **argc ) {
     time_t starttime, stoptime;
     time ( &starttime );
 
+#ifdef TESTCODE
 //    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
     std::cout << "program-data-size: " << co::datacount << "\n" << std::flush;
     std::cout << "program-obj-size : " << co::ocount << "\n============================================\n" << std::flush;
-
+#endif
     RefExecBracket
     *lb = new RefExecBracket(),
     *rb = new RefExecBracket ( lb );
@@ -141,7 +142,9 @@ int main ( int argv, char **argc ) {
     std::cout << "Result: " << result->toString() << "\n";
 
     result->clear();
+#ifdef TESTCODE
     std::cout << "datas in mem: " << co::datacount << "\n";
     std::cout << "objts in mem: " << co::ocount << "\n";
+#endif
     return 0;
 }

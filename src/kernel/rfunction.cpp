@@ -113,9 +113,9 @@ s->fcalls++;
             // пустой аргумент
             ldot = argsecond;
         } else {
-            ldot = argfirst ->pred;
+            ldot = argfirst ->getPred();
         }
-        rdot = argsecond->next;
+        rdot = argsecond->getNext();
         #ifdef TESTCODE
         // должно вызываться только для части цепочки => окружено чем-то. Нужно чтоб не потерять место изменения
         if (! ldot )
@@ -140,7 +140,9 @@ s->fcalls++;
 
         if (s->matching(*sent, (*sent)->leftPart, argfirst, argsecond, false, false)){
             LOG(s->step++ <<  "\tsucessfull!");
-            //s->showStatus();
+            #ifdef DEBUG
+            s->showStatus();
+            #endif
 
             RefChain *newoe = s->RightPartToObjectExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
 
@@ -153,21 +155,21 @@ s->fcalls++;
             } // конец дилетантского отката
 
             // удаляем старый вектор аргументов
-            if (ldot->next != rdot){
-                delChain(ldot->next, rdot->pred);
+            if (ldot->getNext() != rdot){
+                delChain(ldot->getNext(), rdot->getPred());
             }
             // вставляем новый вектор
             if (newoe->first){
-                ldot->next = newoe->first;
-                newoe->first->pred = ldot;
+                ldot->setNext( newoe->first);
+                newoe->first->setPred(ldot);
                 #ifdef TESTCODE
                 if (!newoe->second) SYSTEMERROR("newoe->first && ! newoe->second ");
                 #endif
-                rdot->pred = newoe->second;
-                newoe->second->next = rdot;
+                rdot->setPred( newoe->second);
+                newoe->second->setNext( rdot);
             } else {
-                ldot->next = rdot;
-                rdot->pred = ldot;
+                ldot->setNext( rdot);
+                rdot->setPred( ldot);
             }
 
             // тут не надо удалять содержимое newoe! Его содержимое встроено в поле зрения
@@ -230,11 +232,11 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
         #endif
         lold = rp;
         if (lold) {
-            rold = rp->next;
+            rold = rp->getNext();
         };
     } else {
-        lold = lp->pred;
-        rold = rp->next;
+        lold = lp->getPred();
+        rold = rp->getNext();
     };
     // вычислим функции
     RefChain *result = new RefChain();
@@ -252,16 +254,16 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
     // функция вычислена. результат в result
     if (! result->first){
         // на всякий случай
-        lold->next = rold;
-        rold->pred = lold;
+        lold->setNext( rold);
+        rold->setPred( lold);
         delete result; // ?
         return true;
     };
 
-    lold->next = result->first;
-    rold->pred = result->second;
-    result->first->pred = lold;
-    result->second->next = rold;
+    lold->setNext (result->first);
+    rold->setPred (result->second);
+    result->first->setPred( lold);
+    result->second->setNext( rold);
 
     delete result;
     return true;
@@ -270,7 +272,7 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
 
 // matching  в случае неуспеха сам восстанавливает состояние. В случае успеха - оставляет изменения
 // по идее рефал-условие не должно контроллировать точки состояний. Главное правильно вызывать дизмачинг (домачинг)
-TResult  RefCondition::init(Session* s, RefData *&l){
+TResult  RefCondition::init(RefData*&tpl, Session* s, RefData *&l){
     /// todo: ниже не верно. условие может быть внутри внешнего шаблона и сопоставляться с пустым выражением не в конце
     /// однако для условия в предложении очень важно проверять, что оно сопост-ся с концом аргумента
     /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
@@ -278,7 +280,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
     if (ref_dynamic_cast<RefFunctionBase >(own)){
         // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце,
         // в отличие от условия в конце пользовательского шаблона
-        RefData_DOT *d = ref_dynamic_cast<RefData_DOT >(l->next);
+        RefData_DOT *d = ref_dynamic_cast<RefData_DOT >(l->getNext());
         if (!d){
             return BACK;
         }
@@ -310,7 +312,7 @@ TResult  RefCondition::init(Session* s, RefData *&l){
 };
 
 
-TResult  RefCondition::back(Session* s, RefData *&l, RefData *&r){
+TResult  RefCondition::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r){
     if (!isReverse && s->matching( this, this->leftPart, 0, 0, true, false)){ // продолжаем поиск вариантов
         /// Back->Go
         //std::cout << "\n\nCOND-RETURN:::\tback-> GO" << std::flush << "\n\n\n";
@@ -354,7 +356,7 @@ void RefUserTemplate::setLeftPart(RefChain *lp){
 
 /****************  вызывающие ( переменная )  *****************
 **************************************************************/
-TResult  RefTemplateBridgeVar::init(Session* s, RefData *&l){
+TResult  RefTemplateBridgeVar::init(RefData*&tpl, Session* s, RefData *&l){
     if (this->isOpen()){  //  {
         #ifdef TESTCODE
         if (! ref_dynamic_cast<RefTemplateBridgeVar>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
@@ -395,7 +397,7 @@ RefData*  RefTemplateBridgeVar::next_template( ThisId var_id, Session *s){
 };
 
 
-TResult  RefTemplateBridgeVar::back(Session* s, RefData *&l, RefData *&r){
+TResult  RefTemplateBridgeVar::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r){
     if (this->isOpen()){  //  [{]
         /// неудачное сопоставление переменной внешнего типа
         //  переменная: удаляем подсессию для переменной с очисткой мусора
@@ -433,7 +435,7 @@ RefData*  RefTemplateBridgeVar::pred_template( ThisId var_id, Session *s){
 
 /**************  вызываемые ( $Template ) ********************
 **************************************************************/
-TResult  RefTemplateBridgeTmpl::init(Session* s, RefData *&l){
+TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l){
     if (this->isOpen()){  //  {
         /// начало сопоставления внешнего шаблона
         //  шаблон:  в переменной была создана подсессия и точка возврата
@@ -461,7 +463,7 @@ RefData*  RefTemplateBridgeTmpl::next_template( ThisId var_id, Session *s){
 };
 
 
-TResult  RefTemplateBridgeTmpl::back(Session* s, RefData *&l, RefData *&r){
+TResult  RefTemplateBridgeTmpl::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r){
     if (this->isOpen()){  //    {
         /// неудачное сопоставление внешнего шаблона
         //  в переменной будет удалена подсессия и точка возврата
@@ -527,6 +529,6 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     delete this;
     return true;
 }
-TResult RefUserVarNotInit::init(Session*, RefData *&){ SYSTEMERROR("ALARM!"); };
-TResult RefUserVarNotInit::back(Session*, RefData *&, RefData *&){ SYSTEMERROR("ALARM!"); };
+TResult RefUserVarNotInit::init(RefData*&tpl, Session*, RefData *&){ SYSTEMERROR("ALARM!"); };
+TResult RefUserVarNotInit::back(RefData*&tpl, Session*, RefData *&, RefData *&){ SYSTEMERROR("ALARM!"); };
 

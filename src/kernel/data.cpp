@@ -24,22 +24,24 @@
 #include <stdlib.h>
 #include <iostream>
 
-/*
-long co::ocount    = 0;
-long co::datacount = 0;
-long co::symcount  = 0;
-long co::varcount  = 0;
-*/
 
-RefObject::RefObject(){ co::ocount++;
-    //if (! (co::ocount % 10000)) std::cout << "\n:: " << co::ocount << " / " << co::chaincount << " / " << ((float)co::chaincount)/co::datacount << "\n";
+RefObject::RefObject(){
+    #ifdef TESTCODE
+    co::ocount++;
+    #endif
 };
-RefObject::~RefObject(){ co::ocount--; };
+RefObject::~RefObject(){
+    #ifdef TESTCODE
+    co::ocount--;
+    #endif
+    };
 
 
 RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
-    this->castInfo = 0;
+    this->isSystem = false;
+    #ifdef TESTCODE
     co::datacount++;
+    #endif
 
 	is_system (true);
 //	is_symbol = true;
@@ -56,8 +58,9 @@ RefData::RefData(RefData *pr) : RefObject() { // создаемся после p
 }
 
 RefData::~RefData(){
-    //std::cout << "\n--DEL: " << this->toString() << "\n" << std::flush;
+    #ifdef TESTCODE
     co::datacount--;
+    #endif
     if (next) next->pred = pred;
     if (pred) pred->next = next;
 };
@@ -103,12 +106,12 @@ void       RefData::drop   ( ThisId ThisId) {
 
 //////////////////////////////////////////////////////////////////
 
-TResult RefData::init(Session* s, RefData *&) {
+TResult RefData::init(RefData*&tpl, Session* s, RefData *&) {
     SYSTEMERROR("unexpected called for " << toString());
     return ERROR;
 }
 
-TResult RefData::back(Session* s, RefData *&, RefData *&) {
+TResult RefData::back(RefData*&tpl,Session* s, RefData *&, RefData *&) {
     SYSTEMERROR("unexpected called for " << toString());
     return ERROR;
 }
@@ -150,8 +153,8 @@ bool   RefBracketBase::operator==(RefData &rd){ return false; };
 RefData*  RefBracketBase::beginOfTerm(){ return (isOpen()?this:getOther()); };
 RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 
-//TResult RefBracketBase::init(Session* s, RefData *&){ SYSTEMERROR(" RefBracketBase::init zagluska!"); };
-//TResult RefBracketBase::back(Session* s, RefData *&, RefData *&){ SYSTEMERROR(" RefBracketBase::back zagluska!"); };
+//TResult RefBracketBase::init(RefData*&tpl,Session* s, RefData *&){ SYSTEMERROR(" RefBracketBase::init zagluska!"); };
+//TResult RefBracketBase::back(RefData*&tpl,Session* s, RefData *&, RefData *&){ SYSTEMERROR(" RefBracketBase::back zagluska!"); };
 
 
 
@@ -162,7 +165,9 @@ RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 // only for ObjectExpressions !!! Возвращает копию цепочки. Вместо ссылок на переменные - значения. Так как применяется для правых частей
 // то открытых переменных быть не должно!
 RefChain* RefChain::Copy(Session *s){
-    //std::cout << "\n{ RefChain for copy: " << this->toString();
+    #ifdef DEBUG
+    std::cout << "\n{ RefChain for copy: " << this->toString();
+    #endif
     RefData  *srcL = this->first;
     RefData  *srcR = this->second;
 
@@ -203,7 +208,8 @@ RefChain* RefChain::Copy(Session *s){
             }
             //#endif
             if (!(tbody->first)){
-                src = move_to_next_term(src, 0, 0);
+                //src = move_to_next_term(src, 0, 0);
+                MOVE_TO_NEXT_TERM(src, 0, 0);
                 continue;
             };
             RefChain *ch = RefChain(tbody->first, tbody->second).Copy();
@@ -211,7 +217,8 @@ RefChain* RefChain::Copy(Session *s){
             ch->first->pred = dst;
             dst = ch->second;
             delete ch;
-            move_to_next_term(src, 0, 0);
+            //move_to_next_term(src, 0, 0);
+            MOVE_TO_NEXT_TERM(src, 0, 0);
             continue;
         }
 
@@ -263,7 +270,8 @@ RefChain* RefChain::Copy(Session *s){
         } else {
             dst = src->Copy(dst);
         }
-        src = move_to_next_term(src, 0, s);
+        //src = move_to_next_term(src, 0, s);
+        MOVE_TO_NEXT_TERM(src, 0, s);
     }
     newChain->second = dst;
 
@@ -354,7 +362,9 @@ RefChain& RefChain::operator+=(RefChain &ch){
 
 
 RefChain::RefChain(RefData *l, RefData *r){
+    #ifdef TESTCODE
         co::chaincount++;
+    #endif
         if (!l){
             first = 0;
             second = r;
@@ -365,7 +375,9 @@ RefChain::RefChain(RefData *l, RefData *r){
 };
 
 RefChain::~RefChain(){
+    #ifdef TESTCODE
     co::chaincount--;
+    #endif
 };
 
 
@@ -458,7 +470,7 @@ bool RefLinkToVariable::operator==(RefData&){
 };
 
 
-TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
+TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&currentPoint){
 
 
     TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: если делать ссылки через имена а не через адреса то добавить и вызывать тут менеджер адресов по именам
@@ -483,7 +495,8 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
         return GO; // ссылка на пустой отрезок - верна
     }
 
-    move_to_next_term(currentPoint, 0/*myid()*/, s);
+    //move_to_next_term(currentPoint, 0/*myid()*/, s);
+    MOVE_TO_NEXT_TERM(currentPoint, 0/*myid()*/, s);
     if (currentPoint/*->myid()*/==ldata/*->myid()*/){ // сопоставление с собой
         currentPoint = rdata;
         return GO;
@@ -497,8 +510,10 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
             //currentPoint->drop(myid);
             return BACK;
         } //std::cout << '^' << ref_dynamic_cast<ref_BYTE *>(a)->get_ch();
-        move_to_next_term(ldata, 0/*myid()*/, s);
-        currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
+        //move_to_next_term(ldata, 0/*myid()*/, s);
+        MOVE_TO_NEXT_TERM(ldata, 0/*myid()*/, s);
+        //currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
+        MOVE_TO_NEXT_TERM(currentPoint, 0/*myid()*/, s);
     };
     if (!(*currentPoint == *ldata)){ // сравниваем последние элементы
             //ldata->drop(myid);
@@ -511,7 +526,7 @@ TResult RefLinkToVariable::init(Session* s, RefData *&currentPoint){
     return GO;
 };
 
-TResult RefLinkToVariable::back(Session* s, RefData *&currentRight, RefData *&currentLeft){
+TResult RefLinkToVariable::back(RefData*&tpl,Session* s, RefData *&currentRight, RefData *&currentLeft){
     return BACK;
 };
 RefData*  RefLinkToVariable::Copy(RefData* where){
@@ -559,36 +574,45 @@ void delChain(RefData*a, RefData*b){
 
 
 
-RefData*  RefLChain::next_term( ThisId var_id, Session *s){
+//RefData*  RefLChain::next_term( ThisId var_id, Session *s){
+//    #ifdef TESTCODE
+//    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
+//    #endif
+//    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
+//        s->currentLWay = 0;
+//        return next;
+//    }
+//    s->currentLWay = this;
+//    return from;
+//};
+//
+//RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
+//    #ifdef TESTCODE
+//    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
+//    #endif
+//    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
+//        s->currentLWay = 0;
+//        return pred;
+//    }
+//    s->currentLWay = this;
+//    return to;
+//};
+
+
+
+
+
+RefVariable::~RefVariable(){
     #ifdef TESTCODE
-    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
+    co::varcount--;
     #endif
-    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
-        s->currentLWay = 0;
-        return next;
-    }
-    s->currentLWay = this;
-    return from;
-};
-
-RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
+    };
+RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(rp), RefalNameSpace(name){
     #ifdef TESTCODE
-    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
+    co::varcount++;
     #endif
-    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
-        s->currentLWay = 0;
-        return pred;
-    }
-    s->currentLWay = this;
-    return to;
-};
+    is_system (false);  };
 
-
-
-
-
-RefVariable::~RefVariable(){ co::varcount--;};
-RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(rp), RefalNameSpace(name){ co::varcount++; is_system (false);  };
 
 
 

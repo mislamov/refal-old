@@ -61,8 +61,8 @@ public:
         return (getValue() > t->getValue());
     };
 
-    virtual TResult init(Session* s, RefData *&currentPoint); //  --> operator==() => [return GO] else [return BACK]
-    virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+    virtual TResult init(RefData *&tpl, Session* s, RefData *&currentPoint); //  --> operator==() => [return GO] else [return BACK]
+    virtual TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
 
     virtual void setValueFromString(unistring) = 0;
     virtual unistring toString()
@@ -105,14 +105,11 @@ public:
 
     void forceback(Session *){};
 };
-//template <class T> RefDataTypesForCast RefSymbol<T> ::getClassTypeCast(){
+//template <class T> const RefDataTypesForCast RefSymbol<T> ::getClassTypeCast = castUseRTTI;
+//
+//template <class T> RefDataTypesForCast RefSymbol<T> ::object_cast(){
 //    return castUseRTTI;
 //};
-template <class T> const RefDataTypesForCast RefSymbol<T> ::getClassTypeCast = castUseRTTI;
-
-template <class T> RefDataTypesForCast RefSymbol<T> ::object_cast(){
-    return castUseRTTI;
-};
 
 
 
@@ -126,8 +123,8 @@ public:
     RefDataTypesForCast object_cast();
     const static RefDataTypesForCast getClassTypeCast;
 
-    TResult init(Session* s, RefData *&l);
-    TResult back(Session* s, RefData *&l, RefData *&r);
+    TResult init(RefData *&tpl, Session* s, RefData *&l);
+    TResult back(RefData *&tpl, Session* s, RefData *&l, RefData *&r);
     RefVarForSymbol (unistring name, RefData *rp=0);
 
     //virtual void setValueFromString(unistring) = 0;
@@ -154,7 +151,9 @@ template <class T> RefDataTypesForCast RefVarForSymbol<T> ::object_cast(){
 };
 */
 #define oCastSymbolClass(P, T, N) \
-        RefDataTypesForCast P<T>::object_cast(){return cast##N; }
+        RefDataTypesForCast P<T>::object_cast(){return cast##N; }; \
+        template<> const RefDataTypesForCast P<T> ::getClassTypeCast = cast##N;
+
 
 //*
 typedef  RefSymbolBase<infint>    RefIntegerBase;
@@ -170,6 +169,7 @@ oCastSymbolClass(RefSymbolBase,  char,   RefByteBase);
 oCastSymbolClass(RefSymbolBase,  unistring, RefWordBase);
 //*/
 
+
 //*
 typedef  RefSymbol<infint>    RefInteger;
 typedef  RefSymbol<infreal>   RefReal;
@@ -182,6 +182,8 @@ oCastSymbolClass(RefSymbol,  unichar,   RefAlpha);
 oCastSymbolClass(RefSymbol,  char,      RefByte);
 oCastSymbolClass(RefSymbol,  unistring, RefWord);
 //*/
+
+
 //*
 typedef RefVarForSymbol<RefIntegerBase>  RefVarInteger;
 typedef RefVarForSymbol<RefRealBase>     RefVarReal;

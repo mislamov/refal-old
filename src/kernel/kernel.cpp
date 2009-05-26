@@ -20,13 +20,13 @@
 #include "session.h"
 //#include "dataterms.h"
 
-
+#ifdef TESTCODE
 long co::ocount    = 0;
 long co::datacount = 0;
 long co::symcount  = 0;
 long co::varcount  = 0;
 long co::chaincount  = 0;
-
+#endif
 
 
 
@@ -37,13 +37,13 @@ RefStructBracket::RefStructBracket(RefStructBracket *br, RefData* rp) : RefBrack
 };
 RefData*  RefStructBracket::next_term( ThisId var_id ) {
     if (is_opened) {
-        return other->next;//
+        return other->getNext();//
     }
     return next;
 };
 RefData*  RefStructBracket::pred_term( ThisId var_id ) {
     if (!is_opened) {
-        return getOther()->pred;
+        return getOther()->getPred();
     }
     return pred;
 };
@@ -52,15 +52,16 @@ bool RefStructBracket::operator ==(RefData &rd) {
     return  aux && (aux->is_opened == is_opened);
 };
 
-TResult RefStructBracket::init(Session* s, RefData *&l) {
-    move_to_next_term(l,0/*myid()*/,s);
+TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l) {
+    //move_to_next_term(l,0/*myid()*/,s);
+    MOVE_TO_NEXT_TERM(l,0/*myid()*/,s);
     RefStructBracket* aux = ref_dynamic_cast<RefStructBracket >(l);
     if (!aux || (isOpen()!=aux->isOpen()))  return BACK; //   )  (
     if (isOpen()) {  //    (  (
         //std::cout << "\n% % % : " << std::flush;
         //std::cout << s->getStackOfDataSkob()->size() << std::flush;
         s->getStackOfDataSkob()->push( aux->getOther() );
-        l = l->next; // jump into brackets (to NULL-dot)
+        l = l->getNext(); // jump into brackets (to NULL-dot)
         return GO;
     };
     //    )  )
@@ -73,7 +74,7 @@ TResult RefStructBracket::init(Session* s, RefData *&l) {
 
 };
 
-TResult RefStructBracket::back(Session* s, RefData *&l, RefData *&r) {
+TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     if (is_opened) { //  (
         //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
         s->getStackOfDataSkob()->pop(); /// clean?
@@ -115,13 +116,13 @@ RefExecBracket::RefExecBracket(RefExecBracket *br, RefData* rp) : RefBracketBase
 
 RefData*  RefExecBracket::next_term( ThisId var_id ) {
     if (is_opened) {
-        return other->next;//
+        return other->getNext();//
     }
     return next;
 };
 RefData*  RefExecBracket::pred_term( ThisId var_id ) {
     if (!is_opened) {
-        return other->pred;
+        return other->getPred();
     }
     return pred;
 };
@@ -130,16 +131,17 @@ bool RefExecBracket::operator ==(RefData &rd) {
     return  aux && (aux->is_opened == is_opened);
 };
 
-TResult RefExecBracket::init(Session* s, RefData *&l) {
+TResult RefExecBracket::init(RefData*&tpl, Session* s, RefData *&l) {
     SYSTEMERROR("RefExecBracket::init! Exec bracket can't to match!");
-    move_to_next_term(l,0/*myid()*/,s);
+    //move_to_next_term(l,0/*myid()*/,s);
+    MOVE_TO_NEXT_TERM(l,0/*myid()*/,s);
     RefData*  a   = l;
     RefExecBracket* aux = ref_dynamic_cast<RefExecBracket >(a);
 //    if (a)  a->drop(0/*myid()*/); //   удаляет старую ссылку если создатель
     if (!aux || (is_opened!=aux->is_opened))  return BACK; //   )  (
     if (is_opened) {  //    (  (
         s->getStackOfDataSkob()->push( aux->other );
-        l = l -> next; // jump into brackets (to NULL-dot)
+        l = l -> getNext(); // jump into brackets (to NULL-dot)
         return GO;
     };
     //    )  )
@@ -153,7 +155,7 @@ TResult RefExecBracket::init(Session* s, RefData *&l) {
 
 };
 
-TResult RefExecBracket::back(Session* s, RefData *&l, RefData *&r) {
+TResult RefExecBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     SYSTEMERROR("RefExecBracket::back! Exec bracket can't to match!");
     if (is_opened) { //  (
 
@@ -167,8 +169,9 @@ TResult RefExecBracket::back(Session* s, RefData *&l, RefData *&r) {
 
 
 
-TResult  RefVariable_s::init(Session *s, RefData *&a) {
-    move_to_next_term(a, 0/*myid()*/, s);
+TResult  RefVariable_s::init(RefData*&tpl, Session *s, RefData *&a) {
+    //move_to_next_term(a, 0/*myid()*/, s);
+    MOVE_TO_NEXT_TERM(a, 0/*myid()*/, s);
     if (! ref_dynamic_cast<RefBracketBase >(a) ){
         return GO;
     } else {
@@ -176,15 +179,16 @@ TResult  RefVariable_s::init(Session *s, RefData *&a) {
     }
 };
 
-TResult  RefVariable_s::back(Session *s, RefData *&l, RefData *&r) {
+TResult  RefVariable_s::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     return BACK;
 };
 
 
 
 
-TResult  RefVariable_t::init(Session *s, RefData *&a) {
-    move_to_next_term(a, 0/*myid()*/, s);
+TResult  RefVariable_t::init(RefData*&tpl, Session *s, RefData *&a) {
+    //move_to_next_term(a, 0/*myid()*/, s);
+    MOVE_TO_NEXT_TERM(a, 0/*myid()*/, s);
     if (ref_dynamic_cast<RefData_DOT >(a) ){
         return BACK;
     } else {
@@ -193,30 +197,30 @@ TResult  RefVariable_t::init(Session *s, RefData *&a) {
     }
 };
 
-TResult  RefVariable_t::back(Session *s, RefData *&l, RefData *&r) {
+TResult  RefVariable_t::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     return BACK;
 };
 
 
 
 
-TResult  RefVariable_e::init(Session *s, RefData *&a) {
+TResult  RefVariable_e::init(RefData*&tpl, Session *s, RefData *&a) {
     return GO;
 };
 
-TResult  RefVariable_E::init(Session *s, RefData *&a) {
+TResult  RefVariable_E::init(RefData*&tpl, Session *s, RefData *&a) {
     //SYSTEMERROR("");
-    a = s->getStackOfDataSkob()->top()->pred;
+    a = s->getStackOfDataSkob()->top()->getPred();
     return GO;
 };
 
-TResult  RefVariable_END::init(Session *s, RefData *&a) {
+TResult  RefVariable_END::init(RefData*&tpl, Session *s, RefData *&a) {
     //SYSTEMERROR("");
-    a = s->getStackOfDataSkob()->top()->pred;
+    a = s->getStackOfDataSkob()->top()->getPred();
     return GO;
 };
 
-TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
+TResult  RefVariable_e::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     //std::cout << "\n## restore for e.e: " << std::flush; if (l) l->print_inf(); std::cout << " , "; if (r) r->print_inf(); std::cout << " next: " << r->next->toString() << "\n" << std::flush;
     if (l) {
         if (r==s->getStackOfDataSkob()->top()) {
@@ -224,7 +228,8 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
             return BACK;
         };
         //std::cout << "\n\n[r]: r==" << r->toString() << "  top=" << s->getStackOfDataSkob()->top()->toString() << "   " << s->getStackOfDataSkob()->size() << std::flush;
-        move_to_next_term(r, 0/*myid()*/, s);
+        //move_to_next_term(r, 0/*myid()*/, s);
+        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
         r = r->endOfTerm();
     } else {
         move_to_next_term(r, 0/*myid()*/, s);
@@ -244,7 +249,7 @@ TResult  RefVariable_e::back(Session *s, RefData *&l, RefData *&r) {
 
 };
 
-TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
+TResult  RefVariable_E::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     if (!l) return BACK;
     #ifdef TESTCODE
     if (! r)SYSTEMERROR("alarm!");
@@ -262,7 +267,7 @@ TResult  RefVariable_E::back(Session *s, RefData *&l, RefData *&r) {
     return GO;
 };
 
-TResult  RefVariable_END::back(Session *s, RefData *&l, RefData *&r) {
+TResult  RefVariable_END::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     return BACK;
 };
 
@@ -300,24 +305,24 @@ unistring vectorToString(RefData *f, RefData *g){
         #endif
     } else {
 
-        while (f && (!g || f!=g->next)) {
+        while (f && (!g || f!=g->getNext())) {
                 RefData *ff = f;
                 a += f->toString();
-                f = f->next;
+                f = f->getNext();
                 #ifdef TESTCODE
-                if (f && f->pred != ff){
+                if (f && f->getPred() != ff){
                     #ifdef DEBUG
                     std::cout << a << std::flush;
                     std::cout << "\n~f=" << (f?f->toString():"@null")  << std::flush;
-                    std::cout << "\n~f->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush;
+                    std::cout << "\n~f->pred=" << ((f&&f->getPred())?f->getPred()->toString():"@null") << std::flush;
                     #endif
-                    SYSTEMERROR(" next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->pred)?f->pred->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
+                    SYSTEMERROR(" next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->getPred())?f->getPred()->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
                 };
                 #endif
         };
 
         #ifdef TESTCODE
-        if (g && f!=g->next){
+        if (g && f!=g->getNext()){
                 SYSTEMERROR("f!=g after vectorToString! f=" << f << " and g=" << g->toString());
         };
         #endif
@@ -332,9 +337,9 @@ unistring vectorExplode(RefData *f, RefData *g){
 
     unistring a = EmptyUniString;
     if (f) {
-        while (f && (!g || f!=g->next)) {
+        while (f && (!g || f!=g->getNext())) {
                 a += f->explode();
-                f = f->next;
+                f = f->getNext();
         }
     }
     return a;
@@ -376,9 +381,9 @@ RefData*  RefNULL::Copy(RefData *d) {
     return new RefNULL(d);
 }
 
-TResult RefNULL::init(Session* s, RefData *&){
+TResult RefNULL::init(RefData*&tpl, Session* s, RefData *&){
     SYSTEMERROR("RefNULL::init() tring!");
 };
-TResult RefNULL::back(Session* s, RefData *&, RefData *&){
+TResult RefNULL::back(RefData*&tpl, Session* s, RefData *&, RefData *&){
     SYSTEMERROR("RefNULL::RefNULL() tring!");
 };

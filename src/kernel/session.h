@@ -53,7 +53,7 @@ struct quadL {
 };
 
 // тело сопоставленной переменной
-class TVarBody : public quadL<RefData*, RefLChain*, RefData*, RefLChain*>{
+class TVarBody : public quadL<RefData*, RefDataChainPart*, RefData*, RefDataChainPart*>{
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
 
@@ -84,13 +84,10 @@ class SessionOfMaching  : public RefObject {
                 RefChain  *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
 
                 std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
-                //std::stack<RefData *>	        StackOfGroupSkob;	    // Стек указателей на ПЕРЕДначало ОВ для группы - а надо ли
-                //std::stack<DataForRepeater *>	StackOfRepeatSkob;	    // Стек итераций повторителей
-                //std::stack<DataForRepeater *>	StackOfRepeatSkobDoned;	// Стек итераций повторителей для успешно сопоставленных
-                std::stack<ref_variant_vert*> StackOfVariants;	        // Стек удачно сопоставленных вариантов (ссылки на границы последнего варианта)
+                std::stack<ref_variant_vert*>   StackOfVariants;	    // Стек удачно сопоставленных вариантов (ссылки на границы последнего варианта)
 
                 std::stack<infint> StackOfRepeater;	        // Стек активных повторителей
-                std::stack<infint> StackOfRepeaterDoned;	    // Стек удачно сопоставленных повторителей
+                std::stack<infint> StackOfRepeaterDoned;	// Стек удачно сопоставленных повторителей
 
                 RefData *activeTemplate; // последнее активное выражение шаблона в сопоставлении (использовать вне matching ОПАСНО!)
                 RefTemplateBridgeVar *templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
@@ -125,12 +122,12 @@ class Session : public RefObject {
   public:
 
     /* путешествие по цепочкам данных сканирующей головки */
-    RefLChain *currentLWay;
+    RefDataChainPart *currentChainPart;
 
     int fcalls;
     unsigned long step;
 
-    TResult result_sost;     // последний статус в сопоставлении. Внешнее изменение: ref_variant_dot::pred_
+    TResult result_sost, pre_sost;     // последний статус в сопоставлении. Внешнее изменение: ref_variant_dot::pred_
     TMessage message4nextpred; // через эту переменную методы init и back могут передавать указание методам next_ и pred_
 
     // данные
@@ -148,8 +145,10 @@ class Session : public RefObject {
     Session();
     virtual ~Session();
 
-    void  SaveTemplItem   (RefData* var, RefData* l, RefLChain* lWay, RefData* r, RefLChain* rWay); // если аргумент - переменная, то добавляем ее состояние
-    void  RestoreTemplItem(RefData *owner, RefData* &l, RefLChain* &lWay, RefData* &r, RefLChain* &rWay); // извлекаем последнее сохраненное сост-е
+    //void  SaveTemplItem   (RefData* var,   RefData*  l, RefDataChainPart*  lWay, RefData*  r, RefDataChainPart*  rWay); // если аргумент - переменная, то добавляем ее состояние
+    //void  RestoreTemplItem(RefData *owner, RefData* &l, RefDataChainPart* &lWay, RefData* &r, RefDataChainPart* &rWay); // извлекаем последнее сохраненное сост-е
+    void  SaveTemplItem   (RefData* var,   RefData*  l, RefData*  r ); // если аргумент - переменная, то добавляем ее состояние
+    void  RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ); // извлекаем последнее сохраненное сост-е
 
     bool  matching(RefObject *initer, RefChain *tmplate, RefData*l, RefData*r, bool isdemaching, bool isRevers); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 

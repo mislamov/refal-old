@@ -41,8 +41,8 @@ public:
 
 RefVariable_e(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name, rp) {};
 
-    TResult  init(Session *, RefData *&);
-    TResult  back(Session *, RefData *&, RefData *&);
+    TResult  init(RefData *&tpl, Session *, RefData *&);
+    TResult  back(RefData *&tpl, Session *, RefData *&, RefData *&);
     void     dropall(Session *);
     bool operator==(RefData &rd);
 
@@ -63,8 +63,8 @@ RefVariable_E(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
     void     dropall(Session *);
     bool operator==(RefData &rd);
 
-    TResult  init(Session *, RefData *&);
-    TResult  back(Session *, RefData *&, RefData *&);
+    TResult  init(RefData *&tpl, Session *, RefData *&);
+    TResult  back(RefData *&tpl, Session *, RefData *&, RefData *&);
     virtual RefData*  Copy(RefData *d = 0) {
         return new RefVariable_E(getName());
     };
@@ -82,8 +82,8 @@ RefVariable_END(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(na
     void     dropall(Session *);
     bool operator==(RefData &rd);
 
-    TResult  init(Session *, RefData *&);
-    TResult  back(Session *, RefData *&, RefData *&);
+    TResult  init(RefData *&tpl, Session *, RefData *&);
+    TResult  back(RefData *&tpl, Session *, RefData *&, RefData *&);
     virtual RefData*  Copy(RefData *d = 0) {
         return new RefVariable_END(getName());
     };
@@ -102,8 +102,8 @@ RefVariable_s(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
         return false;
     };
 
-    TResult  init(Session *, RefData *&);
-    TResult  back(Session *, RefData *&, RefData *&);
+    TResult  init(RefData *&tpl, Session *, RefData *&);
+    TResult  back(RefData *&tpl, Session *, RefData *&, RefData *&);
     virtual RefData*  Copy(RefData *d = 0) {
         return new RefVariable_s(getName());
     };
@@ -124,8 +124,8 @@ RefVariable_t(unistring name = EmptyUniString, RefData *rp=0) : RefVariable(name
         return false;
     };
 
-    TResult  init(Session *, RefData *&);//{ SYSTEMERROR(""); };
-    TResult  back(Session *, RefData *&, RefData *&);//{ SYSTEMERROR(""); };
+    TResult  init(RefData *&tpl, Session *, RefData *&);//{ SYSTEMERROR(""); };
+    TResult  back(RefData *&tpl, Session *, RefData *&, RefData *&);//{ SYSTEMERROR(""); };
     virtual RefData*  Copy(RefData *d = 0) {
         return new RefVariable_t(getName());
     };
@@ -149,8 +149,8 @@ CLASS_OBJECT_CAST(RefStructBracket);
     bool       operator ==(RefData &);
     RefData*  next_term( ThisId );
     RefData*  pred_term( ThisId );
-    TResult    init( Session* , RefData *& );
-    TResult    back( Session* , RefData *&, RefData *& );
+    TResult    init(RefData *&tpl,  Session* , RefData *& );
+    TResult    back(RefData *&tpl,  Session* , RefData *&, RefData *& );
     void    forceback(Session *);
     unistring toString() {
         std::ostringstream s;
@@ -186,8 +186,8 @@ CLASS_OBJECT_CAST(RefExecBracket);
     bool       operator ==(RefData &rd);
     RefData*  next_term( ThisId var_id );
     RefData*  pred_term( ThisId var_id );
-    TResult    init( Session* s, RefData *&l );
-    TResult    back( Session* s, RefData *&l, RefData *&r );
+    TResult    init(RefData *&tpl,  Session* s, RefData *&l );
+    TResult    back(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
     unistring toString() {
         std::ostringstream s;
         s << (isOpen()?"<":"> ") ;//<< "." << (long)this << "other:" << (long)other;

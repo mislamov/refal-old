@@ -35,14 +35,17 @@ class ref_variant_vopr;
 class RefData_DOT : public RefBracketBase { // begin- Рё end-
 public:
     CLASS_OBJECT_CAST(RefData_DOT);
-    virtual bool IRefVarStacked(){ return true; };
+    virtual bool IRefVarStacked() {
+        return true;
+    };
 
     //~RefData_DOT(){ if(pred)next->pred=pred; if(pred)pred->next=next; };
 RefData_DOT(RefData* rp = 0) : RefBracketBase(rp) {};
+
 RefData_DOT(RefData_DOT *nd, RefData* rp = 0) : RefBracketBase(nd, rp) {};
     bool operator ==(RefData &rd);
-    TResult  init(Session* s, RefData *&l); //
-    TResult  back(Session* s, RefData *&l, RefData *&r); //
+    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
 
     virtual RefData*  next_term( ThisId var_id, Session *s );
     virtual RefData*  pred_term( ThisId var_id, Session *s );
@@ -76,8 +79,8 @@ public:
 
     ref_variant_dot( RefData* rp=0);
     RefData*  pred_template (ThisId id, Session *s);
-    TResult	   init	      (Session *s, RefData *&l);
-    TResult	   back	      (Session *s, RefData *&l, RefData *&r);
+    TResult	   init	      (RefData *&tpl, Session *s, RefData *&l);
+    TResult	   back	      (RefData *&tpl, Session *s, RefData *&l, RefData *&r);
     bool operator==(RefData&rd);
     void forceback(Session* s) {};
 
@@ -108,8 +111,8 @@ public:
     bool operator==(RefData&rd);
     void forceback (Session *s);
 
-    TResult  init(Session* s, RefData *&l); //
-    TResult  back(Session* s, RefData *&l, RefData *&r); //
+    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
     };
@@ -124,8 +127,8 @@ class ref_variant_ffwd : public RefData {
 
 public:
     ref_variant_ffwd(RefData *rp=0);
-    TResult	 init(Session *s, RefData *&l);
-    TResult	 back(Session *s, RefData *&l, RefData *&r);
+    TResult	 init(RefData *&tpl, Session *s, RefData *&l);
+    TResult	 back(RefData *&tpl, Session *s, RefData *&l, RefData *&r);
     bool operator==(RefData&rd);
 
     virtual RefData* Copy(RefData *where=0) {
@@ -149,8 +152,8 @@ public:
     RefData*	pred_template (ThisId id, Session *s);
     bool operator==(RefData&rd);
 
-    TResult  init(Session* s, RefData *&l); //
-    TResult  back(Session* s, RefData *&l, RefData *&r); //
+    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
     };
@@ -172,8 +175,8 @@ public:
     RefData*	pred_template (ThisId id, Session *s);
     bool operator==(RefData&rd);
 
-    TResult  init(Session* s, RefData *&l); //
-    TResult  back(Session* s, RefData *&l, RefData *&r) {
+    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
         SYSTEMERROR("zagl for " << toString() << "->back(s,l,r)");
     }; //
     virtual RefData* Copy(RefData *where=0) {
@@ -191,19 +194,19 @@ public:
 //---------- {  } ----------
 class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
 public:
-CLASS_OBJECT_CAST(RefGroupBracket);
-    virtual bool IRefVarStacked(){ return true; };
+    CLASS_OBJECT_CAST(RefGroupBracket);
+    virtual bool IRefVarStacked() { return true; };
 
     virtual ~RefGroupBracket() {};
-RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) {
+    RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) {
         RefalNameSpace::setName(name);
     }; // оптимизировать
-RefGroupBracket(RefGroupBracket *oth, RefData *rp) : RefBracketBase(oth, rp) {
+    RefGroupBracket(RefGroupBracket *oth, RefData *rp) : RefBracketBase(oth, rp) {
         RefalNameSpace::setName(oth->name);
     };
     //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
-    TResult  init(Session *, RefData *&l);
-    TResult  back(Session *, RefData *&l, RefData *&r);
+    TResult  init(RefData *&tpl, Session *, RefData *&l);
+    TResult  back(RefData *&tpl, Session *, RefData *&l, RefData *&r);
     bool operator==(RefData&rd) {
         return false;
     };
@@ -238,7 +241,7 @@ class ref_repeater : public RefBracketBase {
     infint min; /// todo: экономить. вообще используются толька в ]
     infint max;
 public:
-CLASS_OBJECT_CAST(ref_repeater);
+    CLASS_OBJECT_CAST(ref_repeater);
 
     virtual ~ref_repeater() {};
 
@@ -248,8 +251,8 @@ ref_repeater(infint tfrom, infint tto, RefData *rp=0) : RefBracketBase(rp) {
     };
 ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
     //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
-    TResult  init(Session *, RefData *&l);
-    TResult  back(Session *, RefData *&l, RefData *&r);
+    TResult  init(RefData *&tpl, Session *, RefData *&l);
+    TResult  back(RefData *&tpl, Session *, RefData *&l, RefData *&r);
     RefData*  next_template (ThisId id, Session*);
     RefData*  pred_template (ThisId id, Session*);
 

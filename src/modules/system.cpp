@@ -25,11 +25,11 @@
 
 
 RefChain* Dec (RefData* beg, RefData* end, Session* s){
-    //RefInteger *a = ref_dynamic_cast<RefInteger *>(beg);
-    //RefInteger *b = ref_dynamic_cast<RefInteger *>(end);
-    RefInteger *a = (RefInteger *)(beg);
-    RefInteger *b = (RefInteger *)(end);
-    if (beg->next != end){
+    RefInteger *a = ref_dynamic_cast<RefInteger >(beg);
+    RefInteger *b = ref_dynamic_cast<RefInteger >(end);
+    //RefInteger *a = (RefInteger *)(beg);
+    //RefInteger *b = (RefInteger *)(end);
+    if (!a || !b || (beg->getNext() != end)){
         RUNTIMEERROR("Dec", "error arguments");
         return 0;
     };
@@ -40,11 +40,11 @@ RefChain* Dec (RefData* beg, RefData* end, Session* s){
 };
 
 RefChain* Div (RefData* beg, RefData* end, Session* s){
-    //RefInteger *a = ref_dynamic_cast<RefInteger *>(beg);
-    //RefInteger *b = ref_dynamic_cast<RefInteger *>(end);
-    RefInteger *a = (RefInteger *)(beg);
-    RefInteger *b = (RefInteger *)(end);
-    if (beg->next != end){
+    RefInteger *a = ref_dynamic_cast<RefInteger >(beg);
+    RefInteger *b = ref_dynamic_cast<RefInteger >(end);
+    //RefInteger *a = (RefInteger *)(beg);
+    //RefInteger *b = (RefInteger *)(end);
+    if (!a || !b || (beg->getNext() != end)){
         RUNTIMEERROR("Div", "error arguments");
         return 0;
     };
@@ -59,7 +59,7 @@ RefChain* Sum (RefData* beg, RefData* end, Session* s){
     infint thesum = 0;
     RefInteger *a;
     //std::cout << "\n\nSum: ";
-    while(beg != end->next){
+    while(beg != end->getNext()){
         a = ref_dynamic_cast<RefInteger >(beg);
 
         if (! a){
@@ -68,7 +68,8 @@ RefChain* Sum (RefData* beg, RefData* end, Session* s){
         }
         thesum += a->getValue();
         //std::cout << a->getValue() << ", ";
-        move_to_next_term(beg, 0, s);
+        //move_to_next_term(beg, 0, s);
+        MOVE_TO_NEXT_TERM(beg, 0, s);
     }
 
     //std::cout << a->getValue() << " = " << thesum ;
@@ -81,7 +82,7 @@ RefChain* Mul (RefData* beg, RefData* end, Session* s){
     infint thesum = 1;
     RefInteger *a;
     //std::cout << "\n\nMul: ";
-    while(beg != end->next){
+    while(beg != end->getNext()){
         a = ref_dynamic_cast<RefInteger >(beg);
 
         if (! a){
@@ -90,7 +91,8 @@ RefChain* Mul (RefData* beg, RefData* end, Session* s){
         }
         thesum *= a->getValue();
         //std::cout << a->getValue() << " * ";
-        move_to_next_term(beg, 0, s);
+        //move_to_next_term(beg, 0, s);
+        MOVE_TO_NEXT_TERM(beg, 0, s);
     }
     a = new RefInteger(thesum);
     //std::cout << " = " << thesum;
@@ -103,9 +105,10 @@ RefChain* Mul (RefData* beg, RefData* end, Session* s){
 RefChain* Lenw (RefData* beg, RefData* end, Session* s){
     infint thecount = 0;
     RefInteger *a;
-    if (beg) while(beg != end->next){
+    if (beg) while(beg != end->getNext()){
         thecount++;
-        move_to_next_term(beg, 0, s);
+        //move_to_next_term(beg, 0, s);
+        MOVE_TO_NEXT_TERM(beg, 0, s);
     }
 
     a = new RefInteger(thecount);
@@ -125,7 +128,7 @@ RefChain* Numb (RefData* beg, RefData* end, Session* s){
 
 RefChain*  DataCompare(RefData* beg, RefData* end, Session* s){
     RefData *a = 0;
-    if (beg->next != end){
+    if (beg->getNext() != end){
         RUNTIMEERROR("Compare", "Must be 2 arguments");
         return 0;
     }

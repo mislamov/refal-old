@@ -28,7 +28,6 @@
 RefChain* evalutor(RefChain *argline, Session *s){
         // long &dc = co::datacount;
 
-        ///todo: следующа€ строка экспериментальна€ - когда игралс€ с улови€ми (отключил откат если сопоствление не с концом аргумента)
         if (! argline->first) return argline;
 
         RefData *tmpA, *tmpB;
@@ -43,15 +42,13 @@ RefChain* evalutor(RefChain *argline, Session *s){
         TVarBodyTable *vars     = 0;
 		bool succes;
 
-        for (RefData *it=argline->first; it&&it!=argline->second->next; ){
-        //for (RefData *it=argline->first; it&&it!=argline->second->next; move_to_next_term(it, 0, s)){
+        for (RefData *it=argline->first; it&&it!=argline->second->getNext(); ){ ////-помен€ть когда через куски
             exec = ref_dynamic_cast<RefExecBracket>(it);
-            ////exec = ref_dynamic_cast<RefExecBracket *>(it);
             if (exec && !exec->isOpen()){    // поиск >
-                it = exec->getOther()->pred; // получение точки перед <  (может быть 0)
+                it = exec->getOther()->getPred(); // получение точки перед <  (может быть 0)
 
                 // получение ссылки на функцию
-                fn = ref_dynamic_cast<RefWord>( exec->getOther()->next->next);
+                fn = ref_dynamic_cast<RefWord>( exec->getOther()->getNext()->getNext());
                 if (fn){
                     unistring fname = fn->getValue();
                     funk = s->findMethodFromModule( fname );
@@ -59,30 +56,32 @@ RefChain* evalutor(RefChain *argline, Session *s){
                 } else {
                     /// todo: вызов метода из пользовательской переменной
                     // вынос карты подпеременных переменной на передовую
-                    SYSTEMERROR("Function name is not RefWord! : " << exec->getOther()->next->next->toString());
+                    SYSTEMERROR("Function name is not RefWord! : " << exec->getOther()->getNext()->getNext()->toString());
                 }
 
-                if (fn->next == exec){ // выполнить с пустым аргументом  (  <fn >  )
+                if (fn->getNext() == exec){ // выполнить с пустым аргументом  (  <fn >  )
                     tmpA=0;
                     tmpB=fn;
                 } else {
-                    tmpA=fn->next;
-                    tmpB=exec->pred;
+                    tmpA=fn->getNext();
+                    tmpB=exec->getPred();
                     // выполнить с аргументом
                 }
                 succes = funk && funk->execute(tmpA, tmpB, s);
                 if (!succes){
-                        SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue() ) << " " << RefChain(fn->next, exec->pred).toString() << ">\nView: " << argline->toString());
+                        SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue() ) << " " << RefChain(fn->getNext(), exec->getPred()).toString() << ">\nView: " << argline->toString());
                 }
 
-                delete exec->getOther()->next->next; // удал€ем вызов - остаетс€ только результат вызова
-                delete exec->getOther()->next;
+                delete exec->getOther()->getNext()->getNext(); // удал€ем вызов - остаетс€ только результат вызова
+                delete exec->getOther()->getNext();
                 delete exec->getOther();
                 delete exec;
                 // std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
             }
 
-            while((it = it->next_term(0, s)) && it->is_system()); // итераци€
+            //while((it = it->next_term(0, s)) && it->is_system()); // итераци€
+            //move_to_next_term(it, 0, s);
+            MOVE_TO_NEXT_TERM(it, 0, s);
         }
 
 

@@ -28,7 +28,7 @@ bool RefData_DOT::operator ==(RefData &rd) {
         return  aux && (aux->is_opened == is_opened);
 };
 
-TResult RefData_DOT::init(Session* s, RefData *&l){
+TResult RefData_DOT::init(RefData*&tpl, Session* s, RefData *&l){
         RefData_DOT* aux;
 		if (is_opened){ // (
 			aux = ref_dynamic_cast<RefData_DOT >(l);
@@ -38,13 +38,14 @@ TResult RefData_DOT::init(Session* s, RefData *&l){
 		};
 
 		// )
-		move_to_next_term(l, 0/*this->myid()*/, s);
+		//move_to_next_term(l, 0/*this->myid()*/, s);
+		MOVE_TO_NEXT_TERM(l, 0/*this->myid()*/, s);
 		aux = ref_dynamic_cast<RefData_DOT >(l);
 		if ( !aux || aux->is_opened) { return BACK; }
 		return SUCCESS;
 };
 
-TResult RefData_DOT::back(Session* sess, RefData *&l, RefData *&r){
+TResult RefData_DOT::back(RefData*&tpl, Session* sess, RefData *&l, RefData *&r){
 		if (is_opened) { /*sess->extention_number = 0;*/
 		    return FAIL;
         };
@@ -70,10 +71,10 @@ RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) { return pred; };
 
 /**------------------- группа -----------------**/
 
-TResult  RefGroupBracket::init(Session *s, RefData *&l){
+TResult  RefGroupBracket::init(RefData*&tpl, Session *s, RefData *&l){
     return GO;
 };
-TResult  RefGroupBracket::back(Session *s, RefData *&l, RefData *&r){
+TResult  RefGroupBracket::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r){
 	return BACK;
 };
 
@@ -88,7 +89,7 @@ RefData*   ref_variant_dot::pred_template (ThisId id, Session *s) {
     return nextffwd;
 };
 
-TResult	   ref_variant_dot::init(Session *s, RefData *&l) {
+TResult	   ref_variant_dot::init(RefData*&tpl, Session *s, RefData *&l) {
     #ifdef TESTCODE
     TVarBody* vb = dynamic_cast<TVarBody *>( s->matchSessions.back()->StackOfSopost.top());
     if ((!vb) || (! dynamic_cast<RefBracketBase *>(vb->owner)))
@@ -97,27 +98,34 @@ TResult	   ref_variant_dot::init(Session *s, RefData *&l) {
     l = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()))->second;
     return GO;
 };
-TResult	   ref_variant_dot::back(Session *s, RefData *&l, RefData *&r) { /*l = r = s->StackOfGroupSkob.top();*/ return BACK; };
+
+TResult	   ref_variant_dot::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    //return BACK;
+    tpl = nextffwd;//->next_template(0, s);
+    //s->pre_sost = GO;
+    return GO;
+};
+
 bool	   ref_variant_dot::operator==(RefData&rd){ return false; };
 
 //----------  |  ------------
 ref_variant_vert::ref_variant_vert( RefData* rp) : RefData(rp) { is_system (false); };
-TResult	   ref_variant_vert::init(Session *s, RefData *&l)	{ s->matchSessions.back()->StackOfVariants.push(this); return GO;};
-TResult	   ref_variant_vert::back(Session *s, RefData *&l, RefData *&r)	{ s->matchSessions.back()->StackOfVariants.pop(); return BACK;};
-RefData*   ref_variant_vert::next_template (ThisId id, Session*) { return vopr->next; }; //  return "}.vname"
+TResult	   ref_variant_vert::init(RefData*&tpl, Session *s, RefData *&l)	{ s->matchSessions.back()->StackOfVariants.push(this); return GO;};
+TResult	   ref_variant_vert::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)	{ s->matchSessions.back()->StackOfVariants.pop(); return BACK;};
+RefData*   ref_variant_vert::next_template (ThisId id, Session*) { return vopr->getNext(); }; //  return "}.vname"
 void       ref_variant_vert::forceback (Session *s)	{ s->matchSessions.back()->StackOfVariants.pop(); };
 bool	   ref_variant_vert::operator==(RefData&rd){ return false; };
 
 //----------  =>  ------------
 ref_variant_ffwd::ref_variant_ffwd(RefData *rp) : RefData (rp) { is_system (false);};
-TResult	 ref_variant_ffwd::init(Session *, RefData *&l) { return GO; };
-TResult	 ref_variant_ffwd::back(Session *, RefData *&l, RefData *&r) { return GO; };
+TResult	 ref_variant_ffwd::init(RefData*&tpl, Session *, RefData *&l) { return GO; };
+TResult	 ref_variant_ffwd::back(RefData*&tpl, Session *, RefData *&l, RefData *&r) { return GO; };
 bool	 ref_variant_ffwd::operator==(RefData&rd){ return false; };
 
 //----------  ?  ------------
 ref_variant_vopr::ref_variant_vopr( RefData* rp) : RefData(rp) { is_system (false);};
-TResult		ref_variant_vopr::init(Session *, RefData *&l) { return BACK; };
-TResult     ref_variant_vopr::back(Session* s, RefData *&l, RefData *&r){ return BACK; }; //
+TResult		ref_variant_vopr::init(RefData*&tpl, Session *, RefData *&l) { return BACK; };
+TResult     ref_variant_vopr::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r){ return BACK; }; //
 RefData*	ref_variant_vopr::pred_template (ThisId id, Session *s) {
         //if (s->message4nextpred == mFORCEBACK){ return pred; } - закрыл, так как откатывать надо не последний вариант а сопоставленный
 		ref_variant_vert *rvv = s->matchSessions.back()->StackOfVariants.top();
@@ -130,7 +138,7 @@ void ref_variant_vopr::forceback(Session* s){
 
 //----------  x  ------------
 ref_variant_krest::ref_variant_krest( RefData* rp) : RefData(rp) { is_system (false);};
-TResult		ref_variant_krest::init(Session *, RefData *&l) { return BACK; };
+TResult		ref_variant_krest::init(RefData*&tpl, Session *, RefData *&l) { return BACK; };
 RefData*	ref_variant_krest::pred_template (ThisId id, Session *s) { return begbr; };
 bool ref_variant_krest::operator==(RefData&rd){ return false; };
 
@@ -139,7 +147,7 @@ bool ref_variant_krest::operator==(RefData&rd){ return false; };
 
 
 //----------  [...]  ------------
-TResult  ref_repeater::init(Session *s, RefData *&l){
+TResult  ref_repeater::init(RefData*&tpl, Session *s, RefData *&l){
     if (isOpen()){ ///  [
         if (! getMin()){ // [0..x]
             s->message4nextpred = mOTHER_next; // выходим из варианта
@@ -166,7 +174,7 @@ TResult  ref_repeater::init(Session *s, RefData *&l){
 
 };
 
-TResult  ref_repeater::back(Session *s, RefData *&l, RefData *&r){
+TResult  ref_repeater::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r){
     if (isOpen()){   ///   [
         infint currentStep = s->matchSessions.back()->StackOfRepeater.top();
         if (currentStep){
@@ -197,8 +205,8 @@ RefData*  ref_repeater::next_template (ThisId id, Session*s){
     switch (s->message4nextpred){
         case mNEXT: return next;
         case mPRED: return pred;
-        case mOTHER_next: return other->next;
-        case mOTHER_pred: return other->pred;
+        case mOTHER_next: return other->getNext();
+        case mOTHER_pred: return other->getPred();
         default:;
     }
     SYSTEMERROR("unexpected message");
@@ -207,8 +215,8 @@ RefData*  ref_repeater::pred_template (ThisId id, Session*s){
     switch (s->message4nextpred){
         case mNEXT: return next;
         case mPRED: return pred;
-        case mOTHER_next: return other->next;
-        case mOTHER_pred: return other->pred;
+        case mOTHER_next: return other->getNext();
+        case mOTHER_pred: return other->getPred();
         default:;
     }
     SYSTEMERROR("unexpected message");

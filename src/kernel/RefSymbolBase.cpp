@@ -38,8 +38,10 @@
 
 
 template <class T>
-TResult RefSymbolBase <T>::init(Session* s, RefData *&l) {
-    move_to_next_term(l,0/*myid()*/,s);
+TResult RefSymbolBase <T>::init(RefData *&tpl, Session* s, RefData *&l) {
+    //move_to_next_term(l,0/*myid()*/,s);
+    MOVE_TO_NEXT_TERM(l,0/*myid()*/,s);
+
     RefData* aux = l;
     #ifdef TESTCODE
         if (!aux) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
@@ -53,27 +55,31 @@ TResult RefSymbolBase <T>::init(Session* s, RefData *&l) {
 };
 
 template <class T>
-    TResult RefSymbolBase <T>::back(Session* s, RefData *&l, RefData *&r) {
+    TResult RefSymbolBase <T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
         //s->get_moved_to_pred_current_term(myid);
         return BACK;
 };
 
 template <class T>
     RefSymbolBase<T>::~RefSymbolBase(){
+#ifdef TESTCODE
                 co::symcount--;
+#endif
 };
 
 template <class T>
     RefSymbolBase<T>::RefSymbolBase(RefData *rp) : RefValuedData(rp){
         is_system (false);
+#ifdef TESTCODE
         co::symcount++;
+#endif
 };
 /*template <class T>
     void RefSymbolBase<T>::setValue(T i){};
 */
 template <class T>
     bool RefSymbolBase<T>::operator ==(RefData& rd){
-        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase<T> >(& rd); //// static_cast
+        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase<T> >(& rd);
         return t && (t->getValue()==this->getValue());
     };
 
@@ -112,8 +118,9 @@ template <class T>
 
 
 template <class T>
-    TResult RefVarForSymbol<T>::init(Session* s, RefData *&l){
-        move_to_next_term(l, 0/*myid()*/, s);
+    TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l){
+        //move_to_next_term(l, 0/*myid()*/, s);
+        MOVE_TO_NEXT_TERM(l, 0/*myid()*/, s);
 
         if (ref_dynamic_cast<T >(l))
             return GO;
@@ -122,7 +129,7 @@ template <class T>
     };
 
 template <class T>
-    TResult RefVarForSymbol<T>::back(Session* s, RefData *&l, RefData *&r){
+    TResult RefVarForSymbol<T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r){
         return BACK;
     };
 
@@ -254,6 +261,7 @@ oCastSymbolClass(RefSymbol,  infreal,   RefReal);
 oCastSymbolClass(RefSymbol,  unichar,   RefAlpha);
 oCastSymbolClass(RefSymbol,  char,      RefByte);
 oCastSymbolClass(RefSymbol,  unistring, RefWord);
+
 
 oCastSymbolClass(RefVarForSymbol,  RefIntegerBase, RefVarInteger);
 oCastSymbolClass(RefVarForSymbol,  RefRealBase,    RefVarReal);

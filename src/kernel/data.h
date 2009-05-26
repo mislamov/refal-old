@@ -55,7 +55,7 @@ const char varPathSeparator = '/';  // разделитель в пути к п�
 enum RefDataTypesForCast {
     /*   доп.      ветка     лист      -||-   */
     castUseRTTI       = B32(01000000, 00000000, 00000000, 00000000), // для объектов требуется сисемный dynamic_cast
-    castIsSystemData  = B32(10000000, 00000000, 00000000, 00000000),
+//    castIsSystemData  = B32(10000000, 00000000, 00000000, 00000000),
 
     /*рефал-символы*/
     castRefSymbolBase = B32(00000000, 00000001, 00000000, 00000000), // рефал-символ
@@ -100,11 +100,10 @@ enum RefDataTypesForCast {
 
     castRefConditionBase =  B32(00000000, 01000000, 00000000, 00000000),
     castRefCondition     =  B32(00000000, 00000000, 00000000, 00000001) | castRefConditionBase
-    //сastRef            = B32(00000000, 00000000, 00000000, 00000000)  ////
+    //сastRef            = B32(00000000, 00000000, 00000000, 00000000)
 
 
-
-//  castRef            = B32(00000000, 00000000, 00000000, 00000000)  ////
+//  castRef            = B32(00000000, 00000000, 00000000, 00000000)
 //  castRef            = B8 (00000000)
 };
 
@@ -143,22 +142,27 @@ public:
 
 // Абстрактный класс - предок всех термов языка
 class RefData : public RefObject {
-public:
+    friend class RefChain;
+    friend class RefUserVarNotInit;
+    friend void delChain(RefData*, RefData*);
+
+protected:
     RefData*  next;
     RefData*  pred;
-    //RefDataTypesForCast castInfo;
-    unsigned long castInfo;
+    //RefDataTypesForCast isSystem;
+    bool isSystem;
 
-    virtual bool IRefVarStacked(){ return false; };
 
 
 public:
-    inline bool  is_system() {
-        return castInfo&castIsSystemData;
-    };
-    inline void  is_system(bool ss) {
-        castInfo = (ss ? castInfo|castIsSystemData : castInfo&~castIsSystemData);
-    };
+    inline RefData* getNext(){ return next; };
+    inline RefData* getPred(){ return pred; };
+    inline void setNext(RefData *p){ next=p; };
+    inline void setPred(RefData *p){ pred=p; };
+
+    virtual bool IRefVarStacked(){ return false; };
+    inline bool  is_system() {        return isSystem;    };
+    inline void  is_system(bool ss) {        isSystem = ss;    };
 
     RefData(RefData *rp=0); // pr вставляем после себя
     virtual ~RefData();
@@ -201,8 +205,8 @@ public:
             virtual bool operator <=(RefData &rd) { return ! (*this>rd); };
             virtual bool operator >=(RefData &rd) { return ! (*this<rd); };
     */
-    virtual TResult init(Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
-    virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
+    virtual TResult init(RefData *&activeTemplate, Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
+    virtual TResult back(RefData *&activeTemplate, Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
     virtual void    forceback(Session* s) {
         SYSTEMERROR("RefData.forceback NOT DEFINE for "
                     << toString());
@@ -216,6 +220,9 @@ public:
 RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s);
 RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s);
 
+#define MOVE_TO_NEXT_TERM(p, id, s) {while ((p = p->next_term(id, s)) && p->is_system());}
+#define MOVE_TO_PRED_TERM(p, id, s) {while ((p = p->pred_term(id, s)) && p->is_system());}
+
 
 
 
@@ -225,8 +232,8 @@ public:
     RefNULL(RefData *pr=0);
     virtual bool operator==(RefData&);
     virtual RefData*  Copy(RefData *d);
-    virtual TResult init(Session*, RefData *&);
-    virtual TResult back(Session*, RefData *&, RefData *&);
+    virtual TResult init(RefData *&tpl, Session*, RefData *&);
+    virtual TResult back(RefData *&tpl, Session*, RefData *&, RefData *&);
 
     virtual unistring toString() {
         #ifdef DEBUG
@@ -295,8 +302,8 @@ public:
 
     unistring toString();
     bool operator==(RefData&);
-    virtual TResult init(Session* s, RefData *&currentPoint);
-    virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+    virtual TResult init(RefData *&tpl, Session* s, RefData *&currentPoint);
+    virtual TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
     virtual RefData*  Copy(RefData* where=0);
 
     RefLinkToVariable(unistring name, RefData *rp = 0);
@@ -389,35 +396,24 @@ public:
 void delChain(RefData*, RefData*);
 
 
-class RefLChain : public RefData {
-public:
+
+struct RefDataChainPart {
     RefData *from;
-    RefData *to  ;
+    RefData *to;
 
-    virtual RefData*  next_term( ThisId var_id, Session *s);
-    virtual RefData*  pred_term( ThisId var_id, Session *s);
-    virtual RefData*  Copy(RefData* where=0) {
-        SYSTEMERROR("undefined");
-    };
+    // TODO (Islamov#1#): Может стоит подумать о массиве ссылок, а не об очереди?
+    RefDataChainPart *pred;
+    RefDataChainPart *next;
+};
 
-    virtual TResult init(Session* s, RefData *&currentPoint) {
-        SYSTEMERROR("undefined");
-    };
-    virtual TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft) {
-        SYSTEMERROR("undefined");
-    };
-
-    virtual bool operator ==(RefData &rd) {
-        SYSTEMERROR("undefined");
-    };
-RefLChain(RefData *rp = 0):RefData(rp) {
-        is_system(true);
-    };
+struct RefDataLnkPoint {
+    RefDataChainPart*   chainLnk;
+    RefData*            dataLnk;
 };
 
 
 template <class T>
-inline T* ref_dynamic_cast(RefObject *d) {
+ T* ref_dynamic_cast(RefObject *d) {
     if (!d)
         return 0;
 
@@ -449,6 +445,7 @@ inline T* ref_dynamic_cast(RefObject *d) {
     RefDataTypesForCast objectCast = d->object_cast();
 
     if ((T::getClassTypeCast & castUseRTTI)) {
+        std::cout << "err";// << d->toString();
         return dynamic_cast<T*>(d);
     }
 //     else {

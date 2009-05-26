@@ -98,7 +98,7 @@ public:
 class RefUserVarNotInit : public RefVariable, public NeedInitilize {
     unistring type;
 public:
-CLASS_OBJECT_CAST(RefUserVarNotInit);
+    CLASS_OBJECT_CAST(RefUserVarNotInit);
     bool initize(Session *); // замещается на пару
     void setType(unistring ttype) {
         type = ttype;
@@ -113,8 +113,8 @@ CLASS_OBJECT_CAST(RefUserVarNotInit);
     bool operator ==(RefData &rd) {
         return false;
     };
-    TResult init(Session*, RefData *&);
-    TResult back(Session*, RefData *&, RefData *&);
+    TResult init(RefData *&tpl, Session*, RefData *&);
+    TResult back(RefData *&tpl, Session*, RefData *&, RefData *&);
     RefData*  Copy(RefData* where=0) {
         return 0;
     };
@@ -184,7 +184,7 @@ class RefCondition : public RefConditionBase {
     RefChain *leftPart;
     bool isReverse; // признак условия $NOT
 public:
-CLASS_OBJECT_CAST(RefCondition);
+    CLASS_OBJECT_CAST(RefCondition);
     RefObject *own;  // RefCondition or RefFunctionBase
 
     void setRightPart(RefChain *rp) {
@@ -197,8 +197,8 @@ CLASS_OBJECT_CAST(RefCondition);
     virtual bool operator ==(RefData &rd) {
         return false;
     };
-    virtual TResult  init(Session* , RefData *&); //
-    virtual TResult  back(Session* , RefData *&, RefData *&); //
+    virtual TResult  init(RefData *&tpl, Session* , RefData *&); //
+    virtual TResult  back(RefData *&tpl, Session* , RefData *&, RefData *&); //
 
 RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r) {
         isReverse = withnot;
@@ -229,10 +229,10 @@ public:
 RefMatchingCutter(RefData *d=0) : RefData(d) {
         is_system( false );
     }
-    virtual TResult  init(Session* , RefData *&) {
+    virtual TResult  init(RefData *&tpl, Session* , RefData *&) {
         return GO;
     }
-    virtual TResult  back(Session* , RefData *&, RefData *&) {
+    virtual TResult  back(RefData *&tpl, Session* , RefData *&, RefData *&) {
         return FORCEBACK;
     }
 
@@ -263,7 +263,7 @@ public:
 class RefUserTemplate : public RefTemplateBase {
     RefChain *leftPart;
 public:
-CLASS_OBJECT_CAST(RefUserTemplate);
+    CLASS_OBJECT_CAST(RefUserTemplate);
     inline unistring getName() {
         return name;
     };
@@ -309,8 +309,8 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
         else return  name+".[}]";
     };
 
-    TResult init(Session* s, RefData *&currentPoint);
-    TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+    TResult init(RefData *&tpl, Session* s, RefData *&currentPoint);
+    TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
     RefData*  next_template( ThisId var_id, Session *s);
     RefData*  pred_template( ThisId var_id, Session *s);
 
@@ -364,8 +364,8 @@ RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketB
         else return "{]}";
     };
 
-    TResult init(Session* s, RefData *&currentPoint);
-    TResult back(Session* s, RefData *&currentRight, RefData *&currentLeft);
+    TResult init(RefData *&tpl, Session* s, RefData *&currentPoint);
+    TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
     RefData*  next_template( ThisId var_id, Session *s);
     RefData*  pred_template( ThisId var_id, Session *s);
 
