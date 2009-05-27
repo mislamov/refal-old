@@ -26,6 +26,7 @@ long co::datacount = 0;
 long co::symcount  = 0;
 long co::varcount  = 0;
 long co::chaincount  = 0;
+
 #endif
 
 

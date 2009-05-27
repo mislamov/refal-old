@@ -414,12 +414,12 @@ struct RefDataLnkPoint {
 
 template <class T>
  T* ref_dynamic_cast(RefObject *d) {
-    if (!d)
-        return 0;
-
     #ifdef TESTCODE
-    T
-        *testres = dynamic_cast<T*>(d),
+    if (!d){
+        SYSTEMERROR("ref_dynamic_cast for 0!");
+    }
+
+    T   *testres = dynamic_cast<T*>(d),
         *testres2=0;
 
     if ((T::getClassTypeCast & castUseRTTI)) {

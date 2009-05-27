@@ -25,13 +25,7 @@
 #include "data.h"
 
 
-namespace co {
-    extern long ocount;
-    extern long datacount;
-    extern long symcount;
-    extern long varcount;
-    extern long chaincount;
-};
+
 
 
 

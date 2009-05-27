@@ -20,7 +20,7 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.0.7 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
-#define TESTCODE
+//#define TESTCODE
 //#define DEBUG
 
 //#define UNICODE
@@ -31,6 +31,17 @@
 *     бесконечные целые и вещественные
 *     и др.
 *****************************************************************************************/
+
+
+namespace co {
+    extern long ocount;
+    extern long datacount;
+    extern long symcount;
+    extern long varcount;
+    extern long chaincount;
+
+};
+
 
 #ifdef DEBUG
     #define SYSTEMERROR(msg) { \
@@ -181,5 +192,7 @@ namespace std {
         return stream;
     }
 }
+
+
 
 #endif // REF_CORE_H_INCLUDED

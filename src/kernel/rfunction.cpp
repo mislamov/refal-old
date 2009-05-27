@@ -495,7 +495,8 @@ RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s){
 // класс - непроинициализированная переменная внешнего типа.
 // После инициализации заменяется на пару   {RefTemplateBridgeVar   RefTemplateBridgeVar}
 bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
-    RefUserTemplate *utempl =  ref_dynamic_cast<RefUserTemplate >( s->getObjectByName(this->getType()) );
+    RefObject* oo = s->getObjectByName(this->getType());
+    RefUserTemplate *utempl =  oo ? ref_dynamic_cast<RefUserTemplate >( oo ) : 0 ;
     if (! utempl) SYSTEMERROR("User $Template '" << getType() << "' not defined!"); //     return false;
     // шаблон найден
     RefTemplateBridgeVar

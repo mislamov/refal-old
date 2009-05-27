@@ -301,6 +301,11 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 s->SaveTemplItem(activeTemplate, l, r);
             }
 
+            if (result_sost == SUCCESS) {
+                LOGSTEP("SUCCESS ");
+                return true;
+            }
+
             savedL = r; //l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
             l = 0;
 
@@ -308,10 +313,11 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 activeTemplate = activeTemplate->next_template(0, s);
             } while (activeTemplate && activeTemplate->is_system());
 
+
             LOGSTEP("GO  ");
+            s->message4nextpred = mERROR;
             result_sost = activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
 
-            if (result_sost == SUCCESS) return true;
             break;
         }
         case BACK: {
@@ -328,6 +334,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             }
 
             LOGSTEP("BACK");
+            s->message4nextpred = mERROR;
             result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
             break;
         }
@@ -408,18 +415,11 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
         default:
             break;
         }
-
-        s->message4nextpred = mERROR;
-
     };
 
 
 
 };
-
-
-
-
 
 
 
@@ -432,9 +432,6 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src) { // готовит праву
     return tmp; ///todo: сократить
 
 };
-
-
-
 
 
 
@@ -687,7 +684,8 @@ RefFunctionBase * Session::findMethodFromModule(unistring fname) {
     //    it--;
     for (it = modules.rbegin(); it!=modules.rend(); ++it) { // исходя из того что последние модули самые актуальные (см порядок загрузки модулей)
         //std::cout << "\n\n:::: " << it->first << " ::::\n\n" << std::flush;
-        if (f = ref_dynamic_cast<RefFunctionBase >( it->second->getObjectByName(fname) )) {
+        RefObject *oo = it->second->getObjectByName(fname);
+        if (oo && (f=ref_dynamic_cast<RefFunctionBase >( oo ))) {
             //LOG("implementation of " << fname << " finded (" << f << ") in " << it->first);
             return f;
         }

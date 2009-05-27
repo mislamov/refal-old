@@ -276,10 +276,10 @@ ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
 
     virtual unistring toString() {
         if (isOpen()) {
-            return "[" ;
+            return "[.." ;
         }
         std::ostringstream ss;
-        ss << "][" << getMin() << ".." << getMax() << "]";
+        ss << "[.." << getMin() << ".." << getMax() << "]";
         return ss.str();
     };
     virtual void forceback(Session *) { /** todo: */};
