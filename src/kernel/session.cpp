@@ -236,35 +236,34 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, 
 
 
 #ifdef DEBUG
-    #define LOGSTEP(sss) {    \
-            std::cout << "\n" << s->step++ << ":>>   "; \
-            for (int i=1; i<s->fcalls; i++) {   \
-                for (int j=1; j<i; j++) {   \
-                    std::cout << "\t";  \
-                }   \
-            }   \
-            std::cout << sss; \
-            std::cout << " [s:"<< s->matchSessions.size() <<    \
-            std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t"  << std::flush; \
-            std::cout << "\t"; \
-            print_vector(r->getNext()); \
-    }
+#define LOGSTEP(sss) {    \
+    std::cout << "\n" << s->step++ << ":>>   "; \
+    for (int i=1; i<s->fcalls; i++) {   \
+        for (int j=1; j<i; j++) {   \
+            std::cout << "\t";  \
+        }   \
+    }   \
+    std::cout << sss; \
+    std::cout << " [s:"<< s->matchSessions.size() <<    \
+    std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t"  << std::flush; \
+    std::cout << "\t"; \
+    print_vector(r->getNext()); \
+}
 #else
-    #define LOGSTEP(s)
+#define LOGSTEP(s)
 #endif
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     LOG("New MATCHING !");
     TResult
-               &pre_sost    = s->pre_sost,
-               &result_sost = s->result_sost;
-    result_sost = pre_sost = isdemaching?BACK:GO;
+    &result_sost = s->result_sost;
+    result_sost = isdemaching?BACK:GO;
 
     RefData *&activeTemplate = s->matchSessions.back()->activeTemplate,
-            *tmpA, *tmpB, *savedL,
-            *l=0, *r=0;           // указатели на конечные точки в данных
+                               *tmpA, *tmpB, *savedL,
+                               *l=0, *r=0;           // указатели на конечные точки в данных
 
 
-    if (isdemaching){
+    if (isdemaching) {
         activeTemplate = tmplate->second;
         s->RestoreTemplItem(activeTemplate, l, r);
     } else {
@@ -273,27 +272,28 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     }
     savedL=r;
 
-
-    while (true) {
-        s->message4nextpred = mERROR;
-
-        pre_sost = result_sost;
-        // сопоставляем текущий шаблон
-        if (result_sost==GO) {
-            LOGSTEP("GO  ");
-            result_sost = activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
-        } else
+    // первая итерация
+    s->message4nextpred = mERROR;
+    if (result_sost==GO) {
+        LOGSTEP("GO  ");
+        result_sost = activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
+    } else
         if (result_sost==BACK) {
             LOGSTEP("BACK");
             result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
         }
 
 
-        // выбираем следующий шаблон
-        if (result_sost == GO || result_sost == SUCCESS) {
-            /// ... -> GO
+    while (true) {
+        // сопоставляем текущий шаблон
+        switch (result_sost) {
 
-            if (savedL && !l){ // go -> go
+
+
+
+        case GO:
+        case SUCCESS: {
+            if (savedL && !l) { // go -> go
                 l = (savedL==r) ? 0 : move_to_next_term( savedL, 0, s );
             }
 
@@ -304,33 +304,34 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             savedL = r; //l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
             l = 0;
 
-
             do {
                 activeTemplate = activeTemplate->next_template(0, s);
             } while (activeTemplate && activeTemplate->is_system());
 
+            LOGSTEP("GO  ");
+            result_sost = activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
 
-
-        } else
+            if (result_sost == SUCCESS) return true;
+            break;
+        }
+        case BACK: {
             if (result_sost == BACK ) {
                 /// ... -> BACK
-
-                // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
-                // Может создать ошибки для varBridge, если тот наследуется от RefVariableBase
                 do {
                     activeTemplate = activeTemplate->pred_template(0, s);
                 } while (activeTemplate && activeTemplate->is_system());
 
-
                 if (activeTemplate->IRefVarStacked()) {
                     s->RestoreTemplItem(activeTemplate, l, r);
                 }
-
                 savedL = 0;
             }
 
+            LOGSTEP("BACK");
+            result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
+            break;
+        }
 
-        switch (result_sost) {
         case ERROR :
             //return -1;
             #ifdef DEBUG
@@ -342,12 +343,6 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             LOG( "FAIL signal when maching!" );
             #endif
             return false;
-
-        case SUCCESS :
-            #ifdef DEBUG
-            //LOG( "SUCCESS signal when maching!" );
-            #endif
-            return true;
 
         case FORCEBACK: { // откат правых скобок или отсечения
             RefData *finish = 0;
@@ -413,6 +408,9 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
         default:
             break;
         }
+
+        s->message4nextpred = mERROR;
+
     };
 
 

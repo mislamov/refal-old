@@ -211,6 +211,7 @@ RefData*  ref_repeater::next_template (ThisId id, Session*s){
     }
     SYSTEMERROR("unexpected message");
 };
+
 RefData*  ref_repeater::pred_template (ThisId id, Session*s){
     switch (s->message4nextpred){
         case mNEXT: return next;
@@ -221,3 +222,4 @@ RefData*  ref_repeater::pred_template (ThisId id, Session*s){
     }
     SYSTEMERROR("unexpected message");
 };
+
