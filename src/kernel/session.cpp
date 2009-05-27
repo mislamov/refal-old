@@ -232,442 +232,87 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, 
 
 };
 
-/*
-bool matchingBySession_new(Session *s, RefChain *tmplate, bool isdemaching) {
 
-    TResult
-    pre_sost = isdemaching?BACK:GO,
-               &result_sost = s->result_sost;
 
-    result_sost = isdemaching?BACK:GO;
 
-    #ifdef TESTCODE
-    RefChain *args = s->getPole_zrenija();
-    if (!args || !args->first || !args->second) {
-        SYSTEMERROR("unexpected NULLs in session::matching arguments!");
+#ifdef DEBUG
+    #define LOGSTEP(sss) {    \
+            std::cout << "\n" << s->step++ << ":>>   "; \
+            for (int i=1; i<s->fcalls; i++) {   \
+                for (int j=1; j<i; j++) {   \
+                    std::cout << "\t";  \
+                }   \
+            }   \
+            std::cout << sss; \
+            std::cout << " [s:"<< s->matchSessions.size() <<    \
+            std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t"  << std::flush; \
+            std::cout << "\t"; \
+            print_vector(r->getNext()); \
     }
-    #endif
-
-    // запускается вне матчинга: initialization(args->first, args->second);
-    RefData  *&activeTemplate = s->matchSessions.back()->activeTemplate, *tmpA, *tmpB;
-    RefData   *l=0, *r=0;           // указатели на конечные точки в данных
-
-    activeTemplate = isdemaching?tmplate->second:tmplate->first; // было: tmplate->second->pred - это потому что последний датадот. сделал tmplate->second чтоб откат обработал скобки
-
-    l=r=s->getPole_zrenija()->first; // для isdemaching не важно - все равно сначала будет restore
-
-
-    while (true) {
-        #ifdef DEBUG
-        {
-            std::cout << "\n" << s->step++ << ":>>   ";
-        for (int i=1; i<s->fcalls; i++) {
-        for (int j=1; j<i; j++) {
-                std::cout << "\t";
-            }
-        }
-        switch (result_sost) {
-    case GO :
-        std::cout << "GO   ";
-        break;
-    case BACK :
-        std::cout << "BACK ";
-        break;
-    case ERROR :
-        std::cout << "ERROR";
-        break;
-    default:
-        std::cout << "???? ";
-    }
-    std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
-    //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
-    std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t" << std::flush;
-    std::cout << "\t";
-    print_vector(r->getNext());
-    }
-    #endif
-
-    // init и back могут изменить новый активный шаблон
-    switch (result_sost) {
-        case GO: {
-            l=r;
-            result_sost = activeTemplate->init(activeTemplate, s, r);    /// ШАГ ВПЕРЕД
-            break;
-        }
-        case BACK: {
-            result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
-            break;
-        }
-        case FORCEBACK: { // откат правых скобок или отсечения
-            RefData *finish = 0;
-
-            RefMatchingCutter* cutter = ref_dynamic_cast<RefMatchingCutter>(activeTemplate);
-            if (cutter) {
-                /// отсечение
-                #ifdef DEBUG
-                s->showStatus();
-                #endif
-                // выгребаем стек сопоставлений субсессии
-                // в finish сохраняем последний (точнее первый) элемент сопоставления в субсессии
-                while (s->getCurrentSopostStack()->size() != 1) {
-                    #ifdef TESTCODE
-                    if (! dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner )) {
-                        SYSTEMERROR("error here");
-                    }
-                    #endif
-                    finish = (RefData *)( s->getCurrentSopostStack()->top()->owner );
-                    LOG( ">> CUTTER BACKFORSE DROP: " << finish->toString() );
-                    s->getCurrentSopostStack()->pop(); /// clean pered pop ?
-                }
-                #ifdef TESTCODE
-                if (! dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner )) {
-                    SYSTEMERROR("error here");
-                }
-                #endif
-                finish = (RefData *)( s->getCurrentSopostStack()->top()->owner );
-
-
-            } else {
-                /// скобка
-                RefBracketBase* br = (RefBracketBase *)(activeTemplate);
-
-                #ifdef TESTCODE
-                br = dynamic_cast<RefBracketBase *>(activeTemplate);
-                if (!br) {
-                    SYSTEMERROR("FORCEBACK not for barcket! But for : " << activeTemplate->toString());
-                }
-                #endif
-
-                finish = br->getOther();
-
-                while ( (! s->getCurrentSopostStack()->empty())  && s->getCurrentSopostStack()->top()->owner != finish) {
-                    #ifdef TESTCODE
-                    if ( s->getCurrentSopostStack()->empty()) SYSTEMERROR("Empty getCurrentSopostStack() while FORCEBACKing when finish<>0");
-                    #endif
-                    LOG( ">> BACKFORSE DROP: " << s->getCurrentSopostStack()->top()->owner->toString() << " != " << (finish?finish->toString():"$null"));
-                    s->getCurrentSopostStack()->pop(); /// clean pered pop ?
-                }
-            }
-
-            #ifdef DEBUG
-            if ( s->getCurrentSopostStack()->empty()) LOG( ">> BACKFORSE :  getCurrentSopostStack->empty !");
-            #endif
-
-            // сейчас активна закрытая скобка
-            s->message4nextpred = mFORCEBACK;
-            while (activeTemplate != finish) {
-                LOG( ">> BACKFORSE forceback: " << activeTemplate->toString() );
-                activeTemplate->forceback(s);  // принудительный откат переменной
-                move_to_pred_term(activeTemplate, 0, s);
-            }
-            ; // (
-
-
-            //this->getCurrentSopostStack().pop(); /// clean pered pop ? // - for (
-            //move_to_pred_point(activeTemplate, 0, this);
-            result_sost = BACK;
-
-            break;
-        }
-        default:
-            SYSTEMERROR("unexpected signal");
-        }
-
-
-        switch (result_sost) {
-        case GO: {
-            s->SaveTemplItem(activeTemplate, l, r);
-            activeTemplate = activeTemplate->next_template(0, s);
-            break;
-        }
-        case BACK:
-        case FORCEBACK: {
-            activeTemplate = activeTemplate->pred_template(0, s);
-            if (activeTemplate->IRefVarStacked()) {
-                s->RestoreTemplItem(activeTemplate, l, r);
-            }
-            break;
-        }
-        default:
-            return (result_sost==SUCCESS);
-        }
-    }
-    return false;
-};*/
-
-
-
-
-
-
-bool matchingBySession_old(Session *s, RefChain *tmplate, bool isdemaching) {
-
-//    std::cout << "\n\n###################################################\n";
-//    std::cout << "####\t" << s->getPole_zrenija()->toString() << "\n";
-//    std::cout << "####\t~\n";
-//    std::cout << "####\t" << tmplate->toString() << "\n";
-//    std::cout << "#######################################################\n";
-    //std::cout << s->varTableToText();
-    //s->showStatus();
-
-//    std::cout << "\n\nMATCHING:\ntmpl: " << tmplate->toString();
-//    std::cout << "\nargs: " << s->pole_zrenija.top()->toString();
-
-    TResult
-               &pre_sost    = s->pre_sost,
-               &result_sost = s->result_sost;
-
-    result_sost = pre_sost = isdemaching?BACK:GO;
-
-    RefChain *args = s->getPole_zrenija();
-    #ifdef TESTCODE
-    if (!args || !args->first || !args->second) {
-        SYSTEMERROR("unexpected NULLs in session::matching arguments!");
-    }
-    #endif
-
-    // запускается вне матчинга: initialization(args->first, args->second);
-    RefData  *&activeTemplate = s->matchSessions.back()->activeTemplate, *tmpA, *tmpB;
-    RefData   *l=0, *r=0;           // указатели на конечные точки в данных
-
-
-    activeTemplate = isdemaching?tmplate->second:tmplate->first; // было: tmplate->second->pred - это потому что последний датадот. сделал tmplate->second чтоб откат обработал скобки
-
-    l=r=s->getPole_zrenija()->first; // для isdemaching не важно - все равно сначала будет restore
-
-    while (activeTemplate) {
-        #ifdef DEBUG
-        {
-            std::cout << "\n" << s->step++ << ":>>   ";
-            for (int i=1; i<s->fcalls; i++) {
-                for (int j=1; j<i; j++) {
-                    std::cout << "\t";
-                }
-            }
-            switch (result_sost) {
-            case GO :
-                std::cout << "GO   ";
-                break;
-            case BACK :
-                std::cout << "BACK ";
-                break;
-            case ERROR :
-                std::cout << "ERROR";
-                break;
-            default:
-                std::cout << "???? ";
-            }
-            std::cout << " [s:"<< s->matchSessions.size() << "//" << s->matchSessions.back() <<"] ";
-            //std::cout << "\n>>   " << (result_sost==GO?"GO":"BACK");
-            std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t"  << std::flush;
-            std::cout << "\t";
-            print_vector(r->getNext());
-        }
-        #endif
-
-        s->message4nextpred = mERROR;
-
-        pre_sost = result_sost;
-
-
-        if (pre_sost==GO) {
-            l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
-            result_sost = activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
-        } else
-            if (pre_sost==BACK) {
-                if (activeTemplate->IRefVarStacked()) {
-                    s->RestoreTemplItem(activeTemplate, l, r);
-                }
-                result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
-            }
-
-
-        if (result_sost == GO || result_sost == SUCCESS) {
-            /// ... -> GO
-            if (l==r && pre_sost!=BACK) {
-                tmpA = 0;
-                tmpB = l;
-            } else {
-                if (pre_sost==GO) {
-                    move_to_next_term(l, 0, s);    ///
-                }
-                tmpA = l;
-                tmpB = r;
-            }
-            s->SaveTemplItem(activeTemplate, tmpA, tmpB);
-
-            do {
-                activeTemplate = activeTemplate->next_template(0, s);
-            } while (activeTemplate && activeTemplate->is_system());
-        } else
-            if (result_sost == BACK) {
-                /// ... -> BACK
-
-                // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
-                // Может создать ошибки для varBridge, если тот наследуется от RefVariableBase
-                do {
-                    activeTemplate = activeTemplate->pred_template(0, s);
-                } while (activeTemplate && activeTemplate->is_system());
-            }
-
-
-        switch (result_sost) {
-        case ERROR :
-            //return -1;
-            #ifdef DEBUG
-            LOG( "ERROR signal when maching!" );
-            #endif
-            return false;
-        case FAIL   :
-            #ifdef DEBUG
-            LOG( "FAIL signal when maching!" );
-            #endif
-            return false;
-
-        case SUCCESS :
-            #ifdef DEBUG
-            //LOG( "SUCCESS signal when maching!" );
-            #endif
-            return true;
-
-        case FORCEBACK: { // откат правых скобок или отсечения
-            RefData *finish = 0;
-
-            RefMatchingCutter* cutter = ref_dynamic_cast<RefMatchingCutter>(activeTemplate);
-            if (cutter) {
-                /// отсечение
-                #ifdef DEBUG
-                s->showStatus();
-                #endif
-                // выгребаем стек сопоставлений субсессии
-                // в finish сохраняем последний (точнее первый) элемент сопоставления в субсессии
-                while (s->getCurrentSopostStack()->size() != 1) {
-                    //finish = ref_dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
-                    finish = (RefData *)( s->getCurrentSopostStack()->top()->owner );
-                    LOG( ">> CUTTER BACKFORSE DROP: " << finish->toString() );
-                    s->getCurrentSopostStack()->pop(); /// clean pered pop ?
-                }
-                //finish = ref_dynamic_cast<RefData *>( s->getCurrentSopostStack()->top()->owner );
-                finish = (RefData *)( s->getCurrentSopostStack()->top()->owner );
-
-
-            } else {
-                /// скобка
-                //RefBracketBase* br = ref_dynamic_cast<RefBracketBase *>(activeTemplate);
-                RefBracketBase* br = (RefBracketBase *)(activeTemplate);
-
-                #ifdef TESTCODE
-                br = ref_dynamic_cast<RefBracketBase >(activeTemplate);
-                if (!br) {
-                    SYSTEMERROR("FORCEBACK not for barcket! But for : " << activeTemplate->toString());
-                }
-                #endif
-
-                finish = br->getOther();
-
-                while ( (! s->getCurrentSopostStack()->empty())  && s->getCurrentSopostStack()->top()->owner != finish) {
-                    #ifdef TESTCODE
-                    if ( s->getCurrentSopostStack()->empty()) SYSTEMERROR("Empty getCurrentSopostStack() while FORCEBACKing when finish<>0");
-                    #endif
-                    LOG( ">> BACKFORSE DROP: " << s->getCurrentSopostStack()->top()->owner->toString() << " != " << (finish?finish->toString():"$null"));
-                    s->getCurrentSopostStack()->pop(); /// clean pered pop ?
-                }
-            }
-
-            #ifdef DEBUG
-            if ( s->getCurrentSopostStack()->empty()) LOG( ">> BACKFORSE :  getCurrentSopostStack->empty !");
-            #endif
-
-            // сейчас активна закрытая скобка
-            s->message4nextpred = mFORCEBACK;
-            while (activeTemplate != finish) {
-                LOG( ">> BACKFORSE forceback: " << activeTemplate->toString() );
-                activeTemplate->forceback(s);  // принудительный откат переменной
-                move_to_pred_term(activeTemplate, 0, s);
-            }
-            ; // (
-
-
-            //this->getCurrentSopostStack().pop(); /// clean pered pop ? // - for (
-            //move_to_pred_point(activeTemplate, 0, this);
-            result_sost = BACK;
-        }
-        break;
-
-        default:
-            break;
-        }
-    };
-
-    /*
-        std::cout << "\nActiveTemplate is NULL while matching: [" <<pre_sost<<']';
-        std::cout << "\n>   tmpl:" << activeTemplate; if(activeTemplate) activeTemplate->print_inf();
-        std::cout << "\n>>  vars:" << r; if(r) r->print_inf();
-        std::cout << "\n>>> pre_sost:" << pre_sost << std::flush;
-    */
-///todo: ниже экспериментальное: тоключил наобум, когда тестировал сопоставление внешнего шаблона с условиями -
-//SYSTEMERROR("ActiveTemplate is NULL while matching: [" << pre_sost << "]  ");
-//if (pre_sost == GO) return true; /// ?? может result_sost == GO ?
-    if (result_sost == GO) return true; /// ?? может pre_sost == GO ?
-    return false;
-
-};
-
-
-
-
-
+#else
+    #define LOGSTEP(s)
+#endif
 bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
+    LOG("New MATCHING !");
     TResult
                &pre_sost    = s->pre_sost,
                &result_sost = s->result_sost;
     result_sost = pre_sost = isdemaching?BACK:GO;
 
     RefData *&activeTemplate = s->matchSessions.back()->activeTemplate,
-            *tmpA, *tmpB,
+            *tmpA, *tmpB, *savedL,
             *l=0, *r=0;           // указатели на конечные точки в данных
 
-    activeTemplate = isdemaching?tmplate->second:tmplate->first;
-    l=r=s->getPole_zrenija()->first; // для isdemaching не важно - все равно сначала будет restore
+
+    if (isdemaching){
+        activeTemplate = tmplate->second;
+        s->RestoreTemplItem(activeTemplate, l, r);
+    } else {
+        l = r = s->getPole_zrenija()->first;
+        activeTemplate = tmplate->first;
+    }
+    savedL=r;
+
 
     while (true) {
         s->message4nextpred = mERROR;
+
         pre_sost = result_sost;
-
-
         // сопоставляем текущий шаблон
-        if (pre_sost==GO) {
-            l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
+        if (result_sost==GO) {
+            LOGSTEP("GO  ");
             result_sost = activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
         } else
-            if (pre_sost==BACK) {
-                if (activeTemplate->IRefVarStacked()) {
-                    s->RestoreTemplItem(activeTemplate, l, r);
-                }
-                result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
-            }
+        if (result_sost==BACK) {
+            LOGSTEP("BACK");
+            result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
+        }
 
 
         // выбираем следующий шаблон
         if (result_sost == GO || result_sost == SUCCESS) {
             /// ... -> GO
-            if (l==r && pre_sost!=BACK) {
-                tmpA = 0;
-                tmpB = l;
-            } else {
-                if (pre_sost==GO) {
-                    move_to_next_term(l, 0, s);    ///
-                }
-                tmpA = l;
-                tmpB = r;
+
+            if (savedL && !l){ // go -> go
+                l = (savedL==r) ? 0 : move_to_next_term( savedL, 0, s );
             }
-            s->SaveTemplItem(activeTemplate, tmpA, tmpB);
+
+            if (activeTemplate->IRefVarStacked()) {
+                s->SaveTemplItem(activeTemplate, l, r);
+            }
+
+            savedL = r; //l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
+            l = 0;
+
 
             do {
                 activeTemplate = activeTemplate->next_template(0, s);
             } while (activeTemplate && activeTemplate->is_system());
+
+
+
         } else
-            if (result_sost == BACK) {
+            if (result_sost == BACK ) {
                 /// ... -> BACK
 
                 // обнуляем вармапинг для переменной - чтоб не было ошибок при showStatus.
@@ -675,6 +320,13 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 do {
                     activeTemplate = activeTemplate->pred_template(0, s);
                 } while (activeTemplate && activeTemplate->is_system());
+
+
+                if (activeTemplate->IRefVarStacked()) {
+                    s->RestoreTemplItem(activeTemplate, l, r);
+                }
+
+                savedL = 0;
             }
 
 
@@ -790,8 +442,13 @@ RefChain* Session::RightPartToObjectExpression(RefChain *src) { // готовит праву
 
 // сохраняет состояние переменной во время сопоставления
 void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
-    if (! v->IRefVarStacked()) return; /// тест. попытка сохранять не все
+    #ifdef TESTCODE
+    if (! v->IRefVarStacked()) {
+        SYSTEMERROR("unexpected"); /// тест. попытка сохранять не все
+    }
+    #endif
     //std::cout << "\n+++::\t" << v->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
+    //std::cout << "\nSaveTemplItem::\t" << v->toString() << "\t->\t" << vectorToString(l, r);
 
     // если входит открывающая скобка, значит вся пара
     RefBracketBase *rb = ref_dynamic_cast<RefBracketBase >(r);
@@ -891,8 +548,10 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
 
 
 void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ) {
-//void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
+    //void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r) {
+    #ifdef TESTCODE
     if (! owner->IRefVarStacked() ) SYSTEMERROR("not right using"); /// тест. попытка сохранять не все
+    #endif
     //std::cout << "\n---::\t" << owner->toString() << "\t->\t" << vectorToString(l, r) << "      [" << getCurrentSopostStack()->size() << "]";
 
     RefTemplateBridgeVar *bridge = ref_dynamic_cast<RefTemplateBridgeVar >(owner);
@@ -992,7 +651,9 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ) {
 //showStatus();
     delete varBody;
 //showStatus();
+
     //std::cout << "\nRestoreTemplItem::\t" << owner->toString() << "\t->\t" << vectorToString(l, r);
+
     return;
 };
 

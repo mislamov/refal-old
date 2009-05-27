@@ -92,7 +92,7 @@ RefData*   ref_variant_dot::pred_template (ThisId id, Session *s) {
 TResult	   ref_variant_dot::init(RefData*&tpl, Session *s, RefData *&l) {
     #ifdef TESTCODE
     TVarBody* vb = dynamic_cast<TVarBody *>( s->matchSessions.back()->StackOfSopost.top());
-    if ((!vb) || (! dynamic_cast<RefBracketBase *>(vb->owner)))
+    if ((!vb) || (! dynamic_cast<RefGroupBracket *>(vb->owner)))
         SYSTEMERROR("net ozhifaemoj skobki na vershine steka sopostavlenij");
     #endif
     l = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()))->second;

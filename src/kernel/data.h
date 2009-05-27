@@ -447,14 +447,14 @@ template <class T>
     if ((T::getClassTypeCast & castUseRTTI)) {
         return dynamic_cast<T*>(d);
     }
-//     else {
-//        if ((objectCast | T::getClassTypeCast) == objectCast) {
-//            return (T*)(d);
-//        }
-//    }
+     else {
+        if ((objectCast | T::getClassTypeCast) == objectCast) {
+            return (T*)(d);
+        }
+    }
+    return 0;
 
-    return (T*)((RefObject *) ((POINTER_INT_TYPE)(d) * (POINTER_INT_TYPE)((objectCast|T::getClassTypeCast) == objectCast)));
-//    return 0;
+//    return (T*)((RefObject *) ((POINTER_INT_TYPE)(d) * (POINTER_INT_TYPE)((objectCast|T::getClassTypeCast) == objectCast)));
 };
 
 
