@@ -183,10 +183,10 @@ unistring Session::varTableToText() {
 
 
 
-bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
+bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching);
 
 /*  Сопоставляет шаблон с аргументом. Аргумент должен быть подцепочкой (т.е. окружон слева и справа элементами)
-    Шаблон должен быть с дотами (на данный момент все левые части оснащ. дотами при загрузке)
+    Шаблон должен быть с дотами (на момент написания коммента все левые части оснащ. дотами при загрузке)
     Если внутри шаблона есть другие датадоты, то для их сопоставления НУЖНО запускать отдельный матчинг
     Управляет полями зрения во время сопоставления
 
@@ -194,9 +194,9 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching);
     После успешного матчинга условия - все новое нужно сохранить для возможного отката
 
     Если isdemaching==true, то argleft и argrigh игнорируются.
-    Если isRevers==true, то инфертировать успех: удачное сопоставление нас не удовлетворяет. Для демачинга - неуспех
+    Если isRevers==true, то инвертировать успех: удачное сопоставление нас не удовлетворяет. Для демачинга - неуспех
 */
-bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, RefData *argright, bool isdemaching, bool isRevers) {
+bool  Session::matching(RefObject *initer, RefChain *tmplateChain, RefData *argleft, RefData *argright, bool isdemaching, bool isRevers) {
     if (isRevers && isdemaching) {
         return false;
     }
@@ -210,12 +210,12 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, 
         this->matchSessions.push_back( new SessionOfMaching(initer, argleft, argright) );
         //  showStatus();
         //  запустиь матчинг
-        succmatch = matchingBySession(this, tmplate, isdemaching);
+        succmatch = matchingBySession(this, tmplateChain, isdemaching);
     } else {
         /// продолжение старого сопоставления, начиная с предыдущего состояния (цепочке условий неудача)
         //  задействовать нужное поле зрения (уже: должно быть на вершине стека подсессий, так как предшествующая неудача должна была удалить свою точку - останется эта)
         //  начать с конца матчинг
-        succmatch = matchingBySession(this, tmplate, isdemaching);
+        succmatch = matchingBySession(this, tmplateChain, isdemaching);
     }
 
     if (isRevers || !succmatch) {
@@ -225,9 +225,16 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, 
         #endif
         delete this->matchSessions.back();
         this->matchSessions.pop_back();
+    } else {
+        // удачно сопоставились. двигаемся дальше
+        if(dynamic_cast<RefCondition *>( initer)){
+            int i = 0;
+            i++;
+        };
+
     }
 
-    //return (succmatch xor isRevers);
+    //return (succmatch != isRevers);
     return ((succmatch && !isRevers) || (!succmatch && isRevers));
 
 };
@@ -252,27 +259,87 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData *argleft, 
 #else
 #define LOGSTEP(s)
 #endif
-bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
-    LOG("New MATCHING !");
+
+
+TResult doGOandINIT(RefData *&activeTemplate, Session *s, SessionOfMaching *subsess) {
+    RefData* &savedL = subsess->matching_savedL ;
+    RefData* &l =   subsess->matching_l ;
+    RefData* &r =   subsess->matching_r ;
+
+    if (savedL && !l) { // go -> go
+        l = (savedL==r) ? 0 : move_to_next_term( savedL, 0, s );
+    }
+
+    if (activeTemplate->IRefVarStacked()) {
+        s->SaveTemplItem(activeTemplate, l, r);
+    }
+
+    savedL = r; //l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
+    l = 0;
+
+    do {
+        activeTemplate = activeTemplate->next_template(0, s);
+    } while (activeTemplate && activeTemplate->is_system());
+
+
+    LOGSTEP("GO  ");
+    s->message4nextpred = mERROR;
+    return activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
+}
+
+TResult doBACKandBACK(RefData *&activeTemplate, Session *s, SessionOfMaching *subsess) {
+    RefData* &l =   subsess->matching_l ;
+    RefData* &r =   subsess->matching_r ;
+    RefData* &savedL =   subsess->matching_savedL ;
+
+    //LOG("\n:: activeTemplate = " << activeTemplate->toString());
+
+    /// ... -> BACK
+    do {
+        activeTemplate = activeTemplate->pred_template(0, s);
+    } while (activeTemplate && activeTemplate->is_system());
+
+    if (activeTemplate->IRefVarStacked()) {
+        s->RestoreTemplItem(activeTemplate, l, r);
+    }
+    savedL = 0;
+
+    LOGSTEP("BACK");
+    s->message4nextpred = mERROR;
+    return activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
+}
+
+bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching) {
+    LOG("New MATCHING : tmplateChain=" << tmplateChain->toString() << "  isDematching="<<isdemaching);
     TResult
-    &result_sost = s->result_sost;
-    result_sost = isdemaching?BACK:GO;
+        &result_sost = s->result_sost;
 
-    RefData *&activeTemplate = s->matchSessions.back()->activeTemplate,
-                               *savedL,
-                               *l=0, *r=0;           // указатели на конечные точки в данных
+    SessionOfMaching * subsess = s->matchSessions.back();
+    RefData
+        * &activeTemplate = subsess->activeTemplate,
+        * &savedL         = subsess->matching_savedL,          // для хранения левой границы аргумента для актальной точки шаблона
+        * &l  =  subsess->matching_l,       // указатели на конечные точки в данных
+        * &r  =  subsess->matching_r;
 
+    l = r = 0;
+    //activeTemplate = s->matchSessions.back()->activeTemplate;
 
     if (isdemaching) {
-        activeTemplate = tmplate->second;
+        result_sost = BACK;
+        activeTemplate = tmplateChain->second;
         s->RestoreTemplItem(activeTemplate, l, r);
     } else {
+        result_sost = GO;
         l = r = s->getPole_zrenija()->first;
-        activeTemplate = tmplate->first;
+        activeTemplate = tmplateChain->first;
     }
-    savedL=r;
+    savedL = r;
 
-    // первая итерация
+    // первая итерация - обычно для RefData_DOT
+    if (! ref_dynamic_cast<RefData_DOT>(activeTemplate)){
+        SYSTEMERROR("test: " << activeTemplate->toString());
+    }
+
     s->message4nextpred = mERROR;
     if (result_sost==GO) {
         LOGSTEP("GO  ");
@@ -286,53 +353,21 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
 
     while (true) {
         // сопоставляем текущий шаблон
+
         switch (result_sost) {
 
-
-
-
         case GO: {
-            if (savedL && !l) { // go -> go
-                l = (savedL==r) ? 0 : move_to_next_term( savedL, 0, s );
-            }
-
-            if (activeTemplate->IRefVarStacked()) {
-                s->SaveTemplItem(activeTemplate, l, r);
-            }
-
-            savedL = r; //l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
-            l = 0;
-
-            do {
-                activeTemplate = activeTemplate->next_template(0, s);
-            } while (activeTemplate && activeTemplate->is_system());
-
-
-            LOGSTEP("GO  ");
-            s->message4nextpred = mERROR;
-            result_sost = activeTemplate->init(activeTemplate, s, r); /// ШАГ ВПЕРЕД
-
+            result_sost = doGOandINIT(activeTemplate, s, subsess);
             break;
         }
         case BACK: {
-            if (result_sost == BACK ) {
-                /// ... -> BACK
-                do {
-                    activeTemplate = activeTemplate->pred_template(0, s);
-                } while (activeTemplate && activeTemplate->is_system());
-
-                if (activeTemplate->IRefVarStacked()) {
-                    s->RestoreTemplItem(activeTemplate, l, r);
-                }
-                savedL = 0;
-            }
-
-            LOGSTEP("BACK");
-            s->message4nextpred = mERROR;
-            result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
+            /// ... -> BACK
+            result_sost = doBACKandBACK(activeTemplate, s, subsess);
             break;
         }
-        case SUCCESS: {
+
+        case SUCCESS : {
+            LOGSTEP("SUCCESS ");
             if (savedL && !l) { // go -> go
                 l = (savedL==r) ? 0 : move_to_next_term( savedL, 0, s );
             }
@@ -341,9 +376,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
                 s->SaveTemplItem(activeTemplate, l, r);
             }
 
-            LOGSTEP("SUCCESS ");
             return true;
-
         }
 
         case ERROR :
