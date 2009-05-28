@@ -259,7 +259,7 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
     result_sost = isdemaching?BACK:GO;
 
     RefData *&activeTemplate = s->matchSessions.back()->activeTemplate,
-                               *tmpA, *tmpB, *savedL,
+                               *savedL,
                                *l=0, *r=0;           // указатели на конечные точки в данных
 
 
@@ -291,19 +291,13 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
 
 
 
-        case GO:
-        case SUCCESS: {
+        case GO: {
             if (savedL && !l) { // go -> go
                 l = (savedL==r) ? 0 : move_to_next_term( savedL, 0, s );
             }
 
             if (activeTemplate->IRefVarStacked()) {
                 s->SaveTemplItem(activeTemplate, l, r);
-            }
-
-            if (result_sost == SUCCESS) {
-                LOGSTEP("SUCCESS ");
-                return true;
             }
 
             savedL = r; //l = r; // началом становится конец предыдущего - r - конец сопоставленного значения переменной которая левее
@@ -337,6 +331,19 @@ bool matchingBySession(Session *s, RefChain *tmplate, bool isdemaching) {
             s->message4nextpred = mERROR;
             result_sost = activeTemplate->back(activeTemplate, s, l, r); /// ШАГ НАЗАД
             break;
+        }
+        case SUCCESS: {
+            if (savedL && !l) { // go -> go
+                l = (savedL==r) ? 0 : move_to_next_term( savedL, 0, s );
+            }
+
+            if (activeTemplate->IRefVarStacked()) {
+                s->SaveTemplItem(activeTemplate, l, r);
+            }
+
+            LOGSTEP("SUCCESS ");
+            return true;
+
         }
 
         case ERROR :
