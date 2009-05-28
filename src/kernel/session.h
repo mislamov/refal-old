@@ -188,6 +188,10 @@ class Session : public RefObject {
 };
 
 
+TResult doGOandINIT(RefData *&activeTemplate, Session *s, SessionOfMaching *subsess);
+TResult doBACKandBACK(RefData *&activeTemplate, Session *s, SessionOfMaching *subsess);
+
+
 
 
 /*

@@ -100,9 +100,11 @@ TResult	   ref_variant_dot::init(RefData*&tpl, Session *s, RefData *&l) {
 };
 
 TResult	   ref_variant_dot::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    //return BACK;
+    return BACK; //- po logike pravilno
+	// optimizacija:
+	//return doGOandINIT(tpl = nextffwd, s, s->matchSessions.back());
+
     tpl = nextffwd;//->next_template(0, s);
-    //s->pre_sost = GO;
     return GO;
 };
 

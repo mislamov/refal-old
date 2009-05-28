@@ -54,19 +54,21 @@ TVarBody * TVarBody::folowByWay(unistring path) {
         std::list<SessionOfMaching *>::reverse_iterator som = varItem->sessStack.rbegin();
         TVarBodyTable::iterator fnded;
 
+		bool tmpBoolForMSVC = true;
         while ( som != varItem->sessStack.rend()) {
 
             TVarBodyTable varTable = ((*som)->varTable);
             fnded = varTable.find(vname);
             if (fnded != varTable.end()) {
                 varItem  = (*fnded).second;
+				tmpBoolForMSVC = false;
                 break;
             }
 
             ++som;
         }
 
-        if (som == varItem->sessStack.rend()) {
+		if (tmpBoolForMSVC) {
             SYSTEMERROR("subVariable not found : " << path << "  for  " << toString());
         }
 

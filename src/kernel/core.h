@@ -19,7 +19,7 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define REFVERSION "D-Refal 0.0.7 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
+#define REFVERSION "D-Refal 0.0.8 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 //#define TESTCODE
 //#define DEBUG
 //#define UNICODE
