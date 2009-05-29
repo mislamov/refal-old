@@ -360,6 +360,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
 
             *(loader->getCurrChain()) += vert;
             *(loader->getCurrChain()) += ffwd;
+			*(loader->getCurrChain()) += new RefNULL();
             *(loader->getCurrChain()) += krest;
             *(loader->getCurrChain()) += vopr;
     } else

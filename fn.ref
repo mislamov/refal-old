@@ -1,15 +1,12 @@
 $ENTRY Go {
-	= <Prout '2..4 digit-numbers:'><Run <Mount 'rbc.html'>>;
+	= <Prout <IsVarName 'sdfdhx'>>;
 }
 
+IsVarName {
+	e.name,
+		e.name : e.1 e.2,
+		e.1 : {'s'|'f'|'d'|'h' s.s} = <IsVarName e.2>;
+	= true;
 
-Template nonum ::= s.s, s.s : $not {'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'} ;
-
-Run {
-
-	e.1 {'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'}[2..4].num nonum. '2' E.3
-	=	<Prout @.num><Run '2' E.3>;
-	e.e = <Prout '****'>;
-
-
+	e.else = false;
 }
