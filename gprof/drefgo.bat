@@ -7,4 +7,6 @@ copy ..\refal_scaner.rsl .
 rem | grep '####:'
 del refal_scaner.rsl
 pause
+gprof ..\bin\debug\refal51.exe > o.txt
+
 exit

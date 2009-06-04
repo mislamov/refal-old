@@ -85,7 +85,9 @@ TResult  RefGroupBracket::back(RefData*&tpl, Session *s, RefData *&l, RefData *&
 ref_variant_dot::ref_variant_dot( RefData* rp) : RefData(rp) { is_system (false); };
 
 RefData*   ref_variant_dot::pred_template (ThisId id, Session *s) {
-    if (s->result_sost == FORCEBACK){ return krest; };
+    if (s->result_sost == FORCEBACK){
+        return krest;
+    };
     return nextffwd;
 };
 
@@ -100,35 +102,17 @@ TResult	   ref_variant_dot::init(RefData*&tpl, Session *s, RefData *&l) {
 };
 
 TResult	   ref_variant_dot::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    //return BACK; //- po logike pravilno
+    return BACK; //- po logike pravilno
 	// optimizacija:
 
-	SessionOfMaching* &subsess = s->matchSessions.back();
-	RefData* &savedL = subsess->matching_savedL ;
-
-	savedL = l = r = ((TVarBody *)( subsess->StackOfSopost.top()))->second;
-	//TResult res = doGOandINIT(tpl = nextffwd->getNext()->getNext(), s, s->matchSessions.back());
-	
-	//if (ref_dynamic_cast<ref_variant_dot>(nextffwd->getNext())){
-	//	doGOandINIT(tpl = nextffwd->getNext(), s, s->matchSessions.back());
-	//}
-
-	TResult res = doGOandINIT(tpl = nextffwd->getNext(), s, s->matchSessions.back());
-	return res;
-
-    //l = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()))->second;
-	//return doGOandINIT(tpl = nextffwd->getNext()->getNext(), s, s->matchSessions.back());
-
-    //tpl = nextffwd;//->next_template(0, s);
-    //return GO;
 };
 
 bool	   ref_variant_dot::operator==(RefData&rd){ return false; };
 
 //----------  |  ------------
 ref_variant_vert::ref_variant_vert( RefData* rp) : RefData(rp) { is_system (false); };
-TResult	   ref_variant_vert::init(RefData*&tpl, Session *s, RefData *&l)	{ 
-	s->matchSessions.back()->StackOfVariants.push(this); 
+TResult	   ref_variant_vert::init(RefData*&tpl, Session *s, RefData *&l)	{
+	s->matchSessions.back()->StackOfVariants.push(this);
 	return GO;
 };
 TResult	   ref_variant_vert::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)	{ s->matchSessions.back()->StackOfVariants.pop(); return BACK;};

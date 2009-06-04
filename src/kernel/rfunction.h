@@ -72,13 +72,19 @@ public:
 };
 
 
-class RefModuleBase : public RefalNameSpace, public RefObject {
+class RefModuleBase : public RefObject {
+protected:
+    unistring name;
 public:
-    virtual unistring getName()=0;
-    //{ return name; };
-    //virtual void setName(unistring s){ name = s; };
+    virtual unistring getName() {
+        return name;
+    }
+    virtual void setName(unistring s) {
+        name = s;
+    }
 
-RefModuleBase(unistring nname = EmptyUniString) : RefalNameSpace(nname) {};
+public:
+    RefModuleBase(unistring nname = EmptyUniString) { setName(nname); };
     virtual ~RefModuleBase() {};
     virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
     virtual void initilizeAll(Session *) {

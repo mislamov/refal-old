@@ -504,25 +504,16 @@ TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&currentPoint)
 
     while ((ldata!=rdata) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
         if (!(*currentPoint == *ldata)) {
-            //std::cout << "\n{ " << currentPoint->toString() << " != " << ldata->toString() << " }";
-            //ldata->drop(myid);
-            //rdata->drop(myid);
-            //currentPoint->drop(myid);
             return BACK;
-        } //std::cout << '^' << ref_dynamic_cast<ref_BYTE *>(a)->get_ch();
+        }
         //move_to_next_term(ldata, 0/*myid()*/, s);
         MOVE_TO_NEXT_TERM(ldata, 0/*myid()*/, s);
         //currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
         MOVE_TO_NEXT_TERM(currentPoint, 0/*myid()*/, s);
     };
     if (!(*currentPoint == *ldata)){ // сравниваем последние элементы
-            //ldata->drop(myid);
-            //rdata->drop(myid);
-            //currentPoint->drop(myid);
             return BACK;
     }
-    //ldata->drop(myid);
-    //rdata->drop(myid);
     return GO;
 };
 
@@ -533,7 +524,8 @@ RefData*  RefLinkToVariable::Copy(RefData* where){
     return new RefLinkToVariable(getName(), where);
 };
 
-RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp), RefalNameSpace(name) {
+RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp) {
+    setName(name);
     is_system (false);
 };
 
@@ -574,44 +566,19 @@ void delChain(RefData*a, RefData*b){
 
 
 
-//RefData*  RefLChain::next_term( ThisId var_id, Session *s){
-//    #ifdef TESTCODE
-//    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
-//    #endif
-//    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
-//        s->currentLWay = 0;
-//        return next;
-//    }
-//    s->currentLWay = this;
-//    return from;
-//};
-//
-//RefData*  RefLChain::pred_term( ThisId var_id, Session *s){
-//    #ifdef TESTCODE
-//    if (s->currentLWay && s->currentLWay != this) SYSTEMERROR("unknown link way");
-//    #endif
-//    if (s->currentLWay == this){ // уже есть точка входа - значит выходим
-//        s->currentLWay = 0;
-//        return pred;
-//    }
-//    s->currentLWay = this;
-//    return to;
-//};
-
-
-
-
-
 RefVariable::~RefVariable(){
     #ifdef TESTCODE
     co::varcount--;
     #endif
     };
-RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(rp), RefalNameSpace(name){
+RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(rp) {
     #ifdef TESTCODE
     co::varcount++;
     #endif
-    is_system (false);  };
+
+    is_system (false);
+    setName(name);
+    };
 
 
 

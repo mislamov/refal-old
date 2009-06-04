@@ -192,17 +192,26 @@ public:
 
 ////////////////  {o      | => o      | => o      | => x ?} ///////////////////
 //---------- {  } ----------
-class RefGroupBracket : public RefBracketBase, public RefalNameSpace {
+class RefGroupBracket : public RefBracketBase {
+protected:
+    unistring name;
+public:
+    virtual unistring getName() {
+        return name;
+    }
+    virtual void setName(unistring s) {
+        name = s;
+    }
 public:
     CLASS_OBJECT_CAST(RefGroupBracket);
     virtual bool IRefVarStacked() { return true; };
 
     virtual ~RefGroupBracket() {};
     RefGroupBracket(unistring name, RefData *rp) : RefBracketBase(rp) {
-        RefalNameSpace::setName(name);
+        setName(name);
     }; // оптимизировать
     RefGroupBracket(RefGroupBracket *oth, RefData *rp) : RefBracketBase(oth, rp) {
-        RefalNameSpace::setName(oth->name);
+        setName(oth->name);
     };
     //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
     TResult  init(RefData *&tpl, Session *, RefData *&l);
@@ -211,13 +220,6 @@ public:
         return false;
     };
 
-    virtual unistring getName() {
-        return RefalNameSpace::getName();
-    }; /// todo: оптимизировать
-    /*
-    virtual RefData* Copy(RefData *where=0){ return new RefGroupBracket("", where); };
-    virtual RefData* Copy(RefBracketBase *b, RefData *where=0){ return new RefGroupBracket(b, where); };
-    */
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("unexpected call");
     };

@@ -128,7 +128,6 @@ class RefObject {
 public:
     OBJECT_CAST(UseRTTI);
 
-    //static long ocount;
     RefObject();
     virtual ~RefObject();
     virtual unistring toString() = 0;//{ return "@RefObject.toString()"; }
@@ -149,7 +148,6 @@ class RefData : public RefObject {
 protected:
     RefData*  next;
     RefData*  pred;
-    //RefDataTypesForCast isSystem;
     bool isSystem;
 
 
@@ -166,12 +164,8 @@ public:
 
     RefData(RefData *rp=0); // pr вставляем после себя
     virtual ~RefData();
-    //ThisId  0/*myid()*/{  return (ThisId)(this); };
 
-    //static  RefDataTypesForCast getClassTypeCast(){ return castUseRTTI; };      // инфотип для класса
-    //bool  is_symbol; // сопостовимость с s-перемеенной
-
-    virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
+	virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
     virtual RefData*  pred_term( ThisId var_id, Session *s);
     virtual RefData*  next_template( ThisId var_id, Session *s) {
         //return next_term(var_id, s);
@@ -188,24 +182,16 @@ public:
     virtual RefData*  endOfTerm () {
         return this;
     };
-//        virtual RefData*  take_copy ( ThisId var_id); // возвращает копию если новый создатель
-//        virtual RefData*  take_copy_force ( ThisId var_id); // возвращает копию - независимо от создателя
-//        virtual void       drop   ( ThisId var_id);
 
     virtual RefData* predInsert(RefData *);
     virtual RefData* afterInsert(RefData *);
-    ///todo:  virtual void 	   dropall( Session*);
 
     virtual bool operator ==(RefData &rd) =0;//{ return false; };
     virtual bool operator >(RefData &rd)  {
         RUNTIMEERROR("operator >", "Not comparable");
     };
-    /*
-            virtual bool operator <(RefData &rd)  { return ! (*this>rd || *this==rd); };
-            virtual bool operator <=(RefData &rd) { return ! (*this>rd); };
-            virtual bool operator >=(RefData &rd) { return ! (*this<rd); };
-    */
-    virtual TResult init(RefData *&activeTemplate, Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
+
+	virtual TResult init(RefData *&activeTemplate, Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData *&activeTemplate, Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
     virtual void    forceback(Session* s) {
         SYSTEMERROR("RefData.forceback NOT DEFINE for "
@@ -245,27 +231,6 @@ public:
 };
 
 
-// Именнованое поле методов и переменных
-class RefalNameSpace {
-protected:
-    unistring name;
-public:
-    virtual unistring getName() {
-        return name;
-    }
-    virtual void setName(unistring s) {
-        name = s;
-    }
-
-    RefalNameSpace(unistring name = EmptyUniString) {
-        setName(name);
-    };
-    virtual ~RefalNameSpace() {};
-
-};
-
-
-
 // Абстрактный класс - предок всех открытых переменных языка (простых и скобочных)
 class RefVariableBase :  public RefData {
 public:
@@ -276,7 +241,10 @@ public:
     RefVariableBase(RefData *rp) : RefData(rp) { };
 };
 
-class RefVariable : public RefVariableBase, public RefalNameSpace { // Простая переменная
+class RefVariable : public RefVariableBase { // Простая переменная
+protected:
+    unistring name;
+
 public:
     BASE_CLASS_CAST(RefVariable);
 
@@ -284,16 +252,27 @@ public:
 
     virtual void    forceback(Session* s) { }; // принудительный откат. Точка убирает из сессии свое состоян
     RefVariable(unistring name = EmptyUniString, RefData *rp = 0);
-    virtual unistring getName() {
-        return RefalNameSpace::getName();
-    }; /// todo очень грязное решение. исправить
-    virtual void setName(unistring name) {
-        RefalNameSpace::setName(name);
-    }; /// todo очень грязное решение. исправить
+
+	virtual unistring getName() {
+        return name;
+    }
+    virtual void setName(unistring s) {
+        name = s;
+    }
 };
 
+
 // Ссылка на переменную
-class RefLinkToVariable : public RefData, public RefalNameSpace {
+class RefLinkToVariable : public RefData {
+protected:
+    unistring name;
+public:
+    virtual unistring getName() {
+        return name;
+    }
+    virtual void setName(unistring s) {
+        name = s;
+    }
     //RefVariable *lnkData;
     // в name хранится адрес ссылочной переменной в виде varname:varname:varname
     /// todo: сделать ссылаемость на конкретную переменную + карту сопоставлений сделать по адресу ссылки а не по имени
@@ -336,18 +315,15 @@ RefSmplVarType(unistring name = EmptyUniString, RefData *rp = 0) : RefVariable(n
 class RefVarTable : public std::map<unistring, RefVariable*> {};
 
 
-class RefBracketBase : /*public IRefVarStacked, */ public RefData {
+class RefBracketBase : public RefData {
 protected:
     bool        is_opened; // true = begin- ; false = end-
+    RefBracketBase*  other;
 
 public:
     BASE_CLASS_CAST(RefBracketBase);
 
-    RefBracketBase*  other;
 
-    virtual RefData *Clone() {
-        SYSTEMERROR("unexpected call");
-    };
     RefBracketBase( RefData *rp = 0); // открывающая
     RefBracketBase( RefBracketBase *dr, RefData *rp=0); // закрывающая
     virtual bool isOpen();
@@ -359,9 +335,6 @@ public:
     virtual bool       operator ==(RefData &rd);
     virtual RefData* Copy(RefBracketBase *b, RefData *rp=0)=0;
     virtual RefData* Copy(RefData *rp=0)=0;
-
-    /*virtual unistring getName(){ SYSTEMERROR("alarm!"); };
-    virtual void setName(unistring ){ SYSTEMERROR("alarm!"); };*/
 
 };
 
@@ -453,8 +426,6 @@ template <class T>
         }
     }
     return 0;
-
-//    return (T*)((RefObject *) ((POINTER_INT_TYPE)(d) * (POINTER_INT_TYPE)((objectCast|T::getClassTypeCast) == objectCast)));
 };
 
 

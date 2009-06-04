@@ -131,11 +131,8 @@ RefObject*  Session::getObjectByName(unistring name, Session *s) {
 	///todo: проверить указан ли модуль явно и если указан, то искать только в нем
 	std::map<unistring, RefModuleBase*>::reverse_iterator mod;
 	RefObject* result = 0;
-	//std::cout << "\n\n" << modules.size() << std::flush << "\n\n";
-
 
 	for ( mod=this->modules.rbegin() ; mod != this->modules.rend(); ++mod ) {
-		//std::cout << "\n\n" << mod->second->getName() << std::flush << "\n\n";
 
 		if (result = mod->second->getObjectByName(name, s)) {
 			return result;
@@ -289,7 +286,6 @@ TResult doGOandINIT(RefData *&activeTemplate, Session *s, SessionOfMaching *subs
 		break;
 			 }
 	case BACK: {
-		l = savedL;
 		break;
 			   }
 	default: {
@@ -331,7 +327,6 @@ TResult doBACKandBACK(RefData *&activeTemplate, Session *s, SessionOfMaching *su
 		break;
 			 }
 	case BACK: {
-		l = savedL;
 		break;
 			   }
 	default: {
