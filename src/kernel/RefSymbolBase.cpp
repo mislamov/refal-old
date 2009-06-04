@@ -38,106 +38,134 @@
 
 
 template <class T>
-TResult RefSymbolBase <T>::init(RefData *&tpl, Session* s, RefData *&l) {
-    //move_to_next_term(l,0/*myid()*/,s);
-    MOVE_TO_NEXT_TERM(l,0/*myid()*/,s);
-
-    RefData* aux = l;
+TResult RefSymbolBase <T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
     #ifdef TESTCODE
-        if (!aux) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
+    if (l)  {
+        SYSTEMERROR("RefData::init() l is NULL !");
+    };
+    if (!r) {
+        SYSTEMERROR("RefData::init() tring to matching with NULL address!");
+    };
     #endif
-    //std::cout << "\n?::: "; print_inf(); std::cout << "=="; aux->print_inf(); std::cout << std::flush;
-    bool tmpr = (*this == *aux);
-    //aux->drop(0/*myid()*/);
-    if (tmpr) return GO;
-    //s->get_moved_to_pred_current_term(myid);
+
+    MOVE_TO_NEXT_TERM(r,0,s);
+    if (*this == *r) {
+        //save
+        //l=0;
+        //r=r;
+        tpl = tpl->getNext();
+        return GO;
+    }
+
+    tpl = tpl->getPred();
     return BACK;
 };
 
+
+
 template <class T>
-    TResult RefSymbolBase <T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
-        //s->get_moved_to_pred_current_term(myid);
-        return BACK;
+TResult RefSymbolBase <T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
+    //restore
+    tpl = tpl->getPred();
+    return BACK;
+};
+
+
+template <class T>
+RefSymbolBase<T>::~RefSymbolBase() {
+    #ifdef TESTCODE
+    co::symcount--;
+    #endif
 };
 
 template <class T>
-    RefSymbolBase<T>::~RefSymbolBase(){
-#ifdef TESTCODE
-                co::symcount--;
-#endif
-};
-
-template <class T>
-    RefSymbolBase<T>::RefSymbolBase(RefData *rp) : RefValuedData(rp){
-        is_system (false);
-#ifdef TESTCODE
-        co::symcount++;
-#endif
+RefSymbolBase<T>::RefSymbolBase(RefData *rp) : RefValuedData(rp) {
+    is_system (false);
+    #ifdef TESTCODE
+    co::symcount++;
+    #endif
 };
 /*template <class T>
     void RefSymbolBase<T>::setValue(T i){};
 */
 template <class T>
-    bool RefSymbolBase<T>::operator ==(RefData& rd){
-        RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase<T> >(& rd);
-        return t && (t->getValue()==this->getValue());
-    };
+bool RefSymbolBase<T>::operator ==(RefData& rd) {
+    RefSymbolBase<T> *t = ref_dynamic_cast<RefSymbolBase<T> >(& rd);
+    return t && (t->getValue()==this->getValue());
+};
 
 
 /* общие  */
 template <class T>
-    RefSymbol<T>::RefSymbol(T i, RefData *rp) : RefSymbolBase<T>(rp){
-        this->setValue(i);
-        /*this->is_system() (false);*/
-        };
-
-template <class T>
-    RefSymbol<T>::RefSymbol(RefData *rp) : RefSymbolBase<T>(rp){
-        return;
-        /*this->is_system() (false);*/
-        };
-
-template <class T>
-    T RefSymbol<T>::getValue() { return value; };
-
-template <class T>
-    void RefSymbol<T>::setValue(T i) { value = i; };
-
-template <class T>
-    RefData* RefSymbol<T>::Copy(RefData *where){
-        return new RefSymbol<T>(getValue(), where);
+RefSymbol<T>::RefSymbol(T i, RefData *rp) : RefSymbolBase<T>(rp) {
+    this->setValue(i);
+    /*this->is_system() (false);*/
 };
 
 template <class T>
-    unistring RefSymbol<T>::toString(){
-        std::ostringstream s;
-        s << this->getValue();
-        return s.str();
+RefSymbol<T>::RefSymbol(RefData *rp) : RefSymbolBase<T>(rp) {
+    return;
+    /*this->is_system() (false);*/
+};
+
+template <class T>
+T RefSymbol<T>::getValue() {
+    return value;
+};
+
+template <class T>
+void RefSymbol<T>::setValue(T i) {
+    value = i;
+};
+
+template <class T>
+RefData* RefSymbol<T>::Copy(RefData *where) {
+    return new RefSymbol<T>(getValue(), where);
+};
+
+template <class T>
+unistring RefSymbol<T>::toString() {
+    std::ostringstream s;
+    s << this->getValue();
+    return s.str();
 };
 
 
 
 template <class T>
-    TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l){
-        //move_to_next_term(l, 0/*myid()*/, s);
-        MOVE_TO_NEXT_TERM(l, 0/*myid()*/, s);
+TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
+    #ifdef TESTCODE
+    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
+    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
+    #endif
 
-        if (ref_dynamic_cast<T >(l))
-            return GO;
-        else
-            return BACK;
-    };
+    MOVE_TO_NEXT_TERM(r,0,s);
+    if (ref_dynamic_cast<T >(r)) {
+        //save
+        //l=0;
+        //r=r;
+        tpl = tpl->getNext();
+        return GO;
+    }
+
+    tpl = tpl->getPred();
+    return BACK;
+
+};
 
 template <class T>
-    TResult RefVarForSymbol<T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r){
-        return BACK;
-    };
+TResult RefVarForSymbol<T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
+    tpl = tpl->getPred();
+    return BACK;
+};
 
 template <class T>
-    RefVarForSymbol<T>::RefVarForSymbol (unistring name, RefData *rp) : RefVariable(name, rp){};
+RefVarForSymbol<T>::RefVarForSymbol (unistring name, RefData *rp) : RefVariable(name, rp) {};
 
 template <class T>
-    bool RefVarForSymbol<T>::operator ==(RefData &rd){ return false; };
+bool RefVarForSymbol<T>::operator ==(RefData &rd) {
+    return false;
+};
 
 
 
@@ -146,56 +174,56 @@ template <class T>
 
 
 ///     ПЕРЕГРУЖЕННЫЕ МЕТОДЫ
-void RefSymbol<unichar>::setValueFromString(unistring s){
+void RefSymbol<unichar>::setValueFromString(unistring s) {
     setValue( s[0] );
 }
 
 
-void RefSymbol<char>::setValueFromString(unistring s){
+void RefSymbol<char>::setValueFromString(unistring s) {
     setValue((char)s[0] );
 }
 
-void RefSymbol<infint>::setValueFromString(unistring s){
+void RefSymbol<infint>::setValueFromString(unistring s) {
     setValue( strtoul(s.c_str(), 0, 10) );
 }
 
-void RefSymbol<infreal>::setValueFromString(unistring s){
+void RefSymbol<infreal>::setValueFromString(unistring s) {
     setValue( strtof(s.c_str(), 0) );
 }
 
-void RefSymbol<unistring>::setValueFromString(unistring s){
+void RefSymbol<unistring>::setValueFromString(unistring s) {
     setValue( s );
 }
 
 
 
 
-unistring RefSymbol<unistring>::toString(){
+unistring RefSymbol<unistring>::toString() {
+    #ifdef DEBUG
+    return "\"" + getValue() + "\" ";
+    #else
+    //return getValue() + " ";
+    return "\"" + getValue() + "\" ";
+    #endif
+}
+
+
+unistring RefSymbol<unichar>::toString() {
+    std::ostringstream s;
+    if ((getValue() == 10) || (getValue() == 13)) {
         #ifdef DEBUG
-            return "\"" + getValue() + "\" ";
+        s << "#" << (int)getValue();
         #else
-            //return getValue() + " ";
-            return "\"" + getValue() + "\" ";
+        s << "\n";
         #endif
+    } else {
+        //s << '\'' << this->getValue();// << '_' <<(long)this << ' ';
+        s << this->getValue();
+    }
+    return s.str();
 }
 
-
-unistring RefSymbol<unichar>::toString(){
-        std::ostringstream s;
-        if ((getValue() == 10) || (getValue() == 13)){
-            #ifdef DEBUG
-            s << "#" << (int)getValue();
-            #else
-            s << "\n";
-            #endif
-        } else {
-            //s << '\'' << this->getValue();// << '_' <<(long)this << ' ';
-            s << this->getValue();
-        }
-        return s.str();
-}
-
-unistring RefSymbol<infint>::toString(){
+unistring RefSymbol<infint>::toString() {
 //    return getValue() + " ";
     std::ostringstream s;
     s << getValue() << " ";
@@ -203,13 +231,13 @@ unistring RefSymbol<infint>::toString(){
 
 }
 
-unistring RefSymbol<infreal>::toString(){
+unistring RefSymbol<infreal>::toString() {
     std::ostringstream s;
     s << getValue() << " ";
     return s.str();
 }
 
-unistring RefSymbol<char>::toString(){
+unistring RefSymbol<char>::toString() {
     std::ostringstream s;
     s << "\\x" << std::hex << (int)getValue();
     return s.str();
@@ -222,7 +250,7 @@ unistring RefSymbol<char>::toString(){
 
 
 // возвращает переменную
-RefVariable* createVariableByTypename(unistring nametype, unistring vn){
+RefVariable* createVariableByTypename(unistring nametype, unistring vn) {
     if (nametype == "word") return new RefVarWord(vn);
     if (nametype == "int") return new RefVarInteger(vn);
     if (nametype == "real") return new RefVarReal(vn);
@@ -240,7 +268,7 @@ RefVariable* createVariableByTypename(unistring nametype, unistring vn){
 
 
 // возвращает рефал-символ
-RefData* createNewEmptyRefSymbolByTypeName(unistring nametype){
+RefData* createNewEmptyRefSymbolByTypeName(unistring nametype) {
     if (nametype == "WORD") return new RefWord();
     if (nametype == "INT") return new RefInteger();
     if (nametype == "REAL") return new RefReal();

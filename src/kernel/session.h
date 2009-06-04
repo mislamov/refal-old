@@ -42,7 +42,7 @@ class RefModuleBase;
 class RefFunctionBase;
 class RefTemplateBridgeVar;
 
-class TVarBodyTable : public std::map<unistring, TVarBody*>{};
+class TVarBodyTable : public std::map<unistring, TVarBody*> {};
 
 template <class T1,class T2,class T3,class T4>
 struct quadL {
@@ -53,7 +53,7 @@ struct quadL {
 };
 
 // тело сопоставленной переменной
-class TVarBody : public quadL<RefData*, RefDataChainPart*, RefData*, RefDataChainPart*>{
+class TVarBody : public quadL<RefData*, RefDataChainPart*, RefData*, RefDataChainPart*> {
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
 
@@ -77,40 +77,42 @@ public:
     Пользовательский шаблон: это будет TemplateItem c сылками на концы тела. В сессии сделать специальный стек/мап указателей на точки возврата пользовательскоо шаблона при сопоставлении.
 */
 class SessionOfMaching  : public RefObject {
-        public:
-                bool isfar; // признак того, что субсессия создается для внешнего сопоставления (чужое поле зрения)
-        public:
-                RefObject *owner;  // причина подсессии : предложение(образец), условие или внешний шаблон(образец);
-                RefChain  *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
+public:
+    bool isfar; // признак того, что субсессия создается для внешнего сопоставления (чужое поле зрения)
+public:
+    RefObject *owner;  // причина подсессии : предложение(образец), условие или внешний шаблон(образец);
+    RefChain  *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
 
     RefData* matching_savedL ;
     RefData* matching_l ;
     RefData* matching_r ;
 
 
-                std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
-                std::stack<ref_variant_vert*>   StackOfVariants;	    // Стек удачно сопоставленных вариантов (ссылки на границы последнего варианта)
+    std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
+    std::stack<ref_variant_vert*>   StackOfVariants;	    // Стек удачно сопоставленных вариантов (ссылки на границы последнего варианта)
 
-                std::stack<infint> StackOfRepeater;	        // Стек активных повторителей
-                std::stack<infint> StackOfRepeaterDoned;	// Стек удачно сопоставленных повторителей
+    std::stack<infint> StackOfRepeater;	        // Стек активных повторителей
+    std::stack<infint> StackOfRepeaterDoned;	// Стек удачно сопоставленных повторителей
 
-                RefData *activeTemplate; // последнее активное выражение шаблона в сопоставлении (использовать вне matching ОПАСНО!)
-                RefTemplateBridgeVar *templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
+    RefData *activeTemplate; // последнее активное выражение шаблона в сопоставлении (использовать вне matching ОПАСНО!)
+    RefTemplateBridgeVar *templReturnBackPoint;// точка возврата при сопоставлении внешних шаблонов
 
 
-                TVarBodyTable varTable;		          // Таблица переменных  имя -> ссылка на элемент стека
-                std::stack<TVarBody*> StackOfSopost; // Стек хранителей состояний шаблонов
-                //RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
+    TVarBodyTable varTable;		          // Таблица переменных  имя -> ссылка на элемент стека
+    std::stack<TVarBody*> StackOfSopost; // Стек хранителей состояний шаблонов
+    //RefData*    StopBrackForceVar;	// Конечная точка (шаблон) принудительного отката. ?: нужно ли в подсессию?
 
-                // создает и возвращает субсессию (точку восстановления) для сопоставления с новым полем зрения
-                SessionOfMaching(RefObject *own, RefData *argLeft, RefData *argRight);
+    // создает и возвращает субсессию (точку восстановления) для сопоставления с новым полем зрения
+    SessionOfMaching(RefObject *own, RefData *argLeft, RefData *argRight);
 
-                // создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов (поле зения уже подготовлено)
-                SessionOfMaching(RefObject *own, Session *s);
+    // создает точку внутри субсессии. Нужно для сопоставления внешних шаблонов (поле зения уже подготовлено)
+    SessionOfMaching(RefObject *own, Session *s);
 
-                // очищает точку восстановления с удалением мусора
-                virtual ~SessionOfMaching();
-                unistring toString() { return "SessionOfMaching"; };
+    // очищает точку восстановления с удалением мусора
+    virtual ~SessionOfMaching();
+    unistring toString() {
+        return "SessionOfMaching";
+    };
 };
 
 
@@ -118,13 +120,13 @@ class SessionOfMaching  : public RefObject {
 // Данные для процесса вычисления функции (сессия сопоставления)
 class Session : public RefObject {
 
-  private:
+private:
     RefChain* globalData;   // глобальные данные для цепочек
 
     RefChain*  deinitializationArg();               //  откат регистрации ОО в initialization
     void  initializationArg(RefData*, RefData*);    //  регистрация ОО для сапостовления. приставка дот
 
-  public:
+public:
 
     /* путешествие по цепочкам данных сканирующей головки */
     RefDataChainPart *currentChainPart;
@@ -158,10 +160,11 @@ class Session : public RefObject {
 
     bool  matching(RefObject *initer, RefChain *tmplate, RefData*l, RefData*r, bool isdemaching, bool isRevers); // сопоставляет шаблон tmplate с объектным выражением. isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 
-    std::stack<TVarBody*> *getCurrentSopostStack(){
+    std::stack<TVarBody*> *getCurrentSopostStack() {
         #ifdef TESTCODE
-        if (matchSessions.empty()){
-            showStatus(); SYSTEMERROR("matchSessions is EMPTY !");
+        if (matchSessions.empty()) {
+            showStatus();
+            SYSTEMERROR("matchSessions is EMPTY !");
         }
         #endif
         return &(matchSessions.back()->StackOfSopost);
@@ -170,8 +173,12 @@ class Session : public RefObject {
 
     }
 
-    inline std::stack<RefBracketBase  *>  *getStackOfDataSkob(){ return &(matchSessions.back()->StackOfDataSkob); }
-    inline RefChain *getPole_zrenija(){ return matchSessions.back()->pole_zrenija; }
+    inline std::stack<RefBracketBase  *>  *getStackOfDataSkob() {
+        return &(matchSessions.back()->StackOfDataSkob);
+    }
+    inline RefChain *getPole_zrenija() {
+        return matchSessions.back()->pole_zrenija;
+    }
 
     // готовит правую часть для сопоставления - подстановка переменных. В сессии, потому что нужна таблица переменных
     RefChain *RightPartToObjectExpression(RefChain *);
@@ -179,34 +186,15 @@ class Session : public RefObject {
     void regModule(RefModuleBase *);
     RefFunctionBase* findMethodFromModule(unistring);
 
-    virtual unistring toString(){ return "Session"; };
+    virtual unistring toString() {
+        return "Session";
+    };
     void showStatus();
-
 
 
 
 };
 
 
-TResult doGOandINIT(RefData *&activeTemplate, Session *s, SessionOfMaching *subsess);
-TResult doBACKandBACK(RefData *&activeTemplate, Session *s, SessionOfMaching *subsess);
-
-
-
-
-/*
-class DataForRepeater {
-public:
-    RefData *owner; //?
-    unsigned long from, to;	// границы количества допутимых проходов
-    long step;
-    long mustbe;	//?
-    long maxstep;	//?
-    unsigned long current_step;	// число активных проходов
-    RefData *leftPoint;	// левый край захватывемой подцепочки
-
-    DataForRepeater(RefData *o);
-    std::string toString(){ return ("@DataForRepeater:owner=" + owner->toString()); }
-};*/
 
 #endif

@@ -481,7 +481,7 @@ RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s){
         if (! s->matchSessions.back()->templReturnBackPoint)
             SYSTEMERROR("bridge back-dot not found!");
         #endif
-        return s->matchSessions.back()->templReturnBackPoint->other;
+        return s->matchSessions.back()->templReturnBackPoint->getOther();
     } else {
         return pred;
     }

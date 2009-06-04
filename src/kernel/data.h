@@ -167,14 +167,14 @@ public:
 
 	virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
     virtual RefData*  pred_term( ThisId var_id, Session *s);
-    virtual RefData*  next_template( ThisId var_id, Session *s) {
-        //return next_term(var_id, s);
-        return next;
-    }; // следующий шаблон при сопоставлении
-    virtual RefData*  pred_template( ThisId var_id, Session *s) {
-        //return pred_term(var_id, s);
-        return pred;
-    };
+//    virtual RefData*  next_template( ThisId var_id, Session *s) {
+//        //return next_term(var_id, s);
+//        return next;
+//    }; // следующий шаблон при сопоставлении
+//    virtual RefData*  pred_template( ThisId var_id, Session *s) {
+//        //return pred_term(var_id, s);
+//        return pred;
+//    };
 
     virtual RefData*  beginOfTerm() {
         return this;
@@ -191,9 +191,9 @@ public:
         RUNTIMEERROR("operator >", "Not comparable");
     };
 
-	virtual TResult init(RefData *&activeTemplate, Session* s, RefData *&currentPoint)=0; //  --> operator==() => [return GO] else [return BACK]
+	virtual TResult init(RefData *&activeTemplate, Session* s, RefData *&currentPoint, RefData *&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData *&activeTemplate, Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
-    virtual void    forceback(Session* s) {
+    virtual void    forceback(RefData *&activeTemplate, Session* s) {
         SYSTEMERROR("RefData.forceback NOT DEFINE for "
                     << toString());
     };; // принудительный откат. Точка убирает из сессии свое состояние
@@ -218,7 +218,7 @@ public:
     RefNULL(RefData *pr=0);
     virtual bool operator==(RefData&);
     virtual RefData*  Copy(RefData *d);
-    virtual TResult init(RefData *&tpl, Session*, RefData *&);
+    virtual TResult init(RefData *&tpl, Session*, RefData *&, RefData *&);
     virtual TResult back(RefData *&tpl, Session*, RefData *&, RefData *&);
 
     virtual unistring toString() {
@@ -227,7 +227,7 @@ public:
         #endif
         return "";
     };
-    void forceback(Session *) {};
+    void forceback(RefData *&, Session *) {};
 };
 
 
@@ -250,7 +250,7 @@ public:
 
     ~RefVariable();
 
-    virtual void    forceback(Session* s) { }; // принудительный откат. Точка убирает из сессии свое состоян
+    virtual void    forceback(RefData *&, Session* s) { }; // принудительный откат. Точка убирает из сессии свое состоян
     RefVariable(unistring name = EmptyUniString, RefData *rp = 0);
 
 	virtual unistring getName() {
@@ -281,12 +281,12 @@ public:
 
     unistring toString();
     bool operator==(RefData&);
-    virtual TResult init(RefData *&tpl, Session* s, RefData *&currentPoint);
-    virtual TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
+    virtual TResult init(RefData *&tpl, Session* s, RefData *&, RefData *&);
+    virtual TResult back(RefData *&tpl, Session* s, RefData *&, RefData *&);
     virtual RefData*  Copy(RefData* where=0);
 
     RefLinkToVariable(unistring name, RefData *rp = 0);
-    void forceback(Session *) {};
+    void forceback(RefData *&, Session *) {};
 
     virtual unistring getPath() {
         return EmptyUniString;
@@ -318,10 +318,11 @@ class RefVarTable : public std::map<unistring, RefVariable*> {};
 class RefBracketBase : public RefData {
 protected:
     bool        is_opened; // true = begin- ; false = end-
-    RefBracketBase*  other;
 
 public:
     BASE_CLASS_CAST(RefBracketBase);
+
+	    RefBracketBase*  other;
 
 
     RefBracketBase( RefData *rp = 0); // открывающая

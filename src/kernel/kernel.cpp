@@ -53,32 +53,40 @@ bool RefStructBracket::operator ==(RefData &rd) {
     return  aux && (aux->is_opened == is_opened);
 };
 
-TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l) {
-    //move_to_next_term(l,0/*myid()*/,s);
-    MOVE_TO_NEXT_TERM(l,0/*myid()*/,s);
-    RefStructBracket* aux = ref_dynamic_cast<RefStructBracket >(l);
-    if (!aux || (isOpen()!=aux->isOpen()))  return BACK; //   )  (
+TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
+    #ifdef TESTCODE
+    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
+    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
+    #endif
+
+    MOVE_TO_NEXT_TERM(r,0,s);
+
+    RefStructBracket* aux = ref_dynamic_cast<RefStructBracket >(r);
+    if (!aux || (isOpen()!=aux->isOpen()))  {
+        tpl=tpl->getPred();
+        return BACK; //   )  (
+    }
     if (isOpen()) {  //    (  (
-        //std::cout << "\n% % % : " << std::flush;
-        //std::cout << s->getStackOfDataSkob()->size() << std::flush;
         s->getStackOfDataSkob()->push( aux->getOther() );
-        l = l->getNext(); // jump into brackets (to NULL-dot)
+        r = r->getNext(); // jump into brackets (to NULL-dot)
+        tpl=tpl->getNext();
         return GO;
     };
     //    )  )
     if (aux != s->getStackOfDataSkob()->top()){
+        tpl=tpl->getPred();
         return BACK;
     }
-    //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
     s->getStackOfDataSkob()->pop();
+    tpl=tpl->getNext();
     return GO;
 
 };
 
 TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     if (is_opened) { //  (
-        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
         s->getStackOfDataSkob()->pop(); /// clean?
+        tpl=tpl->getPred();
         return BACK;
     }
 
@@ -88,14 +96,13 @@ TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&
         SYSTEMERROR("may be unnormal situation: r = " << r->toString());
     }
     #endif
-    //s->getStackOfDataSkob()->push( ref_dynamic_cast<RefBracketBase*>( r ) );
     s->getStackOfDataSkob()->push( (RefBracketBase*)( r ) );
     //return FORCEBACK; - не надо, т к ситуация мб такая: (e.1 e.all)
     return BACK;
 };
 
 
-void RefStructBracket::forceback(Session *s){
+void RefStructBracket::forceback(RefData*&tpl, Session *s){
     if (this->isOpen()){
         //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
         //s->getStackOfDataSkob()->pop(); /// - в стеке скобок нет инфы для этой скобки! Она и ее пара была сопоставлена

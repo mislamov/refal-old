@@ -61,8 +61,8 @@ public:
         return (getValue() > t->getValue());
     };
 
-    virtual TResult init(RefData *&tpl, Session* s, RefData *&currentPoint); //  --> operator==() => [return GO] else [return BACK]
-    virtual TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
+    virtual TResult init(RefData *&tpl, Session* s, RefData *&, RefData *&); //  --> operator==() => [return GO] else [return BACK]
+    virtual TResult back(RefData *&tpl, Session* s, RefData *&, RefData *&);
 
     virtual void setValueFromString(unistring) = 0;
     virtual unistring toString()
@@ -103,7 +103,7 @@ public:
     //virtual void setValueFromString(unistring) = 0;
     virtual void setValueFromString(unistring);
 
-    void forceback(Session *){};
+    void forceback(RefData *&, Session *){};
 };
 //template <class T> const RefDataTypesForCast RefSymbol<T> ::getClassTypeCast = castUseRTTI;
 //
@@ -123,7 +123,7 @@ public:
     RefDataTypesForCast object_cast();
     const static RefDataTypesForCast getClassTypeCast;
 
-    TResult init(RefData *&tpl, Session* s, RefData *&l);
+    TResult init(RefData *&tpl, Session* s, RefData *&l, RefData *&r);
     TResult back(RefData *&tpl, Session* s, RefData *&l, RefData *&r);
     RefVarForSymbol (unistring name, RefData *rp=0);
 

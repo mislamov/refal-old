@@ -106,7 +106,7 @@ void       RefData::drop   ( ThisId ThisId) {
 
 //////////////////////////////////////////////////////////////////
 
-TResult RefData::init(RefData*&tpl, Session* s, RefData *&) {
+TResult RefData::init(RefData*&tpl, Session* s, RefData *&, RefData *&) {
     SYSTEMERROR("unexpected called for " << toString());
     return ERROR;
 }
@@ -470,10 +470,16 @@ bool RefLinkToVariable::operator==(RefData&){
 };
 
 
-TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&currentPoint){
+TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&l, RefData *&r){
+    #ifdef TESTCODE
+    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
+    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
+    #endif
 
 
-    TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: если делать ссылки через имена а не через адреса то добавить и вызывать тут менеджер адресов по именам
+
+
+    TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: ссылки
     if (getPath() != EmptyUniString){
         // поиск подпути
         pd = pd->folowByWay(getPath());
@@ -484,40 +490,40 @@ TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&currentPoint)
         return ERROR;
     };
 
-    //std::cout << "\n\n\n\nArg:::::: " << currentPoint->toString(); //print_vector(currentPoint);
-    //std::cout << "\nShablon:: "; print_vector(pd->first, pd->second);
-
     RefData
         *ldata = pd->first,
         *rdata = pd->second;
 
     if (!ldata ) {
+        tpl = tpl->getNext();
         return GO; // ссылка на пустой отрезок - верна
     }
 
-    //move_to_next_term(currentPoint, 0/*myid()*/, s);
-    MOVE_TO_NEXT_TERM(currentPoint, 0/*myid()*/, s);
-    if (currentPoint/*->myid()*/==ldata/*->myid()*/){ // сопоставление с собой
-        currentPoint = rdata;
+    MOVE_TO_NEXT_TERM(r, 0, s);
+    if (r/*->myid()*/==ldata/*->myid()*/){ // сопоставление с собой
+        r = rdata;
+        tpl = tpl->getNext();
         return GO;
     }
 
-    while ((ldata!=rdata) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
-        if (!(*currentPoint == *ldata)) {
+    RefData *lend = rdata;
+    MOVE_TO_NEXT_TERM(lend, 0/*myid()*/, s); // граница сравнения
+
+    while ((ldata!=lend) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
+        if ( !(*r == *ldata)) {
+            tpl=tpl->getPred();
             return BACK;
         }
-        //move_to_next_term(ldata, 0/*myid()*/, s);
+
         MOVE_TO_NEXT_TERM(ldata, 0/*myid()*/, s);
-        //currentPoint = move_to_next_term(currentPoint, 0/*myid()*/, s);
-        MOVE_TO_NEXT_TERM(currentPoint, 0/*myid()*/, s);
+        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
     };
-    if (!(*currentPoint == *ldata)){ // сравниваем последние элементы
-            return BACK;
-    }
+    tpl = tpl->getNext();
     return GO;
 };
 
 TResult RefLinkToVariable::back(RefData*&tpl,Session* s, RefData *&currentRight, RefData *&currentLeft){
+    tpl=tpl->getPred();
     return BACK;
 };
 RefData*  RefLinkToVariable::Copy(RefData* where){

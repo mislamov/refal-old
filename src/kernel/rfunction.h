@@ -119,7 +119,7 @@ public:
     bool operator ==(RefData &rd) {
         return false;
     };
-    TResult init(RefData *&tpl, Session*, RefData *&);
+    TResult init(RefData *&tpl, Session*, RefData *&, RefData *&);
     TResult back(RefData *&tpl, Session*, RefData *&, RefData *&);
     RefData*  Copy(RefData* where=0) {
         return 0;
@@ -203,7 +203,7 @@ public:
     virtual bool operator ==(RefData &rd) {
         return false;
     };
-    virtual TResult  init(RefData *&tpl, Session* , RefData *&); //
+    virtual TResult  init(RefData *&tpl, Session* , RefData *&, RefData *&); //
     virtual TResult  back(RefData *&tpl, Session* , RefData *&, RefData *&); //
 
 RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r) {
@@ -235,7 +235,7 @@ public:
 RefMatchingCutter(RefData *d=0) : RefData(d) {
         is_system( false );
     }
-    virtual TResult  init(RefData *&tpl, Session* , RefData *&) {
+    virtual TResult  init(RefData *&tpl, Session* , RefData *&, RefData *&) {
         return GO;
     }
     virtual TResult  back(RefData *&tpl, Session* , RefData *&, RefData *&) {
@@ -251,7 +251,7 @@ RefMatchingCutter(RefData *d=0) : RefData(d) {
     virtual bool operator ==(RefData &rd) {
         SYSTEMERROR("alarm");
     };
-    virtual void    forceback(Session* s) {};
+    virtual void    forceback(RefData *&a, Session* s) {};
 
 
 };
@@ -315,8 +315,8 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
         else return  name+".[}]";
     };
 
-    TResult init(RefData *&tpl, Session* s, RefData *&currentPoint);
-    TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
+    TResult init(RefData *&tpl, Session* s, RefData *&, RefData *&);
+    TResult back(RefData *&tpl, Session* s, RefData *&, RefData *&);
     RefData*  next_template( ThisId var_id, Session *s);
     RefData*  pred_template( ThisId var_id, Session *s);
 
@@ -350,7 +350,7 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
         return cp;
     };
 
-    virtual void    forceback(Session* s) {};
+    virtual void    forceback(RefData *&a, Session* s) {};
 
 };
 

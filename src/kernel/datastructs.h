@@ -44,7 +44,7 @@ RefData_DOT(RefData* rp = 0) : RefBracketBase(rp) {};
 
 RefData_DOT(RefData_DOT *nd, RefData* rp = 0) : RefBracketBase(nd, rp) {};
     bool operator ==(RefData &rd);
-    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
     TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
 
     virtual RefData*  next_term( ThisId var_id, Session *s );
@@ -79,10 +79,10 @@ public:
 
     ref_variant_dot( RefData* rp=0);
     RefData*  pred_template (ThisId id, Session *s);
-    TResult	   init	      (RefData *&tpl, Session *s, RefData *&l);
+    TResult	   init	      (RefData *&tpl, Session *s, RefData *&l, RefData *&);
     TResult	   back	      (RefData *&tpl, Session *s, RefData *&l, RefData *&r);
     bool operator==(RefData&rd);
-    void forceback(Session* s) {};
+    void forceback(RefData *&, Session* s) {};
 
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
@@ -109,9 +109,9 @@ public:
     ref_variant_vert( RefData* rp=0);
     RefData*  next_template (ThisId id, Session*);
     bool operator==(RefData&rd);
-    void forceback (Session *s);
+    void forceback (RefData *&, Session *s);
 
-    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&); //
     TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
@@ -127,14 +127,14 @@ class ref_variant_ffwd : public RefData {
 
 public:
     ref_variant_ffwd(RefData *rp=0);
-    TResult	 init(RefData *&tpl, Session *s, RefData *&l);
+    TResult	 init(RefData *&tpl, Session *s, RefData *&l, RefData *&);
     TResult	 back(RefData *&tpl, Session *s, RefData *&l, RefData *&r);
     bool operator==(RefData&rd);
 
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
     };
-    void forceback(Session* s) {};
+    void forceback(RefData *&, Session* s) {};
     virtual unistring toString() {
         return "=>";
         std::ostringstream ss;
@@ -152,7 +152,7 @@ public:
     RefData*	pred_template (ThisId id, Session *s);
     bool operator==(RefData&rd);
 
-    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&); //
     TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
@@ -160,7 +160,7 @@ public:
     virtual unistring toString() {
         return "-?-";
     };
-    void forceback(Session* s);
+    void forceback(RefData *&, Session* s);
 
 };
 //----------  x  ------------
@@ -175,7 +175,7 @@ public:
     RefData*	pred_template (ThisId id, Session *s);
     bool operator==(RefData&rd);
 
-    TResult  init(RefData *&tpl, Session* s, RefData *&l); //
+    TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&); //
     TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
         SYSTEMERROR("zagl for " << toString() << "->back(s,l,r)");
     }; //
@@ -185,7 +185,7 @@ public:
     virtual unistring toString() {
         return "-x-";
     };
-    void forceback(Session* s) {};
+    void forceback(RefData *&, Session* s) {};
 
 };
 
@@ -195,6 +195,7 @@ public:
 class RefGroupBracket : public RefBracketBase {
 protected:
     unistring name;
+
 public:
     virtual unistring getName() {
         return name;
@@ -214,7 +215,7 @@ public:
         setName(oth->name);
     };
     //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
-    TResult  init(RefData *&tpl, Session *, RefData *&l);
+    TResult  init(RefData *&tpl, Session *, RefData *&l, RefData *&);
     TResult  back(RefData *&tpl, Session *, RefData *&l, RefData *&r);
     bool operator==(RefData&rd) {
         return false;
@@ -230,7 +231,7 @@ public:
     virtual unistring toString() {
         return (isOpen() ? "{" : ("}."+name) );
     };
-    virtual void forceback(Session *) { /** todo: очищать подсессию до открывающей скобки */};
+    virtual void forceback(RefData *&, Session *) { /** todo: очищать подсессию до открывающей скобки */};
 };
 
 
@@ -253,7 +254,7 @@ ref_repeater(infint tfrom, infint tto, RefData *rp=0) : RefBracketBase(rp) {
     };
 ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
     //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
-    TResult  init(RefData *&tpl, Session *, RefData *&l);
+    TResult  init(RefData *&tpl, Session *, RefData *&l, RefData *&);
     TResult  back(RefData *&tpl, Session *, RefData *&l, RefData *&r);
     RefData*  next_template (ThisId id, Session*);
     RefData*  pred_template (ThisId id, Session*);
@@ -284,7 +285,7 @@ ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
         ss << "[.." << getMin() << ".." << getMax() << "]";
         return ss.str();
     };
-    virtual void forceback(Session *) { /** todo: */};
+    virtual void forceback(RefData *&, Session *) { /** todo: */};
 
 
 };
