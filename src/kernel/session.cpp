@@ -253,7 +253,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplateChain, RefData *argl
     std::cout << " [s:"<< s->matchSessions.size() <<    \
     std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t"  << std::flush; \
     std::cout << "\t"; \
-    print_vector(r->getNext()); \
+    print_vector(r?r->getNext():0); \
 }
 #else
 #define LOGSTEP(s)
@@ -290,6 +290,7 @@ bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching) {
         SYSTEMERROR("test: " << activeTemplate->toString());
     }
 
+    LOG("\n\n~~~ " << tmplateChain->toString() << "  ~~  " << s->getPole_zrenija()->toString());
 
     while (true) {
         // сопоставляем текущий шаблон
@@ -300,9 +301,10 @@ bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching) {
             // выполняем инит
             LOGSTEP("GO  ");
             #ifdef TESTCODE
-            if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
+//            if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
             if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
             #endif
+            l=0;
             result_sost = activeTemplate->init(activeTemplate, s, l, r); /// ШАГ ВПЕРЕД
             break;
         }

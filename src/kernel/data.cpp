@@ -166,7 +166,7 @@ RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 // то открытых переменных быть не должно!
 RefChain* RefChain::Copy(Session *s){
     #ifdef DEBUG
-    std::cout << "\n{ RefChain for copy: " << this->toString();
+    //std::cout << "\n{ RefChain for copy: " << this->toString();
     #endif
     RefData  *srcL = this->first;
     RefData  *srcR = this->second;
@@ -458,6 +458,24 @@ bool RefNULL::operator==(RefData&) {
 
 
 
+RefData*  RefNULL::Copy(RefData *d) {
+    return new RefNULL(d);
+}
+
+TResult RefNULL::init(RefData*&tpl, Session* s, RefData *&, RefData *&){
+    SYSTEMERROR("RefNULL::init() tring!");
+};
+TResult RefNULL::back(RefData*&tpl, Session* s, RefData *&, RefData *&){
+    LOG("vremenno RefNULL::back - potom produmat kak ubrat Ref_NULL iz skobok voobshe!");
+    tpl=tpl->getPred();
+    return BACK;
+    SYSTEMERROR("RefNULL::RefNULL() tring!");
+};
+
+
+
+
+
 
 unistring RefLinkToVariable::toString(){
     std::ostringstream s;
@@ -471,13 +489,6 @@ bool RefLinkToVariable::operator==(RefData&){
 
 
 TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&l, RefData *&r){
-    #ifdef TESTCODE
-    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
-    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
-    #endif
-
-
-
 
     TVarBody *pd  = s->getVarBody( getName() ) ; /// todo: ссылки
     if (getPath() != EmptyUniString){
@@ -509,14 +520,15 @@ TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&l, RefData *&
     RefData *lend = rdata;
     MOVE_TO_NEXT_TERM(lend, 0/*myid()*/, s); // граница сравнения
 
+    MOVE_TO_PRED_TERM(r, 0/*myid()*/, s); /// todo: оптимизировать
     while ((ldata!=lend) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
+        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
         if ( !(*r == *ldata)) {
             tpl=tpl->getPred();
             return BACK;
         }
 
         MOVE_TO_NEXT_TERM(ldata, 0/*myid()*/, s);
-        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
     };
     tpl = tpl->getNext();
     return GO;

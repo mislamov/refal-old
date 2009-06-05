@@ -17,6 +17,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "datastructs.h"
+#include "kernel.h"
 #include "session.h"
 
 #include <sstream>
@@ -86,22 +87,6 @@ RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) {
 
 /**------------------- группа -----------------**/
 
-#define SAVE_STATE(activeTemplate) { \
-    s->getCurrentSopostStack()->push( new TVarBody(l, r, activeTemplate) ); \
-}; \
-
-#define RESTORE_STATE(activeTemplate) { \
-    TVarBody *tvb = s->getCurrentSopostStack()->top(); \
-    l=tvb->first;r=tvb->second; \
-    if (tvb->owner!=activeTemplate) SYSTEMERROR("mmmm"); \
-    s->getCurrentSopostStack()->pop(); \
-}; \
-
-#define SAVE_STATE_AND_VAR(name, activeTemplate) { \
-    s->getCurrentSopostStack()->push( s->setVarBody(name, new TVarBody(l, r, this)) ); \
-};
-
-
 
 TResult  RefGroupBracket::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     #ifdef TESTCODE
@@ -111,7 +96,7 @@ TResult  RefGroupBracket::init(RefData*&tpl, Session *s, RefData *&l, RefData *&
 
     if (isOpen()) { ///      {
         // сохранить левую границу для }
-        SAVE_STATE_AND_VAR(getName(), this);
+        SAVE_STATE_AND_VAR(this);
     } else {        ///      }.name
         TVarBody *vb = s->getVarBody(name); /// сделать эффективнее чем поиск по имени
         #ifdef TESTCODE

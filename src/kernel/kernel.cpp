@@ -31,7 +31,9 @@ long co::chaincount  = 0;
 
 
 
-RefStructBracket::RefStructBracket(RefData* rp) : RefBracketBase(rp) { is_system (false); };
+RefStructBracket::RefStructBracket(RefData* rp) : RefBracketBase(rp) {
+    is_system (false);
+};
 
 RefStructBracket::RefStructBracket(RefStructBracket *br, RefData* rp) : RefBracketBase(br, rp) {
     is_system (false);
@@ -54,11 +56,6 @@ bool RefStructBracket::operator ==(RefData &rd) {
 };
 
 TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    #ifdef TESTCODE
-    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
-    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
-    #endif
-
     MOVE_TO_NEXT_TERM(r,0,s);
 
     RefStructBracket* aux = ref_dynamic_cast<RefStructBracket >(r);
@@ -69,11 +66,11 @@ TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&
     if (isOpen()) {  //    (  (
         s->getStackOfDataSkob()->push( aux->getOther() );
         r = r->getNext(); // jump into brackets (to NULL-dot)
-        tpl=tpl->getNext();
+        tpl=tpl->getNext()->getNext(); // jump into brackets after NULL-dot
         return GO;
     };
     //    )  )
-    if (aux != s->getStackOfDataSkob()->top()){
+    if (aux != s->getStackOfDataSkob()->top()) {
         tpl=tpl->getPred();
         return BACK;
     }
@@ -86,24 +83,25 @@ TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&
 TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     if (is_opened) { //  (
         s->getStackOfDataSkob()->pop(); /// clean?
-        tpl=tpl->getPred();
-        return BACK;
+    } else {
+
+        // )
+        #ifdef TESTCODE
+        if (! ref_dynamic_cast<RefBracketBase >(r) ) {
+            SYSTEMERROR("may be unnormal situation: r = " << r->toString());
+        }
+        #endif
+        s->getStackOfDataSkob()->push( (RefBracketBase*)( r ) );
     }
 
-    // )
-    #ifdef TESTCODE
-    if (! ref_dynamic_cast<RefBracketBase >(r) ){
-        SYSTEMERROR("may be unnormal situation: r = " << r->toString());
-    }
-    #endif
-    s->getStackOfDataSkob()->push( (RefBracketBase*)( r ) );
+    tpl=tpl->getPred();
     //return FORCEBACK; - не надо, т к ситуация мб такая: (e.1 e.all)
     return BACK;
 };
 
 
-void RefStructBracket::forceback(RefData*&tpl, Session *s){
-    if (this->isOpen()){
+void RefStructBracket::forceback(RefData*&tpl, Session *s) {
+    if (this->isOpen()) {
         //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
         //s->getStackOfDataSkob()->pop(); /// - в стеке скобок нет инфы для этой скобки! Она и ее пара была сопоставлена
     }
@@ -158,16 +156,10 @@ TResult RefExecBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r)
 
 
 TResult  RefVariable_s::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    #ifdef TESTCODE
-    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
-    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
-    #endif
-
     MOVE_TO_NEXT_TERM(r,0,s);
     if (! ref_dynamic_cast<RefBracketBase >(r) ) {
-        //save
-        //l=0;
-        //r=r;
+        l=r;
+        SAVE_STATE_AND_VAR( tpl);
         tpl = tpl->getNext();
         return GO;
     }
@@ -177,6 +169,7 @@ TResult  RefVariable_s::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 };
 
 TResult  RefVariable_s::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    RESTORE_STATE(tpl); /// todo: оптимизация. заменить на DROP_STATE
     tpl = tpl->getPred();
     return BACK;
 };
@@ -185,16 +178,11 @@ TResult  RefVariable_s::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 
 
 TResult  RefVariable_t::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    #ifdef TESTCODE
-    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
-    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
-    #endif
 
     MOVE_TO_NEXT_TERM(r,0,s);
     if (! (ref_dynamic_cast<RefData_DOT >(r) ) ) {
-        //save
-        //l=0;
-        //r=r;
+        l=r;
+        SAVE_STATE_AND_VAR( tpl);
         tpl = tpl->getNext();
         return GO;
     }
@@ -204,6 +192,7 @@ TResult  RefVariable_t::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 };
 
 TResult  RefVariable_t::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    RESTORE_STATE(tpl); /// todo: оптимизация. заменить на DROP_STATE
     tpl = tpl->getPred();
     return BACK;
 };
@@ -212,13 +201,20 @@ TResult  RefVariable_t::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 
 
 TResult  RefVariable_e::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    SAVE_STATE_AND_VAR(tpl);
     tpl = tpl->getNext();
     return GO;
 };
 
 TResult  RefVariable_E::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     //SYSTEMERROR("");
-    l = s->getStackOfDataSkob()->top()->getPred();
+    RefData *rr = s->getStackOfDataSkob()->top()->getPred();
+    if (r->getNext()!=rr) { // getNextSymbol! not nextTerm
+        // НЕ пустое значение
+        l = r->getNext(); // getNextSymbol! not nextTerm
+        r = rr;
+    }
+    SAVE_STATE_AND_VAR(tpl);
     tpl = tpl->getNext();
     return GO;
 };
@@ -229,10 +225,13 @@ TResult  RefVariable_E::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 TResult  RefVariable_END::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     r = s->getStackOfDataSkob()->top()->getPred();
     tpl=tpl->getNext();
+    SAVE_STATE_AND_VAR( tpl);
     return GO;
 };
 
 TResult  RefVariable_e::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    RESTORE_STATE(tpl);
+
     if (l) {
         if (r==s->getStackOfDataSkob()->top()) {
             tpl=tpl->getPred();
@@ -253,12 +252,14 @@ TResult  RefVariable_e::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
         tpl=tpl->getPred();
         return BACK;
     };
+    SAVE_STATE_AND_VAR( tpl); // оптимизировать
     tpl=tpl->getNext();
     return GO;
 
 };
 
 TResult  RefVariable_E::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    RESTORE_STATE(tpl);
     if (!l) {
         tpl=tpl->getPred();
         return BACK;
@@ -268,19 +269,17 @@ TResult  RefVariable_E::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
     #endif
     r = r->beginOfTerm();
 
-    if (l==r){
+    if (l==r) {
         l = 0;
-        MOVE_TO_PRED_TERM(r, 0/*myid()*/, s);
-        tpl=tpl->getNext();
-        return GO;
     }
     MOVE_TO_PRED_TERM(r, 0/*myid()*/, s);
+    SAVE_STATE_AND_VAR( tpl);          /// todo оптимизировать: не удалять тело переменной в начале при ресторе, а изменять его параметры
     tpl=tpl->getNext();
-    //SYSTEMERROR("not yet");
     return GO;
 };
 
 TResult  RefVariable_END::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    RESTORE_STATE(tpl);
     tpl=tpl->getPred();
     return BACK;
 };
@@ -297,13 +296,13 @@ bool	RefVariable_END::operator==(RefData &rd) {
     return ref_dynamic_cast<RefVariable_END >(&rd);
 };
 
-unistring vectorToString(RefData *f, RefData *g){
+unistring vectorToString(RefData *f, RefData *g) {
     unistring a = EmptyUniString;
 
     if (!f) {
         #ifdef TESTCODE
         a+= "$null, ";
-        if (g){
+        if (g) {
             a+=" after "+g->toString();
         } else {
             a+=" $null";
@@ -312,59 +311,48 @@ unistring vectorToString(RefData *f, RefData *g){
     } else {
 
         while (f && (!g || f!=g->getNext())) {
-                RefData *ff = f;
-                a += f->toString();
-                f = f->getNext();
-                #ifdef TESTCODE
-                if (f && f->getPred() != ff){
-                    #ifdef DEBUG
-                    std::cout << a << std::flush;
-                    std::cout << "\n~f=" << (f?f->toString():"@null")  << std::flush;
-                    std::cout << "\n~f->pred=" << ((f&&f->getPred())?f->getPred()->toString():"@null") << std::flush;
-                    #endif
-                    SYSTEMERROR(" next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->getPred())?f->getPred()->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
-                };
+            RefData *ff = f;
+            a += f->toString();
+            f = f->getNext();
+            #ifdef TESTCODE
+            if (f && f->getPred() != ff) {
+                #ifdef DEBUG
+                std::cout << a << std::flush;
+                std::cout << "\n~f=" << (f?f->toString():"@null")  << std::flush;
+                std::cout << "\n~f->pred=" << ((f&&f->getPred())?f->getPred()->toString():"@null") << std::flush;
                 #endif
+                SYSTEMERROR(" next<>pred : f->pred!=ff : f=" << (f?f->toString():"@null") << std::flush << "\tf->pred=" << ((f&&f->getPred())?f->getPred()->toString():"@null") << std::flush  << " , ff=" << (ff?ff->toString():"@null"));
+            };
+            #endif
         };
 
         #ifdef TESTCODE
-        if (g && f!=g->getNext()){
-                SYSTEMERROR("f!=g after vectorToString! f=" << f << " and g=" << g->toString());
+        if (g && f!=g->getNext()) {
+            SYSTEMERROR("f!=g after vectorToString! f=" << f << " and g=" << g->toString());
         };
         #endif
     }
     return a;
 }
 
-unistring vectorExplode(RefData *f, RefData *g){
+unistring vectorExplode(RefData *f, RefData *g) {
     #ifdef TESTCODE
-        vectorToString(f, g); // проверка ошибок
+    vectorToString(f, g); // проверка ошибок
     #endif
 
     unistring a = EmptyUniString;
     if (f) {
         while (f && (!g || f!=g->getNext())) {
-                a += f->explode();
-                f = f->getNext();
+            a += f->explode();
+            f = f->getNext();
         }
     }
     return a;
 }
 
-void print_vector(RefData *f, RefData *g){
+void print_vector(RefData *f, RefData *g) {
     std::cout << vectorToString(f ,g);
 };
 
 
 
-
-RefData*  RefNULL::Copy(RefData *d) {
-    return new RefNULL(d);
-}
-
-TResult RefNULL::init(RefData*&tpl, Session* s, RefData *&, RefData *&){
-    SYSTEMERROR("RefNULL::init() tring!");
-};
-TResult RefNULL::back(RefData*&tpl, Session* s, RefData *&, RefData *&){
-    SYSTEMERROR("RefNULL::RefNULL() tring!");
-};

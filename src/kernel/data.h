@@ -430,5 +430,24 @@ template <class T>
 };
 
 
+#define SAVE_STATE(activeTemplate) { \
+    s->getCurrentSopostStack()->push( new TVarBody(l, r, activeTemplate) ); \
+    std::cout << "\nsave : "; print_vector(l, r); std::cout << "\n" << std::flush; \
+}; \
+
+#define RESTORE_STATE(tpl) { \
+    TVarBody *tvb = s->getCurrentSopostStack()->top(); \
+    l=tvb->first;r=tvb->second; \
+    if (tvb->owner!=tpl) SYSTEMERROR("mmmm: tvb->owner(" << tvb->owner->toString() << ") !=  tpl("<<tpl->toString()<<")"); \
+    s->getCurrentSopostStack()->pop(); \
+}; \
+
+#define SAVE_STATE_AND_VAR(activeTemplate) { \
+    s->getCurrentSopostStack()->push( s->setVarBody(name, new TVarBody(l, r, this)) ); \
+    std::cout << "\nsave(" << name << ") : "; print_vector(l, r); std::cout << "\n" << std::flush; \
+};
+
+
+
 #endif // REF_KERNEL_H_INCLUDED
 

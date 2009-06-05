@@ -4,7 +4,7 @@ $ENTRY Go {
 
 F {
 	(E.code) e. 'x'  END.next  
-					=  <Prout 'first'>;
+					=  <Prout 'error'>;
 
-	e.e = <Prout 'second'>;
+	e.e = <Prout 'success'>;
 }

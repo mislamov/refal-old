@@ -164,6 +164,9 @@ public:
             showStatus();
             SYSTEMERROR("matchSessions is EMPTY !");
         }
+//        if (matchSessions.back()->StackOfSopost.empty()){
+//            LOG("Current Stak of sopost is empty!");
+//        }
         #endif
         return &(matchSessions.back()->StackOfSopost);
 

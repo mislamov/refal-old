@@ -39,15 +39,6 @@
 
 template <class T>
 TResult RefSymbolBase <T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
-    #ifdef TESTCODE
-    if (l)  {
-        SYSTEMERROR("RefData::init() l is NULL !");
-    };
-    if (!r) {
-        SYSTEMERROR("RefData::init() tring to matching with NULL address!");
-    };
-    #endif
-
     MOVE_TO_NEXT_TERM(r,0,s);
     if (*this == *r) {
         //save
@@ -134,11 +125,6 @@ unistring RefSymbol<T>::toString() {
 
 template <class T>
 TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
-    #ifdef TESTCODE
-    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
-    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
-    #endif
-
     MOVE_TO_NEXT_TERM(r,0,s);
     if (ref_dynamic_cast<T >(r)) {
         //save
