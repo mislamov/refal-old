@@ -139,28 +139,8 @@ bool RefExecBracket::operator ==(RefData &rd) {
     return  aux && (aux->is_opened == is_opened);
 };
 
-TResult RefExecBracket::init(RefData*&tpl, Session* s, RefData *&l) {
+TResult RefExecBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     SYSTEMERROR("RefExecBracket::init! Exec bracket can't to match!");
-    //move_to_next_term(l,0/*myid()*/,s);
-    MOVE_TO_NEXT_TERM(l,0/*myid()*/,s);
-    RefData*  a   = l;
-    RefExecBracket* aux = ref_dynamic_cast<RefExecBracket >(a);
-//    if (a)  a->drop(0/*myid()*/); //   удаляет старую ссылку если создатель
-    if (!aux || (is_opened!=aux->is_opened))  return BACK; //   )  (
-    if (is_opened) {  //    (  (
-        s->getStackOfDataSkob()->push( aux->other );
-        l = l -> getNext(); // jump into brackets (to NULL-dot)
-        return GO;
-    };
-    //    )  )
-    if (aux != s->getStackOfDataSkob()->top()){
-        return BACK;
-    }
-
-    //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
-    s->getStackOfDataSkob()->pop();
-    return GO;
-
 };
 
 TResult RefExecBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
@@ -177,117 +157,135 @@ TResult RefExecBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r)
 
 
 
-TResult  RefVariable_s::init(RefData*&tpl, Session *s, RefData *&a) {
-    //move_to_next_term(a, 0/*myid()*/, s);
-    MOVE_TO_NEXT_TERM(a, 0/*myid()*/, s);
-    if (! ref_dynamic_cast<RefBracketBase >(a) ){
+TResult  RefVariable_s::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    #ifdef TESTCODE
+    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
+    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
+    #endif
+
+    MOVE_TO_NEXT_TERM(r,0,s);
+    if (! ref_dynamic_cast<RefBracketBase >(r) ) {
+        //save
+        //l=0;
+        //r=r;
+        tpl = tpl->getNext();
         return GO;
-    } else {
-        return BACK;
     }
+
+    tpl = tpl->getPred();
+    return BACK;
 };
 
 TResult  RefVariable_s::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    tpl = tpl->getPred();
     return BACK;
 };
 
 
 
 
-TResult  RefVariable_t::init(RefData*&tpl, Session *s, RefData *&a) {
-    //move_to_next_term(a, 0/*myid()*/, s);
-    MOVE_TO_NEXT_TERM(a, 0/*myid()*/, s);
-    if (ref_dynamic_cast<RefData_DOT >(a) ){
-        return BACK;
-    } else {
-        // *a оставляем на открытой скобке в надежде на то, что move_to_next_term будет перекидывать за закрытую скобку
+TResult  RefVariable_t::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    #ifdef TESTCODE
+    if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
+    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
+    #endif
+
+    MOVE_TO_NEXT_TERM(r,0,s);
+    if (! (ref_dynamic_cast<RefData_DOT >(r) ) ) {
+        //save
+        //l=0;
+        //r=r;
+        tpl = tpl->getNext();
         return GO;
     }
+
+    tpl = tpl->getPred();
+    return BACK;
 };
 
 TResult  RefVariable_t::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    tpl = tpl->getPred();
     return BACK;
 };
 
 
 
 
-TResult  RefVariable_e::init(RefData*&tpl, Session *s, RefData *&a) {
+TResult  RefVariable_e::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    tpl = tpl->getNext();
     return GO;
 };
 
-TResult  RefVariable_E::init(RefData*&tpl, Session *s, RefData *&a) {
+TResult  RefVariable_E::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     //SYSTEMERROR("");
-    a = s->getStackOfDataSkob()->top()->getPred();
+    l = s->getStackOfDataSkob()->top()->getPred();
+    tpl = tpl->getNext();
     return GO;
 };
 
-TResult  RefVariable_END::init(RefData*&tpl, Session *s, RefData *&a) {
-    //SYSTEMERROR("");
-    a = s->getStackOfDataSkob()->top()->getPred();
+
+
+
+TResult  RefVariable_END::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    r = s->getStackOfDataSkob()->top()->getPred();
+    tpl=tpl->getNext();
     return GO;
 };
 
 TResult  RefVariable_e::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    //std::cout << "\n## restore for e.e: " << std::flush; if (l) l->print_inf(); std::cout << " , "; if (r) r->print_inf(); std::cout << " next: " << r->next->toString() << "\n" << std::flush;
     if (l) {
         if (r==s->getStackOfDataSkob()->top()) {
-            //std::cout << "\n\n[r] back: " << r->toString() << ' ' << s->getStackOfDataSkob()->size() << std::flush;
+            tpl=tpl->getPred();
             return BACK;
         };
-        //std::cout << "\n\n[r]: r==" << r->toString() << "  top=" << s->getStackOfDataSkob()->top()->toString() << "   " << s->getStackOfDataSkob()->size() << std::flush;
-        //move_to_next_term(r, 0/*myid()*/, s);
         MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
         r = r->endOfTerm();
     } else {
-        move_to_next_term(r, 0/*myid()*/, s);
+        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
         l = r->beginOfTerm();
         r = r->endOfTerm();
     }
 
-    //std::cout << "\ns->getStackOfDataSkob()->top() = " << s->getStackOfDataSkob()->top()->toString();
-    //std::cout << "\n\n" << s->getStackOfDataSkob()->size() << "\n\n" << std::flush;
     #ifdef TESTCODE
     if (! s->getStackOfDataSkob()->size()) SYSTEMERROR("empty stack!");
     #endif
     if (r==s->getStackOfDataSkob()->top()) {
+        tpl=tpl->getPred();
         return BACK;
     };
+    tpl=tpl->getNext();
     return GO;
 
 };
 
 TResult  RefVariable_E::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    if (!l) return BACK;
+    if (!l) {
+        tpl=tpl->getPred();
+        return BACK;
+    }
     #ifdef TESTCODE
     if (! r)SYSTEMERROR("alarm!");
     #endif
     r = r->beginOfTerm();
 
-
     if (l==r){
         l = 0;
-        r = move_to_pred_term(r, 0/*myid()*/, s);
+        MOVE_TO_PRED_TERM(r, 0/*myid()*/, s);
+        tpl=tpl->getNext();
         return GO;
     }
-    r = move_to_pred_term(r, 0/*myid()*/, s);
+    MOVE_TO_PRED_TERM(r, 0/*myid()*/, s);
+    tpl=tpl->getNext();
     //SYSTEMERROR("not yet");
     return GO;
 };
 
 TResult  RefVariable_END::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    tpl=tpl->getPred();
     return BACK;
 };
 
 
-
-//--------------------------------------------------
-/*void	RefVariable_e::print_inf() {
-    std::cout << " [e." << this->getName().c_str() << "] " << std::flush;
-};
-void	RefVariable_E::print_inf() {
-    std::cout << " [E." << this->getName().c_str() << "] " << std::flush;
-};*/
 
 bool	RefVariable_e::operator==(RefData &rd) {
     return ref_dynamic_cast<RefVariable_e >(&rd);
@@ -359,37 +357,12 @@ void print_vector(RefData *f, RefData *g){
 
 
 
-/*
-template <class T>
-TResult RefSymbol<T>::init(Session* s) {
-    RefData* aux = s->get_moved_to_next_current_term(this->myid);
-
-#ifdef TESTCODE
-    if (!aux) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
-#endif
-
-    std::cout << "\nthis==aux??? this:"; print_inf(); std::cout << "  aux:"; aux->print_inf(); std::cout << "  aux->pred:" << aux->pred << std::flush; std::cout << "  this->pred:" << this->pred << std::flush;
-
-
-    bool r = (*this == *aux);
-    aux->drop(this->myid);
-    if (r) return GO;
-    s->get_moved_to_pred_current_term(this->myid);
-    return BACK;
-};
-
-template <class T>
-TResult RefSymbol<T>::back(Session* s) {
-    s->get_moved_to_pred_current_term(this->myid);
-    return BACK;
-};
-*/
 
 RefData*  RefNULL::Copy(RefData *d) {
     return new RefNULL(d);
 }
 
-TResult RefNULL::init(RefData*&tpl, Session* s, RefData *&){
+TResult RefNULL::init(RefData*&tpl, Session* s, RefData *&, RefData *&){
     SYSTEMERROR("RefNULL::init() tring!");
 };
 TResult RefNULL::back(RefData*&tpl, Session* s, RefData *&, RefData *&){

@@ -370,8 +370,8 @@ RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketB
         else return "{]}";
     };
 
-    TResult init(RefData *&tpl, Session* s, RefData *&currentPoint);
-    TResult back(RefData *&tpl, Session* s, RefData *&currentRight, RefData *&currentLeft);
+    TResult init(RefData *&tpl, Session* s, RefData *&, RefData *&);
+    TResult back(RefData *&tpl, Session* s, RefData *&, RefData *&);
     RefData*  next_template( ThisId var_id, Session *s);
     RefData*  pred_template( ThisId var_id, Session *s);
 

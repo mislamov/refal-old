@@ -31,7 +31,7 @@ bool RefData_DOT::operator ==(RefData &rd) {
 TResult RefData_DOT::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     RefData_DOT* aux;
     if (is_opened) { // (
-        aux = ref_dynamic_cast<RefData_DOT >(l);
+        aux = ref_dynamic_cast<RefData_DOT >(r);
 
         if (aux && aux->is_opened) {
             tpl=tpl->getNext();
@@ -92,7 +92,7 @@ RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) {
 
 #define RESTORE_STATE(activeTemplate) { \
     TVarBody *tvb = s->getCurrentSopostStack()->top(); \
-    l=tvb->l;r=tvb->r; \
+    l=tvb->first;r=tvb->second; \
     if (tvb->owner!=activeTemplate) SYSTEMERROR("mmmm"); \
     s->getCurrentSopostStack()->pop(); \
 }; \

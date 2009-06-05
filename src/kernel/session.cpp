@@ -280,10 +280,9 @@ bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching) {
         activeTemplate = tmplateChain->second;
     } else {
         result_sost = GO;
-        l = r = s->getPole_zrenija()->first;
+        r = s->getPole_zrenija()->first;
         activeTemplate = tmplateChain->first;
     }
-    savedL = r;
 
 
     // первая итерация - обычно для RefData_DOT
@@ -300,6 +299,10 @@ bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching) {
         case GO: {
             // выполняем инит
             LOGSTEP("GO  ");
+            #ifdef TESTCODE
+            if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
+            if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
+            #endif
             result_sost = activeTemplate->init(activeTemplate, s, l, r); /// ШАГ ВПЕРЕД
             break;
         }

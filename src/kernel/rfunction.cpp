@@ -24,8 +24,8 @@
 #include "datastructs.h"
 #include "evalutor.h"
 
-RefFunctionBase::RefFunctionBase(){};
-RefFunctionBase::~RefFunctionBase(){};
+RefFunctionBase::RefFunctionBase() {};
+RefFunctionBase::~RefFunctionBase() {};
 
 
 
@@ -36,45 +36,45 @@ RefSentence::RefSentence(RefChain *l, RefChain *r) : RefObject() {
     leftPart = l;
     rightPart = r;
 };
-unistring RefSentence::toString(){
+unistring RefSentence::toString() {
     //return "$RefSentence: Lp="+(leftPart?leftPart->toString():"$notset")+"   Rp="+(rightPart?rightPart->toString():"$noset");
     return "\t\t\t"+(leftPart?leftPart->toString():"$notset")+"   ::==   "+(rightPart?rightPart->toString():"$noset");
 };
 
 
-RefObject* RefUserModule::getObjectByName(unistring name, Session *s){
+RefObject* RefUserModule::getObjectByName(unistring name, Session *s) {
     return objects[name];
 };
 
 
-unistring RefUserModule::toString(){
-            unistring result = "";
-            std::map<unistring, RefObject*>::iterator it;
-            RefUserFunction *f = 0;
-            for (it = objects.begin(); it!=objects.end(); it++){
-                result += it->first;
-                if (f = ref_dynamic_cast<RefUserFunction >(it->second)){
-                    result += " {\n";
-                    std::list<RefSentence *>::iterator sit;
-                    for (sit = f->body.begin(); sit!=f->body.end(); sit++){
-                        result += (*sit)->toString();
-                        result += ";\n";
-                    };
-                    result += "}\n\n";
-                } else {
-                    result += ": ";
-                    result += it->second->toString();
-                    result += "\n";
-                }
-
+unistring RefUserModule::toString() {
+    unistring result = "";
+    std::map<unistring, RefObject*>::iterator it;
+    RefUserFunction *f = 0;
+    for (it = objects.begin(); it!=objects.end(); it++) {
+        result += it->first;
+        if (f = ref_dynamic_cast<RefUserFunction >(it->second)) {
+            result += " {\n";
+            std::list<RefSentence *>::iterator sit;
+            for (sit = f->body.begin(); sit!=f->body.end(); sit++) {
+                result += (*sit)->toString();
+                result += ";\n";
             };
-            return result;
+            result += "}\n\n";
+        } else {
+            result += ": ";
+            result += it->second->toString();
+            result += "\n";
+        }
+
+    };
+    return result;
 };
 
 
 
-void RefUserModule::initilizeAll(Session *s){
-    while (! initItems.empty()){
+void RefUserModule::initilizeAll(Session *s) {
+    while (! initItems.empty()) {
         initItems.top()->initize(s);
         initItems.pop();
     };
@@ -85,44 +85,44 @@ void RefUserModule::initilizeAll(Session *s){
 
 
 unistring RefUserFunction::toString() {
-        std::string result = "";
-        result += " {\n";
-        std::list<RefSentence *>::iterator sit;
-        for (sit = body.begin(); sit!=body.end(); sit++){
-            result += (*sit)->toString();
-            result += ";\n";
-        };
-        result += "}\n\n";
+    std::string result = "";
+    result += " {\n";
+    std::list<RefSentence *>::iterator sit;
+    for (sit = body.begin(); sit!=body.end(); sit++) {
+        result += (*sit)->toString();
+        result += ";\n";
+    };
+    result += "}\n\n";
 
-        return "RefUserFunction::" + name + result;
+    return "RefUserFunction::" + name + result;
 
 };
 
 
 /// аргументы - концы чистого ОВ
-bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s){
+bool RefUserFunction::execute(RefData *argfirst, RefData *argsecond, Session *s) {
 
     //long &dc = co::datacount;
 
 
-s->fcalls++;
-        RefData *ldot;
-        RefData *rdot;
+    s->fcalls++;
+    RefData *ldot;
+    RefData *rdot;
 
-        if (!argfirst){
-            // пустой аргумент
-            ldot = argsecond;
-        } else {
-            ldot = argfirst ->getPred();
-        }
-        rdot = argsecond->getNext();
-        #ifdef TESTCODE
-        // должно вызываться только для части цепочки => окружено чем-то. Нужно чтоб не потерять место изменения
-        if (! ldot )
-            SYSTEMERROR("RefUserFunction::execute( argfirst->pred != RefDATA not null, ...) !\RefUserFunction::execute( " << RefChain(argfirst, argsecond).toString() << " )");
-        if (! rdot )
-            SYSTEMERROR("RefUserFunction::execute(..., argsecond->next != RefDATA not null) !\RefUserFunction::execute( " << RefChain(argfirst, argsecond).toString() << " )");
-        #endif
+    if (!argfirst) {
+        // пустой аргумент
+        ldot = argsecond;
+    } else {
+        ldot = argfirst ->getPred();
+    }
+    rdot = argsecond->getNext();
+    #ifdef TESTCODE
+    // должно вызываться только для части цепочки => окружено чем-то. Нужно чтоб не потерять место изменения
+    if (! ldot )
+        SYSTEMERROR("RefUserFunction::execute( argfirst->pred != RefDATA not null, ...) !\RefUserFunction::execute( " << RefChain(argfirst, argsecond).toString() << " )");
+    if (! rdot )
+        SYSTEMERROR("RefUserFunction::execute(..., argsecond->next != RefDATA not null) !\RefUserFunction::execute( " << RefChain(argfirst, argsecond).toString() << " )");
+    #endif
 
     LOG(s->step++ <<  "::  <" << getName() << " " << std::flush << RefChain(argfirst,argsecond).toString() << " >  ###############################################################" );
 
@@ -136,9 +136,9 @@ s->fcalls++;
 
         /// todo: создать тут точку отката сессии для очистки последствий функции
         //SessionOfMaching* stateBeforeMatch = s->matchSessions.back();
-		SessionOfMaching* stateBeforeMatch = s->matchSessions.empty() ? 0 : s->matchSessions.back();
+        SessionOfMaching* stateBeforeMatch = s->matchSessions.empty() ? 0 : s->matchSessions.back();
 
-        if (s->matching(*sent, (*sent)->leftPart, argfirst, argsecond, false, false)){
+        if (s->matching(*sent, (*sent)->leftPart, argfirst, argsecond, false, false)) {
             LOG(s->step++ <<  "\tsucessfull!");
             #ifdef DEBUG
             s->showStatus();
@@ -149,17 +149,17 @@ s->fcalls++;
             /// todo: откатиться до созданной точки, оставив только newoe и глобальные данные. Созданные переменные удалить.
             // сейчас дилетантский откат:
             //while (s->matchSessions.back() != stateBeforeMatch){
-            while ((s->matchSessions.empty() ? 0 : s->matchSessions.back()) != stateBeforeMatch){
+            while ((s->matchSessions.empty() ? 0 : s->matchSessions.back()) != stateBeforeMatch) {
                 delete s->matchSessions.back();
                 s->matchSessions.pop_back();
             } // конец дилетантского отката
 
             // удаляем старый вектор аргументов
-            if (ldot->getNext() != rdot){
+            if (ldot->getNext() != rdot) {
                 delChain(ldot->getNext(), rdot->getPred());
             }
             // вставляем новый вектор
-            if (newoe->first){
+            if (newoe->first) {
                 ldot->setNext( newoe->first);
                 newoe->first->setPred(ldot);
                 #ifdef TESTCODE
@@ -185,7 +185,7 @@ s->fcalls++;
         }
     } while (!reslt && sent != body.end());  // std: body.end() - элемент после последнего
 
-s->fcalls--;
+    s->fcalls--;
     return reslt;
 };
 
@@ -202,18 +202,20 @@ RefDllModule::~RefDllModule() {
 };
 
 
-RefObject* RefDllModule::getObjectByName(unistring nm, Session *s){ return objects[nm]; };
+RefObject* RefDllModule::getObjectByName(unistring nm, Session *s) {
+    return objects[nm];
+};
 
 
-void RefDllModule::setObjectByName(unistring name, RefObject* o){
+void RefDllModule::setObjectByName(unistring name, RefObject* o) {
     objects[name] = o;
 };
 
 
-unistring RefDllModule::toString(){
-        std::ostringstream s;
-        s << "RefDllModule[ objects: " << (objects.size()) << " ]" ;
-        return s.str();
+unistring RefDllModule::toString() {
+    std::ostringstream s;
+    s << "RefDllModule[ objects: " << (objects.size()) << " ]" ;
+    return s.str();
 };
 
 
@@ -222,11 +224,11 @@ RefBuildInFunction::RefBuildInFunction(unistring name, RefDllModule *m) : RefFun
 };
 
 
-bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
+bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s) {
     LOG( "\n====================================\n< " << this->getName() << std::flush << " " << vectorToString(lp, rp) << " >" );
     // сохраним границы
     RefData *lold, *rold=0;
-    if (! lp){ // пустой вектор
+    if (! lp) { // пустой вектор
         #ifdef TESTCODE
         if (!rp) SYSTEMERROR("!lp && !rp");
         #endif
@@ -240,10 +242,10 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
     };
     // вычислим функции
     RefChain *result = new RefChain();
-    if (! this->eval(lp, rp, result, s)){
-            // не вычислена функция
-            delete result;
-            return false;
+    if (! this->eval(lp, rp, result, s)) {
+        // не вычислена функция
+        delete result;
+        return false;
     };
 
     // удалим старый вектор
@@ -252,7 +254,7 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
     }
 
     // функция вычислена. результат в result
-    if (! result->first){
+    if (! result->first) {
         // на всякий случай
         lold->setNext( rold);
         rold->setPred( lold);
@@ -272,16 +274,17 @@ bool RefBuildInFunction::execute(RefData* lp, RefData* rp, Session* s){
 
 // matching  в случае неуспеха сам восстанавливает состояние. В случае успеха - оставляет изменения
 // по идее рефал-условие не должно контроллировать точки состояний. Главное правильно вызывать дизмачинг (домачинг)
-TResult  RefCondition::init(RefData*&tpl, Session* s, RefData *&l){
+TResult  RefCondition::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     /// todo: ниже не верно. условие может быть внутри внешнего шаблона и сопоставляться с пустым выражением не в конце
     /// однако для условия в предложении очень важно проверять, что оно сопост-ся с концом аргумента
     /// как вариант - ставить датадоты перед первым условием; можно помечать условия как внешние
 
-    if (ref_dynamic_cast<RefFunctionBase >(own)){
+    if (ref_dynamic_cast<RefFunctionBase >(own)) {
         // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце,
         // в отличие от условия в конце пользовательского шаблона
-        RefData_DOT *d = ref_dynamic_cast<RefData_DOT >(l->getNext());
-        if (!d){
+        RefData_DOT *d = ref_dynamic_cast<RefData_DOT >(r->getNext());
+        if (!d) {
+            tpl=tpl->getPred();
             return BACK;
         }
     }
@@ -295,10 +298,11 @@ TResult  RefCondition::init(RefData*&tpl, Session* s, RefData *&l){
 
     //std::cout << "\nCOND-EVALUTE-OO:\t" << newpz->toString() << " : " << this->leftPart->toString();
 
-    if (s->matching(this, this->leftPart, newpz->first, newpz->second, false, isReverse )){
+    if (s->matching(this, this->leftPart, newpz->first, newpz->second, false, isReverse )) {
         /// Go->Go
         //std::cout << "\n\nCOND-RETURN:::\tinit-> GO" << std::flush << "\n\n\n";
         //std::cout << "s.sopost.top: " << s->getCurrentSopostStack()->top()->toString() << std::flush;
+        tpl=tpl->getNext();
         return (GO);
     } else {
         /// Go->Back
@@ -307,19 +311,22 @@ TResult  RefCondition::init(RefData*&tpl, Session* s, RefData *&l){
         delete newpz;
         //std::cout << "\n\nCOND-RETURN:::\tinit-> BACK" << std::flush << "\n\n\n";
         //s->showStatus();
+        tpl=tpl->getPred();
         return (BACK);
     }
 };
 
 
-TResult  RefCondition::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r){
-    if (!isReverse && s->matching( this, this->leftPart, 0, 0, true, false)){ // продолжаем поиск вариантов
+TResult  RefCondition::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
+    if (!isReverse && s->matching( this, this->leftPart, 0, 0, true, false)) { // продолжаем поиск вариантов
         /// Back->Go
         //std::cout << "\n\nCOND-RETURN:::\tback-> GO" << std::flush << "\n\n\n";
+        tpl=tpl->getNext();
         return GO;
     } else {
         /// Back->Back
         //std::cout << "\n\nCOND-RETURN:::\tback-> BACK" << std::flush << "\n\n\n";
+        tpl=tpl->getPred();
         return BACK;
     }
 
@@ -340,7 +347,7 @@ RefUserTemplate::RefUserTemplate(unistring name, RefChain *lp) : RefTemplateBase
     }
 };
 
-void RefUserTemplate::setLeftPart(RefChain *lp){
+void RefUserTemplate::setLeftPart(RefChain *lp) {
     // добавляем мосты к концам тела шаблона
     RefTemplateBridgeTmpl *lbr = new RefTemplateBridgeTmpl(), *rbr = new RefTemplateBridgeTmpl(lbr, 0);
     lp->first = lp->first->predInsert(lbr);
@@ -356,32 +363,69 @@ void RefUserTemplate::setLeftPart(RefChain *lp){
 
 /****************  вызывающие ( переменная )  *****************
 **************************************************************/
-TResult  RefTemplateBridgeVar::init(RefData*&tpl, Session* s, RefData *&l){
-    if (this->isOpen()){  //  {
+TResult  RefTemplateBridgeVar::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
+    SYSTEMERROR("ZAGL!!!");
+
+    if (this->isOpen()) { //  {
         #ifdef TESTCODE
         if (! ref_dynamic_cast<RefTemplateBridgeVar>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
         #endif
-        /// начало сопоставления переменной
-        /* --== перенесено в Session::SaveTemplItem, т.к. там изменяется varMap, которую надо делать еще для преждней субсесии а не для новой
-        //  переменная: создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
-        SessionOfMaching *sess = new SessionOfMaching(s->getPole_zrenija());
-        //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
-        sess->StackOfDataSkob.push( s->matchSessions.back()->StackOfDataSkob.top()  );
-        s->matchSessions.push_back(sess);
-        //  переменная: сохраняем конец ссылки на шаблон для возврата  }
-        sess->templReturnBackPoint =  (RefTemplateBridgeVar *)this->other ;  //  }
-        */
 
-        return GO;
-    } else {             //  }
-        /// успешное сопоставление переменной
-        /*  --== действия перенесены в Session::SaveTemplItem для сохранения подсессии в теле переменной */
+
+        TVarBody *varBody = new TVarBody(l, r, this);
+        if (! isOpen()) {      ///  [}]
+            // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
+            SessionOfMaching *sess;
+
+            do {
+                sess = s->matchSessions.back();
+                #ifdef TESTCODE
+                if (! sess) {
+                    SYSTEMERROR("alarm!");
+                }
+                #endif
+                varBody->sessStack.push_back(sess);
+                s->matchSessions.pop_back();
+            } while (! sess->templReturnBackPoint);
+
+            // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
+            // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second
+            RefData *leftSecond = s->getVarBody(bridge->getName())->second; /// todo сделать эффективнее. Без использования промежуточного сохранения в map
+            #ifdef TESTCODE
+            if (s->getVarBody(bridge->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа завязано на том, что скобки внешней переменной сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
+            #endif
+            if (leftSecond != r) { // взор на НЕ пустое выражение
+                varBody->first  = leftSecond->getNext();
+                //varBody->second = уже какое надо
+            } /*else {
+			  varBody уже какое надо
+			  }*/
+            s->getCurrentSopostStack()->push( s->setVarBody(bridge->getName(), varBody) );
+            tpl=tpl->getNext();
+
+        } else {     ///  [{]
+            //  сохраняем сопоставление в вызывающей субсессии
+            s->getCurrentSopostStack()->push( s->setVarBody(bridge->getName(), varBody) );
+            //  создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
+            SessionOfMaching *sess = new SessionOfMaching(bridge, s);
+            //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
+            sess->StackOfDataSkob.push( s->matchSessions.back()->StackOfDataSkob.top()  );
+            s->matchSessions.push_back(sess);
+            //  сохраняем конец ссылки на шаблон для возврата  }
+            sess->templReturnBackPoint =  (RefTemplateBridgeVar *)bridge->other ;  //  }
+
+            #ifdef TESTCODE
+            if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
+            #endif
+            tpl = this->bridge;
+
+        }
         return GO;
     }
 };
 
-RefData*  RefTemplateBridgeVar::next_template( ThisId var_id, Session *s){
-    if (this->isOpen()){
+RefData*  RefTemplateBridgeVar::next_template( ThisId var_id, Session *s) {
+    if (this->isOpen()) {
         // указывает на открывающую скобку-мост своего шаблона
         // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
         #ifdef TESTCODE
@@ -397,29 +441,65 @@ RefData*  RefTemplateBridgeVar::next_template( ThisId var_id, Session *s){
 };
 
 
-TResult  RefTemplateBridgeVar::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r){
-    if (this->isOpen()){  //  [{]
-        /// неудачное сопоставление переменной внешнего типа
-        //  переменная: удаляем подсессию для переменной с очисткой мусора
-//s->showStatus();
-        //delete s->matchSessions.back();
-        //s->matchSessions.pop_back();
-//s->showStatus();
-        //  переменная: забываем точку возврата
-        //sess->templReturnBackPoint.pop();
-        //s->matchSessions.back()->templReturnBackPoint = 0;
+TResult  RefTemplateBridgeVar::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
+    SYSTEMERROR("ZAGL!!!");
 
-        return BACK;
-    } else {              //  [}]
-        /// откат к ранее успешной сопоставленной переменной пользовательского типа
-        /* --== перенесено в Session::RestoreTemplItem */
-        //s->showStatus();
-        return BACK;
+    TVarBody *varBody = s->getCurrentSopostStack()->top();
+    s->getCurrentSopostStack()->pop();
+
+
+    if (this->isOpen()) { /// [{]
+
+
+        delete s->matchSessions.back();   // удаление субсессии для внешней переменной
+        s->matchSessions.pop_back();
+
+        #ifdef TESTCODE
+        if (s->getCurrentSopostStack()->empty()) SYSTEMERROR("empty sopost stack!");
+        if (s->getCurrentSopostStack()->top()->owner != this) SYSTEMERROR("wrong owner for " << toString() << " : " << s->getCurrentSopostStack()->top()->owner->toString() );
+        #endif
+        s->getCurrentSopostStack()->pop();
+
+        tpl=tpl->getPred();
+    } else {   /// [}]
+
+        if (varBody->first) {
+            // непустое значение
+            s->setVarBody(bridge->getName(), new TVarBody(0, varBody->first->getPred(), bridge->getOther()));
+        } else {
+            // пустое значение
+            s->setVarBody(bridge->getName(), new TVarBody(0, varBody->second, bridge->getOther()));
+        }
+
+        //  переменная: извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
+        SessionOfMaching *sess;
+        while (! varBody->sessStack.empty()) {
+            sess = varBody->sessStack.back();
+            s->matchSessions.push_back(sess);
+            varBody->sessStack.pop_back();
+        };
+
+        //sess->templReturnBackPoint = bridge ;
+        /// todo: откат до последнего условия может привести к ненужным сопоставлениям и продолжениям, так как если условие при откате снова выполнится,
+        /// то ничего по сути не изменится на данном этапе, но произойдет повторная попытка продолжить сопоставление.
+        /// откатываться до последнего условия разумно, если в нем инициализируется переменная, используемая далее за пределами
+        /// сопоставления шаблона (в объекте) - например в следующем условии внешнего уровня
+        /// пока оставил неэффективно - откат к последнему условию шаблона
+
+
+        // указывает на закр скобку-мост своего шаблона
+        // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
+        #ifdef TESTCODE
+        if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
+        #endif
+        tpl = this->bridge;
     }
+    return BACK;
+
 };
 
-RefData*  RefTemplateBridgeVar::pred_template( ThisId var_id, Session *s){
-    if (this->isOpen()){
+RefData*  RefTemplateBridgeVar::pred_template( ThisId var_id, Session *s) {
+    if (this->isOpen()) {
         return pred; //?
     } else {
         // указывает на закр скобку-мост своего шаблона
@@ -435,8 +515,9 @@ RefData*  RefTemplateBridgeVar::pred_template( ThisId var_id, Session *s){
 
 /**************  вызываемые ( $Template ) ********************
 **************************************************************/
-TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l){
-    if (this->isOpen()){  //  {
+TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
+    SYSTEMERROR("ZAGL!!!");
+    if (this->isOpen()) { //  {
         /// начало сопоставления внешнего шаблона
         //  шаблон:  в переменной была создана подсессия и точка возврата
         return GO;
@@ -447,14 +528,15 @@ TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l){
     }
 };
 
-RefData*  RefTemplateBridgeTmpl::next_template( ThisId var_id, Session *s){
-    if (this->isOpen()){  //  {
+RefData*  RefTemplateBridgeTmpl::next_template( ThisId var_id, Session *s) {
+    if (this->isOpen()) { //  {
         return next;
     } else {              //  }
         #ifdef TESTCODE
         if (s->matchSessions.empty()) SYSTEMERROR("no sessions!");
         if (! s->getTemplReturnBackPoint()) {
-            s->showStatus(); SYSTEMERROR("bridge back-dot not found!");
+            s->showStatus();
+            SYSTEMERROR("bridge back-dot not found!");
         }
         #endif
 
@@ -463,8 +545,9 @@ RefData*  RefTemplateBridgeTmpl::next_template( ThisId var_id, Session *s){
 };
 
 
-TResult  RefTemplateBridgeTmpl::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r){
-    if (this->isOpen()){  //    {
+TResult  RefTemplateBridgeTmpl::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
+    SYSTEMERROR("ZAGL!!!");
+    if (this->isOpen()) { //    {
         /// неудачное сопоставление внешнего шаблона
         //  в переменной будет удалена подсессия и точка возврата
         return BACK;
@@ -475,8 +558,8 @@ TResult  RefTemplateBridgeTmpl::back(RefData*&tpl, Session* s, RefData *&l, RefD
     }
 };
 
-RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s){
-    if (this->isOpen()){
+RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s) {
+    if (this->isOpen()) {
         #ifdef TESTCODE
         if (! s->matchSessions.back()->templReturnBackPoint)
             SYSTEMERROR("bridge back-dot not found!");
@@ -494,14 +577,14 @@ RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s){
 
 // класс - непроинициализированная переменная внешнего типа.
 // После инициализации заменяется на пару   {RefTemplateBridgeVar   RefTemplateBridgeVar}
-bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
+bool RefUserVarNotInit::initize(Session *s) { // замещается на пару
     RefObject* oo = s->getObjectByName(this->getType());
     RefUserTemplate *utempl =  oo ? ref_dynamic_cast<RefUserTemplate >( oo ) : 0 ;
     if (! utempl) SYSTEMERROR("User $Template '" << getType() << "' not defined!"); //     return false;
     // шаблон найден
     RefTemplateBridgeVar
-        *leftBridge  = new RefTemplateBridgeVar(),
-        *rightBridge = new RefTemplateBridgeVar(leftBridge, leftBridge);
+    *leftBridge  = new RefTemplateBridgeVar(),
+    *rightBridge = new RefTemplateBridgeVar(leftBridge, leftBridge);
     #ifdef TESTCODE
     if (! (this->pred && this->next) ) {
         SYSTEMERROR("@RefUserVarNotInit around by $null !");
@@ -530,6 +613,10 @@ bool RefUserVarNotInit::initize(Session *s){ // замещается на пару
     delete this;
     return true;
 }
-TResult RefUserVarNotInit::init(RefData*&tpl, Session*, RefData *&){ SYSTEMERROR("ALARM!"); };
-TResult RefUserVarNotInit::back(RefData*&tpl, Session*, RefData *&, RefData *&){ SYSTEMERROR("ALARM!"); };
+TResult RefUserVarNotInit::init(RefData*&tpl, Session*, RefData *&, RefData *&) {
+    SYSTEMERROR("ALARM!");
+};
+TResult RefUserVarNotInit::back(RefData*&tpl, Session*, RefData *&, RefData *&) {
+    SYSTEMERROR("ALARM!");
+};
 

@@ -44,16 +44,14 @@ class RefTemplateBridgeVar;
 
 class TVarBodyTable : public std::map<unistring, TVarBody*> {};
 
-template <class T1,class T2,class T3,class T4>
+template <class T1, class T3>
 struct quadL {
     T1 first;
-    T2 firstWay;
     T3 second;
-    T4 secondWay;
 };
 
 // тело сопоставленной переменной
-class TVarBody : public quadL<RefData*, RefDataChainPart*, RefData*, RefDataChainPart*> {
+class TVarBody : public quadL<RefData*, RefData*> {
 public:
     RefObject *owner;        // ссылка на переменную-владельца данного тела
 
