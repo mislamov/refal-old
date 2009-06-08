@@ -198,8 +198,10 @@ public:
 RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s);
 RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s);
 
-#define MOVE_TO_NEXT_TERM(p, id, s) {while ((p = p->next_term(id, s)) && p->is_system());}
-#define MOVE_TO_PRED_TERM(p, id, s) {while ((p = p->pred_term(id, s)) && p->is_system());}
+//#define MOVE_TO_NEXT_TERM(p, id, s) {while ((p = p->next_term(id, s)) && p->is_system());}
+//#define MOVE_TO_PRED_TERM(p, id, s) {while ((p = p->pred_term(id, s)) && p->is_system());}
+#define MOVE_TO_NEXT_TERM(p, id, s) {p = p->next_term(id, s);}
+#define MOVE_TO_PRED_TERM(p, id, s) {p = p->pred_term(id, s);}
 
 
 

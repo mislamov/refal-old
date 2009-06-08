@@ -210,7 +210,11 @@ TResult  RefVariable_E::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 
 
 TResult  RefVariable_END::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
+    RefData *tmpl = r;
     r = s->getStackOfDataSkob()->top()->getPred();
+    if (tmpl!=r){ // не пустое значение
+        l=tmpl->getNext();
+    }
     tpl=tpl->getNext();
     SAVE_STATE_AND_VAR( tpl);
     return GO;
@@ -239,7 +243,7 @@ TResult  RefVariable_e::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
         tpl=tpl->getPred();
         return BACK;
     };
-    SAVE_STATE_AND_VAR( tpl); // оптимизировать
+    SAVE_STATE_AND_VAR( tpl); // TODO: оптимизировать
     tpl=tpl->getNext();
     return GO;
 

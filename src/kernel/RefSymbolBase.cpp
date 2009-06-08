@@ -25,6 +25,7 @@
 #include "RefSymbolBase.hxx"
 #include "kernel.h"
 #include "data.h"
+#include "session.h"
 
 #ifdef WIN32
 #define strtof(f1,f2) ((float)strtod(f1,f2))
@@ -41,9 +42,6 @@ template <class T>
 TResult RefSymbolBase <T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
     MOVE_TO_NEXT_TERM(r,0,s);
     if (*this == *r) {
-        //save
-        //l=0;
-        //r=r;
         tpl = tpl->getNext();
         return GO;
     }
@@ -127,8 +125,8 @@ template <class T>
 TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
     MOVE_TO_NEXT_TERM(r,0,s);
     if (ref_dynamic_cast<T >(r)) {
-        //save
-        //l=0;
+        l=r;
+        SAVE_STATE_AND_VAR(tpl);
         //r=r;
         tpl = tpl->getNext();
         return GO;
@@ -141,6 +139,7 @@ TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l, RefData
 
 template <class T>
 TResult RefVarForSymbol<T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
+    RESTORE_STATE(tpl);
     tpl = tpl->getPred();
     return BACK;
 };
