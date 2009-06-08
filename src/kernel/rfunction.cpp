@@ -364,151 +364,109 @@ void RefUserTemplate::setLeftPart(RefChain *lp) {
 /****************  вызывающие ( переменная )  *****************
 **************************************************************/
 TResult  RefTemplateBridgeVar::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    SYSTEMERROR("ZAGL!!!");
 
-    if (this->isOpen()) { //  {
-        #ifdef TESTCODE
-        if (! ref_dynamic_cast<RefTemplateBridgeVar>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
-        #endif
+    #ifdef TESTCODE
+    if (! ref_dynamic_cast<RefTemplateBridgeVar>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
+    #endif
 
+    if (isOpen()) { /// [{]
 
         TVarBody *varBody = new TVarBody(l, r, this);
-        if (! isOpen()) {      ///  [}]
-            // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
-            SessionOfMaching *sess;
 
-            do {
-                sess = s->matchSessions.back();
-                #ifdef TESTCODE
-                if (! sess) {
-                    SYSTEMERROR("alarm!");
-                }
-                #endif
-                varBody->sessStack.push_back(sess);
-                s->matchSessions.pop_back();
-            } while (! sess->templReturnBackPoint);
+        //  сохраняем сопоставление в вызывающей субсессии
+        s->getCurrentSopostStack()->push( s->setVarBody(name, varBody) );
+        LOG( "\nsave(" << name << ") : "; print_vector(l, r); std::cout << "\n" );
 
-            // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
-            // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second
-            RefData *leftSecond = s->getVarBody(bridge->getName())->second; /// todo сделать эффективнее. Без использования промежуточного сохранения в map
-            #ifdef TESTCODE
-            if (s->getVarBody(bridge->getName())->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа завязано на том, что скобки внешней переменной сопоставляются с пустым выражением. А взор всей переменной - по границам пустых выражений
-            #endif
-            if (leftSecond != r) { // взор на НЕ пустое выражение
-                varBody->first  = leftSecond->getNext();
-                //varBody->second = уже какое надо
-            } /*else {
-			  varBody уже какое надо
-			  }*/
-            s->getCurrentSopostStack()->push( s->setVarBody(bridge->getName(), varBody) );
-            tpl=tpl->getNext();
+        //  создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
+        SessionOfMaching *sess = new SessionOfMaching(this, s);
+        //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
+        sess->StackOfDataSkob.push( s->matchSessions.back()->StackOfDataSkob.top()  );
+        s->matchSessions.push_back(sess);
+        //  сохраняем конец ссылки на шаблон для возврата : [}]
+        sess->templReturnBackPoint =  (RefTemplateBridgeVar *)other ;  //  [}]
 
-        } else {     ///  [{]
-            //  сохраняем сопоставление в вызывающей субсессии
-            s->getCurrentSopostStack()->push( s->setVarBody(bridge->getName(), varBody) );
-            //  создаем подсессию для шаблона - стелим подкладку для сопоставления шаблона
-            SessionOfMaching *sess = new SessionOfMaching(bridge, s);
-            //  текущую закрывающую скобку копируем в новое сопоставление - граница действий нового сопоставления
-            sess->StackOfDataSkob.push( s->matchSessions.back()->StackOfDataSkob.top()  );
-            s->matchSessions.push_back(sess);
-            //  сохраняем конец ссылки на шаблон для возврата  }
-            sess->templReturnBackPoint =  (RefTemplateBridgeVar *)bridge->other ;  //  }
-
-            #ifdef TESTCODE
-            if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
-            #endif
-            tpl = this->bridge;
-
-        }
+        tpl=bridge->getNext();
         return GO;
     }
+    /// [}]
+
+    TVarBody *varBody = s->getVarBody(getName()); // оптимизировать
+    // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
+    SessionOfMaching *sess;
+    do {
+        sess = s->matchSessions.back();
+        #ifdef TESTCODE
+        if (! sess) {
+            SYSTEMERROR("alarm!");
+        }
+        #endif
+        varBody->sessStack.push_back(sess);
+        s->matchSessions.pop_back();
+    } while (! sess->templReturnBackPoint); /// оптимизировать?
+
+    #ifdef TESTCODE
+    if (varBody->first) SYSTEMERROR("varBody->first != 0");
+    #endif
+    // сохраняем значение самой переменной
+    if (varBody->second != r) {
+        // не пустое
+        varBody->first  = varBody->second->getNext();
+        varBody->second = r;
+    }
+
+    LOG( "\nsave(" << name << ") : "; print_vector(varBody->first, varBody->second); std::cout << "\n" )
+    tpl=getNext();
+    return GO;
+
 };
 
-RefData*  RefTemplateBridgeVar::next_template( ThisId var_id, Session *s) {
-    if (this->isOpen()) {
-        // указывает на открывающую скобку-мост своего шаблона
-        // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
-        #ifdef TESTCODE
-        if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
-        #endif
-        return this->bridge;
-    } else {
-        #ifdef DEBUG
-        s->showStatus();
-        #endif
-        return next; //?
-    }
-};
+
 
 
 TResult  RefTemplateBridgeVar::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    SYSTEMERROR("ZAGL!!!");
-
-    TVarBody *varBody = s->getCurrentSopostStack()->top();
-    s->getCurrentSopostStack()->pop();
-
-
-    if (this->isOpen()) { /// [{]
-
-
-        delete s->matchSessions.back();   // удаление субсессии для внешней переменной
+    if (isOpen()) {  /// [{]
+        // удаление субсессии для внешней переменной
+        delete s->matchSessions.back();   // TODO: очистка мусора
         s->matchSessions.pop_back();
 
         #ifdef TESTCODE
         if (s->getCurrentSopostStack()->empty()) SYSTEMERROR("empty sopost stack!");
         if (s->getCurrentSopostStack()->top()->owner != this) SYSTEMERROR("wrong owner for " << toString() << " : " << s->getCurrentSopostStack()->top()->owner->toString() );
         #endif
-        s->getCurrentSopostStack()->pop();
+
+        RESTORE_STATE(tpl); // оптимизировать(значения не нужны)
 
         tpl=tpl->getPred();
-    } else {   /// [}]
-
-        if (varBody->first) {
-            // непустое значение
-            s->setVarBody(bridge->getName(), new TVarBody(0, varBody->first->getPred(), bridge->getOther()));
-        } else {
-            // пустое значение
-            s->setVarBody(bridge->getName(), new TVarBody(0, varBody->second, bridge->getOther()));
-        }
-
-        //  переменная: извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
-        SessionOfMaching *sess;
-        while (! varBody->sessStack.empty()) {
-            sess = varBody->sessStack.back();
-            s->matchSessions.push_back(sess);
-            varBody->sessStack.pop_back();
-        };
-
-        //sess->templReturnBackPoint = bridge ;
-        /// todo: откат до последнего условия может привести к ненужным сопоставлениям и продолжениям, так как если условие при откате снова выполнится,
-        /// то ничего по сути не изменится на данном этапе, но произойдет повторная попытка продолжить сопоставление.
-        /// откатываться до последнего условия разумно, если в нем инициализируется переменная, используемая далее за пределами
-        /// сопоставления шаблона (в объекте) - например в следующем условии внешнего уровня
-        /// пока оставил неэффективно - откат к последнему условию шаблона
-
-
-        // указывает на закр скобку-мост своего шаблона
-        // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
-        #ifdef TESTCODE
-        if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
-        #endif
-        tpl = this->bridge;
+        return BACK;
     }
-    return BACK;
+    /// [}]
 
+    // приводим в порядок тело переменной
+    TVarBody *varBody = s->getVarBody(getName());
+    if (varBody->first) {
+        // не пустое значение
+        varBody->second = varBody->first->getPred();
+        varBody->first = 0;
+    }
+
+    //  извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
+    SessionOfMaching *sess;
+    while (! varBody->sessStack.empty()) {
+        sess = varBody->sessStack.back();
+        s->matchSessions.push_back(sess);
+        varBody->sessStack.pop_back();
+    }
+
+    tpl = bridge->getPred();
+    return BACK;
 };
 
-RefData*  RefTemplateBridgeVar::pred_template( ThisId var_id, Session *s) {
-    if (this->isOpen()) {
-        return pred; //?
-    } else {
-        // указывает на закр скобку-мост своего шаблона
-        // по идее ссылка уже должна быть присвоена (при инициализации модуля после загрузки)
-        #ifdef TESTCODE
-        if (! this->bridge) SYSTEMERROR("bridge back-dot not found!");
-        #endif
-        if (s->message4nextpred == mFORCEBACK) return pred;
-        return this->bridge;
+
+
+
+void    RefTemplateBridgeVar::forceback(RefData *&a, Session* s) {
+    if (! isOpen()){  /// [}]
+        /// TODO: очистить мусор и субсессии в переменной
     }
 };
 
@@ -516,59 +474,25 @@ RefData*  RefTemplateBridgeVar::pred_template( ThisId var_id, Session *s) {
 /**************  вызываемые ( $Template ) ********************
 **************************************************************/
 TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    SYSTEMERROR("ZAGL!!!");
-    if (this->isOpen()) { //  {
-        /// начало сопоставления внешнего шаблона
-        //  шаблон:  в переменной была создана подсессия и точка возврата
-        return GO;
-    } else {              //  }
-        /// успешное сопоставление внешнего шаблона
-        //  шаблон:  в переменной будет забыта точка возврата, подсессия будет перемещена в тело переменной
+    if (this->isOpen()) { ///  {[}
+        SYSTEMERROR("unexpected"); // Var перепрыгивает на getNext() минуя Tmpl
+    } else {              ///  {]}
+        tpl = s->getTemplReturnBackPoint();
         return GO;
     }
 };
 
-RefData*  RefTemplateBridgeTmpl::next_template( ThisId var_id, Session *s) {
-    if (this->isOpen()) { //  {
-        return next;
-    } else {              //  }
-        #ifdef TESTCODE
-        if (s->matchSessions.empty()) SYSTEMERROR("no sessions!");
-        if (! s->getTemplReturnBackPoint()) {
-            s->showStatus();
-            SYSTEMERROR("bridge back-dot not found!");
-        }
-        #endif
-
-        return s->getTemplReturnBackPoint();
-    }
-};
 
 
 TResult  RefTemplateBridgeTmpl::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    SYSTEMERROR("ZAGL!!!");
-    if (this->isOpen()) { //    {
-        /// неудачное сопоставление внешнего шаблона
-        //  в переменной будет удалена подсессия и точка возврата
+    if (this->isOpen()) { ///    {[}
+        tpl = s->matchSessions.back()->templReturnBackPoint->getOther();  // [{]
         return BACK;
-    } else {              //    }
-        /// откат к ранее успешному сопоставленному пользовательскому шаблону
-        //  шаблон: в переменной была возвращена и активирована подсессия, восстановлена точка возврата
-        return BACK;
+    } else {              ///    {]}
+        SYSTEMERROR("unexpected"); // Var перепрыгивает Tmpl на getPred()
     }
 };
 
-RefData*  RefTemplateBridgeTmpl::pred_template( ThisId var_id, Session *s) {
-    if (this->isOpen()) {
-        #ifdef TESTCODE
-        if (! s->matchSessions.back()->templReturnBackPoint)
-            SYSTEMERROR("bridge back-dot not found!");
-        #endif
-        return s->matchSessions.back()->templReturnBackPoint->getOther();
-    } else {
-        return pred;
-    }
-};
 
 
 
@@ -620,3 +544,57 @@ TResult RefUserVarNotInit::back(RefData*&tpl, Session*, RefData *&, RefData *&) 
     SYSTEMERROR("ALARM!");
 };
 
+//----------------------- $CUTTER$ ---------------------
+TResult  RefMatchingCutter::init(RefData *&tpl, Session* , RefData *&, RefData *&) {
+        tpl=tpl->getNext();
+        return GO;
+};
+
+TResult  RefMatchingCutter::back(RefData *&tpl, Session* s, RefData *&, RefData *&) {
+        /// TODO: Обязательно оптимизировать! очень неэффективно. нет сборки мусора
+        #ifdef DEBUG
+        s->showStatus();
+        #endif
+
+        SessionOfMaching *sess = s->matchSessions.back();
+
+        // выгребаем стек сопоставлений
+        if (! sess->StackOfSopost.empty()){
+        for(long i=sess->StackOfSopost.size(); --i; i){
+            LOG( ">> CUTTER BACKFORSE DROP: " << sess->StackOfSopost.top()->owner->toString() );
+            sess->StackOfSopost.pop();
+        }}
+
+        // выгребаем стек скобок doned
+        if (! sess->StackOfDataSkob_done.empty()){
+        for(long i=sess->StackOfDataSkob_done.size(); --i; i){
+            LOG( ">> CUTTER BACKFORSE DROP bracket_done: " << sess->StackOfDataSkob_done.top()->toString() );
+            sess->StackOfDataSkob_done.pop();
+        }}
+
+        // выгребаем стек скобок
+        if (! sess->StackOfDataSkob.empty()){
+        for(long i=sess->StackOfDataSkob.size(); --i; i){
+            LOG( ">> CUTTER BACKFORSE DROP bracket : " << sess->StackOfDataSkob.top()->toString() );
+            sess->StackOfDataSkob.pop();
+        }}
+
+
+
+        // обработка каттера для образца
+        RefData *finish;
+        if (sess->templReturnBackPoint){
+            // если пользовательский шаблон
+            finish = sess->templReturnBackPoint->other; // [}]
+        } else {
+            finish = sess->pole_zrenija->first; // datadot
+        }
+        /*
+        while (tpl!=finish) {
+            tpl=tpl->getPred();
+            tpl->forceback();
+        }*/
+
+        tpl=finish;
+        return BACK;
+};

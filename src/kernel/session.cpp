@@ -251,9 +251,12 @@ bool  Session::matching(RefObject *initer, RefChain *tmplateChain, RefData *argl
     }   \
     std::cout << sss; \
     std::cout << " [s:"<< s->matchSessions.size() <<    \
-    std::cout << "\t" << activeTemplate->toString() << " \\"<<activeTemplate<<" \t\t~\t"  << std::flush; \
-    std::cout << "\t"; \
-    print_vector(r?r->getNext():0); \
+    std::cout << "]\t" << activeTemplate->toString() << " \\"<<activeTemplate; \
+    if (sss=="GO  ") { \
+        std::cout <<" \t\t~\t"  << std::flush; \
+        std::cout << "\t"; \
+        print_vector(r?r->getNext():0); \
+    } \
 }
 #else
 #define LOGSTEP(s)
@@ -329,7 +332,8 @@ bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching) {
             #endif
             return false;
 
-        case FORCEBACK: { // откат правых скобок или отсечения
+        /*case FORCEBACK: { // откат правых скобок или отсечения
+            LOG( "FORCEBACK ");
             RefData *finish = 0;
 
             RefMatchingCutter* cutter = ref_dynamic_cast<RefMatchingCutter>(activeTemplate);
@@ -382,13 +386,14 @@ bool matchingBySession(Session *s, RefChain *tmplateChain, bool isdemaching) {
             while (activeTemplate != finish) {
                 LOG( ">> BACKFORSE forceback: " << activeTemplate->toString() );
                 activeTemplate->forceback(activeTemplate, s);  // принудительный откат переменной
-                move_to_pred_term(activeTemplate, 0, s);
+                //move_to_pred_term(activeTemplate, 0, s);
+                activeTemplate = activeTemplate->getPred();
             }
             ; // (
 
             result_sost = BACK;
         }
-        break;
+        break;*/
 
         default:
             break;
@@ -450,8 +455,8 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
                 #endif
                 varBody->sessStack.push_back(sess);
                 this->matchSessions.pop_back();
-            } while (! sess->templReturnBackPoint);
-            //sess->templReturnBackPoint = 0; //??? зачем?
+            } while (! sess->templReturnBackPoint); /// оптимизировать?
+
 
             // сохраняем полную область сопоставления (основываясь на том, что обе скобки ~ внешн перем. ~ имеют одно имя переменной)
             // поскольку на данный момент обе скобки-моста сопоставляются с пустым выражением, то ссылки на нужные элементы хранятся в second

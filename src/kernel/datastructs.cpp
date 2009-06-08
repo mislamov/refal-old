@@ -89,34 +89,26 @@ RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) {
 
 
 TResult  RefGroupBracket::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    #ifdef TESTCODE
-    if (l)  {       SYSTEMERROR("RefData::init() l is NULL !");    };
-    if (!r) {       SYSTEMERROR("RefData::init() tring to matching with NULL address!");    };
-    #endif
-
     if (isOpen()) { ///      {
         // сохранить левую границу дл€ }
         SAVE_STATE_AND_VAR(this);
     } else {        ///      }.name
         TVarBody *vb = s->getVarBody(name); /// сделать эффективнее чем поиск по имени
-        #ifdef TESTCODE
-        if (vb->first || l) SYSTEMERROR("Skobki !~ 0"); // сохранение переменных внешнего типа  и групп зав€зано на том, что скобки внешней переменной или группы сопоставл€ютс€ с пустым выражением. ј взор всей переменной - по границам пустых выражений
-        #endif
-        if (vb->second != r) { // взор на Ќ≈ пустое выражение
-            vb->first  = vb->second->getNext();
-            //vb->second = уже какое надо
-        }
-        #ifdef TESTCODE
-        ///once
-        /// ? :: getCurrentSopostStack()->push( setVarBody(group->getName(), vb) );
-        /// проверить изменилс€ ли vb в стеке
-        TVarBody *vb2 = s->getVarBody(name);
-        if (vb2->first != vb->first || vb2->second!=vb->second) {
-            SYSTEMERROR("alarm! once verify")
+
+int x=0;
+        if (vb->first) { // повторное сопоставление закрытой групповой скобки
+            vb->second = r;
+            x=1;
         } else {
-            LOG("ONCE VERIFY OK");
+            x=2;
+            // первое сопоставление закрытой групповой скобки
+            if (vb->second != r) { // взор на Ќ≈ пустое выражение
+                x = 3;
+                vb->first  = vb->second->getNext();
+                vb->second = r;
+            }
         }
-        #endif
+        LOG( "\nsave(" << name << ") : " << x << " "; print_vector(vb->first, vb->second); std::cout << "\n" );
     }
 
     tpl=tpl->getNext();
@@ -124,7 +116,9 @@ TResult  RefGroupBracket::init(RefData*&tpl, Session *s, RefData *&l, RefData *&
 };
 
 TResult  RefGroupBracket::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    RESTORE_STATE(this);  // ?
+    if (isOpen()) {
+        RESTORE_STATE(this);  // ?
+    }
     tpl=tpl->getPred();
     return BACK;
 };
@@ -137,37 +131,21 @@ ref_variant_dot::ref_variant_dot( RefData* rp) : RefData(rp) {
     is_system (false);
 };
 
-RefData*   ref_variant_dot::pred_template (ThisId id, Session *s) {
-    if (s->result_sost == FORCEBACK) {
-        return krest;
-    };
-    return nextffwd;
-};
-
-//----------  o  ------------
 TResult	   ref_variant_dot::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
     #ifdef TESTCODE
-    if ( l) { SYSTEMERROR("RefData::init() l is NULL !"); };
-    if (!r) { SYSTEMERROR("RefData::init() tring to matching with NULL address!"); };
-    #endif
-
-    #ifdef TESTCODE
-    TVarBody* vb = dynamic_cast<TVarBody *>( s->matchSessions.back()->StackOfSopost.top());
-    if ((!vb) || (! dynamic_cast<RefGroupBracket *>(vb->owner)))
+    TVarBody* vb = dynamic_cast<TVarBody *>( s->matchSessions.back()->StackOfSopost.top() );
+    if ( (!vb) || (! dynamic_cast<RefGroupBracket *>(vb->owner)) )
         SYSTEMERROR("net ozhifaemoj skobki na vershine steka sopostavlenij");
     #endif
-    r = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()))->second;
+    // восстанавливаем начало зрени€
+    r = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()) )->second;
+    // идем дальше
     tpl=tpl->getNext();
     return GO;
 };
 
-//----------  o  ------------
 TResult	   ref_variant_dot::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    //tpl=tpl->getPred();
-    //return BACK;
-    l = 0;
-    r = ((TVarBody *)( s->matchSessions.back()->StackOfSopost.top()))->second;
-    tpl=this->nextffwd->getNext()->getNext();
+    tpl=nextvert->getNext();
     return GO;
 };
 
@@ -180,21 +158,18 @@ ref_variant_vert::ref_variant_vert( RefData* rp) : RefData(rp) {
     is_system (false);
 };
 TResult	  ref_variant_vert::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)	{
+    // сохран€ем удачный вариант дл€ отката
     s->matchSessions.back()->StackOfVariants.push(this);
-    tpl = this->vopr->getNext();
+    // прыгаем на конец варианта
+    tpl = vopr->getNext();
     return GO;
 };
 TResult	  ref_variant_vert::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)	{
     SYSTEMERROR("unecpected");
-    // то что дальее должно выполнитьс€ в ?::back()
-    s->matchSessions.back()->StackOfVariants.pop();
-    tpl=tpl;
-    return BACK;
 };
-RefData*  ref_variant_vert::next_template (ThisId id, Session*) {
-    return vopr->getNext();
-}
-; //  return "}.vname"
+
+
+
 void      ref_variant_vert::forceback (RefData*&tpl, Session *s)	{
     SYSTEMERROR("not released");
     s->matchSessions.back()->StackOfVariants.pop();
@@ -203,28 +178,15 @@ bool	  ref_variant_vert::operator==(RefData&rd) {
     return false;
 };
 
-//----------  =>  ------------
-ref_variant_ffwd::ref_variant_ffwd(RefData *rp) : RefData (rp) {
-    is_system (false);
-};
-TResult	 ref_variant_ffwd::init(RefData*&tpl, Session *, RefData *&, RefData *&) {
-    SYSTEMERROR("unexpected");
-    return GO;
-};
-TResult	 ref_variant_ffwd::back(RefData*&tpl, Session *, RefData *&, RefData *&) {
-    SYSTEMERROR("unexpected");
-    return GO;
-};
-bool	 ref_variant_ffwd::operator==(RefData&rd) {
-    return false;
-};
+
 
 //----------  ?  ------------
 ref_variant_vopr::ref_variant_vopr( RefData* rp) : RefData(rp) {
     is_system (false);
 };
 TResult		ref_variant_vopr::init(RefData*&tpl, Session *, RefData *&, RefData *&) {
-    SYSTEMERROR("unexpected"); // пока не пон€тно как может быть вызвано
+    // вариант не сопоставим с аргументом
+    tpl=begbr;
     return BACK;
 };
 TResult     ref_variant_vopr::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
@@ -234,11 +196,7 @@ TResult     ref_variant_vopr::back(RefData*&tpl, Session* s, RefData *&l, RefDat
     return BACK;
 }
 ; //
-RefData*	ref_variant_vopr::pred_template (ThisId id, Session *s) {
-    //if (s->message4nextpred == mFORCEBACK){ return pred; } - закрыл, так как откатывать надо не последний вариант а сопоставленный
-    ref_variant_vert *rvv = s->matchSessions.back()->StackOfVariants.top();
-    return rvv;
-};
+
 bool ref_variant_vopr::operator==(RefData&rd) {
     return false;
 };
@@ -246,20 +204,6 @@ void ref_variant_vopr::forceback(RefData*&tpl, Session* s) {
     //s->matchSessions.back()->StackOfVariants.pop();
 };
 
-//----------  x  ------------
-ref_variant_krest::ref_variant_krest( RefData* rp) : RefData(rp) {
-    is_system (false);
-};
-TResult		ref_variant_krest::init(RefData*&tpl, Session *, RefData *&l, RefData *&r) {
-    SYSTEMERROR("unexpected");
-    return BACK;
-};
-RefData*	ref_variant_krest::pred_template (ThisId id, Session *s) {
-    return begbr;
-};
-bool ref_variant_krest::operator==(RefData&rd) {
-    return false;
-};
 
 
 
@@ -320,7 +264,7 @@ TResult  ref_repeater::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) 
     return BACK;
 };
 
-RefData*  ref_repeater::next_template (ThisId id, Session*s) {
+/*RefData*  ref_repeater::next_template (ThisId id, Session*s) {
     switch (s->message4nextpred) {
     case mNEXT:
         return next;
@@ -335,6 +279,7 @@ RefData*  ref_repeater::next_template (ThisId id, Session*s) {
     }
     SYSTEMERROR("unexpected message");
 };
+
 
 RefData*  ref_repeater::pred_template (ThisId id, Session*s) {
     switch (s->message4nextpred) {
@@ -351,4 +296,4 @@ RefData*  ref_repeater::pred_template (ThisId id, Session*s) {
     }
     SYSTEMERROR("unexpected message");
 };
-
+*/

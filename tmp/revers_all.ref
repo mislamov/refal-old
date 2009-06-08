@@ -4,7 +4,7 @@
 *   полученное печатает*/
 
 $ENTRY Go {
-            = <Prout 'ded mokar' <Word 'ded mokar'>>;
+            = <Prout 'ded mokar ~ ' <Word 'ded mokar'>>;
           }
 
 Word {

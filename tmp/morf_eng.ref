@@ -38,7 +38,7 @@ CompletionTable { =
 Question {
         /* берем слово и ищем подход€щее по шаблону в таблице1 */
 
-        (e.Word), 
+        (e.Word e.), 
 		<WordsMissTable>: e.L ( ( e.Word ) e.Qst ) e.R 
 		= 	e.Qst;
 

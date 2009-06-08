@@ -137,34 +137,31 @@ try {
             *(loader->getCurrChain()) += gbropen;
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {
-            ref_variant_krest *krest = new ref_variant_krest();
-            ref_variant_ffwd  *ffwd  = new ref_variant_ffwd();
+            ref_variant_vopr  *vopr  = new ref_variant_vopr();
+            ref_variant_vert  *vert  = new ref_variant_vert();
+            vert->vopr = vopr;
             #ifdef TESTCODE
             if (! dynamic_cast<RefGroupBracket *>(loader->getCurrChain()->second)) SYSTEMERROR("bad variant build");
             #endif
-            krest->begbr = loader->getCurrChain()->second;
-            loader->putValueToStack( "VARIANTS-krest", krest); //  добавим позже в конец цепочки
-            loader->putValueToStack( "VARIANTS-vopr" , new ref_variant_vopr()); //  добавим позже в конец цепочки
-            loader->putValueToStack( "VARIANTS-ffwd" , ffwd);  //  добавим этот ffwd в следующем разделителе.
+            vopr->begbr = loader->getCurrChain()->second;
+            loader->putValueToStack( "VARIANTS-vopr" , vopr);  //  добавим позже в конец цепочки
+            loader->putValueToStack( "VARIANTS-vert" , vert);  //  добавим этот ffwd в следующем разделителе.
             ref_variant_dot *dot = new ref_variant_dot();
-            dot->krest    = krest;
-            dot->nextffwd = ffwd;
+            dot->nextvert = vert;
+
             *(loader->getCurrChain()) += dot;
     } else
     if ( theCommand.compare(_L("THE-VARIANT")) == 0) { //       | => x
-            ref_variant_vert  *vert  = new ref_variant_vert();
-            ref_variant_ffwd  *ffwd  = (ref_variant_ffwd *) loader->getValueFromStack( "VARIANTS-ffwd" );
-            ref_variant_ffwd  *ffwdnext = new ref_variant_ffwd();
-            loader->putValueToStack( "VARIANTS-ffwd" , ffwdnext); // для следующего разделителя
-            ref_variant_dot   *dot   = new ref_variant_dot ();
 
-            vert->vopr = (ref_variant_vopr *) loader->getValueFromStack("VARIANTS-vopr");
-            dot->krest = (ref_variant_krest *)loader->getValueFromStack("VARIANTS-krest");
-            dot->nextffwd = ffwdnext;
-
-            *(loader->getCurrChain()) += vert;
-            *(loader->getCurrChain()) += ffwd;
+            ref_variant_vert    *vert   = new ref_variant_vert();
+            ref_variant_dot     *dot    = new ref_variant_dot();
+            ref_variant_vert    *lastvert  = (ref_variant_vert *) loader->extractValueFromStack( "VARIANTS-vert" );
+            dot->nextvert = vert;
+            vert->vopr = (ref_variant_vopr *)loader->getValueFromStack( "VARIANTS-vopr" );
+            loader->putValueToStack( "VARIANTS-vert" , vert);
+            *(loader->getCurrChain()) += lastvert;
             *(loader->getCurrChain()) += dot ;
+
     } else
     if ( theCommand.compare(_L("REPEAT")) == 0 ) {
         infint min = str2infint(toWstring(attributes.getValue("from")));
@@ -352,16 +349,11 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             *(loader->getCurrChain()) += new RefGroupBracket(gbrclose, 0);
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {  //   | => x ?
-            ref_variant_krest *krest = (ref_variant_krest *)loader->extractValueFromStack("VARIANTS-krest");
             ref_variant_vopr  *vopr  = (ref_variant_vopr *) loader->extractValueFromStack("VARIANTS-vopr" );
-            ref_variant_ffwd  *ffwd  = (ref_variant_ffwd *) loader->extractValueFromStack("VARIANTS-ffwd" );
-            ref_variant_vert  *vert  = (ref_variant_vert *) new ref_variant_vert();
+            ref_variant_vert  *vert  = (ref_variant_vert *) loader->extractValueFromStack("VARIANTS-vert" );
             vert->vopr = vopr;
 
             *(loader->getCurrChain()) += vert;
-            *(loader->getCurrChain()) += ffwd;
-			*(loader->getCurrChain()) += new RefNULL();
-            *(loader->getCurrChain()) += krest;
             *(loader->getCurrChain()) += vopr;
     } else
     if ( theCommand.compare(_L("THE-VARIANT")) == 0 ) {

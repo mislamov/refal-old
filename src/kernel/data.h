@@ -167,14 +167,6 @@ public:
 
 	virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
     virtual RefData*  pred_term( ThisId var_id, Session *s);
-//    virtual RefData*  next_template( ThisId var_id, Session *s) {
-//        //return next_term(var_id, s);
-//        return next;
-//    }; // следующий шаблон при сопоставлении
-//    virtual RefData*  pred_template( ThisId var_id, Session *s) {
-//        //return pred_term(var_id, s);
-//        return pred;
-//    };
 
     virtual RefData*  beginOfTerm() {
         return this;
@@ -444,7 +436,7 @@ template <class T>
 
 #define SAVE_STATE_AND_VAR(activeTemplate) { \
     s->getCurrentSopostStack()->push( s->setVarBody(name, new TVarBody(l, r, this)) ); \
-    std::cout << "\nsave(" << name << ") : "; print_vector(l, r); std::cout << "\n" << std::flush; \
+    LOG( "\nsave(" << name << ") : "; print_vector(l, r); std::cout << "\n" ) \
 };
 
 

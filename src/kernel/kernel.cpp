@@ -74,24 +74,20 @@ TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&
         tpl=tpl->getPred();
         return BACK;
     }
+    s->matchSessions.back()->StackOfDataSkob_done.push( s->getStackOfDataSkob()->top() );
     s->getStackOfDataSkob()->pop();
     tpl=tpl->getNext();
     return GO;
 
 };
 
-TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    if (is_opened) { //  (
+TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) { /// TODO: оптимизировать
+    if (is_opened) { ///  (
         s->getStackOfDataSkob()->pop(); /// clean?
     } else {
-
-        // )
-        #ifdef TESTCODE
-        if (! ref_dynamic_cast<RefBracketBase >(r) ) {
-            SYSTEMERROR("may be unnormal situation: r = " << r->toString());
-        }
-        #endif
-        s->getStackOfDataSkob()->push( (RefBracketBase*)( r ) );
+        /// )
+        s->getStackOfDataSkob()->push( s->matchSessions.back()->StackOfDataSkob_done.top() );
+        s->matchSessions.back()->StackOfDataSkob_done.pop();
     }
 
     tpl=tpl->getPred();
@@ -101,9 +97,8 @@ TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&
 
 
 void RefStructBracket::forceback(RefData*&tpl, Session *s) {
-    if (this->isOpen()) {
-        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
-        //s->getStackOfDataSkob()->pop(); /// - в стеке скобок нет инфы для этой скобки! Она и ее пара была сопоставлена
+    if (! this->isOpen()) { // )
+        s->matchSessions.back()->StackOfDataSkob_done.pop();
     }
     return;
 }
@@ -143,14 +138,6 @@ TResult RefExecBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r)
 
 TResult RefExecBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     SYSTEMERROR("RefExecBracket::back! Exec bracket can't to match!");
-    if (is_opened) { //  (
-
-        //std::cout << "\n$poping by " << this->toString() << "  :  " << s->getStackOfDataSkob()->top()->toString();
-        s->getStackOfDataSkob()->pop();
-        return BACK;
-    } else {          //  )
-        return FORCEBACK;
-    };
 };
 
 
@@ -298,6 +285,9 @@ bool	RefVariable_END::operator==(RefData &rd) {
 
 unistring vectorToString(RefData *f, RefData *g) {
     unistring a = EmptyUniString;
+    #ifdef TESTCODE
+    if (g && f==g->getNext()) SYSTEMERROR("bad ends of RefVector (perekrest)");
+    #endif
 
     if (!f) {
         #ifdef TESTCODE

@@ -84,7 +84,9 @@ public:
     }
 
 public:
-    RefModuleBase(unistring nname = EmptyUniString) { setName(nname); };
+    RefModuleBase(unistring nname = EmptyUniString) {
+        setName(nname);
+    };
     virtual ~RefModuleBase() {};
     virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
     virtual void initilizeAll(Session *) {
@@ -232,15 +234,11 @@ class RefMatchingCutter : public RefData {
 public:
     CLASS_OBJECT_CAST(RefMatchingCutter);
 
-RefMatchingCutter(RefData *d=0) : RefData(d) {
+    RefMatchingCutter(RefData *d=0) : RefData(d) {
         is_system( false );
     }
-    virtual TResult  init(RefData *&tpl, Session* , RefData *&, RefData *&) {
-        return GO;
-    }
-    virtual TResult  back(RefData *&tpl, Session* , RefData *&, RefData *&) {
-        return FORCEBACK;
-    }
+    virtual TResult  init(RefData *&tpl, Session* , RefData *&, RefData *&);
+    virtual TResult  back(RefData *&tpl, Session* s, RefData *&, RefData *&);
 
     virtual unistring toString() {
         return " $CUTTER$ ";
@@ -317,8 +315,6 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
 
     TResult init(RefData *&tpl, Session* s, RefData *&, RefData *&);
     TResult back(RefData *&tpl, Session* s, RefData *&, RefData *&);
-    RefData*  next_template( ThisId var_id, Session *s);
-    RefData*  pred_template( ThisId var_id, Session *s);
 
     unistring getName() {
         if (isOpen())
@@ -350,7 +346,7 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
         return cp;
     };
 
-    virtual void    forceback(RefData *&a, Session* s) {};
+    virtual void    forceback(RefData *&a, Session* s);
 
 };
 
@@ -372,8 +368,6 @@ RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketB
 
     TResult init(RefData *&tpl, Session* s, RefData *&, RefData *&);
     TResult back(RefData *&tpl, Session* s, RefData *&, RefData *&);
-    RefData*  next_template( ThisId var_id, Session *s);
-    RefData*  pred_template( ThisId var_id, Session *s);
 
     RefData* Copy(RefBracketBase *b, RefData *rp=0) {
         SYSTEMERROR("взятие копии внешнего шаблона не предусмотрено! наверное ошибка");

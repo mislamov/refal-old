@@ -87,6 +87,7 @@ public:
 
 
     std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
+    std::stack<RefBracketBase  *>	StackOfDataSkob_done;	    // Стек ЗАКР. скобок в векторе данных
     std::stack<ref_variant_vert*>   StackOfVariants;	    // Стек удачно сопоставленных вариантов (ссылки на границы последнего варианта)
 
     std::stack<infint> StackOfRepeater;	        // Стек активных повторителей

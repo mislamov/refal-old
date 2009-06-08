@@ -74,11 +74,9 @@ class ref_variant_dot : public RefData/*, public IRefVarStacked*/ { // IRefVarSt
 public:
 
 
-    ref_variant_ffwd  *nextffwd;
-    ref_variant_krest *krest;
+    ref_variant_vert  *nextvert;
 
     ref_variant_dot( RefData* rp=0);
-    RefData*  pred_template (ThisId id, Session *s);
     TResult	   init	      (RefData *&tpl, Session *s, RefData *&l, RefData *&);
     TResult	   back	      (RefData *&tpl, Session *s, RefData *&l, RefData *&r);
     bool operator==(RefData&rd);
@@ -107,7 +105,6 @@ public:
     RefData *vopr;
 
     ref_variant_vert( RefData* rp=0);
-    RefData*  next_template (ThisId id, Session*);
     bool operator==(RefData&rd);
     void forceback (RefData *&, Session *s);
 
@@ -146,10 +143,10 @@ public:
 //----------  ?  ------------
 class ref_variant_vopr : public RefData {
 public:
+    RefData *begbr;
 
 
     ref_variant_vopr( RefData* rp=0);
-    RefData*	pred_template (ThisId id, Session *s);
     bool operator==(RefData&rd);
 
     TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&); //
@@ -163,34 +160,9 @@ public:
     void forceback(RefData *&, Session* s);
 
 };
-//----------  x  ------------
-class ref_variant_krest : public RefData {
-public:
 
 
-    RefData *begbr;
-
-    ref_variant_krest(RefData* rp=0);
-    virtual ~ref_variant_krest() {};
-    RefData*	pred_template (ThisId id, Session *s);
-    bool operator==(RefData&rd);
-
-    TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&); //
-    TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
-        SYSTEMERROR("zagl for " << toString() << "->back(s,l,r)");
-    }; //
-    virtual RefData* Copy(RefData *where=0) {
-        SYSTEMERROR("zagl for " << toString() << "->copy()");
-    };
-    virtual unistring toString() {
-        return "-x-";
-    };
-    void forceback(RefData *&, Session* s) {};
-
-};
-
-
-////////////////  {o      | => o      | => o      | => x ?} ///////////////////
+////////////////  {o      | o      | o      | ?} ///////////////////
 //---------- {  } ----------
 class RefGroupBracket : public RefBracketBase {
 protected:
@@ -256,8 +228,6 @@ ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
     //RefGroupBracket(RefBracketBase *oth, RefData *rp) : RefBracketBase(oth) {};
     TResult  init(RefData *&tpl, Session *, RefData *&l, RefData *&);
     TResult  back(RefData *&tpl, Session *, RefData *&l, RefData *&r);
-    RefData*  next_template (ThisId id, Session*);
-    RefData*  pred_template (ThisId id, Session*);
 
     bool operator==(RefData&rd) {
         SYSTEMERROR("unexpected call");

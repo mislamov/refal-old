@@ -165,9 +165,9 @@ RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 // only for ObjectExpressions !!! Возвращает копию цепочки. Вместо ссылок на переменные - значения. Так как применяется для правых частей
 // то открытых переменных быть не должно!
 RefChain* RefChain::Copy(Session *s){
-    #ifdef DEBUG
-    //std::cout << "\n{ RefChain for copy: " << this->toString();
-    #endif
+    //#ifdef DEBUG
+    //std::cout << "\n{ RefChain for copy: " << std::flush << this->toString() << std::flush;
+    //#endif
     RefData  *srcL = this->first;
     RefData  *srcR = this->second;
 

@@ -17,7 +17,7 @@ Template rbcbody  ::=
 		DIV.fullContainer::classname : 'fullContainer',
 		DIV.otherBlocks::classname   : 'otherBlocks',
 
-		DIV.fullContainer	 : '<div' e.4 DIV.mainNewsDiv e.5 '</div>',
+		DIV.fullContainer	   : '<div' e.4 DIV.mainNewsDiv e.5 '</div>',
 		DIV.mainNewsDiv::classname : 'ulList mainNews thin';
 		
 
