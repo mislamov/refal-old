@@ -46,7 +46,6 @@
 			<Add directory="C:\MinGW\lib" />
 			<Add directory="C:\MinGW\mingw32\lib" />
 		</Linker>
-		<Unit filename="help.txt" />
 		<Unit filename="src\SAXLoader.cpp" />
 		<Unit filename="src\SAXLoader.hpp" />
 		<Unit filename="src\SAXLoaderHandlers.cpp" />

@@ -369,7 +369,7 @@ TResult  RefTemplateBridgeVar::init(RefData*&tpl, Session* s, RefData *&l, RefDa
     if (! ref_dynamic_cast<RefTemplateBridgeVar>(this->other) ) SYSTEMERROR("not RefTemplateBridgeVar pair!");
     #endif
 
-    if (isOpen()) { /// [{]
+    if (is_opened) { /// [{]
 
         TVarBody *varBody = new TVarBody(l, r, this);
 
@@ -424,7 +424,7 @@ TResult  RefTemplateBridgeVar::init(RefData*&tpl, Session* s, RefData *&l, RefDa
 
 
 TResult  RefTemplateBridgeVar::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    if (isOpen()) {  /// [{]
+    if (is_opened) {  /// [{]
         // удаление субсессии для внешней переменной
         delete s->matchSessions.back();   // TODO: очистка мусора
         s->matchSessions.pop_back();
@@ -465,7 +465,7 @@ TResult  RefTemplateBridgeVar::back(RefData*&tpl, Session* s, RefData *&l, RefDa
 
 
 void    RefTemplateBridgeVar::forceback(RefData *&a, Session* s) {
-    if (! isOpen()){  /// [}]
+    if (! is_opened){  /// [}]
         /// TODO: очистить мусор и субсессии в переменной
     }
 };
@@ -474,7 +474,7 @@ void    RefTemplateBridgeVar::forceback(RefData *&a, Session* s) {
 /**************  вызываемые ( $Template ) ********************
 **************************************************************/
 TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    if (this->isOpen()) { ///  {[}
+    if (this->is_opened) { ///  {[}
         SYSTEMERROR("unexpected"); // Var перепрыгивает на getNext() минуя Tmpl
     } else {              ///  {]}
         tpl = s->getTemplReturnBackPoint();
@@ -485,7 +485,7 @@ TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l, RefD
 
 
 TResult  RefTemplateBridgeTmpl::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    if (this->isOpen()) { ///    {[}
+    if (this->is_opened) { ///    {[}
         tpl = s->matchSessions.back()->templReturnBackPoint->getOther();  // [{]
         return BACK;
     } else {              ///    {]}
@@ -585,7 +585,7 @@ TResult  RefMatchingCutter::back(RefData *&tpl, Session* s, RefData *&, RefData 
         RefData *finish;
         if (sess->templReturnBackPoint){
             // если пользовательский шаблон
-            finish = sess->templReturnBackPoint->other; // [}]
+            finish = sess->templReturnBackPoint->getOther(); // [}]
         } else {
             finish = sess->pole_zrenija->first; // datadot
         }

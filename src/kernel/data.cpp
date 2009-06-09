@@ -62,11 +62,29 @@ RefData::~RefData(){
     if (pred) pred->next = next;
 };
 
-RefData*  RefData::next_term( ThisId ThisId, Session *s) {
-    return next;
+
+inline RefData*  next_term(RefData* p) {
+    #ifdef TESTCODE
+    if (dynamic_cast<RefExecBracket*>(p)) {
+        //SYSTEMERROR("unrealized");
+        return p->next;
+    }
+    #endif
+    RefStructBracket* &bp = (RefStructBracket*&)(p);
+    if (ref_dynamic_cast<RefStructBracket>(p) && bp->is_opened ) return bp->other->next;
+    return p->next;
 };
-RefData*  RefData::pred_term( ThisId ThisId, Session *s) {
-    return pred;
+
+inline RefData*  pred_term(RefData* p) {
+    #ifdef TESTCODE
+    if (dynamic_cast<RefExecBracket*>(p)) {
+        //SYSTEMERROR("unrealized");
+        return p->pred;
+    }
+    #endif
+    RefStructBracket* &bp = (RefStructBracket*&)(p);
+    if (ref_dynamic_cast<RefStructBracket>(p) && !bp->is_opened ) return bp->other->pred;
+    return p->pred;
 };
 
 
@@ -135,18 +153,12 @@ RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ 
 };
 
 
-bool RefBracketBase::isOpen(){
-    return is_opened;
-};
 
 RefBracketBase * RefBracketBase::getOther(){
     return other;
 };
 
 bool   RefBracketBase::operator==(RefData &rd){ return false; };
-
-RefData*  RefBracketBase::beginOfTerm(){ return (isOpen()?this:getOther()); };
-RefData*  RefBracketBase::endOfTerm () { return (isOpen()?getOther():this); };
 
 //TResult RefBracketBase::init(RefData*&tpl,Session* s, RefData *&){ SYSTEMERROR(" RefBracketBase::init zagluska!"); };
 //TResult RefBracketBase::back(RefData*&tpl,Session* s, RefData *&, RefData *&){ SYSTEMERROR(" RefBracketBase::back zagluska!"); };
@@ -181,7 +193,7 @@ RefChain* RefChain::Copy(Session *s){
     RefData *a, *b, *dstHlp, *dst = newChain->first;
 
 
-    while(src != srcR->next_term(0,0)){ /// todo: когда будут монтированные данные - добавить сессию
+    while(src != next_term(srcR)){ /// todo: когда будут монтированные данные - добавить сессию
 
         RefLinkToVariable *tmplnk = ref_dynamic_cast<RefLinkToVariable >(src);
 
@@ -203,8 +215,7 @@ RefChain* RefChain::Copy(Session *s){
             }
             //#endif
             if (!(tbody->first)){
-                //src = move_to_next_term(src, 0, 0);
-                MOVE_TO_NEXT_TERM(src, 0, 0);
+                MOVE_TO_next_term(src);
                 continue;
             };
             RefChain *ch = RefChain(tbody->first, tbody->second).Copy();
@@ -212,15 +223,14 @@ RefChain* RefChain::Copy(Session *s){
             ch->first->pred = dst;
             dst = ch->second;
             delete ch;
-            //move_to_next_term(src, 0, 0);
-            MOVE_TO_NEXT_TERM(src, 0, 0);
+            MOVE_TO_next_term(src);
             continue;
         }
 
         RefBracketBase *br = ref_dynamic_cast<RefBracketBase >(src);
         if (br){ // копируем скобки
             #ifdef TESTCODE
-            if (! br->isOpen()){
+            if (! br->is_opened){
                 SYSTEMERROR("unexpected closed bracket : " << br->toString());
             }
             #endif
@@ -230,14 +240,14 @@ RefChain* RefChain::Copy(Session *s){
 
 
             #ifdef TESTCODE
-            if (!br->other) SYSTEMERROR("br->other == NULL  br=" << br->toString());
+            if (!br->getOther()) SYSTEMERROR("br->other == NULL  br=" << br->toString());
             if (!br->next ) SYSTEMERROR("br->next == NULL  br=" << br->toString());
             if (!br->next->next) SYSTEMERROR("br->next->next == NULL  br->next="  << br->next->toString());
             #endif
 
 
-            if (br->next->next != br->other) { // не пустые скобки
-                hlpChain  = new RefChain(br->next->next, br->other->pred);
+            if (br->next->next != br->getOther()) { // не пустые скобки
+                hlpChain  = new RefChain(br->next->next, br->getOther()->pred);
                 hlpChain2 = hlpChain->Copy(s);
                 // тут нельзя удалять содержимое цепочки - так как тут же постоянный шаблон функции!
                 delete hlpChain;
@@ -260,13 +270,12 @@ RefChain* RefChain::Copy(Session *s){
                 }
             }
             dst = dstHlp;
-            src = br->other;
+            src = br->getOther();
 
         } else {
             dst = src->Copy(dst);
         }
-        //src = move_to_next_term(src, 0, s);
-        MOVE_TO_NEXT_TERM(src, 0, s);
+        MOVE_TO_next_term(src);
     }
     newChain->second = dst;
 
@@ -504,7 +513,7 @@ TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&l, RefData *&
         return GO; // ссылка на пустой отрезок - верна
     }
 
-    MOVE_TO_NEXT_TERM(r, 0, s);
+    MOVE_TO_next_term(r);
     if (r/*->myid()*/==ldata/*->myid()*/){ // сопоставление с собой
         r = rdata;
         tpl = tpl->getNext();
@@ -512,17 +521,17 @@ TResult RefLinkToVariable::init(RefData*&tpl,Session* s, RefData *&l, RefData *&
     }
 
     RefData *lend = rdata;
-    MOVE_TO_NEXT_TERM(lend, 0/*myid()*/, s); // граница сравнения
+    MOVE_TO_next_term(lend); // граница сравнения
 
-    MOVE_TO_PRED_TERM(r, 0/*myid()*/, s); /// todo: оптимизировать
+    MOVE_TO_pred_term(r); /// todo: оптимизировать
     while ((ldata!=lend) /*&& !(ldata->dynamic_same(rdata))*/) { // проверка на конец сравниваемого
-        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
+        MOVE_TO_next_term(r);
         if ( !(*r == *ldata)) {
             tpl=tpl->getPred();
             return BACK;
         }
 
-        MOVE_TO_NEXT_TERM(ldata, 0/*myid()*/, s);
+        MOVE_TO_next_term(ldata);
     };
     tpl = tpl->getNext();
     return GO;

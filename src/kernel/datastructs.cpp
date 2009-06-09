@@ -44,7 +44,7 @@ TResult RefData_DOT::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     };
 
     // )
-    MOVE_TO_NEXT_TERM(r, 0/*this->myid()*/, s);
+    MOVE_TO_next_term(r);
     aux = ref_dynamic_cast<RefData_DOT >(r);
     if ( !aux || aux->is_opened) {
         tpl=tpl->getPred();
@@ -76,12 +76,7 @@ unistring  RefData_DOT::toString() {
     ;
     return s.str();
 };
-RefData* RefData_DOT::next_term( ThisId var_id, Session *s ) {
-    return next;
-};
-RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) {
-    return pred;
-};
+
 
 
 
@@ -89,7 +84,7 @@ RefData* RefData_DOT::pred_term( ThisId var_id, Session *s ) {
 
 
 TResult  RefGroupBracket::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    if (isOpen()) { ///      {
+    if (is_opened) { ///      {
         // сохранить левую границу для }
         SAVE_STATE_AND_VAR(this);
     } else {        ///      }.name
@@ -116,7 +111,7 @@ int x=0;
 };
 
 TResult  RefGroupBracket::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    if (isOpen()) {
+    if (is_opened) {
         RESTORE_STATE(this);  // ?
     }
     tpl=tpl->getPred();
@@ -208,7 +203,7 @@ void ref_variant_vopr::forceback(RefData*&tpl, Session* s) {
 
 //----------  [...]  ------------
 TResult  ref_repeater::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    if (isOpen()) { ///  [
+    if (is_opened) { ///  [
         if (! getMin()) { // [0..x]
             tpl=other->getNext();
             s->matchSessions.back()->StackOfRepeaterDoned.push(0);
@@ -235,7 +230,7 @@ TResult  ref_repeater::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) 
 };
 
 TResult  ref_repeater::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    if (isOpen()) {  ///   [
+    if (is_opened) {  ///   [
         infint currentStep = s->matchSessions.back()->StackOfRepeater.top();
         if (currentStep) {
             s->matchSessions.back()->StackOfRepeater.push(--currentStep);

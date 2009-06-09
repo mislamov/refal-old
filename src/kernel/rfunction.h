@@ -307,7 +307,7 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
         name="NOT SET";
     };
     unistring toString() {
-        if (isOpen()) return ("[{]." + getName());
+        if (is_opened) return ("[{]." + getName());
         else return  name+".[}]";
     };
 
@@ -315,7 +315,7 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
     TResult back(RefData *&tpl, Session* s, RefData *&, RefData *&);
 
     unistring getName() {
-        if (isOpen())
+        if (is_opened)
             return ((RefTemplateBridgeVar*) other)->name;
         return name;
     }
@@ -360,7 +360,7 @@ public:
 RefTemplateBridgeTmpl (RefData *d=0) : RefBracketBase(d) { };
 RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketBase(nd, rp) { };
     unistring toString() {
-        if (isOpen()) return "{[}";
+        if (is_opened) return "{[}";
         else return "{]}";
     };
 

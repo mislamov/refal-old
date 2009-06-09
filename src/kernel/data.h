@@ -144,12 +144,12 @@ class RefData : public RefObject {
     friend class RefChain;
     friend class RefUserVarNotInit;
     friend void delChain(RefData*, RefData*);
+    friend RefData*  next_term(RefData* );
+    friend RefData*  pred_term(RefData* );
 
-protected:
+private:
     RefData*  next;
     RefData*  pred;
-
-
 
 public:
     inline RefData* getNext(){ return next; };
@@ -162,15 +162,6 @@ public:
     RefData(RefData *rp=0); // pr вставляем после себя
     virtual ~RefData();
 
-	virtual RefData*  next_term( ThisId var_id, Session *s); // на виртуально-соседний элемент (для перем.) или через скобку
-    virtual RefData*  pred_term( ThisId var_id, Session *s);
-
-    virtual RefData*  beginOfTerm() {
-        return this;
-    };
-    virtual RefData*  endOfTerm () {
-        return this;
-    };
 
     virtual RefData* predInsert(RefData *);
     virtual RefData* afterInsert(RefData *);
@@ -193,8 +184,8 @@ public:
 };
 
 
-#define MOVE_TO_NEXT_TERM(p, id, s) {p = p->next_term(id, s);}
-#define MOVE_TO_PRED_TERM(p, id, s) {p = p->pred_term(id, s);}
+#define MOVE_TO_next_term(p) {p = next_term(p);}
+#define MOVE_TO_pred_term(p) {p = pred_term(p);}
 
 
 
@@ -303,22 +294,20 @@ class RefVarTable : public std::map<unistring, RefVariable*> {};
 
 
 class RefBracketBase : public RefData {
+    friend RefData*  next_term(RefData* );
+    friend RefData*  pred_term(RefData* );
+
 protected:
-    bool        is_opened; // true = begin- ; false = end-
+    RefBracketBase*  other;
 
 public:
+    bool is_opened; // true = begin- ; false = end-
+
     BASE_CLASS_CAST(RefBracketBase);
-
-	    RefBracketBase*  other;
-
 
     RefBracketBase( RefData *rp = 0); // открывающая
     RefBracketBase( RefBracketBase *dr, RefData *rp=0); // закрывающая
-    virtual bool isOpen();
-    virtual RefBracketBase * getOther();
-
-    virtual RefData*  beginOfTerm();
-    virtual RefData*  endOfTerm ();
+    inline RefBracketBase * getOther();
 
     virtual bool       operator ==(RefData &rd);
     virtual RefData* Copy(RefBracketBase *b, RefData *rp=0)=0;
@@ -433,6 +422,8 @@ template <class T>
     s->getCurrentSopostStack()->push( s->setVarBody(name, new TVarBody(l, r, this)) ); \
     LOG( "\nsave(" << name << ") : "; print_vector(l, r); std::cout << "\n" ) \
 };
+
+
 
 
 

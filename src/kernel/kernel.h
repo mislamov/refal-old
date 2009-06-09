@@ -141,14 +141,12 @@ CLASS_OBJECT_CAST(RefStructBracket);
     RefStructBracket(RefStructBracket *br, RefData* rp=0);
 
     bool       operator ==(RefData &);
-    RefData*  next_term( ThisId );
-    RefData*  pred_term( ThisId );
     TResult    init(RefData *&tpl,  Session* , RefData *&, RefData *& );
     TResult    back(RefData *&tpl,  Session* , RefData *&, RefData *& );
     void    forceback(RefData *&, Session *);
     unistring toString() {
         std::ostringstream s;
-        s << (isOpen()?"(":") ") ;//<< "." << (long)this << ":other=" << (long)other;
+        s << (is_opened?"(":") ") ;//<< "." << (long)this << ":other=" << (long)other;
         return s.str();
     };
 
@@ -178,13 +176,11 @@ CLASS_OBJECT_CAST(RefExecBracket);
     RefExecBracket(RefExecBracket *br, RefData* rp=0);
 
     bool       operator ==(RefData &rd);
-    RefData*  next_term( ThisId var_id );
-    RefData*  pred_term( ThisId var_id );
     TResult    init(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
     TResult    back(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
     unistring toString() {
         std::ostringstream s;
-        s << (isOpen()?"<":"> ") ;//<< "." << (long)this << "other:" << (long)other;
+        s << (is_opened?"<":"> ") ;//<< "." << (long)this << "other:" << (long)other;
         return s.str();
     };
 

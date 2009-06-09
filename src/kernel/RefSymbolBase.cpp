@@ -40,7 +40,7 @@
 
 template <class T>
 TResult RefSymbolBase <T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
-    MOVE_TO_NEXT_TERM(r,0,s);
+    MOVE_TO_next_term(r);
     if (*this == *r) {
         tpl = tpl->getNext();
         return GO;
@@ -120,7 +120,7 @@ unistring RefSymbol<T>::toString() {
 
 template <class T>
 TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
-    MOVE_TO_NEXT_TERM(r,0,s);
+    MOVE_TO_next_term(r);
     if (ref_dynamic_cast<T >(r)) {
         l=r;
         SAVE_STATE_AND_VAR(tpl);

@@ -30,38 +30,44 @@ long co::chaincount  = 0;
 #endif
 
 
+inline RefData*  beginOfTerm(RefData *p){
+    RefBracketBase *&bb = reinterpret_cast<RefBracketBase *&>(p);
+    if (ref_dynamic_cast<RefBracketBase>(p) && !bb->is_opened){
+        return bb->getOther();
+    };
+    return p;
+};
+
+inline RefData*  endOfTerm (RefData *p) {
+    RefBracketBase *&bb = reinterpret_cast<RefBracketBase *&>(p);
+    if (ref_dynamic_cast<RefBracketBase>(p) && bb->is_opened){
+        return bb->getOther();
+    };
+    return p;
+};
+
+
 
 RefStructBracket::RefStructBracket(RefData* rp) : RefBracketBase(rp) {
 };
 
 RefStructBracket::RefStructBracket(RefStructBracket *br, RefData* rp) : RefBracketBase(br, rp) {
 };
-RefData*  RefStructBracket::next_term( ThisId var_id ) {
-    if (is_opened) {
-        return other->getNext();//
-    }
-    return next;
-};
-RefData*  RefStructBracket::pred_term( ThisId var_id ) {
-    if (!is_opened) {
-        return getOther()->getPred();
-    }
-    return pred;
-};
+
 bool RefStructBracket::operator ==(RefData &rd) {
     RefStructBracket *aux = ref_dynamic_cast<RefStructBracket >(&rd);
     return  aux && (aux->is_opened == is_opened);
 };
 
 TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
-    MOVE_TO_NEXT_TERM(r,0,s);
+    MOVE_TO_next_term(r);
 
     RefStructBracket* aux = ref_dynamic_cast<RefStructBracket >(r);
-    if (!aux || (isOpen()!=aux->isOpen()))  {
+    if (!aux || (is_opened!=aux->is_opened))  {
         tpl=tpl->getPred();
         return BACK; //   )  (
     }
-    if (isOpen()) {  //    (  (
+    if (is_opened) {  //    (  (
         s->getStackOfDataSkob()->push( aux->getOther() );
         r = r->getNext(); // jump into brackets (to NULL-dot)
         tpl=tpl->getNext()->getNext(); // jump into brackets after NULL-dot
@@ -95,7 +101,7 @@ TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&
 
 
 void RefStructBracket::forceback(RefData*&tpl, Session *s) {
-    if (! this->isOpen()) { // )
+    if (! this->is_opened) { // )
         s->matchSessions.back()->StackOfDataSkob_done.pop();
     }
     return;
@@ -111,18 +117,7 @@ RefExecBracket::RefExecBracket(RefData* rp) : RefBracketBase(rp) {
 RefExecBracket::RefExecBracket(RefExecBracket *br, RefData* rp) : RefBracketBase(br, rp) {
 };
 
-RefData*  RefExecBracket::next_term( ThisId var_id ) {
-    if (is_opened) {
-        return other->getNext();//
-    }
-    return next;
-};
-RefData*  RefExecBracket::pred_term( ThisId var_id ) {
-    if (!is_opened) {
-        return other->getPred();
-    }
-    return pred;
-};
+
 bool RefExecBracket::operator ==(RefData &rd) {
     RefExecBracket *aux = ref_dynamic_cast<RefExecBracket >(&rd);
     return  aux && (aux->is_opened == is_opened);
@@ -139,7 +134,7 @@ TResult RefExecBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r)
 
 
 TResult  RefVariable_s::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    MOVE_TO_NEXT_TERM(r,0,s);
+    MOVE_TO_next_term(r);
     if (! ref_dynamic_cast<RefBracketBase >(r) ) {
         l=r;
         SAVE_STATE_AND_VAR( tpl);
@@ -162,7 +157,7 @@ TResult  RefVariable_s::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 
 TResult  RefVariable_t::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
 
-    MOVE_TO_NEXT_TERM(r,0,s);
+    MOVE_TO_next_term(r);
     if (! (ref_dynamic_cast<RefData_DOT >(r) ) ) {
         l=r;
         SAVE_STATE_AND_VAR( tpl);
@@ -224,12 +219,12 @@ TResult  RefVariable_e::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
             tpl=tpl->getPred();
             return BACK;
         };
-        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
-        r = r->endOfTerm();
+        MOVE_TO_next_term(r);
+        r = endOfTerm(r);
     } else {
-        MOVE_TO_NEXT_TERM(r, 0/*myid()*/, s);
-        l = r->beginOfTerm();
-        r = r->endOfTerm();
+        MOVE_TO_next_term(r);
+        l = beginOfTerm(r);
+        r = endOfTerm(r);
     }
 
     #ifdef TESTCODE
@@ -254,12 +249,12 @@ TResult  RefVariable_E::back(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
     #ifdef TESTCODE
     if (! r)SYSTEMERROR("alarm!");
     #endif
-    r = r->beginOfTerm();
+    r = beginOfTerm(r);
 
     if (l==r) {
         l = 0;
     }
-    MOVE_TO_PRED_TERM(r, 0/*myid()*/, s);
+    MOVE_TO_pred_term(r);
     SAVE_STATE_AND_VAR( tpl);          /// todo оптимизировать: не удалять тело переменной в начале при ресторе, а изменять его параметры
     tpl=tpl->getNext();
     return GO;

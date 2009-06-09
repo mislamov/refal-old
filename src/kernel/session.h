@@ -81,10 +81,6 @@ public:
     RefObject *owner;  // причина подсессии : предложение(образец), условие или внешний шаблон(образец);
     RefChain  *pole_zrenija;		   // begin- и end-шаблон (поле зрения)
 
-    RefData* matching_savedL ;
-    RefData* matching_l ;
-    RefData* matching_r ;
-
 
     std::stack<RefBracketBase  *>	StackOfDataSkob;	    // Стек ЗАКР. скобок в векторе данных
     std::stack<RefBracketBase  *>	StackOfDataSkob_done;	    // Стек ЗАКР. скобок в векторе данных
@@ -134,8 +130,6 @@ public:
     unsigned long step;
 
     TResult result_sost;     // последний статус в сопоставлении. Внешнее изменение: ref_variant_dot::pred_
-
-    TMessage message4nextpred; // через эту переменную методы init и back могут передавать указание методам next_ и pred_
 
     // данные
     std::map <unistring, RefModuleBase*>  modules;  //  подгруженные модули

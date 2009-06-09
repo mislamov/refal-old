@@ -47,9 +47,6 @@ RefData_DOT(RefData_DOT *nd, RefData* rp = 0) : RefBracketBase(nd, rp) {};
     TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
     TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
 
-    virtual RefData*  next_term( ThisId var_id, Session *s );
-    virtual RefData*  pred_term( ThisId var_id, Session *s );
-
     unistring getName() {
         SYSTEMERROR("unexpected call");
     }
@@ -201,7 +198,7 @@ public:
     };
 
     virtual unistring toString() {
-        return (isOpen() ? "{" : ("}."+name) );
+        return (is_opened ? "{" : ("}."+name) );
     };
     virtual void forceback(RefData *&, Session *) { /** todo: очищать подсессию до открывающей скобки */};
 };
@@ -241,14 +238,14 @@ ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
     };
 
     infint getMin() {
-        return isOpen()?min: ((ref_repeater*)other)->getMin();
+        return is_opened?min: ((ref_repeater*)other)->getMin();
     };
     infint getMax()  {
-        return isOpen()?max  : ((ref_repeater*)other)->getMax();
+        return is_opened?max  : ((ref_repeater*)other)->getMax();
     };
 
     virtual unistring toString() {
-        if (isOpen()) {
+        if (is_opened) {
             return "[.." ;
         }
         std::ostringstream ss;

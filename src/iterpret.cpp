@@ -46,7 +46,23 @@ std::string stringtime(struct tm * tt) {
 }
 
 int main ( int argv, char **argc ) {
+/*
+    RefData** vv = new RefData* [10];
 
+    vv[0] = new RefAlpha('a');
+    vv[1] = new RefAlpha('b');
+    vv[2] = new RefAlpha('c');
+
+    for (int i=0; i<10; i++){
+        std::string s = vv[i]->toString();
+        if (s.length()){
+            s=s;
+        }
+    }
+
+
+return 0;
+*/
     std::cout << REFVERSION << "\n" << std::flush;
     if (argv == 1) {
         std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << std::flush;

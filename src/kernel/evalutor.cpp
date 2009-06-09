@@ -44,7 +44,7 @@ RefChain* evalutor(RefChain *argline, Session *s){
 
         for (RefData *it=argline->first; it&&it!=argline->second->getNext(); ){ ////-поменять когда через куски
             exec = ref_dynamic_cast<RefExecBracket>(it);
-            if (exec && !exec->isOpen()){    // поиск >
+            if (exec && !exec->is_opened){    // поиск >
                 it = exec->getOther()->getPred(); // получение точки перед <  (может быть 0)
 
                 // получение ссылки на функцию
@@ -79,7 +79,8 @@ RefChain* evalutor(RefChain *argline, Session *s){
                 // std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
             }
 
-            MOVE_TO_NEXT_TERM(it, 0, s);
+            ///MOVE_TO_next_term(it, 0, s);
+            it=it->getNext();
         }
 
 
