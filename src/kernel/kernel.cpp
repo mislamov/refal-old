@@ -32,11 +32,9 @@ long co::chaincount  = 0;
 
 
 RefStructBracket::RefStructBracket(RefData* rp) : RefBracketBase(rp) {
-    is_system (false);
 };
 
 RefStructBracket::RefStructBracket(RefStructBracket *br, RefData* rp) : RefBracketBase(br, rp) {
-    is_system (false);
 };
 RefData*  RefStructBracket::next_term( ThisId var_id ) {
     if (is_opened) {
@@ -108,11 +106,9 @@ void RefStructBracket::forceback(RefData*&tpl, Session *s) {
 
 
 RefExecBracket::RefExecBracket(RefData* rp) : RefBracketBase(rp) {
-    is_system (false);
 };
 
 RefExecBracket::RefExecBracket(RefExecBracket *br, RefData* rp) : RefBracketBase(br, rp) {
-    is_system (false);
 };
 
 RefData*  RefExecBracket::next_term( ThisId var_id ) {

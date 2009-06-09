@@ -128,7 +128,6 @@ TResult  RefGroupBracket::back(RefData*&tpl, Session *s, RefData *&l, RefData *&
 
 //-----------  o  -----------
 ref_variant_dot::ref_variant_dot( RefData* rp) : RefData(rp) {
-    is_system (false);
 };
 
 TResult	   ref_variant_dot::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
@@ -155,7 +154,6 @@ bool	   ref_variant_dot::operator==(RefData&rd) {
 
 //----------  |  ------------
 ref_variant_vert::ref_variant_vert( RefData* rp) : RefData(rp) {
-    is_system (false);
 };
 TResult	  ref_variant_vert::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)	{
     // сохраняем удачный вариант для отката
@@ -182,7 +180,6 @@ bool	  ref_variant_vert::operator==(RefData&rd) {
 
 //----------  ?  ------------
 ref_variant_vopr::ref_variant_vopr( RefData* rp) : RefData(rp) {
-    is_system (false);
 };
 TResult		ref_variant_vopr::init(RefData*&tpl, Session *, RefData *&, RefData *&) {
     // вариант не сопоставим с аргументом

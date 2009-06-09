@@ -79,8 +79,6 @@ RefChain* evalutor(RefChain *argline, Session *s){
                 // std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
             }
 
-            //while((it = it->next_term(0, s)) && it->is_system()); // итерация
-            //move_to_next_term(it, 0, s);
             MOVE_TO_NEXT_TERM(it, 0, s);
         }
 

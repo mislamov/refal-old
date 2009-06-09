@@ -211,9 +211,8 @@ public:
 RefCondition(bool withnot, RefData *r=0) : RefConditionBase(r) {
         isReverse = withnot;
         rightPart = leftPart = 0;
-        is_system (false);
     }
-    //RefCondition(RefObject *owner, RefData *r=0) : RefConditionBase(r){ rightPart = leftPart = 0; is_system (false); own = owner; }
+
     virtual ~RefCondition() {};
     unistring toString() {
         std::ostringstream s;
@@ -235,7 +234,6 @@ public:
     CLASS_OBJECT_CAST(RefMatchingCutter);
 
     RefMatchingCutter(RefData *d=0) : RefData(d) {
-        is_system( false );
     }
     virtual TResult  init(RefData *&tpl, Session* , RefData *&, RefData *&);
     virtual TResult  back(RefData *&tpl, Session* s, RefData *&, RefData *&);

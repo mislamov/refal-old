@@ -38,13 +38,10 @@ RefObject::~RefObject(){
 
 
 RefData::RefData(RefData *pr) : RefObject() { // создаемся после pr
-    this->isSystem = false;
     #ifdef TESTCODE
     co::datacount++;
     #endif
 
-	is_system (true);
-//	is_symbol = true;
     if (pr) {
         this->next = pr->next;
         this->pred = pr;
@@ -120,7 +117,6 @@ TResult RefData::back(RefData*&tpl,Session* s, RefData *&, RefData *&) {
 RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // открывающая
     other = 0;
     is_opened = true;
-    is_system (false);
 };
 
 
@@ -135,7 +131,6 @@ RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ 
         other = dr;
         is_opened = false;
         dr->other = this;
-        is_system (false);
 //        if (name == EmptyUniString) { /*name == other->getName();*/ }
 };
 
@@ -450,7 +445,6 @@ RefChain* RefChain::dearoundByDots(){
 
 
 RefNULL::RefNULL(RefData *pr) : RefData(pr) {
-    is_system (true);
 };
 bool RefNULL::operator==(RefData&) {
     return false;
@@ -544,7 +538,6 @@ RefData*  RefLinkToVariable::Copy(RefData* where){
 
 RefLinkToVariable::RefLinkToVariable(unistring name, RefData *rp) : RefData(rp) {
     setName(name);
-    is_system (false);
 };
 
 
@@ -594,35 +587,11 @@ RefVariable::RefVariable(unistring name, RefData *rp) : RefVariableBase(rp) {
     co::varcount++;
     #endif
 
-    is_system (false);
     setName(name);
     };
 
 
 
-
-RefData*  move_to_next_term(RefData* &point, ThisId id, Session *s) {
-    #ifdef TESTCODE
-    if (!point) SYSTEMERROR("point is null");
-    //if (!(s->subChainFrom) && !(s->subChainTo)) SYSTEMERROR("subChain links not set!!!");
-    #endif
-
-    while ((point = point->next_term(id, s)) && point->is_system());
-    //do point = point->next_term(id, s);
-    //while (point && point->is_system());
-    return point;
-};
-
-RefData*  move_to_pred_term(RefData* &point, ThisId id, Session *s) {
-    #ifdef TESTCODE
-    if (!point) SYSTEMERROR("point is null");
-    //if (!s->subChainFrom && !s->subChainTo) SYSTEMERROR("subChain links not set!!!");
-    #endif
-
-    do point = point->pred_term(id, s);
-    while (point && point->is_system());
-    return point;
-};
 
 
 

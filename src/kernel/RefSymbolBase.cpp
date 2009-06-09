@@ -69,7 +69,6 @@ RefSymbolBase<T>::~RefSymbolBase() {
 
 template <class T>
 RefSymbolBase<T>::RefSymbolBase(RefData *rp) : RefValuedData(rp) {
-    is_system (false);
     #ifdef TESTCODE
     co::symcount++;
     #endif
@@ -88,13 +87,11 @@ bool RefSymbolBase<T>::operator ==(RefData& rd) {
 template <class T>
 RefSymbol<T>::RefSymbol(T i, RefData *rp) : RefSymbolBase<T>(rp) {
     this->setValue(i);
-    /*this->is_system() (false);*/
 };
 
 template <class T>
 RefSymbol<T>::RefSymbol(RefData *rp) : RefSymbolBase<T>(rp) {
     return;
-    /*this->is_system() (false);*/
 };
 
 template <class T>
