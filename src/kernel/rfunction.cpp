@@ -390,7 +390,7 @@ TResult  RefTemplateBridgeVar::init(RefData*&tpl, Session* s, RefData *&l, RefDa
     }
     /// [}]
 
-    TVarBody *varBody = s->getVarBody(getName()); // оптимизировать
+    TVarBody *varBody = s->getVarBody(getName(), other); // оптимизировать
     // сохраняем состояние сопоставления в тело переменной (основную подсессию шаблона и подсессии условий шаблона)
     SessionOfMaching *sess;
     do {

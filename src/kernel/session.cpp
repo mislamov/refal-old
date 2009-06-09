@@ -101,21 +101,21 @@ TVarBody* Session::setVarBody( unistring vname, TVarBody* vb) {
 };
 
 
-TVarBody* Session::getVarBody( unistring vname ) {
+TVarBody* Session::getVarBody( unistring vname, RefData* owner) {
     #ifdef TESTCODE
     if (this->matchSessions.empty()) SYSTEMERROR("matchSessions is EMPTY!");
     #endif
 
     std::list<SessionOfMaching *>::reverse_iterator som = this->matchSessions.rbegin();
-    TVarBodyTable::iterator fnded;
+    TVarBodyTable::iterator fneeded;
     //TVarBody* result = 0;
 
     while ( som != this->matchSessions.rend()) {
 
         TVarBodyTable varTable = ((*som)->varTable);
-        fnded = varTable.find(vname);
-        if (fnded != varTable.end()) {
-            return  (*fnded).second;
+        fneeded = varTable.find(vname);
+        if (fneeded != varTable.end() && (!owner || owner==(*fneeded).second->owner)) {
+            return  (*fneeded).second;
         }
 
         ++som;
@@ -125,6 +125,7 @@ TVarBody* Session::getVarBody( unistring vname ) {
     #endif
     return 0;
 };
+
 
 // ищет по всем модулям
 RefObject*  Session::getObjectByName(unistring name, Session *s) {

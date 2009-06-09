@@ -4,8 +4,8 @@ InputFile{='fn.ref';}
 
 $Entry Go { = 
 
-	//<P4_Out
-		<PostScan 
+	
+		 
 			<P2_Builder MODULE 
 				<P1_Prescaning 
 					()<P1_Prescaning_pre <Prout 'P1_Prescaning_pre'>
@@ -13,9 +13,7 @@ $Entry Go { =
 					><Prout 'P1_Prescaning'>
 				><Prout 'P2_Builder'>
 			>
-		><Prout 'P4_Out'>
-	//>
-	; 
+		; 
 
 		}
 
@@ -251,91 +249,3 @@ P3_Semantic {
 }
 
 
-//   4.      построение байт/xml-кода
-
-// (template word. (left-part e.))
-// (func     word. (sentence (left-part e.)(right-part e.))[...])
-// (if (right-part e.) (left-part e.))
-//
-// (var (имя) слово)
-// (group (имя) <S цепь>)
-// (group (имя) (repeat F T <S цепь>))
-// (group (имя) (repeat F T (var () слово)))
-// (lnk имя)
-// (lnk имя @.путь)
-// (int целое)
-// (real вещ-е)
-// (word слово)
-// (word литеры)
-// (text ~~~)
-// ("( " ~~~)
-// (exec (слово) ~~~)
-
-P4_Out {
-	(template  ("word" word.name) (left-part END.lp))  END.next = 
-						'<Template name="'@.name'">'
-							'<LEFT-PART>'
-								<P4_Out @.lp>
-							'</LEFT-PART>'
-						'</Template>' 
-						<P4_Out  @.next>;
-						
-	(func   word.name {(sentence END.sent)}[1..100].sents)  END.next = 
-						'<Function name="'@.name'">' 
-							<P4_Out  @.sents>
-						'</Function>'
-						<P4_Out  @.next>;
-						
-	(sentence (left-part END.lp)(right-part END.rp))  END.next =
-						'<Sentence>' 
-							'<LEFT-PART>'
-								<P4_Out @.lp>
-							'</LEFT-PART>'
-							'<RIGHT_PART>'
-								<P4_Out @.rp>
-							'</RIGHT_PART>'
-						'</Sentence>' 
-						<P4_Out  @.next>;
-						
-	/*( left-part END.)  END.next = '' <P4_Out  @.next>;  // самостоятельно не появляются 
-	  (right-part END.)  END.next = '' <P4_Out  @.next>; */
-	  
-	(exec  (word.name) END.arg)  END.next = 
-						'<EXEC>'
-							'<WORD>'@.name'</WORD>'
-							<P4_Out  @.arg>
-						'</EXEC>'
-						<P4_Out  @.next>;
-// (if (right-part e.) (left-part e.))						
-	(if     (right-part END.rp) (left-part END.lp))  END.next = 
-						'<IF>'
-							'<RIGHT-PART>' <P4_Out  @.rp> '</RIGHT-PART>'
-							'<LEFT-PART>'  <P4_Out  @.lp> '</LEFT-PART>'
-						'</IF>'
-						<P4_Out  @.next>;
-
-	(var    END.)  END.next = 'var' <P4_Out  @.next>;
-	(group  END.)  END.next = 'group' <P4_Out  @.next>;
-	(cutter END.)  END.next = 'cutter' <P4_Out  @.next>;
-	(the-variant END.)  END.next = 'the-variant' <P4_Out  @.next>;
-	(lnk  END.)  END.next = 'lnk'  <P4_Out  @.next>;
-	(int  END.)  END.next = 'int'  <P4_Out  @.next>;
-	(real END.)  END.next = 'real' <P4_Out  @.next>;
-	(word END.)  END.next = 'word' <P4_Out  @.next>;
-	(text END.)  END.next = 'text' <P4_Out  @.next>;
-	("( " END.)  END.next = '()' <P4_Out  @.next>;
-	
-	=;
-
-	END.else = <DoError ('Problem while build byte-code: ' @.else) @.else>;
-}
-
-
-// почее
-PostScan {
-	word.A END.next,
-		<Explode word.A> : '$line:' END. = <PostScan @.next>;
-	(END.A) END.next	=	(<PostScan @.A>) <PostScan @.next>;	
-	t.A  END.next		=	@.A <PostScan @.next>;
-				=;
-}

@@ -142,7 +142,7 @@ public:
     std::list <SessionOfMaching *> matchSessions;  //  стек состояний сопоставлений
 
     // методы
-    TVarBody*   getVarBody( unistring vname );
+    TVarBody*   getVarBody( unistring vname, RefData* owner = 0);
     TVarBody*   setVarBody( unistring vname, TVarBody* );
     RefObject*  getObjectByName(unistring name, Session *s=0); // ищет объект (функция/шаблон) во всех модулях
     RefTemplateBridgeVar * getTemplReturnBackPoint();  // ищет и возвращает последнюю точку возврата внешней переменной
