@@ -190,7 +190,6 @@ public:
 
 
 
-
 class RefNULL : public RefData {
 public:
     RefNULL(RefData *pr=0);
@@ -297,17 +296,14 @@ class RefBracketBase : public RefData {
     friend RefData*  next_term(RefData* );
     friend RefData*  pred_term(RefData* );
 
-protected:
-    RefBracketBase*  other;
-
 public:
+    RefBracketBase*  other;
     bool is_opened; // true = begin- ; false = end-
 
     BASE_CLASS_CAST(RefBracketBase);
 
     RefBracketBase( RefData *rp = 0); // открывающая
     RefBracketBase( RefBracketBase *dr, RefData *rp=0); // закрывающая
-    inline RefBracketBase * getOther();
 
     virtual bool       operator ==(RefData &rd);
     virtual RefData* Copy(RefBracketBase *b, RefData *rp=0)=0;

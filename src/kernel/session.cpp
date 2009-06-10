@@ -370,7 +370,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
     // если входит открывающая скобка, значит вся пара
     RefBracketBase *rb = ref_dynamic_cast<RefBracketBase >(r);
     if (rb && (rb->is_opened) && (!ref_dynamic_cast<RefData_DOT >(r))) {
-        r = rb->getOther();
+        r = rb->other;
 
     }
 
@@ -420,7 +420,7 @@ void Session::SaveTemplItem(RefData* v, RefData* l, RefData* r) {
             sess->StackOfDataSkob.push( matchSessions.back()->StackOfDataSkob.top()  );
             matchSessions.push_back(sess);
             //  сохраняем конец ссылки на шаблон для возврата  }
-            sess->templReturnBackPoint =  (RefTemplateBridgeVar *)bridge->getOther() ;  //  }
+            sess->templReturnBackPoint =  (RefTemplateBridgeVar *)bridge->other ;  //  }
 
         }
 
@@ -505,10 +505,10 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ) {
         // восстанавливаем значение левой var-скобки моста
         if (varBody->first) {
             // непустое значение
-            setVarBody(bridge->getName(), new TVarBody(0, varBody->first->getPred(), bridge->getOther()));
+            setVarBody(bridge->getName(), new TVarBody(0, varBody->first->getPred(), bridge->other));
         } else {
             // пустое значение
-            setVarBody(bridge->getName(), new TVarBody(0, varBody->second, bridge->getOther()));
+            setVarBody(bridge->getName(), new TVarBody(0, varBody->second, bridge->other));
         }
 
         //  переменная: извлекаем из тела переменной все подсессии (базовую и условий) сопоставления и делаем их акивными
@@ -535,10 +535,10 @@ void Session::RestoreTemplItem(RefData *owner, RefData* &l, RefData* &r ) {
     if (group && !group->is_opened) { /// }
         if (varBody->first) {
             // непустое значение
-            setVarBody(group->getName(), new TVarBody(0, varBody->first->getPred(), group->getOther()));
+            setVarBody(group->getName(), new TVarBody(0, varBody->first->getPred(), group->other));
         } else {
             // пустое значение
-            setVarBody(group->getName(), new TVarBody(0, varBody->second, group->getOther()));
+            setVarBody(group->getName(), new TVarBody(0, varBody->second, group->other));
         }
     }
 

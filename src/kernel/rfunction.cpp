@@ -486,7 +486,7 @@ TResult  RefTemplateBridgeTmpl::init(RefData*&tpl, Session* s, RefData *&l, RefD
 
 TResult  RefTemplateBridgeTmpl::back(RefData*&tpl, Session* s, RefData *&l, RefData *&r) {
     if (this->is_opened) { ///    {[}
-        tpl = s->matchSessions.back()->templReturnBackPoint->getOther();  // [{]
+        tpl = s->matchSessions.back()->templReturnBackPoint->other;  // [{]
         return BACK;
     } else {              ///    {]}
         SYSTEMERROR("unexpected"); // Var перепрыгивает Tmpl на getPred()
@@ -585,7 +585,7 @@ TResult  RefMatchingCutter::back(RefData *&tpl, Session* s, RefData *&, RefData 
         RefData *finish;
         if (sess->templReturnBackPoint){
             // если пользовательский шаблон
-            finish = sess->templReturnBackPoint->getOther(); // [}]
+            finish = sess->templReturnBackPoint->other; // [}]
         } else {
             finish = sess->pole_zrenija->first; // datadot
         }

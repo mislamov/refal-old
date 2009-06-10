@@ -198,6 +198,32 @@ CLASS_OBJECT_CAST(RefExecBracket);
 
 
 
+
+inline RefData*  next_term(RefData* p) {
+    #ifdef TESTCODE
+    if (dynamic_cast<RefExecBracket*>(p)) {
+        //SYSTEMERROR("unrealized");
+        return p->next;
+    }
+    #endif
+    RefStructBracket* &bp = (RefStructBracket*&)(p);
+    if (ref_dynamic_cast<RefStructBracket>(p) && bp->is_opened ) return bp->other->next;
+    return p->next;
+};
+
+inline RefData*  pred_term(RefData* p) {
+    #ifdef TESTCODE
+    if (dynamic_cast<RefExecBracket*>(p)) {
+        //SYSTEMERROR("unrealized");
+        return p->pred;
+    }
+    #endif
+    RefStructBracket* &bp = (RefStructBracket*&)(p);
+    if (ref_dynamic_cast<RefStructBracket>(p) && !bp->is_opened ) return bp->other->pred;
+    return p->pred;
+};
+
+
 unistring vectorToString(RefData *f, RefData *g);
 unistring vectorExplode(RefData *f, RefData *g);
 void print_vector(RefData *f, RefData *t=0);

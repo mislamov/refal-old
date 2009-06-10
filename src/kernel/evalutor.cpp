@@ -45,10 +45,10 @@ RefChain* evalutor(RefChain *argline, Session *s){
         for (RefData *it=argline->first; it&&it!=argline->second->getNext(); ){ ////-поменять когда через куски
             exec = ref_dynamic_cast<RefExecBracket>(it);
             if (exec && !exec->is_opened){    // поиск >
-                it = exec->getOther()->getPred(); // получение точки перед <  (может быть 0)
+                it = exec->other->getPred(); // получение точки перед <  (может быть 0)
 
                 // получение ссылки на функцию
-                fn = ref_dynamic_cast<RefWord>( exec->getOther()->getNext()->getNext());
+                fn = ref_dynamic_cast<RefWord>( exec->other->getNext()->getNext());
                 if (fn){
                     unistring fname = fn->getValue();
                     funk = s->findMethodFromModule( fname );
@@ -56,7 +56,7 @@ RefChain* evalutor(RefChain *argline, Session *s){
                 } else {
                     /// todo: вызов метода из пользовательской переменной
                     // вынос карты подпеременных переменной на передовую
-                    SYSTEMERROR("Function name is not RefWord! : " << exec->getOther()->getNext()->getNext()->toString());
+                    SYSTEMERROR("Function name is not RefWord! : " << exec->other->getNext()->getNext()->toString());
                 }
 
                 if (fn->getNext() == exec){ // выполнить с пустым аргументом  (  <fn >  )
@@ -72,9 +72,9 @@ RefChain* evalutor(RefChain *argline, Session *s){
                         SYSTEMERROR("FUNCTION FAILD! : <" << (funk?funk->getName() : fn->getValue() ) << " " << RefChain(fn->getNext(), exec->getPred()).toString() << ">\nView: " << argline->toString());
                 }
 
-                delete exec->getOther()->getNext()->getNext(); // удаляем вызов - остается только результат вызова
-                delete exec->getOther()->getNext();
-                delete exec->getOther();
+                delete exec->other->getNext()->getNext(); // удаляем вызов - остается только результат вызова
+                delete exec->other->getNext();
+                delete exec->other;
                 delete exec;
                 // std::cout << "\n#### VIEWPOLE :: " << argline->toString()  << '\n' << std::flush;
             }

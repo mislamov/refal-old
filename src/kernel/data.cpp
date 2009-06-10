@@ -63,29 +63,6 @@ RefData::~RefData(){
 };
 
 
-inline RefData*  next_term(RefData* p) {
-    #ifdef TESTCODE
-    if (dynamic_cast<RefExecBracket*>(p)) {
-        //SYSTEMERROR("unrealized");
-        return p->next;
-    }
-    #endif
-    RefStructBracket* &bp = (RefStructBracket*&)(p);
-    if (ref_dynamic_cast<RefStructBracket>(p) && bp->is_opened ) return bp->other->next;
-    return p->next;
-};
-
-inline RefData*  pred_term(RefData* p) {
-    #ifdef TESTCODE
-    if (dynamic_cast<RefExecBracket*>(p)) {
-        //SYSTEMERROR("unrealized");
-        return p->pred;
-    }
-    #endif
-    RefStructBracket* &bp = (RefStructBracket*&)(p);
-    if (ref_dynamic_cast<RefStructBracket>(p) && !bp->is_opened ) return bp->other->pred;
-    return p->pred;
-};
 
 
 
@@ -154,9 +131,6 @@ RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ 
 
 
 
-RefBracketBase * RefBracketBase::getOther(){
-    return other;
-};
 
 bool   RefBracketBase::operator==(RefData &rd){ return false; };
 
@@ -240,14 +214,14 @@ RefChain* RefChain::Copy(Session *s){
 
 
             #ifdef TESTCODE
-            if (!br->getOther()) SYSTEMERROR("br->other == NULL  br=" << br->toString());
+            if (!br->other) SYSTEMERROR("br->other == NULL  br=" << br->toString());
             if (!br->next ) SYSTEMERROR("br->next == NULL  br=" << br->toString());
             if (!br->next->next) SYSTEMERROR("br->next->next == NULL  br->next="  << br->next->toString());
             #endif
 
 
-            if (br->next->next != br->getOther()) { // не пустые скобки
-                hlpChain  = new RefChain(br->next->next, br->getOther()->pred);
+            if (br->next->next != br->other) { // не пустые скобки
+                hlpChain  = new RefChain(br->next->next, br->other->pred);
                 hlpChain2 = hlpChain->Copy(s);
                 // тут нельзя удалять содержимое цепочки - так как тут же постоянный шаблон функции!
                 delete hlpChain;
@@ -270,7 +244,7 @@ RefChain* RefChain::Copy(Session *s){
                 }
             }
             dst = dstHlp;
-            src = br->getOther();
+            src = br->other;
 
         } else {
             dst = src->Copy(dst);

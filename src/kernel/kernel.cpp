@@ -33,7 +33,7 @@ long co::chaincount  = 0;
 inline RefData*  beginOfTerm(RefData *p){
     RefBracketBase *&bb = reinterpret_cast<RefBracketBase *&>(p);
     if (ref_dynamic_cast<RefBracketBase>(p) && !bb->is_opened){
-        return bb->getOther();
+        return bb->other;
     };
     return p;
 };
@@ -41,7 +41,7 @@ inline RefData*  beginOfTerm(RefData *p){
 inline RefData*  endOfTerm (RefData *p) {
     RefBracketBase *&bb = reinterpret_cast<RefBracketBase *&>(p);
     if (ref_dynamic_cast<RefBracketBase>(p) && bb->is_opened){
-        return bb->getOther();
+        return bb->other;
     };
     return p;
 };
@@ -68,7 +68,7 @@ TResult RefStructBracket::init(RefData*&tpl, Session* s, RefData *&l, RefData *&
         return BACK; //   )  (
     }
     if (is_opened) {  //    (  (
-        s->getStackOfDataSkob()->push( aux->getOther() );
+        s->getStackOfDataSkob()->push( aux->other );
         r = r->getNext(); // jump into brackets (to NULL-dot)
         tpl=tpl->getNext()->getNext(); // jump into brackets after NULL-dot
         return GO;
