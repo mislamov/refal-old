@@ -1,0 +1,52 @@
+# depslib dependency file v1.0
+1245146588 source:d:\drefal5-array\src\main.cpp
+	<iostream>
+	"kernel\symbols.h"
+	"kernel\variables.h"
+
+1245149961 d:\drefal5-array\src\kernel\data.h
+	<iostream>
+	<sstream>
+	<stdlib.h>
+	<string>
+	<map>
+	"config.h"
+
+1245145446 d:\drefal5-array\src\kernel\config.h
+	<stdlib.h>
+	<string>
+
+1245150002 source:d:\drefal5-array\src\kernel\data.cpp
+	"data.h"
+	"session.h"
+	<stdlib.h>
+	<iostream>
+	<sstream>
+
+1245145297 source:d:\drefal5-array\src\kernel\symbols.cpp
+
+1245146230 d:\drefal5-array\src\kernel\symbols.h
+	"data.h"
+	<sstream>
+
+1245149605 d:\drefal5-array\src\kernel\session.h
+	<stack>
+	"data.h"
+
+1245145974 d:\drefal5-array\src\kernel\symbols.hxx
+	"data.h"
+	<sstream>
+	"symbols.cpp"
+
+1245145297 d:\drefal5-array\src\kernel\symbols.cpp
+
+1245146679 d:\drefal5-array\src\kernel\variables.h
+	"data.h"
+
+1245149488 source:d:\drefal5-array\src\kernel\variables.cpp
+	"variables.h"
+	"session.h"
+
+1245149630 source:d:\drefal5-array\src\kernel\session.cpp
+	"session.h"
+

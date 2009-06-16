@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="src\kernel\config.h" open="0" top="0" tabpos="4">
+		<Cursor position="9857" topLine="207" />
+	</File>
+	<File name="src\kernel\data.cpp" open="0" top="0" tabpos="5">
+		<Cursor position="2218" topLine="59" />
+	</File>
+	<File name="src\kernel\data.h" open="1" top="0" tabpos="2">
+		<Cursor position="5120" topLine="121" />
+	</File>
+	<File name="src\kernel\session.cpp" open="1" top="1" tabpos="4">
+		<Cursor position="2779" topLine="11" />
+	</File>
+	<File name="src\kernel\session.h" open="1" top="0" tabpos="3">
+		<Cursor position="1397" topLine="0" />
+	</File>
+	<File name="src\kernel\symbols.h" open="0" top="0" tabpos="0">
+		<Cursor position="1856" topLine="42" />
+	</File>
+	<File name="src\kernel\variables.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="1565" topLine="0" />
+	</File>
+	<File name="src\kernel\variables.h" open="0" top="0" tabpos="0">
+		<Cursor position="448" topLine="0" />
+	</File>
+	<File name="src\main.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="133" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>
