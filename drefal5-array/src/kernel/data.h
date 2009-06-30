@@ -27,7 +27,7 @@
 
 #include "config.h"
 
-
+class RefExecBracket;
 
 // Абстрактный класс - предок всех термов языка
 class RefData : public RefObject {

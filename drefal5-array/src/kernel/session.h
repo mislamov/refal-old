@@ -16,9 +16,9 @@ public:
     bool  matching(RefObject *initer, RefChain *tmplate, RefData **l, RefData **r, bool isdemaching, bool isRevers);
     // оптимально вычисляет объектное выражение с функциональными вызовами в ОВ без угловых скобок
     // Вызывается подстановкой в предложении пользовательской функциии и перед вычислением условий
-    RefChain* executeExpression(RefChain *&);
+    void executeExpression(RefChain *&);
     // готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
-    RefChain* substituteExpression(RefChain *&);
+    void substituteExpression(RefChain *&);
 };
 
 
