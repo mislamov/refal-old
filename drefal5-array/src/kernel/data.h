@@ -127,14 +127,39 @@ public:
     virtual bool       operator ==(RefData &rd);
 };
 
+class RefExecBracket : public RefBracketBase {
+public:
+CLASS_OBJECT_CAST(RefExecBracket);
+
+    RefExecBracket(RefData* rp=0);
+    RefExecBracket(RefExecBracket *br, RefData* rp=0);
+
+    bool       operator ==(RefData &rd);
+    TResult    init(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
+    TResult    back(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
+    unistring toString() {
+        std::ostringstream s;
+        s << (is_opened?"<":"> ") ;//<< "." << (long)this << "other:" << (long)other;
+        return s.str();
+    };
+
+};
+
+
+
+
+
+
+
 
 class RefChain : public RefObject  {
-    size_t leng;
     #ifdef TESTCODE
     bool   theProtect;
     #endif
 
 public:
+    size_t leng;
+
     RefData** first;
     RefData** after;
 

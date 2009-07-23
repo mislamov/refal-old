@@ -16,15 +16,19 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "session.h"
+#include "rfunction.h"
 
 void SAVE_STATE   (RefData** activeTemplate) {};   // сохраняет состояние переменной
 void SAVE_VARSTATE(RefData** activeTemplate) {}; // сохраняет состояние и значение переменной
 void RESTORE_STATE(RefData** activeTemplate) {}; // восстанавливает состояние переменной
 
 void Session::executeExpression(RefChain *&chain) {
+/**/
     /// поиск скобки и выделение аргумента
     std::stack<RefData**> openExecs;
-    RefData **l_exec, **r_exec = chain->first, **&chain_last = chain->first[chain->leng]; // эл-т после последнего
+    RefData **l_exec,
+        **r_exec = chain->first,
+        **chain_last = &(chain->first[chain->leng]); // эл-т после последнего
     RefExecBracket *tmpBr = 0;
     while (r_exec < chain_last) {
         if (tmpBr = ref_dynamic_cast<RefExecBracket>(*r_exec)) { // > или <
@@ -48,9 +52,11 @@ void Session::executeExpression(RefChain *&chain) {
     #ifdef TESTCODE
     if (! dynamic_cast<RefWord*>(l_exec[1])) SYSTEMERROR("NOt func NAME: " << l_exec[1]->toString() );
     #endif
-    RefFunctionBase* function = this->findFunctionById(  (ref_dynamic_cast<RefWord>(l_exec[1]))->getValue()  );
-    if (!function) RUNTIMEERROR("FUNCTION by ID [" << l_exec[1]->toString() << "] NOT DEFINED!");
-    RefChain *newchain = function->execute(l_exec[2], r_exec[-1]);
+    RefFunctionBase* function = dynamic_cast<RefFunctionBase *>( this->findFunctionById(  (ref_dynamic_cast<RefWord>(l_exec[1]))->getValue()  ) );
+    if (!function) RUNTIMEERROR(l_exec[1]->toString(), "FUNCTION by ID [" << l_exec[1]->toString() << "] NOT DEFINED!");
+
+    // выполнение функции
+    RefChain *newchain = function->execute(l_exec[2], r_exec[-1], this);
 
 
 
@@ -63,11 +69,12 @@ void Session::executeExpression(RefChain *&chain) {
         /// если неуспех для всех предложений - аварийный останов
 
 
-    /// поиск скобки <, вычисление длины и создание аргумента (видимо прямым копированием)
-    /// если найдено, то goto ЫЫЫ:
+        /// поиск скобки <, вычисление длины и создание аргумента (видимо прямым копированием)
+        /// если найдено, то goto ЫЫЫ:
 
     // удалить стартовый аргумент (если он бы создан полным копированием - то с содержимым)
     // вернуть результат + присвоить его аргументу
+/**/
 };
 
 // готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками

@@ -4,6 +4,8 @@
 #include <stack>
 
 #include "data.h"
+#include "rfunction.h"
+
 
 class Session {
     std::stack<RefBracketBase**> stackOfDataSkob; // стек сопоставления скобок
@@ -16,9 +18,12 @@ public:
     bool  matching(RefObject *initer, RefChain *tmplate, RefData **l, RefData **r, bool isdemaching, bool isRevers);
     // оптимально вычисляет объектное выражение с функциональными вызовами в ОВ без угловых скобок
     // Вызывается подстановкой в предложении пользовательской функциии и перед вычислением условий
-    void executeExpression(RefChain *&);
+    void  executeExpression(RefChain *&);
     // готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
-    void substituteExpression(RefChain *&);
+    void  substituteExpression(RefChain *&);
+
+
+    RefObject* findFunctionById(unistring id);
 };
 
 

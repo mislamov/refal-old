@@ -32,9 +32,12 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="src\kernel\RefSymbolBase.cpp" />
 		<Unit filename="src\kernel\config.h" />
 		<Unit filename="src\kernel\data.cpp" />
 		<Unit filename="src\kernel\data.h" />
+		<Unit filename="src\kernel\refsymbolbase.hxx" />
+		<Unit filename="src\kernel\rfunction.h" />
 		<Unit filename="src\kernel\session.cpp" />
 		<Unit filename="src\kernel\session.h" />
 		<Unit filename="src\kernel\symbols.h" />

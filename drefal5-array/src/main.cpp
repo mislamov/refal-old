@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "kernel\RefSymbolBase.hxx"
 #include "kernel\symbols.h"
 #include "kernel\variables.h"
 
