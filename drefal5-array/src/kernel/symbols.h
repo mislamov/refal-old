@@ -34,6 +34,12 @@ public:
     virtual ~RefIntegerBase(){};
 };
 
+class RefWordBase : public RefSymbolBase<RefWordBase, unistring> {
+public:
+    CLASS_OBJECT_CAST(RefWordBase);
+    virtual ~RefWordBase(){};
+};
+
 
 
 class RefAlpha : public RefAlphaBase {
@@ -51,6 +57,15 @@ public:
     RefInteger(infint val){ value = val; };
     virtual ~RefInteger(){};
     virtual infint getValue() {return value;};
+};
+
+
+class RefWord : public RefWordBase {
+    unistring value;
+public:
+    RefWord(unistring val){ value = val; };
+    virtual ~RefWord(){};
+    virtual unistring getValue() {return value;};
 };
 
 

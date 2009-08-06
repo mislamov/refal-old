@@ -32,14 +32,16 @@ class RefExecBracket;
 // јбстрактный класс - предок всех термов €зыка
 class RefData : public RefObject {
 public:
-    virtual bool IRefVarStacked(){ return false; };
+    virtual bool IRefVarStacked() {
+        return false;
+    };
 
     virtual bool operator >(RefData &rd)  {
         RUNTIMEERROR("operator >", "Not comparable");
     };
 
     virtual bool operator ==(RefData &rd) = 0;//{ return false; };
-	virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
+    virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0;
 
     virtual void    forceback(RefData *&activeTemplate, Session* s) {
@@ -50,10 +52,18 @@ public:
 };
 
 
-inline RefData** MOVE_TO_next_term(RefData** &p) { return ++p; }
-inline RefData** MOVE_TO_pred_term(RefData** &p) { return --p; }
-inline RefData** MOVE_TO_next_template(RefData** &p) { return ++p; }
-inline RefData** MOVE_TO_pred_template(RefData** &p) { return --p; }
+inline RefData** MOVE_TO_next_term(RefData** &p) {
+    return ++p;
+}
+inline RefData** MOVE_TO_pred_term(RefData** &p) {
+    return --p;
+}
+inline RefData** MOVE_TO_next_template(RefData** &p) {
+    return ++p;
+}
+inline RefData** MOVE_TO_pred_template(RefData** &p) {
+    return --p;
+}
 
 
 class RefNULL : public RefData {
@@ -67,7 +77,7 @@ public:
     };
 
     virtual bool operator==(RefData&);
-	virtual TResult init(RefData **&, Session* , RefData **&, RefData **&);
+    virtual TResult init(RefData **&, Session* , RefData **&, RefData **&);
     virtual TResult back(RefData **&, Session* , RefData **&, RefData **&);
     void forceback(RefData *&, Session *) {};
 };
@@ -79,7 +89,9 @@ class RefVariableBase :  public RefData {
 public:
     BASE_CLASS_CAST(RefVariableBase);
     virtual unistring getName() = 0;
-    virtual bool IRefVarStacked(){ return true; };
+    virtual bool IRefVarStacked() {
+        return true;
+    };
 };
 
 
@@ -89,8 +101,12 @@ protected:
 public:
     BASE_CLASS_CAST(RefVariable);
     RefVariable(unistring name = EmptyUniString);
-	unistring getName() { return name; }
-    void setName(unistring s) { name = s; }
+    unistring getName() {
+        return name;
+    }
+    void setName(unistring s) {
+        name = s;
+    }
 
     virtual void    forceback(RefData *&, Session* s) { }; // принудительный откат. “очка убирает из сессии свое состо€н
 };
@@ -106,7 +122,7 @@ public:
     unistring toString();
 
     bool operator==(RefData&);
-	virtual TResult init(RefData **&, Session* , RefData **&, RefData **&);
+    virtual TResult init(RefData **&, Session* , RefData **&, RefData **&);
     virtual TResult back(RefData **&, Session* , RefData **&, RefData **&);
     virtual void forceback(RefData *&, Session *) {};
 };
@@ -129,7 +145,7 @@ public:
 
 class RefExecBracket : public RefBracketBase {
 public:
-CLASS_OBJECT_CAST(RefExecBracket);
+    CLASS_OBJECT_CAST(RefExecBracket);
 
     RefExecBracket(RefData* rp=0);
     RefExecBracket(RefExecBracket *br, RefData* rp=0);
@@ -163,7 +179,11 @@ public:
     RefData** first;
     RefData** after;
 
-    void noProtectOnly(){
+
+    inline RefData** get_first(){ return first; };
+    inline RefData** get_last (){ return &(first[leng-1]); };
+
+    void noProtectOnly() {
         #ifdef TESTCODE
         if (! theProtect) return;
         std::cerr << "\nPROTECT!\n" << std::flush;
@@ -174,12 +194,25 @@ public:
     //void clear(){ noProtectOnly(); free(first); }; // уничтожение всего что ммежду first и second включительно
 
     RefChain(RefData **l=0, RefData **r=0);
-    virtual ~RefChain() { free(first); };
+    RefChain(RefData **a11, RefData **a12, RefData **a21, RefData **a22, RefData **a31, RefData **a32);
+    virtual ~RefChain() {
+        free(first);
+    };
 
     // TODO: сделать блоковое расширение
-    RefChain& operator+=(RefChain &ch); // к левому аргумент пристыковываетс€ копи€ правого!
-    RefChain& operator+=(RefData *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
+    RefChain& operator+=(RefChain &ch);   // к левому аргумент пристыковываетс€ копи€ правого!
+    RefChain& operator+=(RefChain *ch);  // к левому аргумент пристыковываетс€ копи€ правого!
+    RefChain& operator+=(RefData  *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
     RefChain* Copy(Session *s =0);
+
+    inline RefChain* clone(RefChain *cc) {
+        #ifdef TESTCODE
+        theProtect = true;
+        cc->theProtect = true;
+        #endif
+        first = cc->first;
+        after = cc->after;
+    };
 
     unistring toString();
     unistring explode(); // голый текст без форматировани€
@@ -189,9 +222,9 @@ RefData** beginOfTerm(RefData** r);
 RefData** endOfTerm  (RefData** r);
 
 class TVarBody : public RefObject {
-    public:
-        RefData** first;
-        RefData** second;
+public:
+    RefData** first;
+    RefData** second;
 };
 
 #endif // REF_KERNEL_H_INCLUDED

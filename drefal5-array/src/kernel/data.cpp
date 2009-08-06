@@ -40,7 +40,7 @@
 
 
 
-//RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // РѕС‚РєСЂС‹РІР°СЋС‰Р°СЏ
+//RefBracketBase::RefBracketBase( RefData *rp) : RefData(rp){ // открывающая
 //    other = 0;
 //    is_opened = true;
 //};
@@ -48,7 +48,7 @@
 //
 //
 //
-//RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ // Р·Р°РєСЂС‹РІР°СЋС‰Р°СЏ
+//RefBracketBase::RefBracketBase( RefBracketBase *dr, RefData *rp) : RefData(rp){ // закрывающая
 //        other = dr;
 //        is_opened = false;
 //        dr->other = this;
@@ -72,26 +72,50 @@
 
 RefChain::RefChain(RefData **l, RefData **r) {
     #ifdef TESTCODE
-    co::chaincount++;
+    //co::chaincount++;
     theProtect = (bool)l;
     #endif
-    if (!l) {
-        first = 0;
+        first = l;
+    if (! first) {
         after = r;
         leng = 0;
     } else {
-        first  = l;
+        after = 0; // ???
         leng = r-l+1;
     }
 };
 
 
-RefChain& RefChain::operator+=(RefData *ch) {
-    noProtectOnly();
+RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, RefData** a31, RefData** a32) {
 
     #ifdef TESTCODE
-    if (!this->second) SYSTEMERROR("bad chain!");
+    //co::chaincount++;
+    theProtect = true;
     #endif
+
+    leng = 0;
+    if (a11) leng += a12-a11;
+    if (a21) leng += a22-a21;
+    if (a31) leng += a32-a31;
+
+    if (!leng){
+        first = 0;
+        after = 0;
+        return;
+    }
+
+    first = (RefData**)malloc( sizeof(RefData*) * leng);
+    memcpy(first, a11, sizeof(RefData*) * (a12-a11));
+    memcpy(first[(a12-a11)], a21, sizeof(RefData*) * (a22-a21));
+    memcpy(first[(a12-a11)+(a22-a21)], a31, sizeof(RefData*) * (a32-a31));
+    return;
+
+};
+
+
+
+RefChain& RefChain::operator+=(RefData *ch) {
+    noProtectOnly();
 
     if (! this->first && !this->after) {
         first = (RefData**)malloc( sizeof(RefData*) );
@@ -101,14 +125,44 @@ RefChain& RefChain::operator+=(RefData *ch) {
         return *this;
     }
 
-
     first   =  (RefData**) realloc(first, (++leng)*sizeof(RefData*));
-
     if (! this->first) {
         std::cerr << "\nNO MEMORY !";
     }
     memcpy(first+leng-1, &ch, sizeof(RefData*));
 
+    return *this;
+};
+
+
+RefChain& RefChain::operator+=(RefChain &ch) {
+    return (*this += &ch);
+};
+
+
+RefChain& RefChain::operator+=(RefChain *ch) {
+    noProtectOnly();
+
+    if (!this->first) {
+        #ifdef DEBUG
+        if (this->after){
+            LOG("Poterja posledovatelnosti chain (after != NULL) but (first = malloc)");
+        }
+        #endif
+        first = (RefData**)malloc( sizeof(RefData*) * ch->leng);
+        if (!first) std::cerr << "NO MEMORY";
+        memcpy(first, &ch, sizeof(RefData*) * ch->leng);
+        leng = ch->leng;
+        return *this;
+    }
+
+    first   =  (RefData**) realloc(first, (this->leng + ch->leng)*sizeof(RefData*));
+    if (! this->first) {
+        RUNTIMEERROR("ABORT", "\nNO MEMORY!");
+        return *this;
+    }
+    memcpy(&( this->first[leng]), ch->first, (ch->leng)*sizeof(RefData*));
+    this->leng += ch->leng;
     return *this;
 };
 
@@ -130,23 +184,6 @@ unistring RefChain::explode()     {
 };
 
 
-RefChain& RefChain::operator+=(RefChain &ch) {
-    noProtectOnly();
-
-    if (! ch.first) return *this; // РїСѓСЃС‚РѕР№ РІРµРєС‚РѕСЂ РЅРµ РїСЂРёР±Р°РІР»СЏРµРј
-
-    if (! this->first) { // РїСЂРёР±Р°РІР»СЏРµРј Рє РїСѓСЃС‚РѕРјСѓ РІРµРєС‚РѕСЂСѓ.
-        this->first = ch.first;
-        this->leng  = ch.leng;
-        return *this;
-    }
-
-    first = (RefData**) realloc(first, (leng+ch.leng)*sizeof(RefData*));
-    memcpy(first+leng, ch.first, ch.leng*sizeof(RefData*));
-
-    leng += ch.leng;
-    return *this;
-};
 
 
 RefChain* RefChain::Copy(Session *s) {
@@ -210,21 +247,21 @@ TResult RefLinkToVariable::init(RefData**&tpl, Session* s, RefData **&l, RefData
 
     if (!ldata ) {
         MOVE_TO_next_template(tpl);
-        return GO; // СЃСЃС‹Р»РєР° РЅР° РїСѓСЃС‚РѕР№ РѕС‚СЂРµР·РѕРє - РІРµСЂРЅР°
+        return GO; // ссылка на пустой отрезок - верна
     }
 
     MOVE_TO_next_term(r);
-    if (*r==*ldata) { // СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёРµ СЃ СЃРѕР±РѕР№
+    if (*r==*ldata) { // сопоставление с собой
         r = rdata;
         MOVE_TO_next_template(tpl);
         return GO;
     }
 
 //    RefData *lend = rdata;
-//    MOVE_TO_next_term(lend); // РіСЂР°РЅРёС†Р° СЃСЂР°РІРЅРµРЅРёСЏ
+//    MOVE_TO_next_term(lend); // граница сравнения
 //
-//    MOVE_TO_pred_term(r); /// todo: РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ
-//    while ((ldata!=lend) ) { // РїСЂРѕРІРµСЂРєР° РЅР° РєРѕРЅРµС† СЃСЂР°РІРЅРёРІР°РµРјРѕРіРѕ
+//    MOVE_TO_pred_term(r); /// todo: оптимизировать
+//    while ((ldata!=lend) ) { // проверка на конец сравниваемого
 //        MOVE_TO_next_term(r);
 //        if ( !(*r == *ldata)) {
 //            tpl=tpl->getPred();
@@ -241,7 +278,7 @@ TResult RefLinkToVariable::init(RefData**&tpl, Session* s, RefData **&l, RefData
         MOVE_TO_next_term(ldata);
     }
 
-    if (**r == **ldata) { // TODO: РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ. СѓР±СЂР°С‚СЊ РІС‹Р·РѕРІ ==
+    if (**r == **ldata) { // TODO: оптимизировать. убрать вызов ==
         MOVE_TO_next_template(tpl);
         return GO;
     }
@@ -265,13 +302,13 @@ RefVariable::RefVariable(unistring name) : RefVariableBase() {
 
 
 
-RefData** beginOfTerm(RefData** r){
+RefData** beginOfTerm(RefData** r) {
     RefBracketBase *br;
-    if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || (br->is_opened)){
+    if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || (br->is_opened)) {
         return r;
     }
     br=br->other;
-    while(*r != br){
+    while (*r != br) {
         --r;
         #ifdef TESTCODE
         if (!r) SYSTEMERROR("alarm");
@@ -280,13 +317,13 @@ RefData** beginOfTerm(RefData** r){
     return r;
 };
 
-RefData** endOfTerm(RefData** r){
+RefData** endOfTerm(RefData** r) {
     RefBracketBase *br;
-    if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || !(br->is_opened)){
+    if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || !(br->is_opened)) {
         return r;
     }
     br=br->other;
-    while(*r != br){
+    while (*r != br) {
         ++r;
         #ifdef TESTCODE
         if (!r) SYSTEMERROR("alarm");

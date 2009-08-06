@@ -22,9 +22,9 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <stack>
 
-#include "refsymbolbase.hxx"
-
+#include "data.h"
 
 class RefSentence : public RefObject {
 public:
@@ -47,7 +47,7 @@ public:
     RefFunctionBase();
     virtual ~RefFunctionBase();
     virtual unistring getName() = 0;
-    virtual bool execute(RefData*&, RefData*&, Session*)=0;
+    //virtual RefChain *execute(RefData*&, RefData*&, Session*)=0;
 };
 
 class RefUserFunction : public RefFunctionBase {
@@ -57,7 +57,7 @@ public:
     std::list<RefSentence *> body; // предложения
 
     /// аргументы - концы чистого ОВ   // заменяет в объектном выражении участок(перед. в аргум)
-    virtual bool execute(RefData *argfirst, RefData *argsecond, Session *s);
+    //virtual RefChain *execute(RefData *argfirst, RefData *argsecond, Session *s); - перенесено в session
     virtual unistring getName()  {
         return name;
     };
@@ -136,7 +136,7 @@ public:
         return name;
     };
 
-RefUserModule() : RefModuleBase() {}
+    RefUserModule() : RefModuleBase() {};
     virtual ~RefUserModule() {};
 
     unistring toString();
@@ -164,13 +164,14 @@ public:
 
 
 class RefBuildInFunction : public RefFunctionBase {
-    bool execute(RefData*, RefData*, Session*);
 public:
     RefBuildInFunction(unistring name, RefDllModule *m);
     virtual ~RefBuildInFunction() {};
-    virtual bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0) = 0;
+    RefChain *execute(RefData*, RefData*, Session*){ SYSTEMERROR("not realised!"); };
 
 };
+
+
 
 
 class RefConditionBase : public RefData {

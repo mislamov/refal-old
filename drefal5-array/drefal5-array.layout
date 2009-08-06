@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="src\kernel\config.h" open="1" top="0" tabpos="7">
-		<Cursor position="2640" topLine="46" />
+	<File name="src\kernel\config.h" open="0" top="0" tabpos="7">
+		<Cursor position="8961" topLine="187" />
 	</File>
 	<File name="src\kernel\data.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="2218" topLine="59" />
+		<Cursor position="872" topLine="0" />
 	</File>
-	<File name="src\kernel\data.h" open="1" top="0" tabpos="4">
-		<Cursor position="1189" topLine="11" />
+	<File name="src\kernel\data.h" open="0" top="0" tabpos="4">
+		<Cursor position="2923" topLine="68" />
 	</File>
-	<File name="src\kernel\refsymbolbase.hxx" open="1" top="0" tabpos="6">
-		<Cursor position="1108" topLine="18" />
+	<File name="src\kernel\rfunction.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="831" topLine="0" />
 	</File>
-	<File name="src\kernel\rfunction.h" open="1" top="0" tabpos="5">
-		<Cursor position="1505" topLine="37" />
+	<File name="src\kernel\rfunction.h" open="0" top="0" tabpos="5">
+		<Cursor position="1539" topLine="41" />
 	</File>
-	<File name="src\kernel\session.cpp" open="1" top="1" tabpos="1">
-		<Cursor position="1964" topLine="16" />
+	<File name="src\kernel\session.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="7863" topLine="139" />
 	</File>
-	<File name="src\kernel\session.h" open="1" top="0" tabpos="3">
-		<Cursor position="116" topLine="0" />
+	<File name="src\kernel\session.h" open="1" top="1" tabpos="3">
+		<Cursor position="5473" topLine="115" />
 	</File>
 	<File name="src\kernel\symbols.h" open="0" top="0" tabpos="0">
-		<Cursor position="1856" topLine="42" />
+		<Cursor position="1689" topLine="34" />
 	</File>
-	<File name="src\kernel\variables.cpp" open="0" top="0" tabpos="1">
-		<Cursor position="1565" topLine="0" />
+	<File name="src\kernel\variables.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="1652" topLine="0" />
 	</File>
 	<File name="src\kernel\variables.h" open="0" top="0" tabpos="0">
 		<Cursor position="448" topLine="0" />
 	</File>
-	<File name="src\main.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="58" topLine="0" />
+	<File name="src\main.cpp" open="0" top="0" tabpos="2">
+		<Cursor position="802" topLine="2" />
 	</File>
 </CodeBlocks_layout_file>

@@ -100,3 +100,64 @@
 	"data.h"
 	<sstream>
 
+1249541920 source:d:\drefal\drefal5-array\src\kernel\data.cpp
+	"data.h"
+	"session.h"
+	<stdlib.h>
+	<iostream>
+	<sstream>
+
+1249541360 d:\drefal\drefal5-array\src\kernel\data.h
+	<iostream>
+	<sstream>
+	<stdlib.h>
+	<string>
+	<map>
+	"config.h"
+
+1249541426 d:\drefal\drefal5-array\src\kernel\config.h
+	<stdlib.h>
+	<string>
+
+1249565883 d:\drefal\drefal5-array\src\kernel\session.h
+	<stack>
+	<stdlib.h>
+	"data.h"
+	"rfunction.h"
+
+1249451636 d:\drefal\drefal5-array\src\kernel\rfunction.h
+	<iostream>
+	<sstream>
+	<list>
+	<stack>
+	"data.h"
+
+1248424455 d:\drefal\drefal5-array\src\kernel\refsymbolbase.hxx
+	"data.h"
+	<sstream>
+
+1249565609 source:d:\drefal\drefal5-array\src\kernel\session.cpp
+	"symbols.h"
+	"session.h"
+	"rfunction.h"
+
+1249565225 source:d:\drefal\drefal5-array\src\kernel\variables.cpp
+	"variables.h"
+	"session.h"
+
+1245146679 d:\drefal\drefal5-array\src\kernel\variables.h
+	"data.h"
+
+1249541335 source:d:\drefal\drefal5-array\src\main.cpp
+	<iostream>
+	"kernel\symbols.h"
+	"kernel\session.h"
+	"kernel\variables.h"
+
+1249450177 d:\drefal\drefal5-array\src\kernel\symbols.h
+	"data.h"
+	<sstream>
+
+1249450649 source:d:\drefal\drefal5-array\src\kernel\rfunction.cpp
+	"rfunction.h"
+
