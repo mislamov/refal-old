@@ -32,9 +32,6 @@ class RefExecBracket;
 // Абстрактный класс - предок всех термов языка
 class RefData : public RefObject {
 public:
-    virtual bool IRefVarStacked() {
-        return false;
-    };
 
     virtual bool operator >(RefData &rd)  {
         RUNTIMEERROR("operator >", "Not comparable");
@@ -181,7 +178,9 @@ public:
 
 
     inline RefData** get_first(){ return first; };
-    inline RefData** get_last (){ return &(first[leng-1]); };
+    inline RefData** get_last (){ 
+		return &(first[leng-1]); 
+	};
 
     void noProtectOnly() {
         #ifdef TESTCODE

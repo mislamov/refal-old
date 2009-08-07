@@ -133,15 +133,28 @@ RefChain *Session::executeExpression(RefChain *chain) {
 RefChain *Session::substituteExpression(RefChain *chain) {
     // итерация по элементам аргумента (RefChain блоковый)
     // если переменная, то добавляем копию ее значения
+	return 0;
 };
 
 
 RefObject* Session::findFunctionById(unistring id) {
+	return 0;
 };
 
+unistring getTextOfChain(RefData** from, RefData** to){
+	int i = 0;
+	if (!from) return "";
+	if (!to || (to-from)<0 || (to-from)>1024) return "[error string]";
+	unistring res = "";
+	while(from[i+1] != *to){
+		res += from[i]->toString();
+		++i;
+	}
+	return res;
+};
 
-
-#define LOGSTEP(s)
+#define LOGSTEP(s) \
+std::cout << s << "\n" << (*activeTemplate)->toString() << " ~ " << getTextOfChain(current_r+1, rr) << "\n" << std::flush;
 
 
 // сопоставляет образец tmplate с объектным выражением с l по r.
@@ -149,17 +162,17 @@ RefObject* Session::findFunctionById(unistring id) {
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefData **rr, bool isdemaching, bool isRevers) {
     LOG("New MATCHING : tmplateChain=" << tmplate->toString() << "  isDematching="<<isdemaching);
-    RefData **activeTemplate, **l=0, **r=0;
+    RefData **activeTemplate = 0;
 
     if (isdemaching) {
         // продолжаем ранее успешное сопоставление
         result_sost = BACK;
         activeTemplate = tmplate->get_last();
     } else {
-        // начинаем новое сопоставление
+        // начинаем новое сопоставление с ll..rr
         result_sost = GO;
-        current_l = ll;
-        current_r = rr;
+        current_r = ll;
+        activeTemplate = tmplate->get_first();
 
         if (ref_dynamic_cast<RefConditionBase >(initer)) {
             saveCurrentStateSmall(); // сохр. состояние перед вычислением условия предложения
@@ -185,17 +198,17 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefD
             LOGSTEP("GO  ");
             #ifdef TESTCODE
 //            if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
-            if (!r) {
+            if (!current_r) {
                 SYSTEMERROR("RefData::init() tring to matching with NULL address!");
             };
             #endif
-            l=0;
-            result_sost = (*activeTemplate)->init(activeTemplate, this, l, r); /// ШАГ ВПЕРЕД
+            current_l=0;
+            result_sost = (*activeTemplate)->init(activeTemplate, this, current_l, current_r); /// ШАГ ВПЕРЕД
             break;
         }
         case BACK: {
             LOGSTEP("BACK");
-            result_sost = (*activeTemplate)->back(activeTemplate, this, l, r); /// ШАГ НАЗАД
+            result_sost = (*activeTemplate)->back(activeTemplate, this, current_l, current_r); /// ШАГ НАЗАД
             break;
         }
 

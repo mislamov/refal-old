@@ -19,13 +19,13 @@
 #include "session.h"
 
 TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
-    SAVE_VAR_STATE(tpl);
+    s->SAVE_VAR_STATE(tpl);
     MOVE_TO_next_template(tpl);
     return GO;
 };
 
 TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
-    RESTORE_VAR_STATE(tpl);
+    s->RESTORE_VAR_STATE(tpl);
 
     if (l) {
         // предыдущее значение не пустое
@@ -45,7 +45,7 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         MOVE_TO_pred_template(tpl);
         return BACK;
     };
-    SAVE_VAR_STATE( tpl); // TODO: Р_РїС'РёР_РёР·РёС_Р_Р_Р°С'С_
+    s->SAVE_VAR_STATE( tpl); // TODO: Р_РїС'РёР_РёР·РёС_Р_Р_Р°С'С_
     MOVE_TO_next_template(tpl);
     return GO;
 

@@ -140,6 +140,9 @@ public:
     {
         return "RefVarForSymbol<T>."+getName();
     }
+	virtual unistring explode(){
+		return "[RefVarForSymbol]."+this->getName();
+	};
 };
 /*
 template <class T> RefDataTypesForCast RefVarForSymbol<T> ::getClassTypeCast(){

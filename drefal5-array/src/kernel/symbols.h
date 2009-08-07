@@ -5,13 +5,20 @@
 
 #include <sstream>
 
+class RefAlphaBase;
+
+
 template <class T, class t>
 class RefSymbolBase : public RefData {
 public:
     RefSymbolBase(){};
     virtual ~RefSymbolBase(){};
     virtual t getValue() = 0;
-    bool operator ==(RefData &rd) { return ref_dynamic_cast<T>(&rd) && ((T*)&rd)->getValue()==this->getValue(); };
+    bool operator ==(RefData &rd) {
+        RefData *tmp = &rd;
+        void* rr = dynamic_cast<RefAlphaBase*>(tmp);
+        return ref_dynamic_cast<T>(&rd) && ((T*)&rd)->getValue()==this->getValue();
+    };
     TResult init(RefData**&, Session* , RefData**&, RefData**&);
     TResult back(RefData**&, Session* , RefData**&, RefData**&);
     unistring explode(){
@@ -73,7 +80,8 @@ public:
 template <class TT, class tt>
 TResult  RefSymbolBase<TT, tt>::init(RefData**& tpl, Session* s, RefData**& l, RefData**& r) {
     MOVE_TO_next_term(r);
-    if (*this == **r) {
+    LOG(" " << this->toString() << " == " << (*r)->toString());
+    if (this==*r || *this == **r) {
         MOVE_TO_next_template(tpl);
         return GO;
     }

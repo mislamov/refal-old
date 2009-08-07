@@ -1,22 +1,28 @@
 #ifndef SESSION_H_INCLUDED
 #define SESSION_H_INCLUDED
 
-#include <stack>
+#ifndef POOLSIZE_DEFAULT
+    #define POOLSIZE_DEFAULT 128
+#endif
 
+
+#include <stack>
 #include <stdlib.h>
 
 #include "data.h"
 #include "rfunction.h"
 
 class VarMap;
+class MatchState;
 class RefVariableBase;
 
+
 class VarMapItem {
-    public:
-    RefVariableBase* var; // сама переменная
-    RefData** l;          // значение..
-    RefData** r;          // ..значение
-    VarMap*   matchState; // состояние сопоставления (для польз-их шаблонов)
+public:
+    RefVariableBase* var;   // сама переменная
+    RefData** l;            // значение..
+    RefData** r;            // ..значение
+    MatchState* matchState; // состояние сопоставления (для польз-их шаблонов)
 
     VarMapItem() {
         var=0;
@@ -25,7 +31,6 @@ class VarMapItem {
     };
 };
 
-size_t POOLSIZE_DEFAULT = 128;
 
 class VarMap {
     VarMapItem *pool;
@@ -33,19 +38,19 @@ class VarMap {
     size_t poolsize;   // индекс последнего в стеке элемента
 
 public:
-    VarMap(void *own = 0){
+    VarMap(void *own = 0) {
         last_ind = 0;
         poolsize = POOLSIZE_DEFAULT;
         pool = (VarMapItem*)malloc( sizeof(VarMapItem)*POOLSIZE_DEFAULT );
         pool[0].var = (RefVariableBase*)own;
     };
 
-    ~VarMap(){
+    ~VarMap() {
         free(pool);
     };
 
     // сохраняет состояние переменной
-    void put(RefVariableBase *var, RefData** l, RefData** r, VarMap* matchState) {
+    void put(RefVariableBase *var, RefData** l, RefData** r, MatchState* matchState) {
         ++last_ind ;
         if (last_ind >= poolsize) {
             // пул исчерпан
@@ -66,7 +71,7 @@ public:
         return;
     };
 
-    void top_pop(RefVariableBase *var, RefData** &l, RefData** &r, VarMap* &matchState) {
+    void top_pop(RefData *var, RefData** &l, RefData** &r, MatchState* &matchState) {
         #ifdef TESTCODE
         if (var != pool[last_ind].var) {
             SYSTEMERROR("var != pool.var");
@@ -101,7 +106,7 @@ public:
         }
     };
 
-    void clear(){
+    void clear() {
         last_ind = 0;
         pool[0].var = 0;
     };
@@ -112,11 +117,21 @@ class MatchState {
     VarMap varmap; // карта сопоставления
     RefData** l;   // аргумент
     RefData** r;
+public:
+    MatchState(RefData** ll, RefData** rr) {
+        l=ll;
+        r=rr;
+    };
 
-    MatchState(RefData** ll, RefData** rr){ l=ll; r=rr; };
+    // сохраняет состояние переменной
+    void saveVar(Session *s, RefVariableBase *varOrData);
+    void restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState);
+
 };
 
 class Session {
+    friend class MatchState;
+
     std::stack<MatchState*>  matchStates;
     std::stack<RefBracketBase**> stackOfDataSkob; // стек сопоставления скобок
     RefData** current_l;
@@ -143,21 +158,45 @@ public:
 
     RefObject* findFunctionById(unistring id);
 
-    MatchState* saveCurrentStateLarge(){ // сохраняет и возвращает ссылку на состояние сопоставления для предложения
-        matchStates.push( new MatchState(current_l, current_r) );
+    MatchState* saveCurrentStateLarge() { // сохраняет и возвращает ссылку на состояние сопоставления для предложения
+		MatchState* res = new MatchState(current_l, current_r);
+        matchStates.push( res );
+		return res;
     };
-    MatchState* saveCurrentStateSmall(){ // сохраняет и возвращает ссылку на состояние сопоставления образца
-        matchStates.push( new MatchState(current_l, current_r) );
+    MatchState* saveCurrentStateSmall() { // сохраняет и возвращает ссылку на состояние сопоставления образца
+		MatchState* res = new MatchState(current_l, current_r);
+        matchStates.push( res );
+		return res;
     };
     void restoreToLastSavedStateLarge(); // возвращается к состоянию на начало выполнения предложения
     void restoreToLastSavedState(); // возвращается к предыдущему состоянию
     void clearAllStatesAfter(MatchState*); // очищает от всего, что было создано после сохранения состояния АРГ
+
+    void SAVE_VAR_STATE   (RefData** activeTemplate) { // сохраняет состояние переменной
+        RefVariableBase* var = ref_dynamic_cast<RefVariableBase>(*activeTemplate);
+        if (var){
+            matchStates.top()->saveVar(this, (RefVariableBase*)var);
+        }
+    };
+    //void SAVE_VAR_STATE_AND_VALUE(RefData** activeTemplate); // сохраняет состояние и значение переменной
+    void RESTORE_VAR_STATE(RefData** activeTemplate){ // восстанавливает состояние переменной
+        RefVariableBase* var = ref_dynamic_cast<RefVariableBase>(*activeTemplate);
+        if (!var) SYSTEMERROR("not var restoring!");
+
+        MatchState *varMatchState;
+        matchStates.top()->restoreVar(this, var, varMatchState); // для польз-переменной varMatchState хранит ее подсессию
+    };
+
 };
 
+inline void MatchState::saveVar(Session *s, RefVariableBase *varOrData) {
+    varmap.put(varOrData, s->current_l, s->current_r, 0);
+};
 
-void SAVE_VAR_STATE   (RefData** activeTemplate); // сохраняет состояние переменной
-void SAVE_VAR_STATE_AND_VALUE(RefData** activeTemplate); // сохраняет состояние и значение переменной
-void RESTORE_VAR_STATE(RefData** activeTemplate); // восстанавливает состояние переменной
+inline void MatchState::restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState) {
+    varmap.top_pop(varOrData, s->current_l, s->current_r, matchState);
+};
+
 
 /*
 #define SAVE_STATE(activeTemplate) { \

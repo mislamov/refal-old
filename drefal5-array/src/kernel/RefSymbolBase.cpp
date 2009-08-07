@@ -23,7 +23,7 @@
 //#include <sstream>
 
 #include "RefSymbolBase.hxx"
-#include "kernel.h"
+//#include "kernel.h"
 #include "data.h"
 #include "session.h"
 
@@ -158,16 +158,16 @@ bool RefVarForSymbol<T>::operator ==(RefData &rd) {
 ///     ПЕРЕГРУЖЕННЫЕ МЕТОДЫ
 void RefSymbol<unichar>::setValueFromString(unistring s) {
     setValue( s[0] );
-}
+};
 
 
 void RefSymbol<char>::setValueFromString(unistring s) {
     setValue((char)s[0] );
-}
+};
 
 void RefSymbol<infint>::setValueFromString(unistring s) {
     setValue( strtoul(s.c_str(), 0, 10) );
-}
+};
 
 void RefSymbol<infreal>::setValueFromString(unistring s) {
     setValue( strtof(s.c_str(), 0) );
@@ -234,15 +234,15 @@ unistring RefSymbol<char>::toString() {
 // возвращает переменную
 RefVariable* createVariableByTypename(unistring nametype, unistring vn) {
     if (nametype == "word") return new RefVarWord(vn);
-    if (nametype == "int") return new RefVarInteger(vn);
+    if (nametype == "int")  return new RefVarInteger(vn);
     if (nametype == "real") return new RefVarReal(vn);
     if (nametype == "char") return new RefVarAlpha(vn);
     if (nametype == "byte") return new RefVarByte(vn);
-    if (nametype == "e") return new RefVariable_e(vn);
-    if (nametype == "E") return new RefVariable_E(vn);
+    if (nametype == "e")   return new RefVariable_e(vn);
+    if (nametype == "E")   return new RefVariable_E(vn);
     if (nametype == "END") return new RefVariable_END(vn);
-    if (nametype == "s") return new RefVariable_s(vn);
-    if (nametype == "t") return new RefVariable_t(vn);
+    if (nametype == "s")   return new RefVariable_s(vn);
+    if (nametype == "t")   return new RefVariable_t(vn);
     //return new RefUserVar(nametype, vn);
     // переменная пользовательского типа
     return 0;

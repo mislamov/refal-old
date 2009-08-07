@@ -76,8 +76,8 @@ namespace co {
 
 //typedef wchar_t         unichar;
 //typedef std::wstring    unistring;
-typedef char         unichar;
-typedef std::string  unistring;
+typedef unsigned char  unichar;
+typedef std::string    unistring;
 
 //#define _L(quote) L##quote
 #define _L(quote) quote
@@ -246,14 +246,14 @@ public:
 
 
 template <class T>
- T* ref_dynamic_cast(RefObject *d) {
+T* ref_dynamic_cast(RefObject *d) {
     #ifdef TESTCODE
     if (!d){
         SYSTEMERROR("ref_dynamic_cast for 0!");
     }
 
-    T   *testres = dynamic_cast<T*>(d),
-        *testres2=0;
+    T   *testres  = dynamic_cast<T*>(d),
+        *testres2 = 0;
 
     if ((T::getClassTypeCast & castUseRTTI)) {
         testres2 = dynamic_cast<T*>(d);
