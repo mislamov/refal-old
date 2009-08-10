@@ -80,8 +80,8 @@ public:
 template <class TT, class tt>
 TResult  RefSymbolBase<TT, tt>::init(RefData**& tpl, Session* s, RefData**& l, RefData**& r) {
     MOVE_TO_next_term(r);
-    LOG(" " << this->toString() << " == " << (*r)->toString());
-    if (this==*r || *this == **r) {
+	LOG(" " << this->toString() << " == " << (*r ? (*r)->toString() : "0"));
+    if (*r && (this==*r || *this == **r)) {
         MOVE_TO_next_template(tpl);
         return GO;
     }

@@ -142,11 +142,11 @@ RefObject* Session::findFunctionById(unistring id) {
 };
 
 unistring getTextOfChain(RefData** from, RefData** to){
-	int i = 0;
-	if (!from) return "";
+	if (!from) return "[null]";
 	if (!to || (to-from)<0 || (to-from)>1024) return "[error string]";
 	unistring res = "";
-	while(from[i+1] != *to){
+	int i = 0;
+	while(&from[i] != to){
 		res += from[i]->toString();
 		++i;
 	}
@@ -154,7 +154,7 @@ unistring getTextOfChain(RefData** from, RefData** to){
 };
 
 #define LOGSTEP(s) \
-std::cout << s << "\n" << (*activeTemplate)->toString() << " ~ " << getTextOfChain(current_r+1, rr) << "\n" << std::flush;
+std::cout << s << "\n" << (*activeTemplate)->toString() << " ~ " << getTextOfChain(r+1, rr+1) << "\n" << std::flush;
 
 
 // сопоставляет образец tmplate с объектным выражением с l по r.
@@ -162,7 +162,9 @@ std::cout << s << "\n" << (*activeTemplate)->toString() << " ~ " << getTextOfCha
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefData **rr, bool isdemaching, bool isRevers) {
     LOG("New MATCHING : tmplateChain=" << tmplate->toString() << "  isDematching="<<isdemaching);
-    RefData **activeTemplate = 0;
+    RefData **activeTemplate = 0, **l=0, **r=0;
+	RefData **datadotTemplate_end = tmplate->get_last()+1;
+	RefData **datadotTemplate_beg = tmplate->get_first()-1;
 
     if (isdemaching) {
         // продолжаем ранее успешное сопоставление
@@ -171,13 +173,14 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefD
     } else {
         // начинаем новое сопоставление с ll..rr
         result_sost = GO;
-        current_r = ll;
+        l = 0;
+        r = ll-1;
         activeTemplate = tmplate->get_first();
 
         if (ref_dynamic_cast<RefConditionBase >(initer)) {
-            saveCurrentStateSmall(); // сохр. состояние перед вычислением условия предложения
+            saveCurrentStateSmall(ll, rr); // сохр. состояние перед вычислением условия предложения
         } else {
-            saveCurrentStateLarge(); // сохр. состояние перед вычислением всего предложения
+            saveCurrentStateLarge(ll, rr); // сохр. состояние перед вычислением всего предложения
         }
     }
 
@@ -195,20 +198,30 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefD
 
         case GO: {
             // выполняем инит
+			if (activeTemplate==datadotTemplate_end && r==current_view_r+1){
+				result_sost = SUCCESS;
+				break;
+			};
+
             LOGSTEP("GO  ");
             #ifdef TESTCODE
 //            if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
-            if (!current_r) {
+            if (!r) {
                 SYSTEMERROR("RefData::init() tring to matching with NULL address!");
             };
             #endif
-            current_l=0;
-            result_sost = (*activeTemplate)->init(activeTemplate, this, current_l, current_r); /// ШАГ ВПЕРЕД
+            l=0;
+            result_sost = (*activeTemplate)->init(activeTemplate, this, l, r); /// ШАГ ВПЕРЕД
             break;
         }
         case BACK: {
+			if (activeTemplate==datadotTemplate_beg){
+				result_sost = FAIL;
+				break;
+			};
+
             LOGSTEP("BACK");
-            result_sost = (*activeTemplate)->back(activeTemplate, this, current_l, current_r); /// ШАГ НАЗАД
+            result_sost = (*activeTemplate)->back(activeTemplate, this, l, r); /// ШАГ НАЗАД
             break;
         }
 

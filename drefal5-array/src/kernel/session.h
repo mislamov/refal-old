@@ -29,46 +29,90 @@ public:
         l=r=0;
         matchState=0;
     };
+
+	VarMapItem(RefVariableBase* vv,RefData** ll,RefData** rr,MatchState* mm=0) {
+        var=vv;
+        l=ll;
+		r=rr;
+        matchState=mm;
+    };
 };
 
 
-class VarMap {
-    VarMapItem *pool;
+// Пулл-стек. сохраняет (put) и восстанавливает (top_pop) содержимое объектов типа T путем прямого копирования.
+template <class T>
+class PooledClass {
+protected:
+	T* pool; // массив объетов. индексируется с 1. pool[0] - для служебного использования
     size_t last_ind;   // индекс последнего в стеке элемента
     size_t poolsize;   // индекс последнего в стеке элемента
 
 public:
-    VarMap(void *own = 0) {
+    PooledClass() {
         last_ind = 0;
         poolsize = POOLSIZE_DEFAULT;
-        pool = (VarMapItem*)malloc( sizeof(VarMapItem)*POOLSIZE_DEFAULT );
-        pool[0].var = (RefVariableBase*)own;
+        pool = (T*)malloc( sizeof(T)*POOLSIZE_DEFAULT );
+		#ifdef TESTCODE
+		memset(pool, 0xff, sizeof(T)*POOLSIZE_DEFAULT);
+		#endif
     };
 
-    ~VarMap() {
+    ~PooledClass() {
         free(pool);
+    };
+
+    // сохраняет состояние item копированием
+    void put_from(T* item) {
+        ++last_ind ;
+        if (last_ind >= poolsize) {
+            // пул исчерпан
+            LOG("T-pool is full. realloc!");
+            poolsize += POOLSIZE_DEFAULT;
+            pool = (T*) realloc(pool, poolsize*sizeof(T) );
+            if (!pool) {
+                RUNTIMEERROR("T-pool", "not anouth memory");
+                return;
+            }
+			#ifdef TESTCODE
+			memset(pool+last_ind, 0xff, sizeof(T)*POOLSIZE_DEFAULT);
+			#endif
+        }
+        
+		memcpy(pool+last_ind, item, sizeof(T));
+        return;
+    };
+
+    void top_pop_to(T* item) {        
+        T* pool_last_ind = pool+last_ind;
+		memcpy(item, pool_last_ind , sizeof(T));
+		#ifdef TESTCODE
+		memset(pool+last_ind, 0xff, sizeof(T));
+		#endif
+        --last_ind;
+
+	};
+
+    void clear() {
+        last_ind = 0;
+		#ifdef TESTCODE
+		memset(pool, 0xff, sizeof(T)*poolsize);
+		#endif
+		memset(pool, 0xff, sizeof(T));
+    };
+
+};
+
+
+class VarMap : public PooledClass<VarMapItem>{
+public:
+	VarMap(void *own = 0) {
+        pool[0].var = (RefVariableBase*)own;
     };
 
     // сохраняет состояние переменной
     void put(RefVariableBase *var, RefData** l, RefData** r, MatchState* matchState) {
-        ++last_ind ;
-        if (last_ind >= poolsize) {
-            // пул исчерпан
-            LOG("VarMapItem-pool is full. realloc!");
-            poolsize += POOLSIZE_DEFAULT;
-            pool = (VarMapItem*) realloc(pool, poolsize*sizeof(VarMapItem) );
-            if (!pool) {
-                RUNTIMEERROR("VarMapItem-pool", "not anouth memory");
-                return;
-            }
-        }
-
-        VarMapItem pool_last_ind = pool[last_ind];
-        pool_last_ind.var = var;
-        pool_last_ind.l = l;
-        pool_last_ind.r = r;
-        pool_last_ind.matchState = matchState;
-        return;
+		 // TODO (Islamov#1#): убрать создание объекта
+		put_from(&VarMapItem(var, l, r, matchState));        
     };
 
     void top_pop(RefData *var, RefData** &l, RefData** &r, MatchState* &matchState) {
@@ -78,19 +122,15 @@ public:
         }
         #endif
 
-        VarMapItem pool_last_ind = pool[last_ind];
-        l = pool_last_ind.l;
-        r = pool_last_ind.r;
-        matchState = pool_last_ind.matchState;
+        VarMapItem* pool_last_ind = pool+last_ind;
+        l = pool_last_ind->l;
+        r = pool_last_ind->r;
+        matchState = pool_last_ind->matchState;
         --last_ind;
 
         // TODO (Islamov#1#): может убрать:
         #ifdef DEBUG
-        pool_last_ind = pool[last_ind+1];
-        pool_last_ind.var = 0;
-        pool_last_ind.l = 0;
-        pool_last_ind.r = 0;
-        pool_last_ind.matchState = 0;
+        memset(pool+last_ind+1, 0xff, sizeof(VarMapItem));
         #endif
     };
 
@@ -106,45 +146,82 @@ public:
         }
     };
 
-    void clear() {
-        last_ind = 0;
-        pool[0].var = 0;
-    };
-
 };
 
+// блок сопоставлений (откатываемый)
 class MatchState {
     VarMap varmap; // карта сопоставления
-    RefData** l;   // аргумент
-    RefData** r;
+    RefData** view_l;   // аргумент сопоставления всего образца
+    RefData** view_r;
+
 public:
     MatchState(RefData** ll, RefData** rr) {
-        l=ll;
-        r=rr;
+        view_l=ll;
+        view_r=rr;
     };
 
     // сохраняет состояние переменной
-    void saveVar(Session *s, RefVariableBase *varOrData);
-    void restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState);
+    void saveVar(Session *s, RefVariableBase *varOrData, RefData **&l, RefData **&r);
+    void restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState, RefData **&l, RefData **&r);
 
+};
+
+template <class T>
+class DataLinkPool {
+	size_t idx;
+	size_t size;
+	T* pool;
+public:
+	DataLinkPool(){
+		idx = 0;
+		size = POOLSIZE_DEFAULT;
+		pool = (T*)malloc(sizeof(T)*size);
+		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
+		memset(pool, 0xff, sizeof(T)*size);
+	};
+
+	void put(T l){
+		if (idx >= size-1){
+			size+=POOLSIZE_DEFAULT;
+			pool = (T*)realloc(pool, sizeof(T)*size);
+		};
+		pool[idx] = l;
+		++idx;
+	};
+
+	T top_pop(){ 
+		#ifdef TESTCODE
+		if (!idx) SYSTEMERROR("link-stack is empty!");
+		#endif
+		return pool[--idx]; 
+	};
+
+	T top(){ 
+		return pool[idx-1]; 
+	};
 };
 
 class Session {
     friend class MatchState;
 
     std::stack<MatchState*>  matchStates;
-    std::stack<RefBracketBase**> stackOfDataSkob; // стек сопоставления скобок
-    RefData** current_l;
-    RefData** current_r;
+    DataLinkPool<RefData**> stackOfDataSkob; // стек сопоставления скобок
+    RefData** current_view_l;
+    RefData** current_view_r;
 public:
+	Session(){
+		current_view_l = current_view_r = 0;
+	};
+
     TResult  result_sost;
 
     TVarBody* getBodyByLink(RefVariable*) {
         SYSTEMERROR("not realized");
     };
-    RefBracketBase** getTopDataSkob() {
-        return stackOfDataSkob.top();
-    }
+
+    RefData** getTopDataSkob() {
+        return (RefData**)stackOfDataSkob.top();
+    };
 
     // сопоставляет образец tmplate с объектным выражением с l по r.
     // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
@@ -158,13 +235,14 @@ public:
 
     RefObject* findFunctionById(unistring id);
 
-    MatchState* saveCurrentStateLarge() { // сохраняет и возвращает ссылку на состояние сопоставления для предложения
-		MatchState* res = new MatchState(current_l, current_r);
+    MatchState* saveCurrentStateLarge(RefData** ll, RefData** rr) { // сохраняет и возвращает ссылку на состояние сопоставления для предложения
+		MatchState* res = new MatchState(current_view_l=ll, current_view_r=rr);
+		stackOfDataSkob.put(current_view_r+1);
         matchStates.push( res );
 		return res;
     };
-    MatchState* saveCurrentStateSmall() { // сохраняет и возвращает ссылку на состояние сопоставления образца
-		MatchState* res = new MatchState(current_l, current_r);
+    MatchState* saveCurrentStateSmall(RefData** ll, RefData** rr) { // сохраняет и возвращает ссылку на состояние сопоставления образца
+		MatchState* res = new MatchState(current_view_l=ll, current_view_r=rr);
         matchStates.push( res );
 		return res;
     };
@@ -172,29 +250,30 @@ public:
     void restoreToLastSavedState(); // возвращается к предыдущему состоянию
     void clearAllStatesAfter(MatchState*); // очищает от всего, что было создано после сохранения состояния АРГ
 
-    void SAVE_VAR_STATE   (RefData** activeTemplate) { // сохраняет состояние переменной
+    void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r) { // сохраняет состояние переменной
         RefVariableBase* var = ref_dynamic_cast<RefVariableBase>(*activeTemplate);
         if (var){
-            matchStates.top()->saveVar(this, (RefVariableBase*)var);
+            matchStates.top()->saveVar(this, (RefVariableBase*)var, l, r);
         }
+		LOG("save: " << var->getName() << " : " << ((l && *l) ? (*l)->toString() : "null") << " .. " <<  (*r&&(current_view_l-1-r)?(*r)->toString():"null"));
     };
     //void SAVE_VAR_STATE_AND_VALUE(RefData** activeTemplate); // сохраняет состояние и значение переменной
-    void RESTORE_VAR_STATE(RefData** activeTemplate){ // восстанавливает состояние переменной
+    void RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r){ // восстанавливает состояние переменной
         RefVariableBase* var = ref_dynamic_cast<RefVariableBase>(*activeTemplate);
         if (!var) SYSTEMERROR("not var restoring!");
 
         MatchState *varMatchState;
-        matchStates.top()->restoreVar(this, var, varMatchState); // для польз-переменной varMatchState хранит ее подсессию
+        matchStates.top()->restoreVar(this, var, varMatchState, l, r); // для польз-переменной varMatchState хранит ее подсессию
     };
 
 };
 
-inline void MatchState::saveVar(Session *s, RefVariableBase *varOrData) {
-    varmap.put(varOrData, s->current_l, s->current_r, 0);
+inline void MatchState::saveVar(Session *s, RefVariableBase *varOrData, RefData **&l, RefData **&r) {
+    varmap.put(varOrData, l, r, 0);
 };
 
-inline void MatchState::restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState) {
-    varmap.top_pop(varOrData, s->current_l, s->current_r, matchState);
+inline void MatchState::restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState, RefData **&l, RefData **&r) {
+    varmap.top_pop(varOrData, l, r, matchState);
 };
 
 

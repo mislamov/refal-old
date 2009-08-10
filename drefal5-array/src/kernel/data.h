@@ -49,6 +49,9 @@ public:
 };
 
 
+static RefData* nullDataPoint = 0;
+
+
 inline RefData** MOVE_TO_next_term(RefData** &p) {
     return ++p;
 }
@@ -159,7 +162,11 @@ public:
 };
 
 
+class RefData_DOT : public RefBracketBase {
+public:
+	CLASS_OBJECT_CAST(RefData_DOT);
 
+};
 
 
 
@@ -178,21 +185,15 @@ public:
 
 
     inline RefData** get_first(){ return first; };
-    inline RefData** get_last (){ 
-		return &(first[leng-1]); 
+    inline RefData** get_last (){
+		return first+leng-1;
 	};
 
-    void noProtectOnly() {
-        #ifdef TESTCODE
-        if (! theProtect) return;
-        std::cerr << "\nPROTECT!\n" << std::flush;
-        abort();
-        #endif
-    };
+
 
     //void clear(){ noProtectOnly(); free(first); }; // уничтожение всего что ммежду first и second включительно
 
-    RefChain(RefData **l=0, RefData **r=0);
+    RefChain();
     RefChain(RefData **a11, RefData **a12, RefData **a21, RefData **a22, RefData **a31, RefData **a32);
     virtual ~RefChain() {
         free(first);

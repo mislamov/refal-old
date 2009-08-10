@@ -66,48 +66,32 @@
 
 
 
-
-
-
-
-RefChain::RefChain(RefData **l, RefData **r) {
-    #ifdef TESTCODE
-    //co::chaincount++;
-    theProtect = (bool)l;
-    #endif
-        first = l;
-    if (! first) {
-        after = r;
-        leng = 0;
-    } else {
-        after = 0; // ???
-        leng = r-l+1;
-    }
+RefChain::RefChain() {
+    first = 0;
+    after = 0;
+    leng = 0;
 };
 
-
 RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, RefData** a31, RefData** a32) {
-
-    #ifdef TESTCODE
-    //co::chaincount++;
-    theProtect = true;
-    #endif
 
     leng = 0;
     if (a11) leng += a12-a11;
     if (a21) leng += a22-a21;
     if (a31) leng += a32-a31;
 
-    if (!leng){
+    if (!leng) {
         first = 0;
         after = 0;
         return;
     }
 
-    first = (RefData**)malloc( sizeof(RefData*) * leng);
+    first = (RefData**)malloc( sizeof(RefData*) * leng + sizeof(RefData*));
     memcpy(first, a11, sizeof(RefData*) * (a12-a11));
     memcpy(first[(a12-a11)], a21, sizeof(RefData*) * (a22-a21));
     memcpy(first[(a12-a11)+(a22-a21)], a31, sizeof(RefData*) * (a32-a31));
+	//memset(first+leng, 0, sizeof(RefData*));
+	memcpy(first+leng, &nullDataPoint, sizeof(RefData*));
+
     return;
 
 };
@@ -115,21 +99,25 @@ RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, R
 
 
 RefChain& RefChain::operator+=(RefData *ch) {
-    noProtectOnly();
+
 
     if (! this->first && !this->after) {
-        first = (RefData**)malloc( sizeof(RefData*) );
+        first = (RefData**)malloc( sizeof(RefData*) +  sizeof(RefData*)); // + для  0x0
         if (!first) std::cerr << "NO MEMORY";
         memcpy(first, &ch, sizeof(RefData*));
+        //memset(first+1, 0, sizeof(RefData*));  // 0x0
+		memcpy(first+1, &nullDataPoint, sizeof(RefData*));
         leng = 1;
         return *this;
     }
 
-    first   =  (RefData**) realloc(first, (++leng)*sizeof(RefData*));
+    first   =  (RefData**) realloc(first, (++leng)*sizeof(RefData*) +  sizeof(RefData*));
     if (! this->first) {
         std::cerr << "\nNO MEMORY !";
     }
     memcpy(first+leng-1, &ch, sizeof(RefData*));
+    //memset(first+leng, 0, sizeof(RefData*));  // 0x0
+	memcpy(first+leng, &nullDataPoint, sizeof(RefData*));
 
     return *this;
 };
@@ -141,28 +129,33 @@ RefChain& RefChain::operator+=(RefChain &ch) {
 
 
 RefChain& RefChain::operator+=(RefChain *ch) {
-    noProtectOnly();
+
 
     if (!this->first) {
         #ifdef DEBUG
-        if (this->after){
+        if (this->after) {
             LOG("Poterja posledovatelnosti chain (after != NULL) but (first = malloc)");
         }
         #endif
-        first = (RefData**)malloc( sizeof(RefData*) * ch->leng);
+        first = (RefData**)malloc( sizeof(RefData*) * ch->leng  + sizeof(RefData*));
         if (!first) std::cerr << "NO MEMORY";
-        memcpy(first, &ch, sizeof(RefData*) * ch->leng);
+        memcpy(first, &ch->first, sizeof(RefData*) * ch->leng);
         leng = ch->leng;
+        //memset(first+leng+1, 0, sizeof(RefData*));
+		memcpy(first+leng+1, &nullDataPoint, sizeof(RefData*));
         return *this;
     }
 
-    first   =  (RefData**) realloc(first, (this->leng + ch->leng)*sizeof(RefData*));
+    first   =  (RefData**) realloc(first, (this->leng + ch->leng)*sizeof(RefData*) + sizeof(RefData*));
     if (! this->first) {
         RUNTIMEERROR("ABORT", "\nNO MEMORY!");
         return *this;
     }
     memcpy(&( this->first[leng]), ch->first, (ch->leng)*sizeof(RefData*));
     this->leng += ch->leng;
+    //memset(first+leng+1, 0, sizeof(RefData*) );
+	memcpy(first+leng+1, &nullDataPoint, sizeof(RefData*));
+
     return *this;
 };
 
@@ -303,6 +296,7 @@ RefVariable::RefVariable(unistring name) : RefVariableBase() {
 
 
 RefData** beginOfTerm(RefData** r) {
+	if (! *r) return r;
     RefBracketBase *br;
     if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || (br->is_opened)) {
         return r;
@@ -318,6 +312,7 @@ RefData** beginOfTerm(RefData** r) {
 };
 
 RefData** endOfTerm(RefData** r) {
+	if (! *r) return r;
     RefBracketBase *br;
     if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || !(br->is_opened)) {
         return r;

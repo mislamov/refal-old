@@ -4,11 +4,11 @@
 	<File name="src\kernel\config.h" open="0" top="0" tabpos="7">
 		<Cursor position="10050" topLine="236" />
 	</File>
-	<File name="src\kernel\data.cpp" open="0" top="0" tabpos="5">
-		<Cursor position="2198" topLine="72" />
+	<File name="src\kernel\data.cpp" open="1" top="0" tabpos="5">
+		<Cursor position="3574" topLine="103" />
 	</File>
-	<File name="src\kernel\data.h" open="1" top="0" tabpos="2">
-		<Cursor position="1198" topLine="78" />
+	<File name="src\kernel\data.h" open="1" top="0" tabpos="7">
+		<Cursor position="5680" topLine="168" />
 	</File>
 	<File name="src\kernel\rfunction.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="831" topLine="0" />
@@ -16,22 +16,22 @@
 	<File name="src\kernel\rfunction.h" open="0" top="0" tabpos="5">
 		<Cursor position="1539" topLine="41" />
 	</File>
-	<File name="src\kernel\session.cpp" open="1" top="0" tabpos="3">
-		<Cursor position="9000" topLine="186" />
+	<File name="src\kernel\session.cpp" open="1" top="1" tabpos="2">
+		<Cursor position="8311" topLine="144" />
 	</File>
-	<File name="src\kernel\session.h" open="1" top="1" tabpos="5">
-		<Cursor position="2141" topLine="63" />
+	<File name="src\kernel\session.h" open="1" top="0" tabpos="4">
+		<Cursor position="2129" topLine="69" />
 	</File>
 	<File name="src\kernel\symbols.h" open="1" top="0" tabpos="1">
-		<Cursor position="195" topLine="0" />
+		<Cursor position="2171" topLine="61" />
 	</File>
-	<File name="src\kernel\variables.cpp" open="1" top="0" tabpos="4">
-		<Cursor position="1109" topLine="1" />
+	<File name="src\kernel\variables.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="1621" topLine="15" />
 	</File>
 	<File name="src\kernel\variables.h" open="0" top="0" tabpos="0">
 		<Cursor position="448" topLine="0" />
 	</File>
-	<File name="src\main.cpp" open="0" top="0" tabpos="2">
-		<Cursor position="432" topLine="0" />
+	<File name="src\main.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="152" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>
