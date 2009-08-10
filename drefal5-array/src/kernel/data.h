@@ -28,6 +28,7 @@
 #include "config.h"
 
 class RefExecBracket;
+class RefChain;
 
 // јбстрактный класс - предок всех термов €зыка
 class RefData : public RefObject {
@@ -128,70 +129,23 @@ public:
 };
 
 
-
-
-class RefBracketBase : public RefData {
-public:
-    bool is_opened; // true = begin- ; false = end-
-
-    RefBracketBase*  other; // скобка всегда в любой цепочке имеет одну и ту же пару.
-    BASE_CLASS_CAST(RefBracketBase);
-
-    RefBracketBase(); // открывающа€
-    RefBracketBase(RefBracketBase *dr); // закрывающа€
-
-    virtual bool       operator ==(RefData &rd);
-};
-
-class RefExecBracket : public RefBracketBase {
-public:
-    CLASS_OBJECT_CAST(RefExecBracket);
-
-    RefExecBracket(RefData* rp=0);
-    RefExecBracket(RefExecBracket *br, RefData* rp=0);
-
-    bool       operator ==(RefData &rd);
-    TResult    init(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
-    TResult    back(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
-    unistring toString() {
-        std::ostringstream s;
-        s << (is_opened?"<":"> ") ;//<< "." << (long)this << "other:" << (long)other;
-        return s.str();
-    };
-
-};
-
-
-class RefData_DOT : public RefBracketBase {
-public:
-	CLASS_OBJECT_CAST(RefData_DOT);
-
-};
-
-
+// скобки - это пара ссылок в цепочке на общее тело
+class RefBracketBase;
 
 
 
 class RefChain : public RefObject  {
-    #ifdef TESTCODE
-    bool   theProtect;
-    #endif
-
 public:
     size_t leng;
 
     RefData** first;
     RefData** after;
 
-
-    inline RefData** get_first(){ return first; };
+	inline RefData** get_first(){ return first; };
     inline RefData** get_last (){
+		//return (leng ? first+leng-1 : 0);
 		return first+leng-1;
 	};
-
-
-
-    //void clear(){ noProtectOnly(); free(first); }; // уничтожение всего что ммежду first и second включительно
 
     RefChain();
     RefChain(RefData **a11, RefData **a12, RefData **a21, RefData **a22, RefData **a31, RefData **a32);
@@ -202,17 +156,9 @@ public:
     // TODO: сделать блоковое расширение
     RefChain& operator+=(RefChain &ch);   // к левому аргумент пристыковываетс€ копи€ правого!
     RefChain& operator+=(RefChain *ch);  // к левому аргумент пристыковываетс€ копи€ правого!
+	RefChain& operator+=(RefBracketBase  *br);
     RefChain& operator+=(RefData  *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
     RefChain* Copy(Session *s =0);
-
-    inline RefChain* clone(RefChain *cc) {
-        #ifdef TESTCODE
-        theProtect = true;
-        cc->theProtect = true;
-        #endif
-        first = cc->first;
-        after = cc->after;
-    };
 
     unistring toString();
     unistring explode(); // голый текст без форматировани€
@@ -220,6 +166,61 @@ public:
 
 RefData** beginOfTerm(RefData** r);
 RefData** endOfTerm  (RefData** r);
+
+class RefBracketBase : public RefData {
+public:
+    BASE_CLASS_CAST(RefBracketBase);
+	size_t opened_ind;
+	size_t closed_ind;
+	RefChain *chain;
+
+	RefBracketBase (){opened_ind = closed_ind = SIZE_MAX; chain=0; }
+	bool isOpen(RefData** p){
+		#ifdef TESTCODE
+		if (closed_ind-opened_ind <=0 || !chain || ((chain->first+opened_ind)!= p && (chain->first+closed_ind)!=p))SYSTEMERROR("brack-error");
+		#endif
+
+		return ((chain->first+opened_ind)==p);
+	};
+	RefBracketBase **getOther(RefData** p){
+		#ifdef TESTCODE
+		if (closed_ind-opened_ind <=0 || !chain || (chain->first+opened_ind!=p && chain->first+closed_ind!=p))SYSTEMERROR("brack-error");
+		if (! ref_dynamic_cast<RefBracketBase>(* chain->first+opened_ind)) SYSTEMERROR("brack-error");
+		if (! ref_dynamic_cast<RefBracketBase>(* chain->first+closed_ind)) SYSTEMERROR("brack-error");
+		#endif
+		return (RefBracketBase**)(chain->first+opened_ind==p ? chain->first+closed_ind : chain->first+opened_ind);
+	};
+
+};
+
+class RefExecBracket : public RefBracketBase {
+public:
+    CLASS_OBJECT_CAST(RefExecBracket);
+
+	bool       operator ==(RefData &rd);
+    TResult    init(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
+    TResult    back(RefData *&tpl,  Session* s, RefData *&l, RefData *&r );
+    unistring toString() {
+        std::ostringstream s;
+		s << "<br>" ;//<< "." << (long)this << "other:" << (long)other;
+        return s.str();
+    };
+
+};
+
+
+class RefData_DOT : public RefBracketBase {
+public:
+	CLASS_OBJECT_CAST(RefData_DOT);
+	unistring explode(){ return "[br]"; };
+    bool operator ==(RefData &rd) { return false; };
+    TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);
+    TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);
+
+};
+
+
+
 
 class TVarBody : public RefObject {
 public:

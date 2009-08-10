@@ -67,21 +67,23 @@
 
 
 RefChain::RefChain() {
-    first = 0;
+	first = (RefData**)malloc(sizeof(RefData*));
+	memcpy(first, &nullDataPoint, sizeof(RefData*));
     after = 0;
     leng = 0;
 };
 
 RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, RefData** a31, RefData** a32) {
-
     leng = 0;
     if (a11) leng += a12-a11;
     if (a21) leng += a22-a21;
     if (a31) leng += a32-a31;
 
     if (!leng) {
-        first = 0;
-        after = 0;
+		first = (RefData**)malloc(sizeof(RefData*));
+		first[0] = nullDataPoint;
+		after = 0;
+		leng = 0;
         return;
     }
 
@@ -98,9 +100,25 @@ RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, R
 
 
 
+RefChain& RefChain::operator+=(RefBracketBase *br) {
+	*this += (RefData*)br;
+	br->chain = this;
+	if (br->opened_ind == SIZE_MAX){ // [
+		#ifdef TESTCODE
+		if (br->closed_ind != SIZE_MAX) SYSTEMERROR("chain + bracket alarm");
+		if (!ref_dynamic_cast<RefBracketBase>(* this->get_last())) SYSTEMERROR("alarm");
+		#endif
+		br->opened_ind = (get_last()-first);
+	} else { // ]
+		#ifdef TESTCODE
+		if (!ref_dynamic_cast<RefBracketBase>(* this->get_last())) SYSTEMERROR("alarm");
+		#endif
+		br->closed_ind = (this->get_last()-first);
+	}
+	return *this;
+};
+
 RefChain& RefChain::operator+=(RefData *ch) {
-
-
     if (! this->first && !this->after) {
         first = (RefData**)malloc( sizeof(RefData*) +  sizeof(RefData*)); // + для  0x0
         if (!first) std::cerr << "NO MEMORY";
@@ -292,16 +310,46 @@ RefVariable::RefVariable(unistring name) : RefVariableBase() {
 
 
 
+TResult RefData_DOT::init(RefData **&tpl, Session *s, RefData **&l, RefData **&r){
+    RefData_DOT* aux;
+    if (isOpen(tpl)) { // (
+		if (r == s->current_view_l-1){
+			MOVE_TO_next_template(tpl);
+            return GO;
+        }
+        ; // DOT не двигает указатель на след. аргумент
+        MOVE_TO_pred_template(tpl);
+        return ERROR;
+    };
+
+    // )
+    MOVE_TO_next_term(r);
+    
+	if ( r != s->current_view_r+1) {
+        MOVE_TO_pred_template(tpl);
+        return BACK;
+    };
+    return SUCCESS;
+};
+
+TResult RefData_DOT::back(RefData **&tpl, Session *s, RefData **&l, RefData **&r){
+	if (isOpen(tpl)) {
+        return FAIL;
+    };
+    MOVE_TO_pred_template(tpl);
+    return BACK;
+};
+
 
 
 
 RefData** beginOfTerm(RefData** r) {
 	if (! *r) return r;
     RefBracketBase *br;
-    if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || (br->is_opened)) {
+	if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || (br->isOpen(r))) {
         return r;
     }
-    br=br->other;
+    br=*(br->getOther(r));
     while (*r != br) {
         --r;
         #ifdef TESTCODE
@@ -314,10 +362,10 @@ RefData** beginOfTerm(RefData** r) {
 RefData** endOfTerm(RefData** r) {
 	if (! *r) return r;
     RefBracketBase *br;
-    if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || !(br->is_opened)) {
+	if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || !(br->isOpen(r))) {
         return r;
     }
-    br=br->other;
+    br=*(br->getOther(r));
     while (*r != br) {
         ++r;
         #ifdef TESTCODE

@@ -11,15 +11,19 @@ int main() {
 
     RefChain chain1, chain2;
 
+	RefData_DOT *dot1 = new RefData_DOT();
+
     chain1 += new RefAlpha('A');
     chain1 += new RefAlpha('B');
     chain1 += new RefInteger(315);
     chain1 += new RefAlpha('D');
 
-    //chain2 += new RefAlpha('A');
+	chain2 += dot1;
+    chain2 += new RefAlpha('A');
     chain2 += new RefVariable_e("1");
 	//chain2 += new RefAlpha('C');
-    //chain2 += new RefAlpha('D');
+    chain2 += new RefAlpha('D');
+	chain2 += dot1;
 
     std::cout << chain1.toString() << "\n";
     std::cout << chain2.toString() << "\n";

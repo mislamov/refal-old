@@ -33,7 +33,7 @@ RefChain *Session::executeExpression(RefChain *chain) {
         /// поиск скобки и выделение аргумента
         while (r_exec < chain_last) {
             if (tmpBr = ref_dynamic_cast<RefExecBracket>(*r_exec)) { // > или <
-                if (! tmpBr->is_opened) { // > - нашли то, что искали
+                if (! tmpBr->isOpen(r_exec)) { // > - нашли то, что искали
                     l_exec = openExecs.top();
                     openExecs.pop();
                     break;
@@ -154,7 +154,7 @@ unistring getTextOfChain(RefData** from, RefData** to){
 };
 
 #define LOGSTEP(s) \
-std::cout << s << "\n" << (*activeTemplate)->toString() << " ~ " << getTextOfChain(r+1, rr+1) << "\n" << std::flush;
+	std::cout << s << "\n" << (*activeTemplate?(*activeTemplate)->toString():"null") << " ~ " << getTextOfChain(r+1, rr+1) << "\n" << std::flush;
 
 
 // сопоставляет образец tmplate с объектным выражением с l по r.
@@ -163,8 +163,6 @@ std::cout << s << "\n" << (*activeTemplate)->toString() << " ~ " << getTextOfCha
 bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefData **rr, bool isdemaching, bool isRevers) {
     LOG("New MATCHING : tmplateChain=" << tmplate->toString() << "  isDematching="<<isdemaching);
     RefData **activeTemplate = 0, **l=0, **r=0;
-	RefData **datadotTemplate_end = tmplate->get_last()+1;
-	RefData **datadotTemplate_beg = tmplate->get_first()-1;
 
     if (isdemaching) {
         // продолжаем ранее успешное сопоставление
@@ -184,28 +182,26 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefD
         }
     }
 
-    // первая итерация - обычно для RefData_DOT
-//    if (! ref_dynamic_cast<RefData_DOT>(activeTemplate)) {
-//        SYSTEMERROR("test: " << activeTemplate->toString());
-//    }
-
-    //LOG("\n\n~~~ " << tmplateChain->toString() << "  ~~  " << s->getPole_zrenija()->toString());
-
-    while (true) {
+	while (true) {
         // сопоставляем текущий шаблон
 
         switch (result_sost) {
 
         case GO: {
             // выполняем инит
-			if (activeTemplate==datadotTemplate_end && r==current_view_r+1){
-				result_sost = SUCCESS;
-				break;
-			};
+			/*if (activeTemplate==datadotTemplate_end ){
+				if (r==current_view_r){
+					result_sost = SUCCESS;
+					break;
+				} else {
+					result_sost = BACK;
+					MOVE_TO_pred_template(activeTemplate);
+					break;
+				}
+			};*/
 
             LOGSTEP("GO  ");
             #ifdef TESTCODE
-//            if (l)  { SYSTEMERROR("RefData::init() l is NULL !"); };
             if (!r) {
                 SYSTEMERROR("RefData::init() tring to matching with NULL address!");
             };
@@ -215,10 +211,10 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefD
             break;
         }
         case BACK: {
-			if (activeTemplate==datadotTemplate_beg){
+			/*if (activeTemplate==datadotTemplate_beg){
 				result_sost = FAIL;
 				break;
-			};
+			}*/
 
             LOGSTEP("BACK");
             result_sost = (*activeTemplate)->back(activeTemplate, this, l, r); /// ШАГ НАЗАД

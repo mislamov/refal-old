@@ -282,7 +282,7 @@ public:
 
 class RefTemplateBridgeTmpl;
 
-
+/**
 // мосты между лев.частью и внешним шаблоном. Со стороны левой части
 class RefTemplateBridgeVar : public RefBracketBase  {
     unistring name;
@@ -295,11 +295,7 @@ public:
 
     RefTemplateBridgeTmpl* bridge; // указатель на соединяющий мост тела шаблона. Присвоить до сопоставления - при инициализации загруженного модуля
 
-RefTemplateBridgeVar () : RefBracketBase() {
-        bridge=0;
-        name="NOT SET";
-    };
-RefTemplateBridgeVar(RefTemplateBridgeVar *nd) : RefBracketBase(nd) {
+RefTemplateBridgeVar () {
         bridge=0;
         name="NOT SET";
     };
@@ -377,5 +373,6 @@ RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd) : RefBracketBase(nd) { };
     virtual void    forceback(Session* s) {};
 
 };
+*/
 
 #endif // FUNCTION_H_INCLUDED

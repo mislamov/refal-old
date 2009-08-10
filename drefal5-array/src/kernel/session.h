@@ -203,6 +203,7 @@ public:
 
 class Session {
     friend class MatchState;
+	friend class RefData_DOT;
 
     std::stack<MatchState*>  matchStates;
     DataLinkPool<RefData**> stackOfDataSkob; // стек сопоставления скобок
