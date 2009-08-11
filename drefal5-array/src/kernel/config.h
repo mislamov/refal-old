@@ -246,10 +246,11 @@ public:
 
 
 template <class T>
-T* ref_dynamic_cast(RefObject *d) {
+T* ref_dynamic_cast(RefObject* d) {
     #ifdef TESTCODE
     if (!d){
-        SYSTEMERROR("ref_dynamic_cast for 0!");
+		return 0;
+        //SYSTEMERROR("ref_dynamic_cast for 0!");
     }
 
     T   *testres  = dynamic_cast<T*>(d),

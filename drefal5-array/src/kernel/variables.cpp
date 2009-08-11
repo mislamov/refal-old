@@ -45,12 +45,96 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         MOVE_TO_pred_template(tpl);
         return BACK;
     };
-    s->SAVE_VAR_STATE(tpl, l, r); // TODO: Р_РїС'РёР_РёР·РёС_Р_Р_Р°С'С_
+    s->SAVE_VAR_STATE(tpl, l, r);
     MOVE_TO_next_template(tpl);
     return GO;
 
 };
 
-bool    RefVariable_e::operator==(RefData &rd) {
-    return ref_dynamic_cast<RefVariable_e >(&rd);
+bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_e >(&rd); };
+
+
+
+
+TResult  RefVariable_E::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+	RefData **rr = s->getTopDataSkob();
+	MOVE_TO_pred_term(rr);
+
+	RefData **rnext = r;
+	MOVE_TO_next_term(rnext);
+
+    if (rnext!=rr) { // getNextSymbol! not nextTerm
+        // НЕ пустое значение
+        l = rnext; // getNextSymbol! not nextTerm
+        r = rr;
+    }
+    s->SAVE_VAR_STATE(tpl, l, r);
+	MOVE_TO_next_template(tpl);
+    return GO;
 };
+
+TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+    s->RESTORE_VAR_STATE(tpl, l, r);
+    if (!l) {
+		MOVE_TO_pred_template(tpl);
+        return BACK;
+    }
+    #ifdef TESTCODE
+    if (! r)SYSTEMERROR("alarm!");
+    #endif
+    r = beginOfTerm(r);
+
+    if (l==r) {
+        l = 0;
+    }
+    MOVE_TO_pred_term(r);
+    s->SAVE_VAR_STATE( tpl, l, r);          /// todo оптимизировать: не удалять тело переменной в начале при ресторе, а изменять его параметры
+	MOVE_TO_next_template(tpl);
+    return GO;
+};
+
+bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd); };
+
+
+
+TResult  RefVariable_s::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+    MOVE_TO_next_term(r);
+    if (*r && !ref_dynamic_cast<RefBracketBase >(*r) ) {
+        l=r;
+        s->SAVE_VAR_STATE( tpl, l, r);
+        MOVE_TO_next_template(tpl);
+        return GO;
+    }
+
+    MOVE_TO_pred_template(tpl);
+    return BACK;
+};
+
+TResult  RefVariable_s::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+	s->RESTORE_VAR_STATE(tpl, l, r); /// todo: оптимизация. заменить на DROP_STATE
+    MOVE_TO_pred_template(tpl);
+    return BACK;
+};
+bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_s >(&rd); };
+
+
+
+TResult  RefVariable_t::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+    MOVE_TO_next_term(r);
+    if  (*r && (void*)r!=(void*)s->getTopDataSkob()) {
+        l=r;
+        s->SAVE_VAR_STATE( tpl, l, r);
+        MOVE_TO_next_template(tpl);
+        return GO;
+    }
+
+    MOVE_TO_pred_template(tpl);
+    return BACK;
+};
+
+TResult  RefVariable_t::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+    s->RESTORE_VAR_STATE(tpl, l, r);
+    MOVE_TO_pred_template(tpl);
+    return BACK;
+};
+bool    RefVariable_t::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_t >(&rd); };

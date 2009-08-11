@@ -26,10 +26,10 @@ RefChain *Session::executeExpression(RefChain *chain) {
     RefData **r_exec;
     RefData **chain_last;  // на эл-т после последнего
     RefExecBracket *tmpBr = 0;
-    r_exec = chain->first;
+    r_exec = chain->get_first();
 
     do {
-        chain_last = &(chain->first[chain->leng]); // на эл-т после последнего
+        chain_last = &(chain->get_first()[chain->leng]); // на эл-т после последнего
         /// поиск скобки и выделение аргумента
         while (r_exec < chain_last) {
             if (tmpBr = ref_dynamic_cast<RefExecBracket>(*r_exec)) { // > или <
@@ -109,21 +109,21 @@ RefChain *Session::executeExpression(RefChain *chain) {
         if (chain->leng == 0) SYSTEMERROR("alarm");
         #endif
 
-        RefData  **a11 = chain->first;
+        RefData  **a11 = chain->get_first();
         RefData  **a12 = l_exec;
         --a12;
         RefData  **a21 = r_exec;
         ++a21;
-        RefData  **a22 = &( chain->first[chain->leng-1] );
+        RefData  **a22 = &( chain->get_first()[chain->leng-1] );
 
 //  новая chain = ff (chain_first..l_exec[-1] + newchain + r_exec[+1]..chain_last)  нужна ссылка на начало копии newchain
-        RefChain *tmpchain = new RefChain(a11, a12, newchain->first, &( newchain->first[newchain->leng-1] ), a21, a22);
+        RefChain *tmpchain = new RefChain(a11, a12, newchain->get_first(), &( newchain->get_first()[newchain->leng-1] ), a21, a22);
 //  удалить старую chain
         delete newchain;
         chain = tmpchain;
         // теперь chain содержит результат подстановки
 
-        r_exec = &( chain->first[a12-a11] );
+        r_exec = &( chain->get_first()[a12-a11] );
     } while (true);
 
 };
@@ -132,7 +132,13 @@ RefChain *Session::executeExpression(RefChain *chain) {
 // прямое копирование
 RefChain *Session::substituteExpression(RefChain *chain) {
     // итерация по элементам аргумента (RefChain блоковый)
-    // если переменная, то добавляем копию ее значения
+    // если закрытая переменная, то добавляем копию ее значения
+	// если открытая - то ошибка
+	
+	RefData **a1, **a2, **b1, **b2, **c1, **c2;
+	// 1 - вычисление длины нового вектора + поиск точек переменной
+	
+
 	return 0;
 };
 
@@ -142,19 +148,19 @@ RefObject* Session::findFunctionById(unistring id) {
 };
 
 unistring getTextOfChain(RefData** from, RefData** to){
-	if (!from) return "[null]";
+	if (!from || !*from) return "[null]";
 	if (!to || (to-from)<0 || (to-from)>1024) return "[error string]";
 	unistring res = "";
 	int i = 0;
-	while(&from[i] != to){
-		res += from[i]->toString();
+	while(&from[i] <= to){
+		if(from[i]) res += from[i]->toString();
 		++i;
 	}
 	return res;
 };
 
 #define LOGSTEP(s) \
-	std::cout << s << "\n" << (*activeTemplate?(*activeTemplate)->toString():"null") << " ~ " << getTextOfChain(r+1, rr+1) << "\n" << std::flush;
+	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->toString():"null") << " ~ " << (s=="BACK"?"":getTextOfChain(r+1, rr+1)) << "\n" << std::flush;
 
 
 // сопоставляет образец tmplate с объектным выражением с l по r.
@@ -176,9 +182,9 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefD
         activeTemplate = tmplate->get_first();
 
         if (ref_dynamic_cast<RefConditionBase >(initer)) {
-            saveCurrentStateSmall(ll, rr); // сохр. состояние перед вычислением условия предложения
+			saveCurrentStateSmall(ll, rr, tmplate); // сохр. состояние перед вычислением условия предложения
         } else {
-            saveCurrentStateLarge(ll, rr); // сохр. состояние перед вычислением всего предложения
+            saveCurrentStateLarge(ll, rr, tmplate); // сохр. состояние перед вычислением всего предложения
         }
     }
 

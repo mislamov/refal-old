@@ -1,11 +1,6 @@
 #ifndef SESSION_H_INCLUDED
 #define SESSION_H_INCLUDED
 
-#ifndef POOLSIZE_DEFAULT
-    #define POOLSIZE_DEFAULT 128
-#endif
-
-
 #include <stack>
 #include <stdlib.h>
 
@@ -15,6 +10,7 @@
 class VarMap;
 class MatchState;
 class RefVariableBase;
+class RefStructBracket;
 
 
 class VarMapItem {
@@ -146,6 +142,27 @@ public:
         }
     };
 
+	// ищет по ссылке на переменную ее облать видимости
+	bool findByLink(RefVariableBase* var, RefData** &l, RefData** &r, MatchState *&matchState) {
+        for (size_t ind = last_ind; ind>=0; --ind) {
+            if (pool[ind].var==var) {
+                l = pool[ind].l;
+                r = pool[ind].r;
+                return true;
+            }
+        }
+        return false;
+    };
+
+
+	void showDebugInfo(){
+		std::cout << "****\t\tVarMap pool:" << std::flush << "\n";
+		size_t ind = last_ind;
+		while(ind){
+			std::cout << "****\t\t\t" << ind << ") " << std::flush << pool[ind].var->toString() << " : " << getTextOfChain(beginOfTerm(pool[ind].l), endOfTerm(pool[ind].r)) << "\n";
+			--ind;
+		};
+	};
 };
 
 // блок сопоставлений (откатываемый)
@@ -155,58 +172,34 @@ class MatchState {
     RefData** view_r;
 
 public:
-    MatchState(RefData** ll, RefData** rr) {
+	RefChain *tpl;
+	
+	MatchState(RefData** ll, RefData** rr, RefChain *tl) {
         view_l=ll;
         view_r=rr;
+		tpl = tl;
     };
 
     // сохраняет состояние переменной
     void saveVar(Session *s, RefVariableBase *varOrData, RefData **&l, RefData **&r);
     void restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState, RefData **&l, RefData **&r);
+	bool findVar(RefVariableBase *var, RefData **&l, RefData **&r, MatchState* &matchState);
 
-};
-
-template <class T>
-class DataLinkPool {
-	size_t idx;
-	size_t size;
-	T* pool;
-public:
-	DataLinkPool(){
-		idx = 0;
-		size = POOLSIZE_DEFAULT;
-		pool = (T*)malloc(sizeof(T)*size);
-		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
-		memset(pool, 0xff, sizeof(T)*size);
-	};
-
-	void put(T l){
-		if (idx >= size-1){
-			size+=POOLSIZE_DEFAULT;
-			pool = (T*)realloc(pool, sizeof(T)*size);
-		};
-		pool[idx] = l;
-		++idx;
-	};
-
-	T top_pop(){ 
-		#ifdef TESTCODE
-		if (!idx) SYSTEMERROR("link-stack is empty!");
-		#endif
-		return pool[--idx]; 
-	};
-
-	T top(){ 
-		return pool[idx-1]; 
+	void showDebugInfo(){
+		std::cout << "****\tMatchState:\t" << std::flush << getTextOfChain(view_l, view_r) << "\t~\t" << tpl->toString() << "\n";
+		varmap.showDebugInfo();
 	};
 };
+
 
 class Session {
     friend class MatchState;
 	friend class RefData_DOT;
+	friend class RefStructBracket;
 
     std::stack<MatchState*>  matchStates;
-    DataLinkPool<RefData**> stackOfDataSkob; // стек сопоставления скобок
+    DataLinkPool<RefData**> stackOfDataSkob;		// стек сопоставления скобок
+    DataLinkPool<RefData**> stackOfDataSkob_done;	// стек удачного сопоставления скобок
     RefData** current_view_l;
     RefData** current_view_r;
 public:
@@ -216,13 +209,17 @@ public:
 
     TResult  result_sost;
 
-    TVarBody* getBodyByLink(RefVariable*) {
-        SYSTEMERROR("not realized");
+	inline bool getBodyByLink(RefVariableBase *var, RefData **&l, RefData**&r, MatchState *&matchState ) {
+		return matchStates.top()->findVar(var, l, r, matchState);
     };
 
-    RefData** getTopDataSkob() {
-        return (RefData**)stackOfDataSkob.top();
+    RefData** getTopDataSkob() { // RefData так как не только скобки но и границы аргументов
+        return stackOfDataSkob.top();
     };
+	void setTopDataSkob(RefData** b) {
+		stackOfDataSkob.put(b);
+    };
+
 
     // сопоставляет образец tmplate с объектным выражением с l по r.
     // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
@@ -236,14 +233,14 @@ public:
 
     RefObject* findFunctionById(unistring id);
 
-    MatchState* saveCurrentStateLarge(RefData** ll, RefData** rr) { // сохраняет и возвращает ссылку на состояние сопоставления для предложения
-		MatchState* res = new MatchState(current_view_l=ll, current_view_r=rr);
+    MatchState* saveCurrentStateLarge(RefData** ll, RefData** rr, RefChain *tpl) { // сохраняет и возвращает ссылку на состояние сопоставления для предложения
+		MatchState* res = new MatchState(current_view_l=ll, current_view_r=rr, tpl);
 		stackOfDataSkob.put(current_view_r+1);
         matchStates.push( res );
 		return res;
     };
-    MatchState* saveCurrentStateSmall(RefData** ll, RefData** rr) { // сохраняет и возвращает ссылку на состояние сопоставления образца
-		MatchState* res = new MatchState(current_view_l=ll, current_view_r=rr);
+    MatchState* saveCurrentStateSmall(RefData** ll, RefData** rr, RefChain *tpl) { // сохраняет и возвращает ссылку на состояние сопоставления образца
+		MatchState* res = new MatchState(current_view_l=ll, current_view_r=rr, tpl);
         matchStates.push( res );
 		return res;
     };
@@ -267,6 +264,10 @@ public:
         matchStates.top()->restoreVar(this, var, varMatchState, l, r); // для польз-переменной varMatchState хранит ее подсессию
     };
 
+	void showDebugInfo(){
+		std::cerr << "\n***** SESS **********************\n";
+		this->matchStates.top()->showDebugInfo();
+	}
 };
 
 inline void MatchState::saveVar(Session *s, RefVariableBase *varOrData, RefData **&l, RefData **&r) {
@@ -275,6 +276,10 @@ inline void MatchState::saveVar(Session *s, RefVariableBase *varOrData, RefData 
 
 inline void MatchState::restoreVar(Session *s, RefVariableBase *varOrData, MatchState* &matchState, RefData **&l, RefData **&r) {
     varmap.top_pop(varOrData, l, r, matchState);
+};
+
+inline bool MatchState::findVar(RefVariableBase *var, RefData **&l, RefData **&r, MatchState* &matchState) {
+	return varmap.findByLink(var, l, r, matchState);
 };
 
 
