@@ -64,6 +64,11 @@ RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, R
 };
 
 
+RefChain& RefChain::operator+=(RefVariableBase *vr) {
+	*this += (RefData*)vr;
+	this->vars.put(vr);
+};
+
 
 RefChain& RefChain::operator+=(RefBracketBase *br) {
 	*this += (RefData*)br;

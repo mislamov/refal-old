@@ -150,6 +150,7 @@ class RefVariableBase;
 class RefChain : public RefObject  {
     RefData** first;
 	DataLinkPool<RefBracketBase*> brackets; // скобки дл€ цепочки
+	DataLinkPool<RefLinkToVariable*> vars ; // закрытые переменные
 public:
     size_t leng;
 
@@ -166,6 +167,7 @@ public:
     RefChain& operator+=(RefChain &ch);   // к левому аргумент пристыковываетс€ копи€ правого!
     RefChain& operator+=(RefChain *ch);  // к левому аргумент пристыковываетс€ копи€ правого!
 	RefChain& operator+=(RefBracketBase  *br);
+	RefChain& operator+=(RefVariableBase  *vr);
     RefChain& operator+=(RefData  *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
     RefChain* Copy(Session *s =0);
 
