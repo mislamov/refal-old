@@ -6,6 +6,7 @@
 
 #include "data.h"
 #include "rfunction.h"
+#include "poolTuples.h"
 
 class VarMap;
 class MatchState;
@@ -35,123 +36,36 @@ public:
 };
 
 
-// Пулл-стек. сохраняет (put) и восстанавливает (top_pop) содержимое объектов типа T путем прямого копирования.
-template <class T>
-class PooledClass {
-protected:
-	T* pool; // массив объетов. индексируется с 1. pool[0] - для служебного использования
-    size_t last_ind;   // индекс последнего в стеке элемента
-    size_t poolsize;   // индекс последнего в стеке элемента
 
-public:
-    PooledClass() {
-        last_ind = 0;
-        poolsize = POOLSIZE_DEFAULT;
-        pool = (T*)malloc( sizeof(T)*POOLSIZE_DEFAULT );
-		#ifdef TESTCODE
-		memset(pool, 0xff, sizeof(T)*POOLSIZE_DEFAULT);
-		#endif
-    };
-
-    ~PooledClass() {
-        free(pool);
-    };
-
-    // сохраняет состояние item копированием
-    void put_from(T* item) {
-        ++last_ind ;
-        if (last_ind >= poolsize) {
-            // пул исчерпан
-            LOG("T-pool is full. realloc!");
-            poolsize += POOLSIZE_DEFAULT;
-            pool = (T*) realloc(pool, poolsize*sizeof(T) );
-            if (!pool) {
-                RUNTIMEERROR("T-pool", "not anouth memory");
-                return;
-            }
-			#ifdef TESTCODE
-			memset(pool+last_ind, 0xff, sizeof(T)*POOLSIZE_DEFAULT);
-			#endif
-        }
-        
-		memcpy(pool+last_ind, item, sizeof(T));
-        return;
-    };
-
-    void top_pop_to(T* item) {        
-        T* pool_last_ind = pool+last_ind;
-		memcpy(item, pool_last_ind , sizeof(T));
-		#ifdef TESTCODE
-		memset(pool+last_ind, 0xff, sizeof(T));
-		#endif
-        --last_ind;
-
-	};
-
-    void clear() {
-        last_ind = 0;
-		#ifdef TESTCODE
-		memset(pool, 0xff, sizeof(T)*poolsize);
-		#endif
-		memset(pool, 0xff, sizeof(T));
-    };
-
-};
-
-
-class VarMap : public PooledClass<VarMapItem>{
+class VarMap : public PooledTuple4<RefVariableBase*, RefData** , RefData** , MatchState*>{
 public:
 	VarMap(void *own = 0) {
-        pool[0].var = (RefVariableBase*)own;
+        pool[0].i1 = (RefVariableBase*)own;
     };
 
-    // сохраняет состояние переменной
-    void put(RefVariableBase *var, RefData** l, RefData** r, MatchState* matchState) {
-		 // TODO (Islamov#1#): убрать создание объекта
-		put_from(&VarMapItem(var, l, r, matchState));        
-    };
-
-    void top_pop(RefData *var, RefData** &l, RefData** &r, MatchState* &matchState) {
-        #ifdef TESTCODE
-        if (var != pool[last_ind].var) {
-            SYSTEMERROR("var != pool.var");
-        }
-        #endif
-
-        VarMapItem* pool_last_ind = pool+last_ind;
-        l = pool_last_ind->l;
-        r = pool_last_ind->r;
-        matchState = pool_last_ind->matchState;
-        --last_ind;
-
-        // TODO (Islamov#1#): может убрать:
-        #ifdef DEBUG
-        memset(pool+last_ind+1, 0xff, sizeof(VarMapItem));
-        #endif
-    };
 
     // ищет по имени переменной ее облать видимости
     bool findByName(unistring name, RefData** &l, RefData** &r) {
         for (size_t ind = last_ind; ind>=0; --ind) {
-            if (pool[ind].var->getName()==name) {
-                l = pool[ind].l;
-                r = pool[ind].r;
+            if (pool[ind].i1->getName()==name) {
+                l = pool[ind].i2;
+                r = pool[ind].i3;
                 return true;
             }
-            return false;
         }
+            return false;
     };
 
 	// ищет по ссылке на переменную ее облать видимости
 	bool findByLink(RefVariableBase* var, RefData** &l, RefData** &r, MatchState *&matchState) {
         for (size_t ind = last_ind; ind>=0; --ind) {
-            if (pool[ind].var==var) {
-                l = pool[ind].l;
-                r = pool[ind].r;
+            if (pool[ind].i1==var) {
+                l = pool[ind].i2;
+                r = pool[ind].i3;
                 return true;
             }
         }
-        return false;
+            return false;
     };
 
 
@@ -159,7 +73,7 @@ public:
 		std::cout << "****\t\tVarMap pool:" << std::flush << "\n";
 		size_t ind = last_ind;
 		while(ind){
-			std::cout << "****\t\t\t" << ind << ") " << std::flush << pool[ind].var->toString() << " : " << getTextOfChain(beginOfTerm(pool[ind].l), endOfTerm(pool[ind].r)) << "\n";
+			std::cout << "****\t\t\t" << ind << ") " << std::flush << pool[ind].i1->toString() << " : " << getTextOfChain(beginOfTerm(pool[ind].i2), endOfTerm(pool[ind].i3)) << "\n";
 			--ind;
 		};
 	};
@@ -198,8 +112,8 @@ class Session {
 	friend class RefStructBracket;
 
     std::stack<MatchState*>  matchStates;
-    DataLinkPool<RefData**> stackOfDataSkob;		// стек сопоставления скобок
-    DataLinkPool<RefData**> stackOfDataSkob_done;	// стек удачного сопоставления скобок
+	DataLinkPooledStack<RefData**> stackOfDataSkob;		// стек сопоставления скобок
+	DataLinkPooledStack<RefData**> stackOfDataSkob_done;	// стек удачного сопоставления скобок
     RefData** current_view_l;
     RefData** current_view_r;
 public:

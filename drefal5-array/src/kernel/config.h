@@ -74,6 +74,17 @@ namespace co {
 #include <stdlib.h>
 #include <string>
 
+#include <limits>
+#ifndef SIZE_MAX
+	#define SIZE_MAX std::numeric_limits<std::size_t>::max()
+#endif
+
+#ifndef POOLSIZE_DEFAULT
+    #define POOLSIZE_DEFAULT 1
+#endif
+
+
+
 //typedef wchar_t         unichar;
 //typedef std::wstring    unistring;
 typedef unsigned char  unichar;

@@ -64,9 +64,13 @@ RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, R
 };
 
 
-RefChain& RefChain::operator+=(RefVariableBase *vr) {
+RefChain& RefChain::operator+=(RefLinkToVariable *vr) {
 	*this += (RefData*)vr;
-	this->vars.put(vr);
+	#ifdef TESTCODE
+	if (! ref_dynamic_cast<RefLinkToVariable>(*get_last())) SYSTEMERROR("alarm");
+	#endif
+	this->vars.put(leng);
+	return *this;
 };
 
 
@@ -78,14 +82,18 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 		if (!ref_dynamic_cast<RefBracketBase>(* this->get_last())) SYSTEMERROR("alarm");
 		#endif
 		br->opened_ind = (get_last()-get_first());
-		*this += refNullGlobal;
-		brackets.put(br);
+		#ifdef TESTCODE
+			if (! ref_dynamic_cast<RefBracketBase>(*get_last())) SYSTEMERROR("alarm");
+		#endif
+		brackets.put(br, leng, 0);
+		*this += refNullGlobal; // add null dot after open bracket
 	} else {								// ]
 		#ifdef TESTCODE
 		if (br->closed_ind != SIZE_MAX) SYSTEMERROR("chain + bracket alarm");
 		if (!ref_dynamic_cast<RefBracketBase>(* get_last() )) SYSTEMERROR("alarm");
 		#endif
 		br->closed_ind = (get_last()-get_first());
+		brackets.findLastByFirstKey(br)->i3 = leng;
 	}
 	return *this;
 };
@@ -97,9 +105,7 @@ RefChain& RefChain::operator+=(RefData *ch) {
 	#endif
 
 	first   =  (RefData**) realloc(first, (++leng + 2)*sizeof(RefData*) );
-    if (! first) {
-        std::cerr << "\nNO MEMORY !";
-    }
+    if (! first) RUNTIMEERROR("membuffer", "memory limit");
     memcpy(first+leng, &ch, sizeof(RefData*));
 	memcpy(first+leng+1, &nullDataPoint, sizeof(RefData*));
 
@@ -120,10 +126,7 @@ RefChain& RefChain::operator+=(RefChain *ch) {
 	#endif
 
     first   =  (RefData**) realloc(first, (this->leng + ch->leng + 2)*sizeof(RefData*) );
-    if (! this->first) {
-        RUNTIMEERROR("ABORT", "\nNO MEMORY!");
-        return *this;
-    }
+    if (! first) RUNTIMEERROR("membuffer", "memory limit");
     memcpy(&(first[leng+1]), ch->first+1, (ch->leng+1)*sizeof(RefData*)); // גלוסעו ס 0x00
     leng += ch->leng;
 	//memcpy(first+leng+1, &nullDataPoint, sizeof(RefData*));
@@ -232,7 +235,7 @@ TResult RefData_DOT::init(RefData **&tpl, Session *s, RefData **&l, RefData **&r
 
     // )
     MOVE_TO_next_term(r);
-    
+
 	if ( r != s->current_view_r+1) {
         MOVE_TO_pred_template(tpl);
         return BACK;

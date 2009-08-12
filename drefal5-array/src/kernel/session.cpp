@@ -131,16 +131,91 @@ RefChain *Session::executeExpression(RefChain *chain) {
 // готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
 // прямое копирование
 /// TODO: хорошо оптимизируется!
-RefChain *Session::substituteExpression(RefChain *chain) {
+RefChain *Session::substituteExpression(RefChain *substitution) {
     // итерация по элементам аргумента (RefChain блоковый)
     // если закрытая переменная, то добавляем копию ее значения
 	// если открытая - то ошибка
-	
-	// 1) получить список закрытых переменных в chain и их значений
+
+	PooledTuple3<RefLinkToVariable**, RefData**, RefData**> varValues;
+
+	DataLinkPooledStack<size_t> &links = substitution->vars;
+	RefData **l, **r;
+	MatchState *matchState;
+	RefLinkToVariable** link = 0;
+//*
+	// 1) получить список закрытых переменных в chain, их значений и длин
+
 	// 2) вычислить длину нового вектора (сумма длин значений переменных - их количество + длина chain) и создать его
+	size_t newChainLength = substitution->leng;
+
+	size_t varsCount = substitution->vars.getLength();
+	if (varsCount){		
+		for (size_t idx=0; idx<varsCount; ++idx){
+#ifdef TESTCODE
+			if (!ref_dynamic_cast<RefLinkToVariable>(*(substitution->get_first() - 1 + links.getByIndex(idx)))) SYSTEMERROR("alarm");
+#endif
+			link = (RefLinkToVariable**) substitution->get_first() - 1 + links.getByIndex(idx);
+			getBodyByLink( (*link)->lnk, l, r, matchState);
+			varValues.put(link, l, r); 
+			#ifdef TESTCODE
+			if (r-l < 0) SYSTEMERROR("unbalanced links!");
+			#endif
+			--newChainLength; // ссылки не будет
+			newChainLength += (l?r-l+1:0); // но будут значения. поскольку l и r - это части поля зрения, то там только значения - никаких переменных
+		}
+	}
+//*/
+	// 2a) создать его
+	RefData** newdatachain = (RefData**)malloc(sizeof(RefData*)*(newChainLength+2));
+	newdatachain[0] = newdatachain[newChainLength+1] = nullDataPoint;
+	RefData** dest = newdatachain+1;
+	RefData** src = substitution->get_first();
+	size_t tlen = 0;
+#ifdef TESTCODE
+	if (!src) SYSTEMERROR("alarm");
+#endif
+
 	// 3) заполнять блоками memcpy
+	while(varValues.top_pop(link, l, r)){
+		//src..link-1   // до переменной
+		tlen = (RefData**)link-src;
+		if (tlen>0){
+			memcpy(dest, src, tlen);
+			dest += tlen;
+		}
+		//l..r		  // значение переменной
+		if (l){
+			tlen = r-l+1;
+			#ifdef TESTCODE
+			if (tlen<1) SYSTEMERROR("alarm");
+			#endif
+			memcpy(dest, l, tlen);
+			dest += tlen;
+		}
+		src = (RefData**)link+1; // после переменной
+	};
+	//  src..substitution->get_last()
+	tlen = substitution->get_last()-src+1;
+	#ifdef TESTCODE
+	if (tlen<1) SYSTEMERROR("alarm");
+	#endif
+	memcpy(dest, src, tlen);
+
 	// 4) обнулить в области видимости ячейки, попавшие в значения переменных
+
 	// 5) удалить объекты по необнуленным ссылкам и весь ветор старого поля зрения
+
+	PooledTuple3<int, int, int> pol;
+	int a1,a2,b1,b2,c1,c2;
+
+	pol.put(-2, 0, SIZE_MAX);
+	pol.put(0x012345678, 0x012345678, 0x012345678);
+
+	pol.top_pop(a1,b1,c1);
+	pol.top_pop(a2,b2,c2);
+//*/
+
+	//PooledClass
 
 	return 0;
 };

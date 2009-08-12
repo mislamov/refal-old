@@ -24,18 +24,10 @@
 #include <stdlib.h>
 #include <string>
 #include <map>
-#include <limits>
 
 
 #include "config.h"
-
-#ifndef SIZE_MAX 
-	#define SIZE_MAX std::numeric_limits<std::size_t>::max()
-#endif
-
-#ifndef POOLSIZE_DEFAULT
-    #define POOLSIZE_DEFAULT 128
-#endif
+#include "poolTuples.h"
 
 
 class RefExecBracket;
@@ -56,43 +48,6 @@ inline RefData** MOVE_TO_pred_template(RefData** &p) {    return --p;}
 
 
 static RefData* nullDataPoint = 0;
-
-template <class T>
-class DataLinkPool {
-	size_t idx;
-	size_t size;
-	T* pool;
-public:
-	DataLinkPool(){
-		idx = 0;
-		size = POOLSIZE_DEFAULT;
-		pool = (T*)malloc(sizeof(T)*size);
-		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
-		memset(pool, 0xff, sizeof(T)*size);
-	};
-
-	void put(T l){
-		if (idx >= size-1){
-			size+=POOLSIZE_DEFAULT;
-			pool = (T*)realloc(pool, sizeof(T)*size);
-		};
-		pool[idx] = l;
-		++idx;
-	};
-
-	T top_pop(){ 
-		#ifdef TESTCODE
-		if (!idx) SYSTEMERROR("link-stack is empty!");
-		#endif
-		return pool[--idx]; 
-	};
-
-	T top(){ 
-		return pool[idx-1]; 
-	};
-};
-
-
 
 
 
@@ -144,17 +99,17 @@ public:
 
 class RefBracketBase;
 class RefVariableBase;
-
+class RefLinkToVariable;
 
 
 class RefChain : public RefObject  {
+	
     RefData** first;
-	DataLinkPool<RefBracketBase*> brackets; // скобки дл€ цепочки
-	DataLinkPool<RefLinkToVariable*> vars ; // закрытые переменные
+	PooledTuple3<RefBracketBase*, size_t, size_t> brackets;  // скобки дл€ цепочки
 public:
-    size_t leng;
-
-    //RefData** after;
+	DataLinkPooledStack<size_t> vars ; // индексы закрытых переменных в цепочке (дл€ образцов). first + .. - закрыта€ переменна€
+	
+	size_t leng; // длина цепочки
 
 	inline RefData** get_first(){ return first+1; };
     inline RefData** get_last (){ return first+leng;	};
@@ -167,7 +122,7 @@ public:
     RefChain& operator+=(RefChain &ch);   // к левому аргумент пристыковываетс€ копи€ правого!
     RefChain& operator+=(RefChain *ch);  // к левому аргумент пристыковываетс€ копи€ правого!
 	RefChain& operator+=(RefBracketBase  *br);
-	RefChain& operator+=(RefVariableBase  *vr);
+	RefChain& operator+=(RefLinkToVariable  *vr);
     RefChain& operator+=(RefData  *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
     RefChain* Copy(Session *s =0);
 
@@ -257,16 +212,16 @@ public:
 inline RefData** MOVE_TO_next_term(RefData** &p) {
 	if ((void*)p==(void*)&refNullGlobal) return ++p;
 
-	RefStructBracket *br; 
+	RefStructBracket *br;
 	if ((br=ref_dynamic_cast<RefStructBracket>(*p)) && br->isOpen(p)){  // (
 		return (p = (RefData**) br->getOther(p)+1);
 	}
 	return ++p;
 }
-inline RefData** MOVE_TO_pred_term(RefData** &p) {    
+inline RefData** MOVE_TO_pred_term(RefData** &p) {
 	if ((void*)p==(void*)&refNullGlobal) return --p;
 
-	RefStructBracket *br; 
+	RefStructBracket *br;
 	if ((br=ref_dynamic_cast<RefStructBracket>(*p)) && !br->isOpen(p)){  // )
 		return (p = (RefData**) br->getOther(p)-1);
 	}
@@ -278,6 +233,7 @@ inline RefData** MOVE_TO_pred_term(RefData** &p) {
 
 // —сылка на переменную
 class RefLinkToVariable : public RefData {
+	friend class Session;
 protected:
 	RefVariableBase *lnk;
 public:

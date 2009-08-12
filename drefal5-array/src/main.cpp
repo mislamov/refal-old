@@ -48,6 +48,12 @@ int main() {
     //chain2 += new RefAlpha('D');
 	chain2 += dot1;
 
+	chain3 += new RefAlpha('X');
+	chain3 += new RefLinkToVariable("s2", &chain2);
+	chain3 += new RefLinkToVariable("s2", &chain2);
+	chain3 += new RefAlpha('Y');
+
+
     std::cout << chain1.toString() << "\n";
     std::cout << chain2.toString() << "\n";
     std::cout << chain3.toString() << "\n";

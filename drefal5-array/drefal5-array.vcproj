@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\kernel\poolTuples.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\kernel\rfunction.h"
 				>
 			</File>
