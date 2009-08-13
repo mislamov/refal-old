@@ -112,9 +112,10 @@ public:
 	size_t leng; // длина цепочки
 
 	inline RefData** get_first(){ return first+1; };
-    inline RefData** get_last (){ return first+leng;	};
+    inline RefData** get_last (){ return first+leng; };
 
     RefChain();
+	RefChain(RefData **&datachain, size_t theleng){ first=datachain; datachain=0; this->leng = theleng; };
     RefChain(RefData **a11, RefData **a12, RefData **a21, RefData **a22, RefData **a31, RefData **a32);
     virtual ~RefChain() {        free(first);    };
 

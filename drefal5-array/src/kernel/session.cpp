@@ -150,7 +150,10 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 
 	size_t varsCount = substitution->vars.getLength();
 	if (varsCount){		
-		for (size_t idx=0; idx<varsCount; ++idx){
+			// заполняем в обратном порядке - чтоб извлекать из стека в прямом
+		size_t idx=varsCount;
+		do {
+			--idx;
 #ifdef TESTCODE
 			if (!ref_dynamic_cast<RefLinkToVariable>(*(substitution->get_first() - 1 + links.getByIndex(idx)))) SYSTEMERROR("alarm");
 #endif
@@ -162,11 +165,12 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 			#endif
 			--newChainLength; // ссылки не будет
 			newChainLength += (l?r-l+1:0); // но будут значения. поскольку l и r - это части поля зрения, то там только значения - никаких переменных
-		}
+		} while (idx);		
 	}
 //*/
 	// 2a) создать его
 	RefData** newdatachain = (RefData**)malloc(sizeof(RefData*)*(newChainLength+2));
+	if (! newdatachain) SYSTEMERROR("memory limit");
 	newdatachain[0] = newdatachain[newChainLength+1] = nullDataPoint;
 	RefData** dest = newdatachain+1;
 	RefData** src = substitution->get_first();
@@ -200,6 +204,8 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 	if (tlen<1) SYSTEMERROR("alarm");
 	#endif
 	memcpy(dest, src, tlen);
+	// 3a) создать цепочку (выровнять скобки)
+	RefChain *resultChain = new RefChain(newdatachain, newChainLength);
 
 	// 4) обнулить в области видимости ячейки, попавшие в значения переменных
 
@@ -216,8 +222,9 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 //*/
 
 	//PooledClass
+	
 
-	return 0;
+	return resultChain;
 };
 
 
