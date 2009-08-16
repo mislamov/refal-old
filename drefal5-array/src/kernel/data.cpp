@@ -296,7 +296,7 @@ TResult RefStructBracket::back(RefData **&tpl, Session *s, RefData **&l, RefData
 
 
 RefData** beginOfTerm(RefData** r) {
-	if (! *r) return r;
+	if (!r || !*r) return r;
     RefBracketBase *br;
 	if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || (br->isOpen(r))) {
         return r;
@@ -305,7 +305,7 @@ RefData** beginOfTerm(RefData** r) {
 };
 
 RefData** endOfTerm(RefData** r) {
-	if (! *r) return r;
+	if (!r || !*r) return r;
     RefBracketBase *br;
 	if ( !(br = ref_dynamic_cast<RefBracketBase>(*r)) || !(br->isOpen(r))) {
         return r;

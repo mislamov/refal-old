@@ -182,9 +182,9 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 	// 3) заполнять блоками memcpy
 	while(varValues.top_pop(link, l, r)){
 		//src..link-1   // до переменной
-		tlen = (RefData**)link-src;
+		tlen = ((RefData**)link)-src;
 		if (tlen>0){
-			memcpy(dest, src, tlen);
+			memcpy(dest, src, tlen*sizeof(RefData**));
 			dest += tlen;
 		}
 		//l..r		  // значение переменной
@@ -193,7 +193,7 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 			#ifdef TESTCODE
 			if (tlen<1) SYSTEMERROR("alarm");
 			#endif
-			memcpy(dest, l, tlen);
+			memcpy(dest, l, tlen*sizeof(RefData**));
 			dest += tlen;
 		}
 		src = (RefData**)link+1; // после переменной
@@ -203,7 +203,7 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 	#ifdef TESTCODE
 	if (tlen<1) SYSTEMERROR("alarm");
 	#endif
-	memcpy(dest, src, tlen);
+	memcpy(dest, src, tlen*sizeof(RefData**));
 	// 3a) создать цепочку (выровнять скобки)
 	RefChain *resultChain = new RefChain(newdatachain, newChainLength);
 

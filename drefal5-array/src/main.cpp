@@ -34,13 +34,10 @@ int main() {
 
 	chain2 += dot1;
     chain2 += new RefVariable_e("e1");
-	//chain2 += brack2;
-	chain2 += new RefVariable_s("s2");
+	chain2 += new RefVariable_e("e2");
 	chain2 += new RefVariable_s("s3");
-	//chain2 += brack2;
-    chain2 += new RefVariable_e("e4");
-	chain2 += new RefLinkToVariable("s2", &chain2);;
-	chain2 += new RefLinkToVariable("s3", &chain2);;
+	chain2 += new RefVariable_e("e4");
+    chain2 += new RefLinkToVariable("e2", &chain2);;
     chain2 += new RefVariable_e("e5");
 
     //chain2 += new RefAlpha('A');
@@ -49,8 +46,8 @@ int main() {
 	chain2 += dot1;
 
 	chain3 += new RefAlpha('X');
-	chain3 += new RefLinkToVariable("s2", &chain2);
-	chain3 += new RefLinkToVariable("s2", &chain2);
+	chain3 += new RefLinkToVariable("e2", &chain2);
+	chain3 += new RefLinkToVariable("e5", &chain2);
 	chain3 += new RefAlpha('Y');
 
 

@@ -159,7 +159,7 @@ public:
         ++last_ind ;
         if (last_ind >= poolsize) {
             // пул исчерпан
-            LOG("TUPLE3-pool is full. realloc!");
+            //LOG("TUPLE3-pool is full. realloc!");
             poolsize += POOLSIZE_DEFAULT;
             pool = (TUPLE3*) realloc(pool, poolsize*sizeof(TUPLE3) );
             if (!pool) RUNTIMEERROR("TUPLE3-pool", "not anouth memory");
