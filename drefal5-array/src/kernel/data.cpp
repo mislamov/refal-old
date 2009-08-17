@@ -69,7 +69,7 @@ RefChain& RefChain::operator+=(RefLinkToVariable *vr) {
 	#ifdef TESTCODE
 	if (! ref_dynamic_cast<RefLinkToVariable>(*get_last())) SYSTEMERROR("alarm");
 	#endif
-	this->vars.put(leng);
+	this->varsAndBrackets.put(leng);
 	return *this;
 };
 
@@ -83,9 +83,11 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 		#endif
 		br->opened_ind = (get_last()-get_first());
 		#ifdef TESTCODE
-			if (! ref_dynamic_cast<RefBracketBase>(*get_last())) SYSTEMERROR("alarm");
+		if (! ref_dynamic_cast<RefBracketBase>(*get_last())) SYSTEMERROR("alarm");
 		#endif
-		brackets.put(br, leng, 0);
+		if (ref_dynamic_cast<RefStructBracket>(br)) {
+			varsAndBrackets.put(leng);
+		}
 		*this += refNullGlobal; // add null dot after open bracket
 	} else {								// ]
 		#ifdef TESTCODE
@@ -93,7 +95,11 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 		if (!ref_dynamic_cast<RefBracketBase>(* get_last() )) SYSTEMERROR("alarm");
 		#endif
 		br->closed_ind = (get_last()-get_first());
-		brackets.findLastByFirstKey(br)->i3 = leng;
+		//brackets.findLastByFirstKey(br)->i3 = leng;
+		if (ref_dynamic_cast<RefStructBracket>(br)) {
+			varsAndBrackets.put(leng);
+		}
+
 	}
 	return *this;
 };

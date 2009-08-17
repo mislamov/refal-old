@@ -105,9 +105,8 @@ class RefLinkToVariable;
 class RefChain : public RefObject  {
 	
     RefData** first;
-	PooledTuple3<RefBracketBase*, size_t, size_t> brackets;  // скобки для цепочки
 public:
-	DataLinkPooledStack<size_t> vars ; // индексы закрытых переменных в цепочке (для образцов). first + .. - закрытая переменная
+	DataLinkPooledStack<size_t> varsAndBrackets ; // индексы закрытых переменных и структурных скобок в подстановке. first + .. - закрытая переменная или скобка
 	
 	size_t leng; // длина цепочки
 
@@ -150,8 +149,8 @@ RefData** endOfTerm  (RefData** r);
 class RefBracketBase : public RefData {
 public:
     BASE_CLASS_CAST(RefBracketBase);
-	size_t opened_ind;
-	size_t closed_ind;
+	size_t opened_ind; // порядковый номер от get_first()
+	size_t closed_ind; // порядковый номер от get_first()
 	RefChain *chain;
 
 	RefBracketBase (){opened_ind = closed_ind = SIZE_MAX; chain=0; }

@@ -128,6 +128,100 @@ public:
 
 */
 
+template <class T1, class T2>
+class PooledTuple2 {
+protected:
+	struct TUPLE2 {T1 i1; T2 i2; };
+
+	TUPLE2* pool;		// нумераци€ с 1
+    size_t last_ind;	// индекс последнего в стеке элемента
+    size_t poolsize;	
+public:
+    PooledTuple2() {
+		#ifdef TESTCODE
+		if (sizeof(TUPLE2) != sizeof(T1)+sizeof(T2)) SYSTEMERROR("Platform depend collision! sizeof(TUPLE2) != sizeof( struct{T1 T2} ).");
+		#endif
+
+        last_ind = 0;
+        poolsize = POOLSIZE_DEFAULT;
+        pool = (TUPLE2*)malloc( sizeof(TUPLE2)*POOLSIZE_DEFAULT );
+		#ifdef TESTCODE
+		memset(pool, 0xff, sizeof(TUPLE2)*POOLSIZE_DEFAULT);
+		#endif
+    };
+
+    ~PooledTuple2() {
+        free(pool);
+    };
+
+    // сохран€ет состо€ние item копированием
+    void put(T1 i1, T2 i2) {
+        ++last_ind ;
+        if (last_ind >= poolsize) {
+            // пул исчерпан
+            //LOG("TUPLE2-pool is full. realloc!");
+            poolsize += POOLSIZE_DEFAULT;
+            pool = (TUPLE2*) realloc(pool, poolsize*sizeof(TUPLE2) );
+            if (!pool) RUNTIMEERROR("TUPLE2-pool", "not anouth memory");
+
+			#ifdef TESTCODE
+			memset(pool+last_ind, 0xff, sizeof(TUPLE2)*POOLSIZE_DEFAULT);
+			#endif
+        }
+
+		//memcpy(pool+last_ind,	{&i1,	sizeof(TUPLE2));
+		TUPLE2* pool_last_ind = (TUPLE2*) pool+last_ind;
+		pool_last_ind->i1 = i1;
+		pool_last_ind->i2 = i2;
+        return;
+    };
+
+    void top(T1 &i1, T2 &i2) {        
+        TUPLE2* pool_last_ind = pool + last_ind;
+		i1 = pool_last_ind->i1;
+		i2 = pool_last_ind->i2;
+	};
+    
+	bool top_pop(T1 &i1, T2 &i2) {        
+		if (!last_ind) {i1=0;i2=0; return false;}
+        top(i1,i2);
+		#ifdef TESTCODE
+		memset(pool+last_ind, 0xff, sizeof(TUPLE2));
+		#endif
+        --last_ind;
+		return true;
+	};
+
+	size_t getLength(){ return last_ind; }
+
+	bool getByIndex(size_t index, T1 &i1, T2 &i2){
+		if (index<=0 || index>last_ind) {
+			i1 = i2 = = 0;
+			return false;
+		}
+		TUPLE2* pool_index = pool + index;
+		i1 = pool_index->i1;
+		i2 = pool_index->i2;
+		return true;
+	}
+	TUPLE2* findTopByFirstKey(T1 key){
+		for(size_t i=last_ind; i; --i){
+			if (pool[i].i1 == key) return pool+i;
+		}
+		return 0;
+	}
+
+    void clear() {
+        last_ind = 0;
+		#ifdef TESTCODE
+		memset(pool, 0xff, sizeof(TUPLE2)*poolsize);
+		#endif
+		memset(pool, 0xff, sizeof(TUPLE2));
+    };
+
+};
+
+
 template <class T1, class T2, class T3>
 class PooledTuple3 {
 protected:
@@ -208,7 +302,7 @@ public:
 		i3 = pool_index->i3;
 		return true;
 	}
-	TUPLE3* findLastByFirstKey(T1 key){
+	TUPLE3* findTopByFirstKey(T1 key){
 		for(size_t i=last_ind; i; --i){
 			if (pool[i].i1 == key) return pool+i;
 		}

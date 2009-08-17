@@ -136,39 +136,126 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
     // если закрытая переменная, то добавляем копию ее значения
 	// если открытая - то ошибка
 
-	PooledTuple3<RefLinkToVariable**, RefData**, RefData**> varValues;
+	//PooledTuple3<RefLinkToVariable**, RefData**, RefData**> varValues;
+	PooledTuple2<RefData**, RefData**> partValues;
 
-	DataLinkPooledStack<size_t> &links = substitution->vars;
+	DataLinkPooledStack<size_t> &linksAndBrs = substitution->varsAndBrackets;
+	DataLinkPooledStack<RefStructBracket* > old_brackets;
+	DataLinkPooledStack<RefStructBracket* > new_brackets;
 	RefData **l, **r;
 	MatchState *matchState;
 	RefLinkToVariable** link = 0;
 //*
 	// 1) получить список закрытых переменных в chain, их значений и длин
-
 	// 2) вычислить длину нового вектора (сумма длин значений переменных - их количество + длина chain) и создать его
 	size_t newChainLength = substitution->leng;
 
-	size_t varsCount = substitution->vars.getLength();
-	if (varsCount){		
-			// заполняем в обратном порядке - чтоб извлекать из стека в прямом
-		size_t idx=varsCount;
+	size_t varsAndBracketsCount = substitution->varsAndBrackets.getLength(); // количество закрытых переменных и стр-скобок
+	if (varsAndBracketsCount){
+		// заполняем значения переменных в partValues - чтоб потом сгенерировать результат
+		size_t idx = 0;
+		size_t currPosition = 0; // индекс по новому вектору - для скобок
+		RefData **part_l = substitution->get_first(), **part_r = 0;
+
+
+		while(idx < varsAndBracketsCount){
+			part_r = substitution->get_first() - 1 + linksAndBrs.getByIndex(idx);  // first + i_diff
+			if (part_l != part_r){ // если перед скобкой/переменной - есть что обрабатывать
+				partValues.put(part_l, part_r-1);
+				currPosition += (part_r - 1 - part_l);
+			}
+			link = ref_dynamic_cast<RefLinkToVariable>(*part_r);
+			if (link){ // если переменная
+				getBodyByLink( (*link)->lnk, l, r, matchState);
+				if (l) partValues.put(/*link,*/ l, r);  // если переменная с непустым значением
+				#ifdef TESTCODE
+				if (r-l < 0) SYSTEMERROR("unbalanced links!");
+				#endif
+				--newChainLength; // ссылки не будет
+				newChainLength += (l?r-l+1:0); // но будут значения. поскольку l и r - это части поля зрения, то там только значения - никаких переменных
+				currPosition += (l?r-l+1:0);
+			} else {
+				// стуктурная скобка
+				#ifdef TESTCODE
+				if (!ref_dynamic_cast<RefStructBracket>(*part_r)) SYSTEMERROR("alarm");
+				#endif
+				if (*part_r == old_brackets.top()){ // параскобка уже копировалась => позиция для ЗАКР скобки
+
+
+
+
+
+
+
+
+
+
+
+
+
+					old_brackets.top_pop();
+					RefStructBracket *nb = new_brackets.top_pop();
+					nb->opened_ind = текущий;
+					partValues.put(&nb, &nb);					
+				} else { // новая параскобка (закр)
+					old_brackets.put(*part_l);
+					RefStructBracket *nb = new RefStructBracket();
+					nb->closed_ind = текущий;
+					new_brackets.put(nb);
+					partValues.put(&nb, &nb);
+				}
+			}
+			--part_r;
+
+
+
+			++idx;
+		}
+
+
 		do {
 			--idx;
-#ifdef TESTCODE
-			if (!ref_dynamic_cast<RefLinkToVariable>(*(substitution->get_first() - 1 + links.getByIndex(idx)))) SYSTEMERROR("alarm");
-#endif
-			link = (RefLinkToVariable**) substitution->get_first() - 1 + links.getByIndex(idx);
-			getBodyByLink( (*link)->lnk, l, r, matchState);
-			varValues.put(link, l, r); 
-			#ifdef TESTCODE
-			if (r-l < 0) SYSTEMERROR("unbalanced links!");
-			#endif
-			--newChainLength; // ссылки не будет
-			newChainLength += (l?r-l+1:0); // но будут значения. поскольку l и r - это части поля зрения, то там только значения - никаких переменных
+			RefData** part_l = substitution->get_first() - 1 + linksAndBrs.getByIndex(idx);  // first + i_diff
+			if (part_l != part_r){ // если после скобки/переменной - есть что обрабатывать
+				partValues.put(part_l+1, part_r);
+			}
+
+			link = ref_dynamic_cast<RefLinkToVariable>(*part_l);
+			if (link){ // если переменная
+				getBodyByLink( (*link)->lnk, l, r, matchState);
+				if (l) partValues.put(/*link,*/ l, r);  // если переменная с непустым значением
+				#ifdef TESTCODE
+				if (r-l < 0) SYSTEMERROR("unbalanced links!");
+				#endif
+				--newChainLength; // ссылки не будет
+				newChainLength += (l?r-l+1:0); // но будут значения. поскольку l и r - это части поля зрения, то там только значения - никаких переменных
+			} else {
+				// стуктурная скобка
+				#ifdef TESTCODE
+				if (!ref_dynamic_cast<RefStructBracket>(*tmp_data)) SYSTEMERROR("alarm");
+				#endif
+				if (*part_l == old_brackets.top()){ // параскобка уже копировалась => позиция для откр. скобки
+					old_brackets.top_pop();
+					RefStructBracket *nb = new_brackets.top_pop();
+					nb->opened_ind = текущий;
+					partValues.put(&nb, &nb);					
+				} else { // новая параскобка (закр)
+					old_brackets.put(*part_l);
+					RefStructBracket *nb = new RefStructBracket();
+					nb->closed_ind = текущий;
+					new_brackets.put(nb);
+					partValues.put(&nb, &nb);
+				}
+			}
+			--part_r;
 		} while (idx);		
+	} else {
+		RefData** tmp_ptr = (RefData**)malloc((newChainLength+2)*sizeof(RefData*));
+		return new RefChain(memcpy(tmp_ptr, substitution->first, (newChainLength+2)*sizeof(RefData*)), newChainLength);
 	}
 //*/
-	// 2a) создать его
+	// 2a) создать новый вектор нужной длины из подстановки. 
+	//	   Вместо закрытых переменных - значения, стр-скобки заменяем на копии
 	RefData** newdatachain = (RefData**)malloc(sizeof(RefData*)*(newChainLength+2));
 	if (! newdatachain) SYSTEMERROR("memory limit");
 	newdatachain[0] = newdatachain[newChainLength+1] = nullDataPoint;
@@ -179,7 +266,12 @@ RefChain *Session::substituteExpression(RefChain *substitution) {
 	if (!src) SYSTEMERROR("alarm");
 #endif
 
+
+
+
 	// 3) заполнять блоками memcpy
+
+
 	while(varValues.top_pop(link, l, r)){
 		//src..link-1   // до переменной
 		tlen = ((RefData**)link)-src;
