@@ -12,7 +12,7 @@ int main() {
     RefChain chain1, chain2, chain3;
 
 	RefData_DOT *dot1 = new RefData_DOT();
-	RefStructBracket * brack1 = new RefStructBracket();
+	RefExecBracket * brack1 = new RefExecBracket();
 	RefStructBracket * brack2 = new RefStructBracket();
 	
 
@@ -46,8 +46,12 @@ int main() {
 	chain2 += dot1;
 
 	chain3 += new RefAlpha('X');
+	chain3 += brack2;
 	chain3 += new RefLinkToVariable("e2", &chain2);
+	chain3 += brack1;
 	chain3 += new RefLinkToVariable("e5", &chain2);
+	chain3 += brack1;
+	chain3 += brack2;
 	chain3 += new RefAlpha('Y');
 
 

@@ -142,8 +142,8 @@ RefChain& RefChain::operator+=(RefChain *ch) {
 
 unistring RefChain::toString() {
     unistring result = "";
-    for (size_t i=1; i<=leng; i++) {
-        result += first[i]->toString();
+    for (size_t i=0; i<=leng+1; i++) {
+		result += (first[i] ? first[i]->toString() : "[null]");
     }
     return result;
 };

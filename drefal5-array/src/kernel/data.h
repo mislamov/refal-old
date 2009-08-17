@@ -175,8 +175,8 @@ class RefExecBracket : public RefBracketBase {
 public:
     CLASS_OBJECT_CAST(RefExecBracket);
 	bool       operator ==(RefData &rd){ SYSTEMERROR("unexpected"); };
-    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unexpected"); };
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unexpected"); };
 	unistring explode(){ return "<br>"; };
 };
 
