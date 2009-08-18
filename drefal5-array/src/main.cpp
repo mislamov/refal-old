@@ -9,33 +9,36 @@ using namespace std;
 int main() {
     Session *sess = new Session();
 
-    RefChain chain1, chain2, chain3;
+    RefChain chain1, chain2;
+	ChainSubstitution chain3;
 
 	RefData_DOT *dot1 = new RefData_DOT();
-	RefExecBracket * brack1 = new RefExecBracket();
+	RefStructBracket * brack1 = new RefStructBracket();
 	RefStructBracket * brack2 = new RefStructBracket();
+	RefStructBracket * brack3 = new RefStructBracket();
 	
 
+	chain1 += brack2;
+	chain1 += brack2;
+	chain1 += brack1;
     chain1 += new RefAlpha('A');
-	//chain1 += brack1;
-    chain1 += new RefAlpha('B');
-    //chain1 += new RefInteger(315);
-	//chain1 += brack1;
+	chain1 += brack1;
+
+	chain1 += new RefAlpha('B');
     chain1 += new RefAlpha('C');
     chain1 += new RefAlpha('D');
-
     chain1 += new RefAlpha('E');
     chain1 += new RefAlpha('F');
-
     chain1 += new RefAlpha('C');
     chain1 += new RefAlpha('D');
-
     chain1 += new RefAlpha('F');
 
 	chain2 += dot1;
     chain2 += new RefVariable_e("e1");
 	chain2 += new RefVariable_e("e2");
+	chain2 += brack3;
 	chain2 += new RefVariable_s("s3");
+	chain2 += brack3;
 	chain2 += new RefVariable_e("e4");
     chain2 += new RefLinkToVariable("e2", &chain2);;
     chain2 += new RefVariable_e("e5");
@@ -46,12 +49,8 @@ int main() {
 	chain2 += dot1;
 
 	chain3 += new RefAlpha('X');
-	chain3 += brack2;
 	chain3 += new RefLinkToVariable("e2", &chain2);
-	chain3 += brack1;
 	chain3 += new RefLinkToVariable("e5", &chain2);
-	chain3 += brack1;
-	chain3 += brack2;
 	chain3 += new RefAlpha('Y');
 
 

@@ -12,7 +12,7 @@ class DataLinkPooledStack {
 
 	size_t idx;  // pool+idx - элемент после последнего; pool+0 - первый элемент; idx - кол-во элементов
 	size_t size; // физическая длина пула
-	T* pool; 
+	T* pool;
 public:
 	DataLinkPooledStack(){
 		idx = 0;
@@ -44,12 +44,12 @@ public:
 	T top(){
 		return pool[idx-1];
 	};
-	T getByIndex(size_t index){ 
+	T getByIndex(size_t index){
 		if (index <0 || index>=idx) return 0;
 		return pool[index];
 	}
 	size_t getLength(){ return idx; }
-	void clear(){ 
+	void clear(){
 		idx = 0;
 		size = POOLSIZE_DEFAULT;
 		pool = (T*)realloc(pool, sizeof(T)*size);
@@ -100,12 +100,12 @@ public:
 			memset(pool+last_ind, 0xff, sizeof(T)*POOLSIZE_DEFAULT);
 			#endif
         }
-        
+
 		memcpy(pool+last_ind, item, sizeof(T));
         return;
     };
 
-    void top_pop_to(T* item) {        
+    void top_pop_to(T* item) {
         T* pool_last_ind = pool+last_ind;
 		memcpy(item, pool_last_ind , sizeof(T));
 		#ifdef TESTCODE
@@ -135,7 +135,7 @@ protected:
 
 	TUPLE2* pool;		// нумерация с 1
     size_t last_ind;	// индекс последнего в стеке элемента
-    size_t poolsize;	
+    size_t poolsize;
 public:
     PooledTuple2() {
 		#ifdef TESTCODE
@@ -176,13 +176,13 @@ public:
         return;
     };
 
-    void top(T1 &i1, T2 &i2) {        
+    void top(T1 &i1, T2 &i2) {
         TUPLE2* pool_last_ind = pool + last_ind;
 		i1 = pool_last_ind->i1;
 		i2 = pool_last_ind->i2;
 	};
-    
-	bool top_pop(T1 &i1, T2 &i2) {        
+
+	bool top_pop(T1 &i1, T2 &i2) {
 		if (!last_ind) {i1=0;i2=0; return false;}
         top(i1,i2);
 		#ifdef TESTCODE
@@ -196,7 +196,7 @@ public:
 
 	bool getByIndex(size_t index, T1 &i1, T2 &i2){
 		if (index<=0 || index>last_ind) {
-			i1 = i2 = = 0;
+			i1 = i2 = 0;
 			return false;
 		}
 		TUPLE2* pool_index = pool + index;
@@ -229,7 +229,7 @@ protected:
 
 	TUPLE3* pool;		// нумерация с 1
     size_t last_ind;	// индекс последнего в стеке элемента
-    size_t poolsize;	
+    size_t poolsize;
 public:
     PooledTuple3() {
 		#ifdef TESTCODE
@@ -271,15 +271,15 @@ public:
         return;
     };
 
-    void top(T1 &i1, T2 &i2, T3 &i3) {        
+    void top(T1 &i1, T2 &i2, T3 &i3) {
         TUPLE3* pool_last_ind = pool + last_ind;
 		i1 = pool_last_ind->i1;
 		i2 = pool_last_ind->i2;
 		i3 = pool_last_ind->i3;
 	};
 
-    
-	bool top_pop(T1 &i1, T2 &i2, T3 &i3) {        
+
+	bool top_pop(T1 &i1, T2 &i2, T3 &i3) {
 		if (!last_ind) {i1=0;i2=0;i3=0; return false;}
         top(i1,i2,i3);
 		#ifdef TESTCODE
@@ -373,7 +373,7 @@ public:
         return;
     };
 
-    void top(T1 &i1, T2 &i2, T3 &i3, T4 &i4) {        
+    void top(T1 &i1, T2 &i2, T3 &i3, T4 &i4) {
         TUPLE4* pool_last_ind = pool + last_ind;
 		i1 = pool_last_ind->i1;
 		i2 = pool_last_ind->i2;
@@ -381,7 +381,7 @@ public:
 		i4 = pool_last_ind->i4;
 	};
 
-    
+
 	bool top_pop(T1 &i1, T2 &i2, T3 &i3, T4 &i4) {
 		if (!last_ind) {i1=0;i2=0;i3=0; return false;}
         top(i1,i2,i3,i4);

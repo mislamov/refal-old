@@ -100,33 +100,35 @@
 	"data.h"
 	<sstream>
 
-1250057761 source:d:\drefal\drefal5-array\src\kernel\data.cpp
+1250592885 source:d:\drefal\drefal5-array\src\kernel\data.cpp
 	"data.h"
 	"session.h"
 	<stdlib.h>
 	<iostream>
 	<sstream>
 
-1250057613 d:\drefal\drefal5-array\src\kernel\data.h
+1250594618 d:\drefal\drefal5-array\src\kernel\data.h
 	<iostream>
 	<sstream>
 	<stdlib.h>
 	<string>
 	<map>
-	<limits>
 	"config.h"
+	"poolTuples.h"
 
-1249971965 d:\drefal\drefal5-array\src\kernel\config.h
+1250077961 d:\drefal\drefal5-array\src\kernel\config.h
 	<stdlib.h>
 	<string>
+	<limits>
 
-1249991594 d:\drefal\drefal5-array\src\kernel\session.h
+1250593304 d:\drefal\drefal5-array\src\kernel\session.h
 	<stack>
 	<stdlib.h>
 	"data.h"
 	"rfunction.h"
+	"poolTuples.h"
 
-1249963387 d:\drefal\drefal5-array\src\kernel\rfunction.h
+1250593397 d:\drefal\drefal5-array\src\kernel\rfunction.h
 	<iostream>
 	<sstream>
 	<list>
@@ -137,7 +139,7 @@
 	"data.h"
 	<sstream>
 
-1250057379 source:d:\drefal\drefal5-array\src\kernel\session.cpp
+1250593290 source:d:\drefal\drefal5-array\src\kernel\session.cpp
 	"symbols.h"
 	"session.h"
 	"rfunction.h"
@@ -149,7 +151,7 @@
 1249972133 d:\drefal\drefal5-array\src\kernel\variables.h
 	"data.h"
 
-1249995680 source:d:\drefal\drefal5-array\src\main.cpp
+1250593420 source:d:\drefal\drefal5-array\src\main.cpp
 	<iostream>
 	"kernel\symbols.h"
 	"kernel\session.h"
@@ -161,4 +163,7 @@
 
 1249450649 source:d:\drefal\drefal5-array\src\kernel\rfunction.cpp
 	"rfunction.h"
+
+1250593722 d:\drefal\drefal5-array\src\kernel\pooltuples.h
+	"config.h"
 

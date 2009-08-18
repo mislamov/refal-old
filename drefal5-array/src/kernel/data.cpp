@@ -64,7 +64,7 @@ RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, R
 };
 
 
-RefChain& RefChain::operator+=(RefLinkToVariable *vr) {
+ChainSubstitution& ChainSubstitution::operator+=(RefLinkToVariable *vr) {
 	*this += (RefData*)vr;
 	#ifdef TESTCODE
 	if (! ref_dynamic_cast<RefLinkToVariable>(*get_last())) SYSTEMERROR("alarm");
@@ -85,9 +85,7 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 		#ifdef TESTCODE
 		if (! ref_dynamic_cast<RefBracketBase>(*get_last())) SYSTEMERROR("alarm");
 		#endif
-		if (ref_dynamic_cast<RefStructBracket>(br)) {
-			varsAndBrackets.put(leng);
-		}
+
 		*this += refNullGlobal; // add null dot after open bracket
 	} else {								// ]
 		#ifdef TESTCODE
@@ -95,13 +93,23 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 		if (!ref_dynamic_cast<RefBracketBase>(* get_last() )) SYSTEMERROR("alarm");
 		#endif
 		br->closed_ind = (get_last()-get_first());
-		//brackets.findLastByFirstKey(br)->i3 = leng;
-		if (ref_dynamic_cast<RefStructBracket>(br)) {
-			varsAndBrackets.put(leng);
-		}
-
 	}
 	return *this;
+};
+
+ChainSubstitution& ChainSubstitution::operator+=(RefBracketBase *br) {
+	RefChain::operator +=(br);
+	//if (br->closed_ind == SIZE_MAX) => ( , else )
+	if (ref_dynamic_cast<RefStructBracket>(br)) {
+		varsAndBrackets.put((br->closed_ind==SIZE_MAX) ? leng-1 : leng ); // если ( то был создан nullDot
+	}
+
+	return *this;
+};
+
+
+ChainSubstitution& ChainSubstitution::operator+=(RefData  *br){ 
+	return (ChainSubstitution&)RefChain::operator+=(br); 
 };
 
 
@@ -117,6 +125,7 @@ RefChain& RefChain::operator+=(RefData *ch) {
 
     return *this;
 };
+
 
 
 RefChain& RefChain::operator+=(RefChain &ch) {

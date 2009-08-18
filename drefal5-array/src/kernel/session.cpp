@@ -131,7 +131,7 @@ RefChain *Session::executeExpression(RefChain *chain) {
 // готовит подстановку: замен€ет переменные значени€ми. ѕолучаем ќ¬ с угловыми скобками
 // пр€мое копирование
 /// TODO: хорошо оптимизируетс€!
-RefChain *Session::substituteExpression(RefChain *substitution) {
+RefChain *Session::substituteExpression(ChainSubstitution *substitution) {
     // итераци€ по элементам аргумента (RefChain блоковый)
     // если закрыта€ переменна€, то добавл€ем копию ее значени€
 	// если открыта€ - то ошибка

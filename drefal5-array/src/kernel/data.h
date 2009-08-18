@@ -103,11 +103,10 @@ class RefLinkToVariable;
 
 
 class RefChain : public RefObject  {
-	
+protected:
     RefData** first;
 public:
-	DataLinkPooledStack<size_t> varsAndBrackets ; // индексы закрытых переменных и структурных скобок в подстановке. first + .. - закрыта€ переменна€ или скобка
-	
+
 	size_t leng; // длина цепочки
 
 	inline RefData** get_first(){ return first+1; };
@@ -121,9 +120,8 @@ public:
     // TODO: сделать блоковое расширение
     RefChain& operator+=(RefChain &ch);   // к левому аргумент пристыковываетс€ копи€ правого!
     RefChain& operator+=(RefChain *ch);  // к левому аргумент пристыковываетс€ копи€ правого!
-	RefChain& operator+=(RefBracketBase  *br);
-	RefChain& operator+=(RefLinkToVariable  *vr);
     RefChain& operator+=(RefData  *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
+	RefChain& operator+=(RefBracketBase  *br); // скобки указывают друг на друга
     RefChain* Copy(Session *s =0);
 
     unistring toString();
@@ -138,6 +136,15 @@ public:
 		}
 		return 0;
 	}
+};
+
+
+class ChainSubstitution : public RefChain {
+public:
+		DataLinkPooledStack<size_t> varsAndBrackets ; // индексы закрытых переменных и структурных скобок в подстановке. first + .. - закрыта€ переменна€ или скобка
+		ChainSubstitution& operator+=(RefBracketBase  *br);
+		ChainSubstitution& operator+=(RefLinkToVariable  *vr);
+		ChainSubstitution& operator+=(RefData  *br);
 };
 
 extern unistring getTextOfChain(RefData** from, RefData** to);
@@ -156,7 +163,8 @@ public:
 	RefBracketBase (){opened_ind = closed_ind = SIZE_MAX; chain=0; }
 	bool isOpen(RefData** p){
 		#ifdef TESTCODE
-		if (closed_ind-opened_ind <=0 || !chain || ((chain->get_first()+opened_ind)!= p && (chain->get_first()+closed_ind)!=p))SYSTEMERROR("brack-error");
+		if (closed_ind-opened_ind <=0 || !chain || ((chain->get_first()+opened_ind)!= p && (chain->get_first()+closed_ind)!=p))
+			SYSTEMERROR("brack-error");
 		#endif
 		return ((chain->get_first()+opened_ind)==p);
 	};

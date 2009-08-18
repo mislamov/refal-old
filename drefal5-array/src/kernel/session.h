@@ -143,7 +143,7 @@ public:
     // если выр-е без <.>, то возвращается аргумент (НЕ КОПИЯ!)
     RefChain*  executeExpression (RefChain *);
     // готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
-    RefChain*  substituteExpression(RefChain *);
+    RefChain*  substituteExpression(ChainSubstitution *);
 
     RefObject* findFunctionById(unistring id);
 

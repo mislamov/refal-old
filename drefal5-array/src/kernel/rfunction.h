@@ -30,7 +30,7 @@ class RefSentence : public RefObject {
 public:
 
     RefChain *leftPart;
-    RefChain *rightPart;
+    ChainSubstitution *rightPart;
     virtual unistring toString();
 
     RefSentence();
