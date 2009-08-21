@@ -45,6 +45,8 @@ public:
 };
 inline RefData** MOVE_TO_next_template(RefData** &p) {    return ++p;}
 inline RefData** MOVE_TO_pred_template(RefData** &p) {    return --p;}
+inline RefData** MOVE_TO_next_symbol(RefData** &p) {    return ++p;}
+inline RefData** MOVE_TO_pred_symbol(RefData** &p) {    return --p;}
 
 
 static RefData* nullDataPoint = 0;
@@ -191,7 +193,9 @@ public:
 class RefStructBracket : public RefBracketBase {
 public:
     CLASS_OBJECT_CAST(RefStructBracket);
-	bool       operator ==(RefData &rd){ SYSTEMERROR("unexpected"); };
+	bool       operator ==(RefData &rd){ // проверка только по типу. не по открытости
+		return ref_dynamic_cast<RefStructBracket>(&rd);
+	};
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
 	unistring explode(){ return "(br)"; };

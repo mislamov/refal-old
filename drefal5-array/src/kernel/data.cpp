@@ -108,8 +108,8 @@ ChainSubstitution& ChainSubstitution::operator+=(RefBracketBase *br) {
 };
 
 
-ChainSubstitution& ChainSubstitution::operator+=(RefData  *br){ 
-	return (ChainSubstitution&)RefChain::operator+=(br); 
+ChainSubstitution& ChainSubstitution::operator+=(RefData  *br){
+	return (ChainSubstitution&)RefChain::operator+=(br);
 };
 
 
@@ -206,24 +206,28 @@ TResult RefLinkToVariable::init(RefData**&tpl, Session* s, RefData **&l, RefData
     }
 
     MOVE_TO_next_term(r);
-    if (*r==*ldata) { // сопоставление с собой
-        r = rdata;
-        MOVE_TO_next_template(tpl);
-        return GO;
-    }
 
-    while ((**ldata == **r) && (ldata != rdata)  ) {
-        MOVE_TO_next_term(r);
-        MOVE_TO_next_term(ldata);
-    }
+	while(ldata<=rdata){
+		if (*ldata != *r && !(**ldata == **r)) {
+		    MOVE_TO_pred_template(tpl);
+			return BACK;
+		};
+		RefBracketBase* br1 = ref_dynamic_cast<RefBracketBase>(*ldata);
+		if (br1){
+			if (br1->isOpen(ldata) != ((RefBracketBase*) *r)->isOpen(r)) {
+				MOVE_TO_pred_template(tpl);
+				return BACK;
+			};
+		}
+		MOVE_TO_next_symbol(ldata);
+		MOVE_TO_next_symbol(r);
+	}
 
-    if (**ldata == **r) { // TODO: оптимизировать. убрать вызов ==
-        MOVE_TO_next_template(tpl);
-        return GO;
-    }
-    MOVE_TO_pred_template(tpl);
-    return BACK;
+    MOVE_TO_next_template(tpl);
+	//r = rdata;
+	return GO;
 };
+
 
 
 TResult RefLinkToVariable::back(RefData**&tpl, Session* s, RefData **&l, RefData **&r) {
