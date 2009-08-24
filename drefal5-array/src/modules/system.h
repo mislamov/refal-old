@@ -190,7 +190,7 @@ public:
 
         setObjectByName("Exit", new system_EXIT(this));
     };
-	unistring explode();
+	unistring explode(){SYSTEMERROR("unrelised");};
 };
 
 

@@ -51,7 +51,7 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
 
 };
 
-bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_e >(&rd); };
+bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_e >(&rd)?true:false; };
 
 
 
@@ -93,7 +93,7 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
     return GO;
 };
 
-bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd); };
+bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd)?true:false; };
 
 
 
@@ -115,7 +115,7 @@ TResult  RefVariable_s::back(RefData**&tpl, Session *s, RefData **&l, RefData **
     MOVE_TO_pred_template(tpl);
     return BACK;
 };
-bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_s >(&rd); };
+bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_s >(&rd)?true:false; };
 
 
 
@@ -137,4 +137,4 @@ TResult  RefVariable_t::back(RefData**&tpl, Session *s, RefData **&l, RefData **
     MOVE_TO_pred_template(tpl);
     return BACK;
 };
-bool    RefVariable_t::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_t >(&rd); };
+bool    RefVariable_t::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_t >(&rd)?true:false; };

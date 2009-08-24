@@ -211,7 +211,7 @@ class LoaderHeap {
         }
 
 
-        RefData *getNewEmptyRefSymbolByTypeName(unistring);
+        //RefData *getNewEmptyRefSymbolByTypeName(unistring);
         RefVariable *getVariableByTypename(unistring vtype, unistring vname);
 
 

@@ -174,13 +174,13 @@ try {
             loader->currentCondition = new RefCondition(isnot);
     } else
     if ( theCommand.compare(_L("ERROR")) == 0 ) {
-    } else
-    /*****************   выделить в менеджер для простого добавления пользовательских типов  *****************/
+    } /*else
+    //*****************   выделить в менеджер для простого добавления пользовательских типов  *****************
     if (tmp = loader->getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ
         loader->putValueToStack(theCommand, tmp);
-    } else
+    } else  
 
-    SYSTEMERROR("unknown tag name: " << theCommand);
+    SYSTEMERROR("unknown tag name: " << theCommand); */
 #ifdef TESTCODE
 } catch(int i) {
     SYSTEMERROR("excepion!");

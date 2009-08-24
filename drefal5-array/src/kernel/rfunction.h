@@ -34,10 +34,10 @@ public:
 
     RefChain *leftPart;
     ChainSubstitution *rightPart;
-    unistring explode();
+    unistring explode(){SYSTEMERROR("unrelised");};
 
-    RefSentence();
-    RefSentence(RefChain* l, RefChain *r);
+    RefSentence(){SYSTEMERROR("unrelised");};
+    RefSentence(RefChain* l, RefChain *r){SYSTEMERROR("unrelised");};
     virtual ~RefSentence() {};
 };
 
@@ -48,8 +48,8 @@ class RefFunctionBase : public RefObject {
 public:
     CLASS_CAST(UseRTTI);
 
-    RefFunctionBase();
-    virtual ~RefFunctionBase();
+	RefFunctionBase(){};
+	virtual ~RefFunctionBase(){};
     virtual unistring getName() = 0;
     virtual RefChain *eval(RefData**, RefData**, Session*)=0;
 };
@@ -60,9 +60,9 @@ public:
     std::list<RefSentence *> body; // предложения
 
     /// аргументы - концы чистого ОВ   // заменяет в объектном выражении участок(перед. в аргум)
-    RefChain *eval(RefData **, RefData **, Session *s); // - перенесено в session
+	RefChain *eval(RefData **, RefData **, Session *s){SYSTEMERROR("urealised");}; // - перенесено в session
     unistring getName()  { return name; };
-	unistring explode();
+	unistring explode(){SYSTEMERROR("unrelised");};
     RefUserFunction(unistring nname) {
         name = nname;
     }
@@ -104,28 +104,14 @@ class RefUserVarNotInit : public RefVariable, public NeedInitilize {
     unistring type;
 public:
     CLASS_OBJECT_CAST(RefUserVarNotInit);
-    bool initize(Session *); // замещается на пару
-    void setType(unistring ttype) {
-        type = ttype;
-    };
-    unistring getType() {
-        return type;
-    };
-
-    unistring explode() {
-        return "@RefUserVarNotInit.toString()";
-    }
-    bool operator ==(RefData &rd) {
-        return false;
-    };
-    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    RefData*  Copy(RefData* where=0) {
-        return 0;
-    };
-
-    ~RefUserVarNotInit() {
-    };
+    bool initize(Session *){SYSTEMERROR("unexpected");}; // замещается на пару
+    void setType(unistring ttype) {        type = ttype;    };
+    unistring getType() {        return type;    };
+    unistring explode() {        return "@RefUserVarNotInit.toString()";    }
+    bool operator ==(RefData &rd) {        return false;    };
+	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
+    ~RefUserVarNotInit() {    };
 };
 
 
@@ -142,11 +128,11 @@ public:
     RefUserModule(RefProgram* p);
     virtual ~RefUserModule() {};
 
-    unistring explode();
-    RefObject* getObjectByName(unistring name, Session *s=0);
+    unistring explode(){SYSTEMERROR("unrelised");};
+    RefObject* getObjectByName(unistring name, Session *s=0){SYSTEMERROR("unrelised");};
 
     std::stack<NeedInitilize *> initItems; // стек ссылок на неинициализированные данные (внешние переменные)
-    void initilizeAll(Session *);
+    void initilizeAll(Session *){SYSTEMERROR("unrelised");};
     /*  void print_inf(){
             std::cout << this->toString();
         }
@@ -157,18 +143,18 @@ public:
 class RefDllModule : public RefModuleBase {
     std::map<unistring, RefObject*> objects;
 public:
-    RefDllModule();
-    virtual ~RefDllModule();
-    RefObject* getObjectByName(unistring nm, Session *s=0);
-    void setObjectByName(unistring name, RefObject* o);
-    unistring toString();
+	RefDllModule(){};
+	virtual ~RefDllModule(){};
+	RefObject* getObjectByName(unistring nm, Session *s=0){SYSTEMERROR("unrelised");};
+    void setObjectByName(unistring name, RefObject* o){SYSTEMERROR("unrelised");};
+    unistring toString(){SYSTEMERROR("unrelised");};
 };
 
 
 
 class RefBuildInFunction : public RefFunctionBase {
 public:
-    RefBuildInFunction(unistring name, RefDllModule *m);
+    RefBuildInFunction(unistring name, RefDllModule *m){SYSTEMERROR("unrelised");};
     virtual ~RefBuildInFunction() {};
     RefChain *eval(RefData**, RefData**, Session*){ SYSTEMERROR("not realised!"); };
 
@@ -207,8 +193,8 @@ public:
     virtual bool operator ==(RefData &rd) {
         return false;
     };
-    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
 
     RefCondition(bool withnot) : RefConditionBase() {
         isReverse = withnot;
@@ -238,8 +224,8 @@ public:
 
     RefMatchingCutter() : RefData() {
     }
-    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
 
     unistring toString() {        return " $CUTTER$ ";    }
 	unistring explode()  {        SYSTEMERROR("unexpected");    }
@@ -254,8 +240,9 @@ class RefTemplateBase : public RefModuleBase {
 public:
     BASE_CLASS_CAST(RefTemplateBase);
 
-    RefTemplateBase (unistring name);
+    RefTemplateBase (unistring name){SYSTEMERROR("unrelised");};
     virtual ~RefTemplateBase () {};
+	RefTemplateBase () {SYSTEMERROR("unrelised");};
 };
 
 // пользовательский шаблон
@@ -264,18 +251,13 @@ class RefUserTemplate : public RefTemplateBase {
 public:
     CLASS_OBJECT_CAST(RefUserTemplate);
 
-    RefUserTemplate(unistring name, RefChain *lp=0);
-    inline RefChain* getLeftPart() {
-        return leftPart;
-    };
-    void setLeftPart(RefChain *);
-    RefObject* getObjectByName(unistring name, Session *s) {
-        SYSTEMERROR("--== ZAGLUSHKA ==--");
-    };
-    unistring explode() {
-        return (getName()+"$RefUserTemplate_::=_"+(leftPart?leftPart->toString():"$void"));
-    }
+    RefUserTemplate(unistring name){SYSTEMERROR("unrelised");};
+    inline RefChain* getLeftPart() {        return leftPart;    };
+    void setLeftPart(RefChain *){SYSTEMERROR("unrelised");};
+    RefObject* getObjectByName(unistring name, Session *s) {        SYSTEMERROR("--== ZAGLUSHKA ==--");    };
+    unistring explode() {        return (getName()+"$RefUserTemplate_::=_"+(leftPart?leftPart->toString():"$void"));    }
     virtual ~RefUserTemplate() {};
+    RefUserTemplate(){SYSTEMERROR("unrelised");};
 };
 
 class RefTemplateBridgeTmpl;

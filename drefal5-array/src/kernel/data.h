@@ -203,7 +203,7 @@ class RefStructBracket : public RefBracketBase {
 public:
     CLASS_OBJECT_CAST(RefStructBracket);
 	bool       operator ==(RefData &rd){ // проверка только по типу. не по открытости
-		return ref_dynamic_cast<RefStructBracket>(&rd);
+		return (ref_dynamic_cast<RefStructBracket>(&rd))?true:false;
 	};
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
@@ -235,11 +235,11 @@ public:
 
     CLASS_OBJECT_CAST(RefGroupBracket);
 	bool       operator ==(RefData &rd){ // проверка только по типу. не по открытости
-		return ref_dynamic_cast<RefGroupBracket>(&rd);
+		return (ref_dynamic_cast<RefGroupBracket>(&rd))?true:false;
 	};
 	RefGroupBracket(unistring name) : RefBracketBase() { setName(name); };
-    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
 	unistring explode(){ SYSTEMERROR("unexpected"); };
 	unistring toString(){ return "{$"+name+"}"; };
 };
@@ -251,7 +251,7 @@ class ref_variant_dot : public RefData {
 public:
     ref_variant_vert  **nextvert;
 
-    ref_variant_dot();
+    ref_variant_dot(){SYSTEMERROR("unrelised");};
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     //void forceback(RefData *&, Session* s) {};
@@ -271,7 +271,7 @@ class ref_variant_vert : public RefData {
 public:
     RefData **vopr;
 
-    ref_variant_vert();
+    ref_variant_vert(){SYSTEMERROR("unrelised");};
     //bool operator==(RefData&rd);
     //void forceback (RefData *&, Session *s);
 
@@ -285,7 +285,7 @@ public:
 //----------  =>  ------------
 class ref_variant_ffwd : public RefData {
 public:
-    ref_variant_ffwd();
+    ref_variant_ffwd(){SYSTEMERROR("unrelised");};
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     //bool operator==(RefData&rd);
@@ -303,7 +303,7 @@ class ref_variant_vopr : public RefData {
 public:
     RefData **begbr;
 
-    ref_variant_vopr();
+    ref_variant_vopr(){SYSTEMERROR("unrelised");};
     //bool operator==(RefData&rd);
     //void forceback(RefData *&, Session* s);
 

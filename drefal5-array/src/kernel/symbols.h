@@ -55,7 +55,7 @@ public:
     RefAlpha(unichar val){ value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
-	void setValueFromText(unistring code);
+	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
 };
 
 
@@ -65,7 +65,7 @@ public:
     RefInteger(infint val){ value = val; };
     virtual ~RefInteger(){};
     virtual infint getValue() {return value;};
-	void setValueFromText(unistring code);
+	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
 
 };
 
@@ -76,7 +76,7 @@ public:
 	RefWord(unistring val){ value = val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
-	void setValueFromText(unistring code);
+	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
 };
 
 
