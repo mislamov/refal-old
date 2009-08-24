@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\refal.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\kernel\session.cpp"
 				>
 			</File>
@@ -202,6 +206,10 @@
 			</File>
 			<File
 				RelativePath=".\src\kernel\poolTuples.h"
+				>
+			</File>
+			<File
+				RelativePath=".\refal.h"
 				>
 			</File>
 			<File
