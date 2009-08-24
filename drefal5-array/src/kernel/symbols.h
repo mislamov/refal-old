@@ -55,6 +55,7 @@ public:
     RefAlpha(unichar val){ value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
+	void setValueFromText(unistring code);
 };
 
 
@@ -64,15 +65,18 @@ public:
     RefInteger(infint val){ value = val; };
     virtual ~RefInteger(){};
     virtual infint getValue() {return value;};
+	void setValueFromText(unistring code);
+
 };
 
 
 class RefWord : public RefWordBase {
     unistring value;
 public:
-    RefWord(unistring val){ value = val; };
+	RefWord(unistring val){ value = val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
+	void setValueFromText(unistring code);
 };
 
 

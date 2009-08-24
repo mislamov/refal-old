@@ -19,7 +19,7 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define REFVERSION "D-Refal 0.0.8 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
+#define REFVERSION "D-Refal 0.1.1 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 #define TESTCODE
 #define DEBUG
 //#define UNICODE
@@ -246,9 +246,12 @@ public:
     OBJECT_CAST(UseRTTI);
 
     RefObject(){};
-    virtual ~RefObject(){};
+    ~RefObject(){};
+#ifdef TESTCODE
     virtual unistring explode() = 0;
-    virtual unistring toString() {
+	virtual 
+#endif
+    unistring toString() {
         return explode();
     };
 };

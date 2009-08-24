@@ -12,6 +12,7 @@ class VarMap;
 class MatchState;
 class RefVariableBase;
 class RefStructBracket;
+class RefProgram;
 
 
 class VarMapItem {
@@ -105,7 +106,7 @@ public:
 	};
 };
 
-
+// сессия - среда для вычисления какого-либо ОВ с функциональными скобками
 class Session {
     friend class MatchState;
 	friend class RefData_DOT;
@@ -117,8 +118,11 @@ class Session {
     RefData** current_view_l;
     RefData** current_view_r;
 public:
-	Session(){
+	RefProgram *program;
+
+	Session(RefProgram *p){
 		current_view_l = current_view_r = 0;
+		program = p;
 	};
 
     TResult  result_sost;
@@ -138,10 +142,12 @@ public:
     // сопоставляет образец tmplate с объектным выражением с l по r.
     // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
     bool  matching(RefObject *initer, RefChain *tmplate, RefData **l, RefData **r, bool isdemaching, bool isRevers);
-    // оптимально вычисляет объектное выражение с функциональными вызовами в ОВ без угловых скобок
-    // Вызывается подстановкой в предложении пользовательской функциии и перед вычислением условий
-    // если выр-е без <.>, то возвращается аргумент (НЕ КОПИЯ!)
+
+    // Оптимально вычисляет объектное выражение с функциональными вызовами, возвращает ОВ без угловых скобок.
+    // Если выр-е без <.>, то возвращается аргумент (НЕ КОПИЯ!)
+    // (?: Вызывается подстановкой в предложении пользовательской функциии и перед вычислением условий)
     RefChain*  executeExpression (RefChain *);
+
     // готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
     RefChain*  substituteExpression(ChainSubstitution *);
 

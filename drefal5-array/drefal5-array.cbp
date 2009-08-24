@@ -31,7 +31,14 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="c:\mingw\include" />
+			<Add directory="C:\msys\1.0\include" />
 		</Compiler>
+		<Linker>
+			<Add option="-lxerces-c" />
+			<Add directory="C:\MinGW\lib" />
+			<Add directory="C:\msys\1.0\lib" />
+		</Linker>
 		<Unit filename="src\kernel\config.h" />
 		<Unit filename="src\kernel\data.cpp" />
 		<Unit filename="src\kernel\data.h" />
@@ -42,6 +49,7 @@
 		<Unit filename="src\kernel\variables.cpp" />
 		<Unit filename="src\kernel\variables.h" />
 		<Unit filename="src\main.cpp" />
+		<Unit filename="src\modules\system.h" />
 		<Unit filename="version.h">
 			<Option target="Release" />
 		</Unit>

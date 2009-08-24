@@ -41,6 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="&quot;D:\drefal\drefal5-array\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,6 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="D:\drefal\drefal5-array\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -179,7 +181,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\refal.cpp"
+				RelativePath=".\src\kernel\rfunction.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\SAXLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\SAXLoaderHandlers.cpp"
 				>
 			</File>
 			<File
@@ -209,11 +219,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\refal.h"
+				RelativePath=".\src\kernel\program.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\refal.h"
 				>
 			</File>
 			<File
 				RelativePath=".\src\kernel\rfunction.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\SAXLoader.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\SAXLoaderHandlers.hpp"
 				>
 			</File>
 			<File
@@ -225,7 +247,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\modules\system.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\kernel\variables.h"
+				>
+			</File>
+			<File
+				RelativePath=".\src\XMLRefDataCodes.h"
 				>
 			</File>
 		</Filter>

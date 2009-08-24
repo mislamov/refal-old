@@ -61,7 +61,7 @@ RefChain *Session::executeExpression(RefChain *chain) {
         RefBuildInFunction *b_funct = dynamic_cast<RefBuildInFunction *>(function);
         // если не пользовательская функция, то выполнение
         if (b_funct) {
-            newchain = b_funct->execute(l_exec[2], r_exec[-1], this);
+            newchain = b_funct->eval(l_exec+2, r_exec-1, this);
         } else {
             RefUserFunction* u_funct = (RefUserFunction *)(function);
             LOG("Exec " << u_funct->getName());

@@ -33,12 +33,18 @@
 class RefExecBracket;
 class RefStructBracket;
 class RefChain;
+class ref_variant_dot;
+class ref_variant_ffwd;
+class ref_variant_vert;
+class ref_variant_vopr;
+
 
 // Абстрактный класс - предок всех термов языка
 class RefData : public RefObject {
 public:
     virtual bool operator >(RefData &rd)  { RUNTIMEERROR("operator >", "Not comparable"); };
-    virtual bool operator ==(RefData &rd) = 0;//{ return false; };
+    //virtual bool operator ==(RefData &rd) = 0;//{ return false; };
+	virtual bool operator ==(RefData &rd){ SYSTEMERROR("alarm!"); return false; };
     virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0;
     virtual void    forceback(RefData *&activeTemplate, Session* s) {     SYSTEMERROR("RefData.forceback NOT DEFINE for "                 << toString());    }; // принудительный откат. Точка убирает из сессии свое состояние
@@ -141,12 +147,14 @@ public:
 };
 
 
+
+// цепочка - подставновка (правая часть)
 class ChainSubstitution : public RefChain {
 public:
-		DataLinkPooledStack<size_t> varsAndBrackets ; // индексы закрытых переменных и структурных скобок в подстановке. first + .. - закрытая переменная или скобка
-		ChainSubstitution& operator+=(RefBracketBase  *br);
-		ChainSubstitution& operator+=(RefLinkToVariable  *vr);
-		ChainSubstitution& operator+=(RefData  *br);
+	DataLinkPooledStack<size_t> varsAndBrackets ; // индексы закрытых переменных и структурных скобок в подстановке. first + .. - закрытая переменная или скобка
+	ChainSubstitution& operator+=(RefBracketBase  *br);
+	ChainSubstitution& operator+=(RefLinkToVariable  *vr);
+	ChainSubstitution& operator+=(RefData  *br);
 };
 
 extern unistring getTextOfChain(RefData** from, RefData** to);
@@ -187,7 +195,8 @@ public:
 	bool       operator ==(RefData &rd){ SYSTEMERROR("unexpected"); };
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unexpected"); };
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unexpected"); };
-	unistring explode(){ return "<br>"; };
+	unistring explode() { SYSTEMERROR("unexpected"); };
+	unistring toString(){ return "<br>"; };
 };
 
 class RefStructBracket : public RefBracketBase {
@@ -207,7 +216,101 @@ public:
     bool operator ==(RefData &rd) { SYSTEMERROR("unexpected"); };
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-	unistring explode(){ return "[br]"; };
+	unistring toString(){ return "[br]"; };
+	unistring explode() { SYSTEMERROR("unexpected"); };
+};
+
+
+
+
+////////////////  {o      | o      | o      | ?} ///////////////////
+//---------- {  } ----------
+class RefGroupBracket : public RefBracketBase {
+protected:
+    unistring name;
+
+public:
+    unistring getName() {    return name;    }
+    void setName(unistring s) {        name = s;    }
+
+    CLASS_OBJECT_CAST(RefGroupBracket);
+	bool       operator ==(RefData &rd){ // проверка только по типу. не по открытости
+		return ref_dynamic_cast<RefGroupBracket>(&rd);
+	};
+	RefGroupBracket(unistring name) : RefBracketBase() { setName(name); };
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+	unistring explode(){ SYSTEMERROR("unexpected"); };
+	unistring toString(){ return "{$"+name+"}"; };
+};
+
+
+
+//-----------  o  -----------
+class ref_variant_dot : public RefData {
+public:
+    ref_variant_vert  **nextvert;
+
+    ref_variant_dot();
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    //void forceback(RefData *&, Session* s) {};
+
+	unistring explode() {		SYSTEMERROR("unexpected");	}
+	unistring toString() {
+        return "-o- ";
+        std::ostringstream ss;
+        ss << " $o." << ((long)this);
+        return ss.str();
+    };
+};
+
+
+//----------  |  ------------
+class ref_variant_vert : public RefData {
+public:
+    RefData **vopr;
+
+    ref_variant_vert();
+    //bool operator==(RefData&rd);
+    //void forceback (RefData *&, Session *s);
+
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+
+	unistring toString() {	return " |";	};
+	unistring explode() {SYSTEMERROR("unexpected"); };
+
+};
+//----------  =>  ------------
+class ref_variant_ffwd : public RefData {
+public:
+    ref_variant_ffwd();
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    //bool operator==(RefData&rd);
+    //void forceback(RefData *&, Session* s) {};
+    virtual unistring toString() {
+        return "=>";
+        std::ostringstream ss;
+        ss << " =>." << (long)this;
+        return ss.str();
+    };
+	unistring explode() {SYSTEMERROR("unexpected"); };
+};
+//----------  ?  ------------
+class ref_variant_vopr : public RefData {
+public:
+    RefData **begbr;
+
+    ref_variant_vopr();
+    //bool operator==(RefData&rd);
+    //void forceback(RefData *&, Session* s);
+
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    unistring toString() {        return "-?-";    };
+	unistring explode() {SYSTEMERROR("unexpected"); };
 };
 
 
@@ -261,21 +364,17 @@ public:
     //void forceback(RefData *&, Session *) {};
     virtual unistring getPath() { return EmptyUniString;  }; // для наследников класса - путь к подпеременной относитльно основной переменной
 };
-/*
-// Ссылка на переменную (закрытая переменная)
-class RefLinkToVariable : public RefData {
-public:
-    RefVariable *lnkData; // массив ссылок на переменную. (массив для цепочки вложений в шаблоны переменных. последний элемент \x0. При поиске значений итерация по подсессиям)
-public:
-    CLASS_OBJECT_CAST(RefLinkToVariable);
-    RefLinkToVariable(unistring name);
-    unistring toString();
 
-    bool operator==(RefData&);
-    virtual TResult init(RefData **&, Session* , RefData **&, RefData **&);
-    virtual TResult back(RefData **&, Session* , RefData **&, RefData **&);
-    virtual void forceback(RefData *&, Session *) {};
+
+class RefLinkToPartOfVariable : public RefLinkToVariable {
+    unistring path; // путь к подпеременной относитльно основной переменной
+public:
+    unistring getPath() {        return path;    };
+	RefLinkToPartOfVariable(unistring name, unistring tpath, RefChain *chain) : RefLinkToVariable(name, chain) {
+        this->path = tpath;
+    };
 };
-*/
+
+
 #endif // REF_KERNEL_H_INCLUDED
 

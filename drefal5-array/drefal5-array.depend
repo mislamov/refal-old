@@ -100,14 +100,14 @@
 	"data.h"
 	<sstream>
 
-1250592885 source:d:\drefal\drefal5-array\src\kernel\data.cpp
+1250855250 source:d:\drefal\drefal5-array\src\kernel\data.cpp
 	"data.h"
 	"session.h"
 	<stdlib.h>
 	<iostream>
 	<sstream>
 
-1250594618 d:\drefal\drefal5-array\src\kernel\data.h
+1251102433 d:\drefal\drefal5-array\src\kernel\data.h
 	<iostream>
 	<sstream>
 	<stdlib.h>
@@ -116,19 +116,19 @@
 	"config.h"
 	"poolTuples.h"
 
-1250077961 d:\drefal\drefal5-array\src\kernel\config.h
+1251090758 d:\drefal\drefal5-array\src\kernel\config.h
 	<stdlib.h>
 	<string>
 	<limits>
 
-1250593304 d:\drefal\drefal5-array\src\kernel\session.h
+1251111456 d:\drefal\drefal5-array\src\kernel\session.h
 	<stack>
 	<stdlib.h>
 	"data.h"
 	"rfunction.h"
 	"poolTuples.h"
 
-1250593397 d:\drefal\drefal5-array\src\kernel\rfunction.h
+1251117476 d:\drefal\drefal5-array\src\kernel\rfunction.h
 	<iostream>
 	<sstream>
 	<list>
@@ -139,31 +139,333 @@
 	"data.h"
 	<sstream>
 
-1250593290 source:d:\drefal\drefal5-array\src\kernel\session.cpp
+1251092701 source:d:\drefal\drefal5-array\src\kernel\session.cpp
 	"symbols.h"
 	"session.h"
 	"rfunction.h"
 
-1249992466 source:d:\drefal\drefal5-array\src\kernel\variables.cpp
+1250855204 source:d:\drefal\drefal5-array\src\kernel\variables.cpp
 	"variables.h"
 	"session.h"
 
-1249972133 d:\drefal\drefal5-array\src\kernel\variables.h
+1250855204 d:\drefal\drefal5-array\src\kernel\variables.h
 	"data.h"
 
-1250593420 source:d:\drefal\drefal5-array\src\main.cpp
-	<iostream>
-	"kernel\symbols.h"
+1251092654 source:d:\drefal\drefal5-array\src\main.cpp
+	"refal.h"
+	"SAXLoader.hpp"
+	"kernel\RefSymbolBase.hxx"
 	"kernel\session.h"
-	"kernel\variables.h"
+	"kernel\kernel.h"
+	"kernel\datastructs.h"
+	"kernel\evalutor.h"
+	"modules\system.h"
+	<time.h>
 
-1249905300 d:\drefal\drefal5-array\src\kernel\symbols.h
+1251098057 d:\drefal\drefal5-array\src\kernel\symbols.h
 	"data.h"
 	<sstream>
 
 1249450649 source:d:\drefal\drefal5-array\src\kernel\rfunction.cpp
 	"rfunction.h"
 
-1250593722 d:\drefal\drefal5-array\src\kernel\pooltuples.h
+1250855204 d:\drefal\drefal5-array\src\kernel\pooltuples.h
 	"config.h"
+
+1223163075 c:\mingw\include\stdlib.h
+	<_mingw.h>
+	<stddef.h>
+
+1223163072 c:\mingw\include\_mingw.h
+
+1251117264 d:\drefal\drefal5-array\src\refal.h
+	<iostream>
+	"kernel\symbols.h"
+	"kernel\session.h"
+	"kernel\variables.h"
+	"kernel\rfunction.h"
+	"modules\system.h"
+
+1251105557 d:\drefal\drefal5-array\src\modules\system.h
+	"../kernel/rfunction.h"
+	<sstream>
+
+1244715086 d:\drefal\drefal5-array\src\saxloader.hpp
+	<string.h>
+	<iostream>
+	<iostream>
+	<stdlib.h>
+	"SAXLoaderHandlers.hpp"
+
+1223163076 c:\mingw\include\string.h
+	<_mingw.h>
+	<stddef.h>
+
+1244715086 d:\drefal\drefal5-array\src\saxloaderhandlers.hpp
+	<xercesc/sax/HandlerBase.hpp>
+	<xercesc/framework/MemBufFormatTarget.hpp>
+	"kernel/rfunction.h"
+	"stack"
+	"map"
+
+1243255070 c:\msys\1.0\include\xercesc\sax\handlerbase.hpp
+	<xercesc/sax/DocumentHandler.hpp>
+	<xercesc/sax/DTDHandler.hpp>
+	<xercesc/sax/EntityResolver.hpp>
+	<xercesc/sax/ErrorHandler.hpp>
+	<xercesc/sax/SAXParseException.hpp>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\documenthandler.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xercesdefs.hpp
+	<xercesc/util/XercesVersion.hpp>
+	<xercesc/util/AutoSense.hpp>
+	<xercesc/util/Platforms/Win32/Win32Defs.hpp>
+	<xercesc/util/Platforms/Cygwin/CygwinDefs.hpp>
+	<xercesc/util/Platforms/AIX/AIXDefs.hpp>
+	<xercesc/util/Platforms/Solaris/SolarisDefs.hpp>
+	<xercesc/util/Platforms/OpenServer/OpenServerDefs.hpp>
+	<xercesc/util/Platforms/UnixWare/UnixWareDefs.hpp>
+	<xercesc/util/Platforms/HPUX/HPUXDefs.hpp>
+	<xercesc/util/Platforms/IRIX/IRIXDefs.hpp>
+	<xercesc/util/Platforms/Interix/InterixDefs.hpp>
+	<xercesc/util/Platforms/Tandem/TandemDefs.hpp>
+	<xercesc/util/Platforms/BeOS/BeOSDefs.hpp>
+	<xercesc/util/Platforms/Linux/LinuxDefs.hpp>
+	<xercesc/util/Platforms/FreeBSD/FreeBSDDefs.hpp>
+	<xercesc/util/Platforms/OS390/OS390Defs.hpp>
+	<xercesc/util/Platforms/PTX/PTXDefs.hpp>
+	<xercesc/util/Platforms/OS2/OS2Defs.hpp>
+	<xercesc/util/Platforms/MacOS/MacOSDefs.hpp>
+	<xercesc/util/Platforms/OS400/OS400Defs.hpp>
+	<xercesc/util/Platforms/Tru64/Tru64Defs.hpp>
+	<xercesc/util/Platforms/QNX/QNXDefs.hpp>
+	<xercesc/util/Compilers/VCPPDefs.hpp>
+	<xercesc/util/Compilers/CSetDefs.hpp>
+	<xercesc/util/Compilers/BorlandCDefs.hpp>
+	<xercesc/util/Compilers/SunCCDefs.hpp>
+	<xercesc/util/Compilers/SCOCCDefs.hpp>
+	<xercesc/util/Compilers/SunKaiDefs.hpp>
+	<xercesc/util/Compilers/HPCCDefs.hpp>
+	<xercesc/util/Compilers/MIPSproDefs.hpp>
+	<xercesc/util/Compilers/TandemCCDefs.hpp>
+	<xercesc/util/Compilers/GCCDefs.hpp>
+	<xercesc/util/Compilers/MVSCPPDefs.hpp>
+	<xercesc/util/Compilers/IBMVAW32Defs.hpp>
+	<xercesc/util/Compilers/IBMVAOS2Defs.hpp>
+	<xercesc/util/Compilers/CodeWarriorDefs.hpp>
+	<xercesc/util/Compilers/PTXCCDefs.hpp>
+	<xercesc/util/Compilers/OS400SetDefs.hpp>
+	<xercesc/util/Compilers/DECCXXDefs.hpp>
+	<xercesc/util/Compilers/QCCDefs.hpp>
+	<xercesc/util/Platforms/NetBSD/NetBSDDefs.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xercesversion.hpp
+
+1188326692 c:\msys\1.0\include\xercesc\util\autosense.hpp
+
+1188326649 c:\msys\1.0\include\xercesc\util\platforms\win32\win32defs.hpp
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\vcppdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1223163077 c:\mingw\include\sys\types.h
+	<_mingw.h>
+	<stddef.h>
+
+1223163074 c:\mingw\include\limits.h
+	<_mingw.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\csetdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\borlandcdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\sunccdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\scoccdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\sunkaidefs.hpp
+	<memory.h>
+	<strings.h>
+	<sys/types.h>
+	<limits.h>
+
+1223163074 c:\mingw\include\memory.h
+	<string.h>
+
+1223163076 c:\mingw\include\strings.h
+	<string.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\hpccdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\mipsprodefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\tandemccdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\gccdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\mvscppdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\ibmvaw32defs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\ibmvaos2defs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\codewarriordefs.hpp
+	<wchar.h>
+	<wctype.h>
+
+1223163076 c:\mingw\include\wchar.h
+	<_mingw.h>
+	<stddef.h>
+	<stdarg.h>
+	<wctype.h>
+	<sys/types.h>
+	<stdint.h>
+	<stdint.h>
+
+1223163076 c:\mingw\include\wctype.h
+	<_mingw.h>
+	<stddef.h>
+
+1223163075 c:\mingw\include\stdint.h
+	<stddef.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\ptxccdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\os400setdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\deccxxdefs.hpp
+	<sys/types.h>
+	<limits.h>
+
+1188326639 c:\msys\1.0\include\xercesc\util\compilers\qccdefs.hpp
+	<sys/types.h>
+	<limits.h>
+	<inttypes.h>
+
+1223163073 c:\mingw\include\inttypes.h
+	<_mingw.h>
+	<stdint.h>
+	<stddef.h>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\dtdhandler.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\entityresolver.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\errorhandler.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\saxparseexception.hpp
+	<xercesc/sax/SAXException.hpp>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\saxexception.hpp
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/XMLUni.hpp>
+	<xercesc/util/XMemory.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xmlstring.hpp
+	<xercesc/util/BaseRefVectorOf.hpp>
+	<xercesc/framework/XMLBuffer.hpp>
+	<xercesc/framework/MemoryManager.hpp>
+	<string.h>
+	<assert.h>
+
+1188326692 c:\msys\1.0\include\xercesc\util\baserefvectorof.hpp
+	<xercesc/util/ArrayIndexOutOfBoundsException.hpp>
+	<xercesc/util/XMLEnumerator.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/framework/MemoryManager.hpp>
+	<xercesc/util/BaseRefVectorOf.c>
+
+1188326692 c:\msys\1.0\include\xercesc\util\arrayindexoutofboundsexception.hpp
+	<xercesc/util/XMLException.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xmlexception.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/XMLExceptMsgs.hpp>
+	<xercesc/util/XMLUni.hpp>
+	<xercesc/framework/XMLErrorReporter.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xmemory.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<stdlib.h>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xmlexceptmsgs.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/dom/DOMError.hpp>
+
+1188326563 c:\msys\1.0\include\xercesc\dom\domerror.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xmluni.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlerrorreporter.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xmlenumerator.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\platformutils.hpp
+	<xercesc/util/XMLException.hpp>
+	<xercesc/util/PanicHandler.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\panichandler.hpp
+	<xercesc/util/XMemory.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\memorymanager.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<stdlib.h>
+
+1188326692 c:\msys\1.0\include\xercesc\util\baserefvectorof.c
+	<xercesc/util/BaseRefVectorOf.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlbuffer.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/framework/MemoryManager.hpp>
+	<string.h>
+
+1223163072 c:\mingw\include\assert.h
+	<_mingw.h>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\membufformattarget.hpp
+	<xercesc/framework/XMLFormatter.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlformatter.hpp
+	<xercesc/util/PlatformUtils.hpp>
+
+1223163076 c:\mingw\include\time.h
+	<_mingw.h>
+	<stddef.h>
 

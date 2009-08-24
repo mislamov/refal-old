@@ -18,8 +18,9 @@
 
 
 #include "refal.h"
-/*
 #include "SAXLoader.hpp"
+
+/*
 #include "kernel\RefSymbolBase.hxx"
 #include "kernel\session.h"
 #include "kernel\kernel.h"
@@ -46,23 +47,8 @@ std::string stringtime(struct tm * tt) {
 }
 
 int main ( int argv, char **argc ) {
-/*
-    RefData** vv = new RefData* [10];
+	RefProgram program;
 
-    vv[0] = new RefAlpha('a');
-    vv[1] = new RefAlpha('b');
-    vv[2] = new RefAlpha('c');
-
-    for (int i=0; i<10; i++){
-        std::string s = vv[i]->toString();
-        if (s.length()){
-            s=s;
-        }
-    }
-
-
-return 0;
-*/
     std::cout << REFVERSION << "\n" << std::flush;
     if (argv == 1) {
         std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << std::flush;
@@ -111,56 +97,47 @@ return 0;
 
 
 // создали сессию
-    Session *s = new Session();
+    Session *s = new Session(&program);
 
 // загрузили модули
 //std::cout << msystem.toString() << "\n";
-    s->regModule ( &msystem );
-    mod = new RefUserModule();
-    err = loadModuleFromXmlFile ( mod, xmlFile );
+    program.regModule ( &msystem ); // системный модуль загружается в первую очередь!
+
+    mod = new RefUserModule(&program);
+    err = loadModuleFromXmlFile ( mod, &program, xmlFile );
     if (err) return err;
-    s->regModule ( mod );
     #ifdef DEBUG
     std::cout << mod->toString() << "\n";
     #endif
-    /*        RefData_DOT
-                *l = new RefData_DOT(),
-                *r = new RefData_DOT(l,0);
-    */
 
     time_t starttime, stoptime;
     time ( &starttime );
 
 #ifdef TESTCODE
 //    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
-    std::cout << "program-data-size: " << co::datacount << "\n" << std::flush;
-    std::cout << "program-obj-size : " << co::ocount << "\n============================================\n" << std::flush;
+//    std::cout << "program-data-size: " << co::datacount << "\n" << std::flush;
+//    std::cout << "program-obj-size : " << co::ocount << "\n============================================\n" << std::flush;
 #endif
     RefExecBracket
-    *lb = new RefExecBracket(),
-    *rb = new RefExecBracket ( lb );
+    *lrb = new RefExecBracket();
 
     RefChain *polez = new RefChain();
 
-//*polez += l;
-    *polez += lb;
-    *polez += new RefNULL();
+    *polez += lrb;
+    //*polez += new RefNULL();
     *polez += new RefWord ( "Go" );
-    *polez += rb;
-//*polez += r;
+    *polez += lrb;
 
-//s->pole_zrenija.push( polez );
-    RefChain *result = evalutor ( polez, s );
-//s->flush();
+	RefChain *result = s->executeExpression( polez );
 
     time ( &stoptime );
     std::cout << "============================================\nTime: " /*<< stringtime(localtime (&stoptime)) << "\n"*/ << difftime(stoptime, starttime) << " sec.\n" << std::flush;
     std::cout << "Result: " << result->toString() << "\n";
 
-    result->clear();
+    delete result;
 #ifdef TESTCODE
-    std::cout << "datas in mem: " << co::datacount << "\n";
-    std::cout << "objts in mem: " << co::ocount << "\n";
+//    std::cout << "datas in mem: " << co::datacount << "\n";
+//    std::cout << "objts in mem: " << co::ocount << "\n";
 #endif
 
 
