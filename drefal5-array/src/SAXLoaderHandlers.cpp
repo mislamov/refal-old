@@ -16,6 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
 
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/sax/AttributeList.hpp>
@@ -95,7 +96,7 @@ try {
             loader->createChainToStack();
     } else
     if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
-            loader->createChainToStack();
+            loader->createSubstitutionToStack();
     } else
     if ( theCommand.compare(_L("EXEC")) == 0) {  //     <
             RefExecBracket *t = new RefExecBracket();
@@ -297,13 +298,11 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             //std::cout << "EndElement:" << theCommand;
             //std::cout << " stack["<<"BRACKET"<<"]:" << loader->getValueFromStack("BRACKET")->toString();
 
-            RefExecBracket *br = (RefExecBracket *)(loader->extractValueFromStack("BRACKET"));
             #ifdef TESTCODE
-            br = dynamic_cast<RefExecBracket *>(loader->extractValueFromStack("BRACKET"));
-            if (! br) SYSTEMERROR("not EXEC BRACKET in BRACKET-stack !!!");
+		if (! dynamic_cast<RefExecBracket *>(loader->getValueFromStack("BRACKET"))) SYSTEMERROR("not EXEC BRACKET in BRACKET-stack !!!");
             #endif
-            RefExecBracket *brclose = new RefExecBracket();
-            *(loader->getCurrChain()) += brclose;
+            RefExecBracket *br = (RefExecBracket *)(loader->extractValueFromStack("BRACKET"));
+            *(loader->getCurrChain()) += br;
     } else
     if ( theCommand.compare(_L("VAR")) == 0) {  //
         // берем по текущему тексту и получаем ссылку на переменную
@@ -572,9 +571,16 @@ void SAXPrintHandlers::processingInstruction(const  XMLCh* const target
 
 
 // возвращает переменную
-RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn){
-    // поиск среди встроенных типов переменных
-	RefVariable* result = currentProgram->createVariableByTypename(nametype, vn);
+RefVariableBase* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn){
+	
+#ifdef TESTCODE
+	RefData* res = currentProgram->createVariableByTypename(nametype, vn);
+	RefVariableBase* result = dynamic_cast<RefVariableBase*>(res);
+	if (! result) SYSTEMERROR("not variable");
+#else
+	RefVariableBase* result = (RefVariableBase* )currentProgram->createVariableByTypename(nametype, vn);
+#endif
+
     if (result) {
         return result;
     }

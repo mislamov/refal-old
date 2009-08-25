@@ -57,6 +57,14 @@ public:
 };
 
 
+class RefByteBase : public RefSymbolBase<RefByteBase, char> {
+public:
+    CLASS_OBJECT_CAST(RefByteBase);
+    virtual ~RefByteBase(){};
+};
+
+
+
 
 class RefAlpha : public RefAlphaBase {
     unichar value;
@@ -64,7 +72,6 @@ public:
     RefAlpha(unichar val){ value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
-	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
 };
 
 
@@ -74,7 +81,6 @@ public:
     RefInteger(infint val){ value = val; };
     virtual ~RefInteger(){};
     virtual infint getValue() {return value;};
-	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
 };
 
 
@@ -84,8 +90,8 @@ public:
     RefReal(infreal val){ value = val; };
     virtual ~RefReal(){};
     virtual infreal getValue() {return value;};
-	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
 };
+
 
 class RefWord : public RefWordBase {
     unistring value;
@@ -93,7 +99,15 @@ public:
 	RefWord(unistring val){ value = val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
-	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
+};
+
+
+class RefByte : public RefByteBase {
+    char value;
+public:
+	RefByte(char val){ value = val; };
+    virtual ~RefByte(){};
+    virtual char getValue() {return value;};
 };
 
 

@@ -115,7 +115,15 @@ int main ( int argv, char **argc ) {
             std::cout << ss1.str().c_str() << "\n" << std::flush;
             return err;
         }
-    }
+#ifdef DEBUG
+		LOG("program: " << ss0.str());
+#endif
+
+	} else {
+#ifdef DEBUG
+		LOG("program: " << ss1.str());
+#endif
+	}
 
     xmlFile = new char[256];
     strncpy(xmlFile, ss2.str().c_str(), 255);

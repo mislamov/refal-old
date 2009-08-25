@@ -16,10 +16,35 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #include <fstream>
+//#include <stdlib>
 
 #include "system.h"
 #include "../kernel/symbols.h"
 #include "../kernel/program.h"
+
+
+RefData*   word_creator(unistring value){
+	return new RefWord(value);
+};
+
+RefData*  alpha_creator(unistring value){
+	if (value.length() != 1) SYSTEMERROR("Data for alpha incorrect: '" << value << "'");
+	return new RefAlpha(value[0]);
+};
+
+RefData*    int_creator(unistring value){
+	return new RefInteger( atol(value.c_str()) );
+};
+
+RefData*   real_creator(unistring value){
+	return new RefReal( atof(value.c_str()) );
+};
+
+RefData*   byte_creator(unistring value){
+	if (sizeof(value.c_str()) != sizeof(char)) SYSTEMERROR("Data for byte incorrect: '" << value << "'");
+	return new RefByte( *(value.c_str()) );
+};
+
 
 
 RefChain* Dec (RefData** beg, RefData** end, Session* s){

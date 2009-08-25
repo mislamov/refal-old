@@ -180,6 +180,9 @@ class LoaderHeap {
         void createChainToStack(){
             stckChains.push(new RefChain());
         }
+		void createSubstitutionToStack(){
+			stckChains.push(new ChainSubstitution());
+        }
         RefChain* extractCurrChainFromStack(){
             #ifdef TESTCODE
             if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
@@ -212,7 +215,7 @@ class LoaderHeap {
 
 
         //RefData *getNewEmptyRefSymbolByTypeName(unistring);
-        RefVariable *getVariableByTypename(unistring vtype, unistring vname);
+        RefVariableBase *getVariableByTypename(unistring vtype, unistring vname);
 
 
         LoaderHeap(RefUserModule *m, RefProgram *p){

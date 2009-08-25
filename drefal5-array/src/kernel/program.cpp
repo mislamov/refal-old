@@ -13,11 +13,59 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 };
 
 RefData* RefProgram::createSymbolByCode(unistring code, unistring value){
-		SYSTEMERROR("zaglushka");
+	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	RefModuleBase* mod = 0;
+	RefDllModule* dllmod = 0;
+	RefData* result = 0;
+
+	while (modit != end){
+		//TODO: поиск согласно порядку подключения модулей
+		dllmod = dynamic_cast<RefDllModule*>(&(*modit->second));
+		if (dllmod && (result=dllmod->constructSymbol(code, value))){
+			return result;
+		} // на данный момент в НЕ dll-модулях не может определяться генератор символов по коду
+		++modit;
+	}
+
+	COMPILETIMEERROR("Loader", "Definition for " << code << " not found in loaded modules");
 };
 
-RefVariable* RefProgram::createVariableByTypename(unistring code, unistring value){
-		SYSTEMERROR("zaglushka");
+
+// создает переменную с именем по коду. Ищет в подключенных модулях (среди встроенных переменных и пользовательских шаблонов)
+RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
+	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	RefModuleBase* mod = 0;
+	RefDllModule  *dllmod = 0;
+	RefUserModule *usermod= 0;
+	RefData* result = 0;
+
+	while (modit != end){
+		//TODO: сделать поиск согласно порядку подключения модулей
+		mod = &(*modit->second);
+		dllmod = dynamic_cast<RefDllModule*>(mod);
+		if (dllmod){
+			result=dllmod->constructVariable(code, value);
+			if (result && ref_dynamic_cast<RefVariableBase>(result)) {
+				return result;
+			}
+			if (result) {
+				SYSTEMERROR("not variable loading like variable: " << result->toString());
+			}
+		} else {
+			usermod = dynamic_cast<RefUserModule*>(mod);
+			if (!usermod) SYSTEMERROR("unknown children of RefModuleBase");
+			RefObject *obj = usermod->getObjectByName(code);
+			if (obj){
+				RefTemplateBase *templ = ref_dynamic_cast<RefTemplateBase>(obj);
+				if (templ){
+					return new RefUserVarNotInit(templ, code, value);
+				}
+			} 
+		}
+		++modit;
+	}
+
+	return 0;
 };
 
 
@@ -27,12 +75,6 @@ RefVariable* RefProgram::createVariableByTypename(unistring code, unistring valu
 
 void RefModuleBase::initilizeAll(Session *) {        LOG("not realized!");    };
 	
-// создает RefData-символ по rsl-коду code и со значением value (текстовое представление)
-RefData* RefModuleBase::createSymbolByCode(unistring code, unistring value){
-		// TODO: поиск по себе и включенным модулям (а если "свое" описание загружается ПОСЛЕ использования внутри себя? а во включенных определено?)
-		extern mSYSTEM msystem;
-		return msystem.dataConstructors[code](value);
-};
 
 
 ////  class RefUserModule

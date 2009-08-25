@@ -44,9 +44,35 @@ RefChain* Print (RefData** beg, RefData** end, Session* s);
 RefChain* Exit  (RefData** beg, RefData** end, Session* s);
 
 
+RefData*   word_creator(unistring value);
+RefData*  alpha_creator(unistring value);
+RefData*    int_creator(unistring value);
+RefData*   real_creator(unistring value);
+RefData*   byte_creator(unistring value);
+
+RefData*   word_creator(unistring value);
+RefData*  alpha_creator(unistring value);
+RefData*    int_creator(unistring value);
+RefData*   real_creator(unistring value);
+RefData*   byte_creator(unistring value);
+
+
 
 
 BEGIN_DLL_MODULE("System", mSYSTEM)
+
+SYMBOL_DEFINITIONS
+		DEFINE_MODULE_SYMBOL_CLASS(WORD,  word_creator);
+		DEFINE_MODULE_SYMBOL_CLASS(ALPHA, alpha_creator);
+		DEFINE_MODULE_SYMBOL_CLASS(INT,   int_creator);
+		DEFINE_MODULE_SYMBOL_CLASS(REAL,  real_creator);
+		DEFINE_MODULE_SYMBOL_CLASS(BYTE,  byte_creator);
+
+VAR_DEFINITIONS
+		DEFINE_MODULE_VARIABLE_CLASS(WORD,  word_creator);
+
+
+FUNCTION_DEFINITIONS
 		DEFINE_MODULE_FUNCTION(Sum);
 		DEFINE_MODULE_FUNCTION(Dec);
 		DEFINE_MODULE_FUNCTION(Div);
@@ -65,6 +91,7 @@ BEGIN_DLL_MODULE("System", mSYSTEM)
 
 		DEFINE_MODULE_FUNCTION_ALIAS(Add, Sum);
 		DEFINE_MODULE_FUNCTION_ALIAS(Sub, Dec);
+
 END_DLL_MODULE
 
 

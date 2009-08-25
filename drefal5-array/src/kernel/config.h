@@ -73,6 +73,11 @@ namespace co {
     exit(-1); \
     };
 
+#define COMPILETIMEERROR(fname, msg) { \
+    std::cout << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
+    exit(-1); \
+    };
+
 #include <stdlib.h>
 #include <string>
 
@@ -96,7 +101,7 @@ typedef std::string    unistring;
 #define _L(quote) quote
 
 typedef long            infint;
-typedef float           infreal;
+typedef double          infreal;
 typedef int             ThisId;     // тип для хранения  идентификатора каждого дататайпа
 
 infint str2infint(unistring si);  // строку в число

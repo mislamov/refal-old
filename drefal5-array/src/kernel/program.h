@@ -30,7 +30,7 @@ public:
 
 	void regModule(RefModuleBase *module); // регистрация модуля в программе (перед загрузкой)
 	RefData* createSymbolByCode(unistring code, unistring value);
-	RefVariable* createVariableByTypename(unistring code, unistring value);
+	RefData* createVariableByTypename(unistring code, unistring value);
 };
 
 
@@ -43,20 +43,30 @@ public:
     virtual ~RefModuleBase() {};
     virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
     virtual void initilizeAll(Session *);
-
-	// создает RefData-символ по rsl-коду code и со значением value (текстовое представление)
-	virtual RefData* createSymbolByCode(unistring code, unistring value);	// TODO: поиск по себе и включенным модулям (а если "свое" описание загружается ПОСЛЕ использования внутри себя? а во включенных определено?)
 };
 
 
 class RefDllModule : public RefModuleBase {
     std::map<unistring, RefObject*> objects;
+protected:
+	std::map<unistring, RefData*(*)(unistring)> dataConstructors;
+	std::map<unistring, RefData*(*)(unistring)> varConstructors;
 public:
 	RefDllModule(){};
 	virtual ~RefDllModule(){};
 	RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
     void setObjectByName(unistring name, RefObject* o){objects[name] = o; };
     unistring toString(){SYSTEMERROR("unrelised");};
+	RefData* constructSymbol(unistring typecode, unistring value){
+		std::map<unistring, RefData*(*)(unistring)>::iterator iter = dataConstructors.find(typecode);
+		if (iter==dataConstructors.end()) return 0;
+		return (*iter->second)(value);
+	};
+	RefData* constructVariable(unistring typecode, unistring value){
+		std::map<unistring, RefData*(*)(unistring)>::iterator iter = varConstructors.find(typecode);
+		if (iter==varConstructors.end()) return 0;
+		return (*iter->second)(value);
+	};
 };
 
 

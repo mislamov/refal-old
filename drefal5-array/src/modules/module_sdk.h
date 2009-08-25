@@ -20,18 +20,31 @@
 
 
 
-#define BEGIN_DLL_MODULE(mod_name, class_name) \
+#define BEGIN_DLL_MODULE(mod_name, class_name)\
 	class class_name : public RefDllModule {	\
 	public:	\
-		std::map<unistring, RefData*(*)(unistring)> dataConstructors;	\
 		unistring getName(){ return mod_name; };	\
 		unistring explode(){SYSTEMERROR("unrelised");}; \
 		class_name() : RefDllModule() {
 
+#define SYMBOL_DEFINITIONS 
+
+#define DEFINE_MODULE_SYMBOL_CLASS(code, creator)\
+	if (dataConstructors.find( #code )!=dataConstructors.end()) SYSTEMERROR("redefinition symbol-code: " << #code);\
+	dataConstructors[#code] = &creator;
+		
+
+#define VAR_DEFINITIONS
+
+#define DEFINE_MODULE_VARIABLE_CLASS(code, creator)\
+	if (varConstructors.find( #code )!=varConstructors.end()) SYSTEMERROR("redefinition variable-code: " << #code);\
+	varConstructors[#code] = &creator;
+		
+
+#define FUNCTION_DEFINITIONS
 
 
-
-#define DEFINE_MODULE_FUNCTION(func) \
+#define DEFINE_MODULE_FUNCTION(func)\
 class rf_module_##func : public RefBuildInFunction { \
 	public: \
 	rf_module_##func() : RefBuildInFunction(){ LOG("new " << getName()); } \
@@ -46,6 +59,8 @@ class rf_module_##func : public RefBuildInFunction { \
 
 #define DEFINE_MODULE_FUNCTION_ALIAS(alias, func) \
 	setObjectByName(#alias,  getObjectByName(#func));
+
+
 
 
 #define END_DLL_MODULE   };};

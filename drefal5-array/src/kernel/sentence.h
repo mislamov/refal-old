@@ -64,7 +64,10 @@ public:
 // класс - непроинициализированная переменная внешнего типа. После инициализации заменяется на пару {RefTemplateBridgeVar RefTemplateBridgeVar}
 class RefUserVarNotInit : public RefVariable, public NeedInitilize {
     unistring type;
+	RefTemplateBase *templ;
 public:
+	RefUserVarNotInit();
+	RefUserVarNotInit(RefTemplateBase *ntempl, unistring ntype, unistring nname){ type=ntype; name=nname; ntempl=templ; };
     CLASS_OBJECT_CAST(RefUserVarNotInit);
     bool initize(Session *){SYSTEMERROR("unexpected");}; // замещается на пару
     void setType(unistring ttype) {        type = ttype;    };
