@@ -312,4 +312,16 @@ T* ref_dynamic_cast(RefObject* d) {
 
 
 
+inline std::string replace(std::string text, std::string s, std::string d)
+{
+  for(unsigned index=0; index=text.find(s, index), index!=std::string::npos;)
+  {
+    text.replace(index, s.length(), d);
+    index+=d.length();
+  }
+  return text;
+}
+
+
+
 #endif // REF_CORE_H_INCLUDED

@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "program.h"
 #include "../modules/system.h"
 
@@ -69,6 +71,23 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 };
 
 
+RefObject* RefProgram::findFunctionById(unistring id){
+	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	RefModuleBase* mod = 0;
+
+	while (modit != end){
+		//TODO: сделать поиск согласно порядку подключения модулей
+		mod = &(*modit->second);
+		RefObject* obj = mod->getObjectByName(id);
+		if (ref_dynamic_cast<RefFunctionBase>(obj)){
+			return obj;
+		}
+		++modit;
+	};
+	RUNTIMEERROR("FindFunction", "function " << id << " not found in program");
+	return 0;
+};
+
 
 
 ////   class RefModuleBase
@@ -82,4 +101,32 @@ void RefModuleBase::initilizeAll(Session *) {        LOG("not realized!");    };
 RefUserModule::RefUserModule(unistring name, RefProgram* p) : RefModuleBase() {
 		this->name = name;
         p->regModule(this);
+};
+
+
+
+unistring RefUserModule::toString(){ 
+	std::ostringstream ss;
+	ss << "$module " << getName() << "\n";
+
+	std::map<unistring, RefObject*>::iterator it = objects.begin(), end = objects.end();
+	while(it!=end){
+		ss << it->first << "\n" << it->second->toString();
+		++it;
+	}
+
+	return ss.str(); 
+};
+
+
+unistring RefUserFunction::toString(){ 
+	std::ostringstream ss;
+	ss << "$funcrion " << getName() << "\n";
+
+	std::list<RefSentence *>::iterator it = body.begin(), end = body.end();
+	while(it!=end){
+		ss << (*it)->toString() << "\n";
+		++it;
+	}
+	return ss.str(); 
 };

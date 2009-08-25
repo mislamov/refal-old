@@ -183,16 +183,38 @@ class LoaderHeap {
 		void createSubstitutionToStack(){
 			stckChains.push(new ChainSubstitution());
         }
+		void createPatternToStack(){
+			ChainPattern* ch = new ChainPattern();
+			*ch += new RefData_DOT();
+			stckChains.push(ch);
+        }
+		
         RefChain* extractCurrChainFromStack(){
             #ifdef TESTCODE
             if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
             #endif
             RefChain *r = stckChains.top();
             stckChains.pop();
+			if (dynamic_cast<ChainPattern*>(r)){
+				*r += *(r->get_first()); // dataDOT
+			}
             return r;
         }
         RefChain* getCurrChain(){
             return stckChains.top();
+        }
+        RefChain* getCurrChainNotSubstitution(){
+            if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
+            RefChain *r = stckChains.top();
+			if (dynamic_cast<ChainSubstitution*>(r)){
+				RefChain *rr = r;
+				stckChains.pop();
+				if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
+				r = stckChains.top();
+				if (dynamic_cast<ChainSubstitution*>(r)) SYSTEMERROR("two ChainSubstitutions in stack!");
+				stckChains.push(rr);
+			}
+			return r;
         }
         RefObject* putValueToStack(unistring name, RefObject* o){
             /** /

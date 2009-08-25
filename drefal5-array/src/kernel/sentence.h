@@ -46,6 +46,7 @@ public:
     ChainSubstitution *rightPart;
 
     unistring explode(){SYSTEMERROR("unrelised");};
+    unistring toString();
 
 	RefSentence(){ leftPart = rightPart = 0; };
 	RefSentence(RefChain* l, ChainSubstitution *r){SYSTEMERROR("unrelised");};
@@ -66,7 +67,7 @@ class RefUserVarNotInit : public RefVariable, public NeedInitilize {
     unistring type;
 	RefTemplateBase *templ;
 public:
-	RefUserVarNotInit();
+	RefUserVarNotInit(){};
 	RefUserVarNotInit(RefTemplateBase *ntempl, unistring ntype, unistring nname){ type=ntype; name=nname; ntempl=templ; };
     CLASS_OBJECT_CAST(RefUserVarNotInit);
     bool initize(Session *){SYSTEMERROR("unexpected");}; // замещается на пару
@@ -100,10 +101,11 @@ public:
 ////  Рефал-условие пользовтаельское
 class RefCondition : public RefConditionBase {
     RefChain *rightPart;
-    RefChain *leftPart;
     bool isReverse; // признак условия $NOT
 public:
-    CLASS_OBJECT_CAST(RefCondition);
+    RefChain *leftPart;
+
+	CLASS_OBJECT_CAST(RefCondition);
     RefObject *own;  // RefCondition or RefFunctionBase
 
     void setRightPart(RefChain *rp) {        rightPart = rp;    }

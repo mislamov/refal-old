@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include "poolTuples.h"
+//#include "sentence.h"
 
 
 class RefExecBracket;
@@ -132,23 +133,15 @@ public:
     RefChain& operator+=(RefChain &ch);   // к левому аргумент пристыковываетс€ копи€ правого!
     RefChain& operator+=(RefChain *ch);  // к левому аргумент пристыковываетс€ копи€ правого!
     RefChain& operator+=(RefData  *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
-	RefChain& operator+=(RefBracketBase  *br); // скобки указывают друг на друга
+	RefChain& operator+=(RefBracketBase   *br); // скобки указывают друг на друга
+	RefChain& operator+=(RefStructBracket *br); // ( null    )
     RefChain* Copy(Session *s =0);
 
     unistring toString();
     unistring explode(); // голый текст без форматировани€
 
-	RefVariableBase** getVarByName(unistring name){
-		size_t ind = 1;
-		RefVariableBase *var;
-		while(ind <= leng){
-			if ((var = ref_dynamic_cast<RefVariableBase>(first[ind])) && (var->getName()==name)) return (RefVariableBase**)(first+ind);
-			++ind;
-		}
-		return 0;
-	}
+	RefVariableBase** getVarByName(unistring name);
 };
-
 
 
 // цепочка - подставновка (права€ часть)
@@ -159,6 +152,8 @@ public:
 	ChainSubstitution& operator+=(RefLinkToVariable  *vr);
 	ChainSubstitution& operator+=(RefData  *br);
 };
+
+class ChainPattern : public RefChain {};
 
 extern unistring getTextOfChain(RefData** from, RefData** to);
 
@@ -199,7 +194,9 @@ public:
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unexpected"); };
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unexpected"); };
 	unistring explode() { SYSTEMERROR("unexpected"); };
-	unistring toString(){ return "<br>"; };
+	unistring toString(){  
+		return "<br>"; 
+	};
 };
 
 class RefStructBracket : public RefBracketBase {
@@ -363,7 +360,12 @@ public:
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     //virtual RefData*  Copy(RefData* where=0);
     RefLinkToVariable(RefVariableBase *ln){lnk=ln;};
-	RefLinkToVariable(unistring varName, RefChain *chain){lnk=*(chain->getVarByName(varName)); };
+	RefLinkToVariable(unistring varName, RefChain *chain){
+		RefVariableBase** cv = chain->getVarByName(varName);
+		if (!cv) 
+			SYSTEMERROR("can't find variable '" << varName << "' ");
+		lnk=*cv; 
+	};
     //void forceback(RefData *&, Session *) {};
     virtual unistring getPath() { return EmptyUniString;  }; // дл€ наследников класса - путь к подпеременной относитльно основной переменной
 };

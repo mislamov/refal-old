@@ -52,9 +52,9 @@ RefChain *Session::executeExpression(RefChain *chain) {
         // дано: l_exec и r_exec
         /// получение тела функции из репозитория
         #ifdef TESTCODE
-        if (! dynamic_cast<RefWord*>(l_exec[1])) SYSTEMERROR("NOt func NAME: " << l_exec[1]->toString() );
+        if (! dynamic_cast<RefWord*>(l_exec[1])) SYSTEMERROR("Not func NAME: " << l_exec[1]->toString() );
         #endif
-        RefFunctionBase* function = dynamic_cast<RefFunctionBase *>( this->findFunctionById(  (ref_dynamic_cast<RefWord>(l_exec[1]))->getValue()  ) );
+        RefFunctionBase* function = dynamic_cast<RefFunctionBase *>( this->program->findFunctionById(  (ref_dynamic_cast<RefWord>(l_exec[1]))->getValue()  ) );
         if (!function) RUNTIMEERROR(l_exec[1]->toString(), "FUNCTION by ID [" << l_exec[1]->toString() << "] NOT DEFINED!");
 
         RefChain *newchain = 0;
@@ -258,11 +258,6 @@ RefChain *Session::substituteExpression(ChainSubstitution *substitution) {
 	
 
 	return resultChain;
-};
-
-
-RefObject* Session::findFunctionById(unistring id) {
-	return 0;
 };
 
 unistring getTextOfChain(RefData** from, RefData** to){

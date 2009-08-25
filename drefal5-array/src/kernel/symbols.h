@@ -99,6 +99,11 @@ public:
 	RefWord(unistring val){ value = val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
+    unistring toString() {
+		std::ostringstream ss;
+        ss << '"' << replace(value, "\n", "\\n") << "\" ";
+        return ss.str();
+	}
 };
 
 

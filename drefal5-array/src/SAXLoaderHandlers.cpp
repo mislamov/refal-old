@@ -93,7 +93,7 @@ try {
             loader->putValueToStack(theCommand, new RefSentence());
     } else
     if ( theCommand.compare(_L("LEFT-PART")) == 0) {
-            loader->createChainToStack();
+            loader->createPatternToStack();
     } else
     if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
             loader->createSubstitutionToStack();
@@ -102,7 +102,7 @@ try {
             RefExecBracket *t = new RefExecBracket();
             loader->putValueToStack("BRACKET", t);
             *(loader->getCurrChain()) += t;
-            *(loader->getCurrChain()) += new RefNULL();
+            //*(loader->getCurrChain()) += new RefNULL();
 
             //std::cout << "\n\n" << loader->getCurrChain()->toString() << "\n\n";
     } else
@@ -119,7 +119,7 @@ try {
             RefStructBracket *t = new RefStructBracket();
             loader->putValueToStack("BRACKET", t);
             *(loader->getCurrChain()) += t;
-            *(loader->getCurrChain()) += new RefNULL();
+            //*(loader->getCurrChain()) += new RefNULL();
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
             if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("GROUP WITHOUT name-attribute");
@@ -319,10 +319,10 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             // ссылка на часть внешней переменной
             unistring name = loader->currentchars.substr(0, i);
             unistring path = loader->currentchars.substr(i+1);
-            *(loader->getCurrChain()) += new RefLinkToPartOfVariable(name, path, (loader->getCurrChain()));
+            *(loader->getCurrChain()) += new RefLinkToPartOfVariable(name, path, (loader->getCurrChainNotSubstitution()));
         } else {
             // ссылка на целую переменную
-            *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars, (loader->getCurrChain()));
+            *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars, (loader->getCurrChainNotSubstitution()));
             //std::cout << loader->getCurrChain()->second->toString();
         }
     } else

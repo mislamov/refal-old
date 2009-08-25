@@ -21,7 +21,10 @@
 #include <sstream>
 
 #include "../kernel/program.h"
+
 #include "../kernel/symbols.h"
+#include "../kernel/variables.h"
+
 #include "module_sdk.h"
 
 
@@ -50,11 +53,10 @@ RefData*    int_creator(unistring value);
 RefData*   real_creator(unistring value);
 RefData*   byte_creator(unistring value);
 
-RefData*   word_creator(unistring value);
-RefData*  alpha_creator(unistring value);
-RefData*    int_creator(unistring value);
-RefData*   real_creator(unistring value);
-RefData*   byte_creator(unistring value);
+inline RefData*   var_s_creator(unistring value){ return new RefVariable_s(value); };
+inline RefData*   var_t_creator(unistring value){ return new RefVariable_t(value); };
+inline RefData*   var_e_creator(unistring value){ return new RefVariable_e(value); };
+inline RefData*   var_E_creator(unistring value){ return new RefVariable_E(value); };
 
 
 
@@ -69,7 +71,10 @@ SYMBOL_DEFINITIONS
 		DEFINE_MODULE_SYMBOL_CLASS(BYTE,  byte_creator);
 
 VAR_DEFINITIONS
-		DEFINE_MODULE_VARIABLE_CLASS(WORD,  word_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(s,  var_s_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(t,  var_t_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(e,  var_e_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(E,  var_E_creator);
 
 
 FUNCTION_DEFINITIONS

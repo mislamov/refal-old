@@ -18,6 +18,7 @@
 
 #include "data.h"
 #include "symbols.h"
+#include "sentence.h"
 #include "session.h"
 
 #include <stdlib.h>
@@ -102,6 +103,16 @@ ChainSubstitution& ChainSubstitution::operator+=(RefLinkToVariable *vr) {
 	return *this;
 };
 
+RefChain& RefChain::operator+=(RefStructBracket *br) {
+	if (br->opened_ind == SIZE_MAX){ // (
+		*this += (RefBracketBase*)br;
+		*this += refNullGlobal; // add null dot after open bracket
+	} else {
+		*this += (RefBracketBase*)br;
+	}
+	return *this;
+
+};
 
 RefChain& RefChain::operator+=(RefBracketBase *br) {
 	*this += (RefData*)br;
@@ -115,7 +126,7 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 		if (! ref_dynamic_cast<RefBracketBase>(*get_last())) SYSTEMERROR("alarm");
 		#endif
 
-		*this += refNullGlobal; // add null dot after open bracket
+//		*this += refNullGlobal; // add null dot after open bracket
 	} else {								// ]
 		#ifdef TESTCODE
 		if (br->closed_ind != SIZE_MAX) SYSTEMERROR("chain + bracket alarm");
@@ -127,10 +138,12 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 };
 
 ChainSubstitution& ChainSubstitution::operator+=(RefBracketBase *br) {
-	RefChain::operator +=(br);
-	//if (br->closed_ind == SIZE_MAX) => ( , else )
-	if (ref_dynamic_cast<RefStructBracket>(br)) {
+	RefStructBracket *brs = 0;
+	if (brs = ref_dynamic_cast<RefStructBracket>(br)) {
 		varsAndBrackets.put((br->closed_ind==SIZE_MAX) ? leng-1 : leng ); // если ( то был создан nullDot
+		RefChain::operator +=(brs);
+	} else {
+		RefChain::operator +=(br);
 	}
 
 	return *this;
@@ -180,7 +193,7 @@ RefChain& RefChain::operator+=(RefChain *ch) {
 unistring RefChain::toString() {
     unistring result = "";
     for (size_t i=0; i<=leng+1; i++) {
-		result += (first[i] ? first[i]->toString() : "[null]");
+		result += (first[i] ? first[i]->toString() : " _ ");
     }
     return result;
 };
@@ -200,13 +213,24 @@ RefChain* RefChain::Copy(Session *s) {
     if (!first) return new RefChain();
 
     SYSTEMERROR("zaglushka");
-
-
-
-
 };
 
 
+
+
+
+RefVariableBase** RefChain::getVarByName(unistring name){
+		size_t ind = 1;
+		RefVariableBase  *var = 0;
+		RefVariableBase **var_tmpl = 0;
+		RefCondition *condt = 0;
+		while(ind <= leng){
+			if ((var = ref_dynamic_cast<RefVariableBase>(first[ind])) && (var->getName()==name)) return (RefVariableBase**)(first+ind);
+			if ((condt = ref_dynamic_cast<RefCondition>(first[ind])) && (var_tmpl= condt->leftPart->getVarByName(name))) return var_tmpl;
+			++ind;
+		}
+		return 0;
+};
 
 
 

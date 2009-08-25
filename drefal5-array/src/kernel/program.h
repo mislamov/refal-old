@@ -31,6 +31,9 @@ public:
 	void regModule(RefModuleBase *module); // регистрация модуля в программе (перед загрузкой)
 	RefData* createSymbolByCode(unistring code, unistring value);
 	RefData* createVariableByTypename(unistring code, unistring value);
+
+	RefObject* findFunctionById(unistring id);
+
 };
 
 
@@ -83,7 +86,12 @@ public:
     virtual ~RefUserModule() {};
 
     unistring explode(){SYSTEMERROR("unrelised");};
-    RefObject* getObjectByName(unistring name, Session *s=0){SYSTEMERROR("unrelised");};
+    unistring toString();
+    RefObject* getObjectByName(unistring name, Session *s=0){
+		std::map<unistring, RefObject*>::iterator it = objects.find(name);
+		if (it!=objects.end()) return it->second;
+		return 0;
+	};
 
     std::stack<NeedInitilize *> initItems; // стек ссылок на неинициализированные данные (внешние переменные)
     void initilizeAll(Session *){SYSTEMERROR("unrelised");};
@@ -123,7 +131,10 @@ public:
     /// аргументы - концы чистого ОВ   // заменяет в объектном выражении участок(перед. в аргум)
 	RefChain *eval(RefData **, RefData **, Session *s){SYSTEMERROR("urealised");}; // - перенесено в session
     unistring getName()  { return name; };
-	unistring explode(){SYSTEMERROR("unrelised");};
+	unistring toString();
+	unistring explode(){
+		SYSTEMERROR("unrelised");
+	};
     RefUserFunction(unistring nname) {        name = nname;    }
     virtual ~RefUserFunction() {};
 };
