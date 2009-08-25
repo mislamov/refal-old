@@ -25,71 +25,33 @@
 #include <stack>
 
 #include "data.h"
-//#include "program.h"
-//#include "../refal.h"
-//#include "../modules/system.h"
+
+class RefUserFunction;
+
+
+class RefSentence;
+class NeedInitilize;
+class RefUserVarNotInit;
+class RefConditionBase;
+class RefCondition;
+class RefMatchingCutter;
+class RefTemplateBase;
+class RefUserTemplate;
+class RefTemplateBridgeTmpl;
+
 
 class RefSentence : public RefObject {
 public:
-
     RefChain *leftPart;
     ChainSubstitution *rightPart;
+
     unistring explode(){SYSTEMERROR("unrelised");};
 
-    RefSentence(){SYSTEMERROR("unrelised");};
-    RefSentence(RefChain* l, RefChain *r){SYSTEMERROR("unrelised");};
+	RefSentence(){ leftPart = rightPart = 0; };
+	RefSentence(RefChain* l, ChainSubstitution *r){SYSTEMERROR("unrelised");};
     virtual ~RefSentence() {};
 };
 
-
-/* функции - не слабое место в производительности. Поэтому разумно использовать виртуальную таблицу */
-class RefFunctionBase : public RefObject {
-    unistring name;
-public:
-    CLASS_CAST(UseRTTI);
-
-	RefFunctionBase(){};
-	virtual ~RefFunctionBase(){};
-    virtual unistring getName() = 0;
-    virtual RefChain *eval(RefData**, RefData**, Session*)=0;
-};
-
-class RefUserFunction : public RefFunctionBase {
-    unistring name;
-public:
-    std::list<RefSentence *> body; // предложения
-
-    /// аргументы - концы чистого ОВ   // заменяет в объектном выражении участок(перед. в аргум)
-	RefChain *eval(RefData **, RefData **, Session *s){SYSTEMERROR("urealised");}; // - перенесено в session
-    unistring getName()  { return name; };
-	unistring explode(){SYSTEMERROR("unrelised");};
-    RefUserFunction(unistring nname) {
-        name = nname;
-    }
-    virtual ~RefUserFunction() {};
-};
-
-
-class RefModuleBase : public RefObject {
-protected:
-    unistring name;
-public:
-    virtual unistring getName() {        return name;    }
-    virtual void setName(unistring s) {        name = s;    }
-
-    RefModuleBase(unistring nname = EmptyUniString) {        setName(nname);    };
-    virtual ~RefModuleBase() {};
-    virtual RefObject* getObjectByName(unistring name, Session *s=0)=0;
-    virtual void initilizeAll(Session *) {        LOG("not realized!");    };
-	// создает RefData-символ по rsl-коду code и со значением value (текстовое представление)
-/*
-	virtual RefData* createSymbolByCode(unistring code, unistring value){
-		// TODO: поиск по себе и включенным модулям (а если "свое" описание загружается ПОСЛЕ использования внутри себя? а во включенных определено?)
-		extern mSYSTEM msystem;
-		return msystem.dataConstructors[code](value);
-	};
-*/
-};
 
 
 
@@ -115,66 +77,24 @@ public:
 };
 
 
-class RefProgram;
-
-// пользовательские модули могут быть только частью программы (совокупность модулей и зависимостей между ними)
-class RefUserModule : public RefModuleBase {
-public:
-    std::map<unistring, RefObject*> objects;
-    unistring getName() {
-        return name;
-    };
-
-    RefUserModule(RefProgram* p);
-    virtual ~RefUserModule() {};
-
-    unistring explode(){SYSTEMERROR("unrelised");};
-    RefObject* getObjectByName(unistring name, Session *s=0){SYSTEMERROR("unrelised");};
-
-    std::stack<NeedInitilize *> initItems; // стек ссылок на неинициализированные данные (внешние переменные)
-    void initilizeAll(Session *){SYSTEMERROR("unrelised");};
-    /*  void print_inf(){
-            std::cout << this->toString();
-        }
-    */
-};
-
-
-class RefDllModule : public RefModuleBase {
-    std::map<unistring, RefObject*> objects;
-public:
-	RefDllModule(){};
-	virtual ~RefDllModule(){};
-	RefObject* getObjectByName(unistring nm, Session *s=0){SYSTEMERROR("unrelised");};
-    void setObjectByName(unistring name, RefObject* o){SYSTEMERROR("unrelised");};
-    unistring toString(){SYSTEMERROR("unrelised");};
-};
-
-
-
-class RefBuildInFunction : public RefFunctionBase {
-public:
-    RefBuildInFunction(unistring name, RefDllModule *m){SYSTEMERROR("unrelised");};
-    virtual ~RefBuildInFunction() {};
-    RefChain *eval(RefData**, RefData**, Session*){ SYSTEMERROR("not realised!"); };
-
-};
 
 
 
 
+////  рефал-условие. базовый класс
 class RefConditionBase : public RefData {
 public:
     BASE_CLASS_CAST(RefConditionBase);
 
     RefConditionBase() : RefData() {};
     ~RefConditionBase() {};
-    void forceback(Session *) {
-        SYSTEMERROR("RefConditionBase.forceback NOT DEFINE");
-    };
+    //void forceback(Session *) {
+    //    SYSTEMERROR("RefConditionBase.forceback NOT DEFINE");
+    //};
 
 };
 
+////  Рефал-условие пользовтаельское
 class RefCondition : public RefConditionBase {
     RefChain *rightPart;
     RefChain *leftPart;
@@ -183,39 +103,28 @@ public:
     CLASS_OBJECT_CAST(RefCondition);
     RefObject *own;  // RefCondition or RefFunctionBase
 
-    void setRightPart(RefChain *rp) {
-        rightPart = rp;
-    }
-    void setLeftPart(RefChain *lp) {
-        leftPart  = lp;
-    }
+    void setRightPart(RefChain *rp) {        rightPart = rp;    }
+    void setLeftPart(RefChain *lp)  {        leftPart  = lp;    }
 
-    virtual bool operator ==(RefData &rd) {
-        return false;
-    };
+	virtual bool operator ==(RefData &rd) {    SYSTEMERROR("unexpected");    };
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
 
-    RefCondition(bool withnot) : RefConditionBase() {
+	RefCondition(bool withnot) : RefConditionBase() {
         isReverse = withnot;
         rightPart = leftPart = 0;
     }
 
     virtual ~RefCondition() {};
 	unistring explode(){ SYSTEMERROR("alarm"); };
-    unistring toString() {
-        std::ostringstream s;
-        s << " @Condition/" << (isReverse?"$not$":"") <<  (ref_dynamic_cast<RefUserFunction>(own)?"F":"T") << "$" << rightPart->toString() << "::" << leftPart->toString() << ' ';
-        return s.str();
-    }
+    unistring toString() ;
     RefData* Copy(RefData *where=0) {
         SYSTEMERROR("unexpected try to Copy REF-condition");
         return 0;
     };
-
-
-
 };
+
+
 
 /* отсечение шаблона. его откат приводит к откату всего субмачинга */
 class RefMatchingCutter : public RefData {
@@ -231,34 +140,11 @@ public:
 	unistring explode()  {        SYSTEMERROR("unexpected");    }
     virtual bool operator ==(RefData &rd) {        SYSTEMERROR("alarm");    };
     //virtual void    forceback(RefData *&a, Session* s) {};
-
-
 };
+
+
 
 // абстрактный класс для всех сложных шаблонов
-class RefTemplateBase : public RefModuleBase {
-public:
-    BASE_CLASS_CAST(RefTemplateBase);
-
-    RefTemplateBase (unistring name){SYSTEMERROR("unrelised");};
-    virtual ~RefTemplateBase () {};
-	RefTemplateBase () {SYSTEMERROR("unrelised");};
-};
-
-// пользовательский шаблон
-class RefUserTemplate : public RefTemplateBase {
-    RefChain *leftPart;
-public:
-    CLASS_OBJECT_CAST(RefUserTemplate);
-
-    RefUserTemplate(unistring name){SYSTEMERROR("unrelised");};
-    inline RefChain* getLeftPart() {        return leftPart;    };
-    void setLeftPart(RefChain *){SYSTEMERROR("unrelised");};
-    RefObject* getObjectByName(unistring name, Session *s) {        SYSTEMERROR("--== ZAGLUSHKA ==--");    };
-    unistring explode() {        return (getName()+"$RefUserTemplate_::=_"+(leftPart?leftPart->toString():"$void"));    }
-    virtual ~RefUserTemplate() {};
-    RefUserTemplate(){SYSTEMERROR("unrelised");};
-};
 
 class RefTemplateBridgeTmpl;
 
@@ -357,25 +243,5 @@ RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd) : RefBracketBase(nd) { };
 
 
 
-// программа. содержит подключенные модули и поддерживает различные операции по ним
-class RefProgram {
-public:
-	// TODO: сделать список пар для приоритетности.
-	std::map<unistring, RefModuleBase*> modules;
-	RefProgram(){};
-
-	void regModule(RefModuleBase *module){ // регистрация модуля в программе (перед загрузкой)
-		if (module->getName() == EmptyUniString) SYSTEMERROR("Empty module name");
-		if (modules.find(module->getName()) == modules.end()) SYSTEMERROR("Several loads of module [" << module->getName() << "] ");
-		modules[module->getName()] = module;
-	};
-
-	RefData* createSymbolByCode(unistring code, unistring value){
-		SYSTEMERROR("zaglushka");
-	};
-	RefVariable* createVariableByTypename(unistring code, unistring value){
-		SYSTEMERROR("zaglushka");
-	};
-};
 
 #endif // FUNCTION_H_INCLUDED

@@ -35,7 +35,7 @@
 
 
 
-RefUserModule *mod; // ьюфєы№
+RefUserModule *mod; // модуль
 mSYSTEM msystem;
 
 char *xmlFile;
@@ -45,6 +45,31 @@ std::string stringtime(struct tm * tt) {
     ss << ""  << tt->tm_hour << ":" << tt->tm_min << ":" << tt->tm_sec;
     return ss.str();
 }
+
+
+unistring getModuleNameFromFileName(unistring fname){
+    unistring::size_type i = fname.length()-1;
+    while (i && fname[i--] != ':');
+    if (!i) {
+        fname = fname;
+    } else {
+        SYSTEMERROR("--== zaglushka module using ==--");
+        fname = "errornaME.TXT";
+    }
+
+    // oaaeyai ?anoe?aiey
+    unistring newname = "";
+    i=0;
+    while (i<fname.length()){
+        if (fname[i] == '.'){
+            return newname;
+        }
+        newname += fname[i++];
+    }
+
+    return newname;
+};
+
 
 int main ( int argv, char **argc ) {
 	RefProgram program;
@@ -96,14 +121,14 @@ int main ( int argv, char **argc ) {
     strncpy(xmlFile, ss2.str().c_str(), 255);
 
 
-// ёючфрыш ёхёёш■
+// создали сессию
     Session *s = new Session(&program);
 
-// чруЁєчшыш ьюфєыш
+// загрузили модули
 //std::cout << msystem.toString() << "\n";
-    program.regModule ( &msystem ); // ёшёЄхьэ√щ ьюфєы№ чруЁєцрхЄё  т яхЁтє■ юўхЁхф№!
+    program.regModule ( &msystem ); // системный модуль загружается в первую очередь!
 
-    mod = new RefUserModule(&program);
+    mod = new RefUserModule(getModuleNameFromFileName(xmlFile), &program);
     err = loadModuleFromXmlFile ( mod, &program, xmlFile );
     if (err) return err;
     #ifdef DEBUG
@@ -143,3 +168,4 @@ int main ( int argv, char **argc ) {
 
     return 0;
 }
+

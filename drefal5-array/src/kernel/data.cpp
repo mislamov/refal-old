@@ -17,6 +17,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "data.h"
+#include "symbols.h"
 #include "session.h"
 
 #include <stdlib.h>
@@ -31,6 +32,34 @@ RefChain::RefChain() {
 	first[1] = nullDataPoint;
     leng = 0;
 };
+
+RefChain::RefChain(unistring text){
+	leng = text.length();
+	first = (RefData**)malloc(sizeof(RefData*) * (leng+2));
+	first[0] = nullDataPoint;
+	RefData **iter = first+1;
+
+	for(size_t i=0; i<leng; i++){
+		*iter = new RefAlpha(text[i]);
+		++iter;
+	};
+
+	first[leng+1] = nullDataPoint;
+};
+
+RefChain::RefChain(RefData* d) {
+	first = (RefData**)malloc(sizeof(RefData*) * 3);
+	first[0] = nullDataPoint;
+	first[1] = d;
+	first[2] = nullDataPoint;
+    leng = 1;
+};
+
+RefChain::RefChain(size_t system_size) {
+	LOG("chain() systemsize not realised!");
+	RefChain();
+};
+
 
 RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, RefData** a31, RefData** a32) {
 	SYSTEMERROR("ne sdelano kopirovanie skobok");
@@ -125,7 +154,6 @@ RefChain& RefChain::operator+=(RefData *ch) {
 
     return *this;
 };
-
 
 
 RefChain& RefChain::operator+=(RefChain &ch) {

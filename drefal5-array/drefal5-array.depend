@@ -107,7 +107,7 @@
 	<iostream>
 	<sstream>
 
-1251102433 d:\drefal\drefal5-array\src\kernel\data.h
+1251172967 d:\drefal\drefal5-array\src\kernel\data.h
 	<iostream>
 	<sstream>
 	<stdlib.h>
@@ -116,16 +116,17 @@
 	"config.h"
 	"poolTuples.h"
 
-1251090758 d:\drefal\drefal5-array\src\kernel\config.h
+1251184899 d:\drefal\drefal5-array\src\kernel\config.h
+	<iostream>
 	<stdlib.h>
 	<string>
 	<limits>
 
-1251111456 d:\drefal\drefal5-array\src\kernel\session.h
+1251181640 d:\drefal\drefal5-array\src\kernel\session.h
 	<stack>
 	<stdlib.h>
 	"data.h"
-	"rfunction.h"
+	"sentence.h"
 	"poolTuples.h"
 
 1251117476 d:\drefal\drefal5-array\src\kernel\rfunction.h
@@ -139,19 +140,19 @@
 	"data.h"
 	<sstream>
 
-1251092701 source:d:\drefal\drefal5-array\src\kernel\session.cpp
-	"symbols.h"
+1251182551 source:d:\drefal\drefal5-array\src\kernel\session.cpp
 	"session.h"
-	"rfunction.h"
+	"program.h"
+	"symbols.h"
 
-1250855204 source:d:\drefal\drefal5-array\src\kernel\variables.cpp
+1251172967 source:d:\drefal\drefal5-array\src\kernel\variables.cpp
 	"variables.h"
 	"session.h"
 
 1250855204 d:\drefal\drefal5-array\src\kernel\variables.h
 	"data.h"
 
-1251092654 source:d:\drefal\drefal5-array\src\main.cpp
+1251184802 source:d:\drefal\drefal5-array\src\main.cpp
 	"refal.h"
 	"SAXLoader.hpp"
 	"kernel\RefSymbolBase.hxx"
@@ -162,7 +163,7 @@
 	"modules\system.h"
 	<time.h>
 
-1251098057 d:\drefal\drefal5-array\src\kernel\symbols.h
+1251172967 d:\drefal\drefal5-array\src\kernel\symbols.h
 	"data.h"
 	<sstream>
 
@@ -178,19 +179,20 @@
 
 1223163072 c:\mingw\include\_mingw.h
 
-1251117264 d:\drefal\drefal5-array\src\refal.h
+1251182480 d:\drefal\drefal5-array\src\refal.h
 	<iostream>
-	"kernel\symbols.h"
+	"kernel\program.h"
 	"kernel\session.h"
-	"kernel\variables.h"
-	"kernel\rfunction.h"
+	"kernel\symbols.h"
 	"modules\system.h"
 
-1251105557 d:\drefal\drefal5-array\src\modules\system.h
-	"../kernel/rfunction.h"
+1251187593 d:\drefal\drefal5-array\src\modules\system.h
 	<sstream>
+	"../kernel/program.h"
+	"../kernel/symbols.h"
+	"module_sdk.h"
 
-1244715086 d:\drefal\drefal5-array\src\saxloader.hpp
+1251117503 d:\drefal\drefal5-array\src\saxloader.hpp
 	<string.h>
 	<iostream>
 	<iostream>
@@ -201,10 +203,10 @@
 	<_mingw.h>
 	<stddef.h>
 
-1244715086 d:\drefal\drefal5-array\src\saxloaderhandlers.hpp
+1251172968 d:\drefal\drefal5-array\src\saxloaderhandlers.hpp
 	<xercesc/sax/HandlerBase.hpp>
 	<xercesc/framework/MemBufFormatTarget.hpp>
-	"kernel/rfunction.h"
+	"refal.h"
 	"stack"
 	"map"
 
@@ -468,4 +470,359 @@
 1223163076 c:\mingw\include\time.h
 	<_mingw.h>
 	<stddef.h>
+
+1251181989 d:\drefal\drefal5-array\src\kernel\sentence.h
+	<iostream>
+	<sstream>
+	<list>
+	<stack>
+	"data.h"
+
+1251182313 d:\drefal\drefal5-array\src\kernel\program.h
+	<map>
+	<stack>
+	"config.h"
+	"sentence.h"
+
+1251172968 source:d:\drefal\drefal5-array\src\saxloaderhandlers.cpp
+	<xercesc/util/XMLUniDefs.hpp>
+	<xercesc/sax/AttributeList.hpp>
+	"kernel/symbols.h"
+	"SAXLoader.hpp"
+	"XMLRefDataCodes.h"
+	<string>
+	<stack>
+	<locale>
+
+1188326692 c:\msys\1.0\include\xercesc\util\xmlunidefs.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\attributelist.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1251104713 d:\drefal\drefal5-array\src\xmlrefdatacodes.h
+
+1251187691 d:\drefal\drefal5-array\src\modules\module_sdk.h
+
+1251182599 source:d:\drefal\drefal5-array\src\kernel\program.cpp
+	"program.h"
+	"../modules/system.h"
+
+1251184271 source:d:\drefal\drefal5-array\src\kernel\sentence.cpp
+	"sentence.h"
+	"program.h"
+
+1251180417 source:d:\drefal\drefal5-array\src\saxloader.cpp
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/TransService.hpp>
+	<xercesc/parsers/SAXParser.hpp>
+	<xercesc/util/OutOfMemoryException.hpp>
+	"SAXLoader.hpp"
+	"kernel/session.h"
+	"kernel/symbols.h"
+	<string>
+
+1188326692 c:\msys\1.0\include\xercesc\util\transservice.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/framework/XMLRecognizer.hpp>
+	<xercesc/util/RefHashTableOf.hpp>
+	<xercesc/util/RefVectorOf.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlrecognizer.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\refhashtableof.hpp
+	<xercesc/util/HashBase.hpp>
+	<xercesc/util/IllegalArgumentException.hpp>
+	<xercesc/util/NoSuchElementException.hpp>
+	<xercesc/util/RuntimeException.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/HashXMLCh.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/framework/MemoryManager.hpp>
+	<xercesc/util/RefHashTableOf.c>
+
+1188326692 c:\msys\1.0\include\xercesc\util\hashbase.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\illegalargumentexception.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/XMLException.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\nosuchelementexception.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/XMLException.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\runtimeexception.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/XMLException.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\hashxmlch.hpp
+	<xercesc/util/HashBase.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\refhashtableof.c
+	<xercesc/util/RefHashTableOf.hpp>
+	<xercesc/util/Janitor.hpp>
+	<xercesc/util/NullPointerException.hpp>
+	<assert.h>
+	<new>
+
+1188326692 c:\msys\1.0\include\xercesc\util\janitor.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/framework/MemoryManager.hpp>
+	<xercesc/util/Janitor.c>
+
+1188326692 c:\msys\1.0\include\xercesc\util\janitor.c
+	<xercesc/util/Janitor.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\nullpointerexception.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/XMLException.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\refvectorof.hpp
+	<xercesc/util/BaseRefVectorOf.hpp>
+	<xercesc/util/RefVectorOf.c>
+
+1188326692 c:\msys\1.0\include\xercesc\util\refvectorof.c
+	<xercesc/util/RefVectorOf.hpp>
+
+1188326516 c:\msys\1.0\include\xercesc\parsers\saxparser.hpp
+	<xercesc/sax/Parser.hpp>
+	<xercesc/internal/VecAttrListImpl.hpp>
+	<xercesc/framework/XMLDocumentHandler.hpp>
+	<xercesc/framework/XMLElementDecl.hpp>
+	<xercesc/framework/XMLEntityHandler.hpp>
+	<xercesc/framework/XMLErrorReporter.hpp>
+	<xercesc/framework/XMLBuffer.hpp>
+	<xercesc/util/SecurityManager.hpp>
+	<xercesc/validators/DTD/DocTypeHandler.hpp>
+
+1188326568 c:\msys\1.0\include\xercesc\sax\parser.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/XercesDefs.hpp>
+
+1188326634 c:\msys\1.0\include\xercesc\internal\vecattrlistimpl.hpp
+	<xercesc/sax/AttributeList.hpp>
+	<xercesc/framework/XMLAttr.hpp>
+	<xercesc/util/RefVectorOf.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlattr.hpp
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/QName.hpp>
+	<xercesc/framework/XMLAttDef.hpp>
+	<xercesc/validators/datatype/DatatypeValidator.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\qname.hpp
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/XMLUniDefs.hpp>
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/internal/XSerializable.hpp>
+
+1188326634 c:\msys\1.0\include\xercesc\internal\xserializable.hpp
+	<xercesc/internal/XSerializeEngine.hpp>
+	<xercesc/internal/XProtoType.hpp>
+
+1243254968 c:\msys\1.0\include\xercesc\internal\xserializeengine.hpp
+	<xercesc/util/RefHashTableOf.hpp>
+	<xercesc/util/ValueVectorOf.hpp>
+	<xercesc/util/XMLExceptMsgs.hpp>
+	<xercesc/internal/XSerializationException.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\valuevectorof.hpp
+	<xercesc/util/ArrayIndexOutOfBoundsException.hpp>
+	<xercesc/util/XMLEnumerator.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/framework/MemoryManager.hpp>
+	<xercesc/util/ValueVectorOf.c>
+
+1188326692 c:\msys\1.0\include\xercesc\util\valuevectorof.c
+	<xercesc/util/ValueVectorOf.hpp>
+	<string.h>
+
+1188326634 c:\msys\1.0\include\xercesc\internal\xserializationexception.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/XMLException.hpp>
+
+1188326634 c:\msys\1.0\include\xercesc\internal\xprototype.hpp
+	<xercesc/util/PlatformUtils.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlattdef.hpp
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/XMemory.hpp>
+	<xercesc/internal/XSerializable.hpp>
+
+1188326612 c:\msys\1.0\include\xercesc\validators\datatype\datatypevalidator.hpp
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/RefHashTableOf.hpp>
+	<xercesc/util/KVStringPair.hpp>
+	<xercesc/util/XMLUniDefs.hpp>
+	<xercesc/util/regx/RegularExpression.hpp>
+	<xercesc/validators/schema/SchemaSymbols.hpp>
+	<xercesc/internal/XSerializable.hpp>
+	<xercesc/framework/psvi/XSSimpleTypeDefinition.hpp>
+	<xercesc/framework/ValidationContext.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\kvstringpair.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/internal/XSerializable.hpp>
+
+1188326672 c:\msys\1.0\include\xercesc\util\regx\regularexpression.hpp
+	<xercesc/util/RefArrayVectorOf.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/Janitor.hpp>
+	<xercesc/util/regx/Op.hpp>
+	<xercesc/util/regx/TokenFactory.hpp>
+	<xercesc/util/regx/BMPattern.hpp>
+	<xercesc/util/regx/ModifierToken.hpp>
+	<xercesc/util/regx/ConditionToken.hpp>
+	<xercesc/util/regx/OpFactory.hpp>
+	<xercesc/util/regx/RegxUtil.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\refarrayvectorof.hpp
+	<xercesc/util/BaseRefVectorOf.hpp>
+	<xercesc/util/RefArrayVectorOf.c>
+
+1188326692 c:\msys\1.0\include\xercesc\util\refarrayvectorof.c
+	"RefArrayVectorOf.hpp"
+
+1188326672 c:\msys\1.0\include\xercesc\util\regx\op.hpp
+	<xercesc/util/RefVectorOf.hpp>
+	<xercesc/util/RuntimeException.hpp>
+
+1188326672 c:\msys\1.0\include\xercesc\util\regx\tokenfactory.hpp
+	<xercesc/util/RefVectorOf.hpp>
+	<xercesc/util/regx/Token.hpp>
+	<xercesc/util/Mutexes.hpp>
+
+1243255059 c:\msys\1.0\include\xercesc\util\regx\token.hpp
+	<xercesc/util/RuntimeException.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\mutexes.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+
+1188326672 c:\msys\1.0\include\xercesc\util\regx\bmpattern.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+
+1188326672 c:\msys\1.0\include\xercesc\util\regx\modifiertoken.hpp
+	<xercesc/util/regx/Token.hpp>
+
+1243255065 c:\msys\1.0\include\xercesc\util\regx\conditiontoken.hpp
+	<xercesc/util/regx/Token.hpp>
+
+1188326672 c:\msys\1.0\include\xercesc\util\regx\opfactory.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/RefVectorOf.hpp>
+
+1188326672 c:\msys\1.0\include\xercesc\util\regx\regxutil.hpp
+	<xercesc/util/XMLUniDefs.hpp>
+
+1188326598 c:\msys\1.0\include\xercesc\validators\schema\schemasymbols.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326573 c:\msys\1.0\include\xercesc\framework\psvi\xssimpletypedefinition.hpp
+	<xercesc/framework/psvi/XSTypeDefinition.hpp>
+
+1188326573 c:\msys\1.0\include\xercesc\framework\psvi\xstypedefinition.hpp
+	<xercesc/framework/psvi/XSObject.hpp>
+
+1188326573 c:\msys\1.0\include\xercesc\framework\psvi\xsobject.hpp
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/framework/psvi/XSConstants.hpp>
+
+1188326573 c:\msys\1.0\include\xercesc\framework\psvi\xsconstants.hpp
+	<xercesc/util/RefVectorOf.hpp>
+	<xercesc/util/RefArrayVectorOf.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\validationcontext.hpp
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/RefHashTableOf.hpp>
+	<xercesc/util/NameIdPool.hpp>
+	<xercesc/util/XMemory.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\nameidpool.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/NameIdPool.c>
+
+1188326692 c:\msys\1.0\include\xercesc\util\nameidpool.c
+	<xercesc/util/NameIdPool.hpp>
+	<xercesc/util/IllegalArgumentException.hpp>
+	<xercesc/util/NoSuchElementException.hpp>
+	<xercesc/util/RuntimeException.hpp>
+	<new>
+	<assert.h>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmldocumenthandler.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/RefVectorOf.hpp>
+	<xercesc/framework/XMLAttr.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlelementdecl.hpp
+	<xercesc/framework/XMLAttr.hpp>
+	<xercesc/framework/XMLAttDefList.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/internal/XSerializable.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlattdeflist.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/util/XMemory.hpp>
+	<xercesc/internal/XSerializable.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlentityhandler.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\securitymanager.hpp
+	<xercesc/util/XercesDefs.hpp>
+
+1188326605 c:\msys\1.0\include\xercesc\validators\dtd\doctypehandler.hpp
+	<xercesc/util/XercesDefs.hpp>
+	<xercesc/framework/XMLNotationDecl.hpp>
+	<xercesc/validators/DTD/DTDAttDef.hpp>
+	<xercesc/validators/DTD/DTDElementDecl.hpp>
+	<xercesc/validators/DTD/DTDEntityDecl.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlnotationdecl.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/internal/XSerializable.hpp>
+
+1188326605 c:\msys\1.0\include\xercesc\validators\dtd\dtdattdef.hpp
+	<xercesc/framework/XMLAttDef.hpp>
+
+1188326605 c:\msys\1.0\include\xercesc\validators\dtd\dtdelementdecl.hpp
+	<xercesc/util/RefHashTableOf.hpp>
+	<xercesc/util/QName.hpp>
+	<xercesc/framework/XMLElementDecl.hpp>
+	<xercesc/framework/XMLContentModel.hpp>
+	<xercesc/validators/DTD/DTDAttDef.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlcontentmodel.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/QName.hpp>
+
+1188326605 c:\msys\1.0\include\xercesc\validators\dtd\dtdentitydecl.hpp
+	<xercesc/framework/XMLEntityDecl.hpp>
+
+1188326578 c:\msys\1.0\include\xercesc\framework\xmlentitydecl.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/PlatformUtils.hpp>
+	<xercesc/util/XMLString.hpp>
+	<xercesc/internal/XSerializable.hpp>
+
+1188326692 c:\msys\1.0\include\xercesc\util\outofmemoryexception.hpp
+	<xercesc/util/XMemory.hpp>
+	<xercesc/util/XMLExceptMsgs.hpp>
+	<xercesc/util/XMLUniDefs.hpp>
 

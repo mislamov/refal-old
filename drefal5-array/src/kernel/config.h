@@ -31,6 +31,8 @@
 *     и др.
 *****************************************************************************************/
 
+#include <iostream>
+
 
 namespace co {
     extern long ocount;
@@ -249,7 +251,7 @@ public:
     ~RefObject(){};
 #ifdef TESTCODE
     virtual unistring explode() = 0;
-	virtual 
+	virtual
 #endif
     unistring toString() {
         return explode();

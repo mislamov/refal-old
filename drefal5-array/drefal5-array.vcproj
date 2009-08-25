@@ -61,6 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="xerces-c_3.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="D:\drefal\drefal5-array\lib"
 				GenerateDebugInformation="true"
@@ -181,7 +182,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\kernel\rfunction.cpp"
+				RelativePath=".\src\kernel\program.cpp"
 				>
 			</File>
 			<File
@@ -193,7 +194,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\kernel\sentence.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\kernel\session.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\modules\system.cpp"
 				>
 			</File>
 			<File
@@ -215,6 +224,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\modules\module_sdk.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\kernel\poolTuples.h"
 				>
 			</File>
@@ -227,15 +240,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\src\kernel\rfunction.h"
-				>
-			</File>
-			<File
 				RelativePath=".\src\SAXLoader.hpp"
 				>
 			</File>
 			<File
 				RelativePath=".\src\SAXLoaderHandlers.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\kernel\sentence.h"
 				>
 			</File>
 			<File

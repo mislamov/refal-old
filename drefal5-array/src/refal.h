@@ -3,10 +3,10 @@
 
 #include <iostream>
 
-#include "kernel\symbols.h"
+#include "kernel\program.h"
 #include "kernel\session.h"
-#include "kernel\variables.h"
-#include "kernel\rfunction.h"
+
+#include "kernel\symbols.h"
 
 #include "modules\system.h"
 

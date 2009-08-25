@@ -18,181 +18,54 @@
 #ifndef SYSTEM_H_INCLUDED
 #define SYSTEM_H_INCLUDED
 
-#include "../kernel/rfunction.h"
-
 #include <sstream>
 
-
-class system_DEC : public RefBuildInFunction {
-public:
-	system_DEC(RefDllModule *m) : RefBuildInFunction("Dec", m) {}
-    unistring explode(){ return "$DEC"; };
-    unistring getName(){ return "Dec"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_DEC(){};
-};
-
-class system_DIV : public RefBuildInFunction {
-public:
-    system_DIV(RefDllModule *m) : RefBuildInFunction("Div", m) {}
-    unistring explode(){ return "$DIV"; };
-    unistring getName(){ return "Div"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_DIV(){};
-};
-
-class system_MUL : public RefBuildInFunction {
-public:
-    system_MUL(RefDllModule *m) : RefBuildInFunction("Mul", m) {}
-    unistring explode(){ return "$MUL"; };
-    unistring getName(){ return "Mul"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_MUL(){};
-};
-
-class system_SUM : public RefBuildInFunction {
-public:
-    system_SUM(RefDllModule *m) : RefBuildInFunction("Sum", m) {}
-    unistring explode(){ return "$SUM"; };
-    unistring getName(){ return "Sum"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_SUM(){};
-};
-
-class system_LENW : public RefBuildInFunction {
-public:
-    system_LENW(RefDllModule *m) : RefBuildInFunction("Lenw", m) {}
-    unistring explode(){ return "$LENW"; };
-    unistring getName(){ return "Lenw"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_LENW(){};
-};
-
-class system_NUMB : public RefBuildInFunction {
-public:
-    system_NUMB(RefDllModule *m) : RefBuildInFunction("Numb", m) {}
-    unistring explode(){ return "$NUMB"; };
-    unistring getName(){ return "Numb"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_NUMB(){};
-};
-
-class system_COMPARE : public RefBuildInFunction {
-public:
-    system_COMPARE(RefDllModule *m) : RefBuildInFunction("Compare", m) {}
-    unistring explode(){ return "$COMPARE"; };
-    unistring getName(){ return "Compare"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_COMPARE(){};
-};
-
-class system_IMPLODE : public RefBuildInFunction {
-public:
-    system_IMPLODE(RefDllModule *m) : RefBuildInFunction("Implode", m) {}
-    unistring explode(){ return "$IMPLODE"; };
-    unistring getName(){ return "Implode"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_IMPLODE(){};
-};
-
-class system_EXPLODE : public RefBuildInFunction {
-public:
-    system_EXPLODE(RefDllModule *m) : RefBuildInFunction("Explode", m) {}
-    unistring explode(){ return "$EXPLODE"; };
-    unistring getName(){ return "Explode"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_EXPLODE(){};
-};
-
-class system_EXPLODE_ALL : public RefBuildInFunction {
-public:
-    system_EXPLODE_ALL(RefDllModule *m) : RefBuildInFunction("Explode-all", m) {}
-    unistring explode(){ return "$EXPLODE-ALL"; };
-    unistring getName(){ return "Explode-all"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_EXPLODE_ALL(){};
-};
+#include "../kernel/program.h"
+#include "../kernel/symbols.h"
+#include "module_sdk.h"
 
 
-class system_MOUNT : public RefBuildInFunction {
-public:
-    system_MOUNT(RefDllModule *m) : RefBuildInFunction("Mount", m) {}
-    unistring explode(){ return "$MOUNT"; };
-    unistring getName() { return "Mount"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_MOUNT(){};
-};
-
-class system_CARD : public RefBuildInFunction {
-public:
-    system_CARD(RefDllModule *m) : RefBuildInFunction("Card", m) {}
-    unistring explode(){ return "$CARD"; };
-    unistring getName() { return "Card"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_CARD(){};
-};
-
-class system_PROUT : public RefBuildInFunction {
-public:
-    system_PROUT(RefDllModule *m) : RefBuildInFunction("Prout", m) {}
-    unistring explode(){ return "$PROUT"; };
-    unistring getName() { return "Prout"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_PROUT(){};
-};
-
-class system_PRINT : public RefBuildInFunction {
-public:
-    system_PRINT(RefDllModule *m) : RefBuildInFunction("Print", m) {}
-    unistring explode(){ return "$PRINT"; };
-    unistring getName() { return "Print"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_PRINT(){};
-
-};
-
-class system_EXIT : public RefBuildInFunction {
-public:
-    system_EXIT(RefDllModule *m) : RefBuildInFunction("Exit", m) {}
-    unistring explode(){ return "$EXIT"; };
-    unistring getName() { return "Exit"; };
-    bool eval(RefData* lft, RefData* rht, RefChain* &result, Session* s=0);
-    virtual ~system_EXIT(){};
-};
+RefChain* Dec  (RefData** beg, RefData** end, Session* s);
+RefChain* Div  (RefData** beg, RefData** end, Session* s);
+RefChain* Mul  (RefData** beg, RefData** end, Session* s);
+RefChain* Sum  (RefData** beg, RefData** end, Session* s);
+RefChain* Numb (RefData** beg, RefData** end, Session* s);
+RefChain* Lenw (RefData** beg, RefData** end, Session* s);
+RefChain* Compare (RefData** beg, RefData** end, Session* s);
+RefChain* Implode (RefData** beg, RefData** end, Session* s);
+RefChain* Explode (RefData** beg, RefData** end, Session* s);
+RefChain* ExplodeAll (RefData** beg, RefData** end, Session* s);
+RefChain* Add   (RefData** beg, RefData** end, Session* s);
+RefChain* Sub   (RefData** beg, RefData** end, Session* s);
+RefChain* Mount (RefData** beg, RefData** end, Session* s);
+RefChain* Card  (RefData** beg, RefData** end, Session* s);
+RefChain* Prout (RefData** beg, RefData** end, Session* s);
+RefChain* Print (RefData** beg, RefData** end, Session* s);
+RefChain* Exit  (RefData** beg, RefData** end, Session* s);
 
 
 
 
-class mSYSTEM : public RefDllModule {
-public:
-    unistring getName(){ return "System"; };
-    mSYSTEM() : RefDllModule() {
-        setObjectByName("Dec",  new system_DEC(this));
-        setObjectByName("Div",  new system_DIV(this));
-        setObjectByName("Mul",  new system_MUL(this));
-        setObjectByName("Sum",  new system_SUM(this));
+BEGIN_DLL_MODULE("System", mSYSTEM)
+		DEFINE_MODULE_FUNCTION(Sum);
+		DEFINE_MODULE_FUNCTION(Dec);
+		DEFINE_MODULE_FUNCTION(Div);
+		DEFINE_MODULE_FUNCTION(Mul);
+		DEFINE_MODULE_FUNCTION(Numb);
+		DEFINE_MODULE_FUNCTION(Lenw);
+		DEFINE_MODULE_FUNCTION(Compare);
+		DEFINE_MODULE_FUNCTION(Implode);
+		DEFINE_MODULE_FUNCTION(Explode);
+		DEFINE_MODULE_FUNCTION(ExplodeAll);
+		DEFINE_MODULE_FUNCTION(Mount);
+		DEFINE_MODULE_FUNCTION(Card);
+		DEFINE_MODULE_FUNCTION(Prout);
+		DEFINE_MODULE_FUNCTION(Print);
+		DEFINE_MODULE_FUNCTION(Exit);
 
-        setObjectByName("Numb",  new system_NUMB(this));
-
-        setObjectByName("Lenw",  new system_LENW(this));
-        setObjectByName("Compare",  new system_COMPARE(this));
-        setObjectByName("Implode",  new system_IMPLODE(this));
-        setObjectByName("Explode",  new system_EXPLODE(this));
-        setObjectByName("Explode-all",  new system_EXPLODE_ALL(this));
-
-        setObjectByName("Add",  getObjectByName("Sum"));
-        setObjectByName("Sub",  getObjectByName("Dec"));
-
-        setObjectByName("Mount", new system_MOUNT(this));
-        setObjectByName("Card", new system_CARD(this));
-        setObjectByName("Prout", new system_PROUT(this));
-        setObjectByName("Print", new system_PRINT(this));
-
-        setObjectByName("Exit", new system_EXIT(this));
-    };
-	unistring explode(){SYSTEMERROR("unrelised");};
-};
-
+		DEFINE_MODULE_FUNCTION_ALIAS(Add, Sum);
+		DEFINE_MODULE_FUNCTION_ALIAS(Sub, Dec);
+END_DLL_MODULE
 
 
 #endif

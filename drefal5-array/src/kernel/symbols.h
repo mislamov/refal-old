@@ -41,6 +41,15 @@ public:
     virtual ~RefIntegerBase(){};
 };
 
+
+class RefRealBase : public RefSymbolBase<RefRealBase, infreal> {
+public:
+    CLASS_OBJECT_CAST(RefRealBase);
+    virtual ~RefRealBase(){};
+};
+
+
+
 class RefWordBase : public RefSymbolBase<RefWordBase, unistring> {
 public:
     CLASS_OBJECT_CAST(RefWordBase);
@@ -66,9 +75,17 @@ public:
     virtual ~RefInteger(){};
     virtual infint getValue() {return value;};
 	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
-
 };
 
+
+class RefReal : public RefRealBase {
+	infreal value;
+public:
+    RefReal(infreal val){ value = val; };
+    virtual ~RefReal(){};
+    virtual infreal getValue() {return value;};
+	void setValueFromText(unistring code){SYSTEMERROR("unrelised");};
+};
 
 class RefWord : public RefWordBase {
     unistring value;

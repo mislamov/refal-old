@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "data.h"
-#include "rfunction.h"
+#include "sentence.h"
 #include "poolTuples.h"
 
 class VarMap;
