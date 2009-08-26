@@ -109,11 +109,16 @@ public:
 class RefBracketBase;
 class RefVariableBase;
 class RefLinkToVariable;
+class RefConditionBase;
 
 
 class RefChain : public RefObject  {
+	friend class Session;
 protected:
     RefData** first;
+	DataLinkPooledStack<size_t> varsAndBrackets ;	//	индексы закрытых переменных и скобок в подстановке. 
+													//	first+1 + .. - закрыта€ переменна€ или скобка
+													//	chain[..]  - она же
 public:
 
 	size_t leng; // длина цепочки
@@ -124,9 +129,9 @@ public:
     RefChain();
 	RefChain::RefChain(RefData* );
 	RefChain::RefChain(unistring);
-	RefChain(RefData **&datachain, size_t theleng){ first=datachain; datachain=0; this->leng = theleng; };
-    RefChain(RefData **a11, RefData **a12, RefData **a21, RefData **a22, RefData **a31, RefData **a32);
-	RefChain(size_t system_size);
+	RefChain(RefData **&datachain, size_t theleng){ first=datachain; this->leng = theleng; };
+    RefChain(RefData** a11, RefData** a12, RefChain *f_result_chain, RefData** a31, RefData** a32);
+	RefChain(size_t size);
     virtual ~RefChain() {        free(first);    };
 
     // TODO: сделать блоковое расширение
@@ -135,7 +140,9 @@ public:
     RefChain& operator+=(RefData  *ch);  // рефдата ѕќ√Ћјўј≈“—я цепочкой!!!
 	RefChain& operator+=(RefBracketBase   *br); // скобки указывают друг на друга
 	RefChain& operator+=(RefStructBracket *br); // ( null    )
-    RefChain* Copy(Session *s =0);
+	RefChain& operator+=(RefLinkToVariable  *vr);
+	RefChain& operator+=(RefConditionBase *cn){ SYSTEMERROR("must be ChainPattern, not RefChain"); };
+	inline RefData** operator[](size_t idx){ return first+idx+1; }
 
     unistring toString();
     unistring explode(); // голый текст без форматировани€
@@ -143,17 +150,17 @@ public:
 	RefVariableBase** getVarByName(unistring name);
 };
 
+typedef RefChain ChainSubstitution;
 
-// цепочка - подставновка (права€ часть)
-class ChainSubstitution : public RefChain {
+
+// цепочка - образец (лева€ часть без условий. нет функц скобок.)
+class ChainPattern : public RefChain {
 public:
-	DataLinkPooledStack<size_t> varsAndBrackets ; // индексы закрытых переменных и структурных скобок в подстановке. first + .. - закрыта€ переменна€ или скобка
-	ChainSubstitution& operator+=(RefBracketBase  *br);
-	ChainSubstitution& operator+=(RefLinkToVariable  *vr);
-	ChainSubstitution& operator+=(RefData  *br);
+	ChainPattern();
+	void closeDot();
+	void closeDotIfNotYet();
+	ChainPattern& operator+=(RefConditionBase *cn);
 };
-
-class ChainPattern : public RefChain {};
 
 extern unistring getTextOfChain(RefData** from, RefData** to);
 
@@ -167,6 +174,9 @@ public:
 	size_t opened_ind; // пор€дковый номер от get_first()
 	size_t closed_ind; // пор€дковый номер от get_first()
 	RefChain *chain;
+
+	bool isSetClosed(){ return closed_ind!=SIZE_MAX; }
+	bool isSetOpened(){ return opened_ind!=SIZE_MAX; }
 
 	RefBracketBase (){opened_ind = closed_ind = SIZE_MAX; chain=0; }
 	bool isOpen(RefData** p){
@@ -185,6 +195,15 @@ public:
 		return (RefBracketBase**)(chain->get_first()+opened_ind==p ? chain->get_first()+closed_ind : chain->get_first()+opened_ind);
 	};
 
+	virtual RefBracketBase* newInstance() = 0;
+	virtual RefBracketBase* newInstanceCopy(RefChain *ch) { 
+		RefBracketBase* copy = newInstance();
+		copy->chain = ch;
+		copy->closed_ind = closed_ind;
+		copy->opened_ind = opened_ind;
+		return  copy;
+	};
+
 };
 
 class RefExecBracket : public RefBracketBase {
@@ -197,6 +216,7 @@ public:
 	unistring toString(){  
 		return "<br>"; 
 	};
+	RefBracketBase* newInstance() { return new RefExecBracket(); };
 };
 
 class RefStructBracket : public RefBracketBase {
@@ -208,6 +228,7 @@ public:
     TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
 	unistring explode(){ return "(br)"; };
+	RefBracketBase* newInstance() { return new RefStructBracket(); };
 };
 
 class RefData_DOT : public RefBracketBase {
@@ -218,6 +239,7 @@ public:
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
 	unistring toString(){ return "[br]"; };
 	unistring explode() { SYSTEMERROR("unexpected"); };
+	RefBracketBase* newInstance() { SYSTEMERROR("unexpected"); };
 };
 
 
@@ -238,10 +260,11 @@ public:
 		return (ref_dynamic_cast<RefGroupBracket>(&rd))?true:false;
 	};
 	RefGroupBracket(unistring name) : RefBracketBase() { setName(name); };
-    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unrelised");};
-	unistring explode(){ SYSTEMERROR("unexpected"); };
-	unistring toString(){ return "{$"+name+"}"; };
+    TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unrelised"); };
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ SYSTEMERROR("unrelised"); };
+	unistring explode() { SYSTEMERROR("unexpected"); };
+	unistring toString(){ return  "{$"+name+"}"; };
+	RefBracketBase* newInstance(){ SYSTEMERROR("unexpected"); };
 };
 
 

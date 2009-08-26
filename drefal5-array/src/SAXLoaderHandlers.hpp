@@ -184,9 +184,7 @@ class LoaderHeap {
 			stckChains.push(new ChainSubstitution());
         }
 		void createPatternToStack(){
-			ChainPattern* ch = new ChainPattern();
-			*ch += new RefData_DOT();
-			stckChains.push(ch);
+			stckChains.push(new ChainPattern());
         }
 		
         RefChain* extractCurrChainFromStack(){
@@ -195,9 +193,6 @@ class LoaderHeap {
             #endif
             RefChain *r = stckChains.top();
             stckChains.pop();
-			if (dynamic_cast<ChainPattern*>(r)){
-				*r += *(r->get_first()); // dataDOT
-			}
             return r;
         }
         RefChain* getCurrChain(){

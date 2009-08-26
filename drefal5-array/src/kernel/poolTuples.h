@@ -14,6 +14,8 @@ class DataLinkPooledStack {
 	size_t size; // физическая длина пула
 	T* pool;
 public:
+	inline size_t getCount(){ return idx; }
+
 	DataLinkPooledStack(){
 		idx = 0;
 		size = POOLSIZE_DEFAULT;

@@ -8,6 +8,20 @@
 class RefAlphaBase;
 
 
+inline unistring the_text(RefData **a, RefData **b){
+	if (!a) {
+		return " $empty ";
+	}
+	size_t leng = b-a;
+	if (!a || !b || leng<0) RUNTIMEERROR("the_text(**, **)", "error arguments");
+	unistring result = "";
+    for (size_t i=0; i<=leng; i++) {
+		result += (a[i]?a[i]->explode():" 0x0000 ");
+    }
+	return result;
+}
+
+
 template <class T, class t>
 class RefSymbolBase : public RefData {
 public:

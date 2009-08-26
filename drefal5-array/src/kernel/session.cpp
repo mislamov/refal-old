@@ -20,37 +20,58 @@
 #include "symbols.h"
 
 RefChain *Session::executeExpression(RefChain *chain) {
+	RefChain* result = 0;
 
     std::stack<RefData**> openExecs; // ссылки на ячейки для открывающихся скобок
     RefData **l_exec;
     RefData **r_exec;
     RefData **chain_last;  // на эл-т после последнего
+
+	RefData** item;
     RefExecBracket *tmpBr = 0;
-    r_exec = chain->get_first();
 
-    do {
-        chain_last = &(chain->get_first()[chain->leng]); // на эл-т после последнего
-        /// поиск скобки и выделение аргумента
-        while (r_exec < chain_last) {
-            if (tmpBr = ref_dynamic_cast<RefExecBracket>(*r_exec)) { // > или <
-                if (! tmpBr->isOpen(r_exec)) { // > - нашли то, что искали
-                    l_exec = openExecs.top();
-                    openExecs.pop();
-                    break;
-                }
-                // <
-                openExecs.push(r_exec);
-            }
-            ++r_exec;
-        }
-        // теперь l_exec и r_exec - это ссылки на ячейки для < и > соотв.
-        if (r_exec == chain_last) { // нечего вычислять
-            // openExecs - статический и сам очистится. Если динамический, то тут удалить.
-            return chain;
-        }
 
-        // дано: l_exec и r_exec
-        /// получение тела функции из репозитория
+	if (! chain->varsAndBrackets.getCount()){ //// объектное выражение без скобок
+		//result = new RefChain(chain->leng); - раскрыть когда будет сделан расширяемый чайн
+		//memcpy(result->first+1, chain->first+1, chain->leng);
+
+		result = new RefChain();
+		size_t end = chain->leng;
+		for(size_t i=0; i < end; ++i){
+			*result += chain[i];
+		}
+		return result;
+	}
+
+
+	size_t  r_exec_idx = 0; // индекс > в стеке скобок и переменных
+	do {
+		//// поиск первой > с помощью стека скобок
+		tmpBr   = 0;
+
+		size_t  imax = chain->varsAndBrackets.getLength();
+		for ( /* r_exec_idx уже установлено */; r_exec_idx<imax; ++r_exec_idx){
+			item = chain[chain->varsAndBrackets.getByIndex(r_exec_idx)];
+			if ((tmpBr = ref_dynamic_cast<RefExecBracket>(*item)) && (! tmpBr->isOpen(item))){
+				break;
+			}
+		}
+		if (r_exec_idx==imax){ //// не нашли >
+			return chain;
+		}
+		//// нашли >
+		l_exec = tmpBr->getOther(item);
+		r_exec = item;
+		r_exec_idx = chain->getStackIndexOfBracket(l_exec); // следующий поиск > продолжать с < - l_exec
+
+
+		// теперь l_exec и r_exec - это ссылки на ячейки для < и > соотв.
+		// дано: l_exec и r_exec
+
+
+klghkjhlkj
+	
+	    /// получение тела функции из репозитория
         #ifdef TESTCODE
         if (! dynamic_cast<RefWord*>(l_exec[1])) SYSTEMERROR("Not func NAME: " << l_exec[1]->toString() );
         #endif
@@ -78,7 +99,17 @@ RefChain *Session::executeExpression(RefChain *chain) {
             bool reslt = false;
 
             do {
-                if (matching(*sent, (*sent)->leftPart, &(l_exec[2]), &(r_exec[-1]), false, false)) {
+				// пустой аргумент вызова функции
+#ifdef TESTCODE
+				if (l_exec[0]!=r_exec[0]) SYSTEMERROR("unbalanced < and >");
+#endif
+
+				delete l_exec[0]; // <
+				delete l_exec[1]; // F
+				//delete r_exec[0]; // ==l_exec[0]
+				l_exec[0] = l_exec[1] = r_exec[0] = nullDataPoint;
+
+                if (matching(*sent, (*sent)->leftPart, l_exec+2, r_exec-1, false, false)) {
                     //LOG(step++ <<  "\tsucessfull!");
                     newchain = substituteExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
                     reslt = true;
@@ -117,11 +148,9 @@ RefChain *Session::executeExpression(RefChain *chain) {
         RefData  **a22 = &( chain->get_first()[chain->leng-1] );
 
 //  новая chain = ff (chain_first..l_exec[-1] + newchain + r_exec[+1]..chain_last)  нужна ссылка на начало копии newchain
-        RefChain *tmpchain = new RefChain(a11, a12, newchain->get_first(), &( newchain->get_first()[newchain->leng-1] ), a21, a22);
-//  удалить старую chain
-        delete newchain;
-        chain = tmpchain;
-        // теперь chain содержит результат подстановки
+        chain = new RefChain(a11, a12, newchain, a21, a22);
+//  при этом удалится newchain
+		//TODO: ОЧИСТКА МУСОРА для a12+1 .. a21-1
 
         r_exec = &( chain->get_first()[a12-a11] );
     } while (true);
@@ -140,8 +169,8 @@ RefChain *Session::substituteExpression(ChainSubstitution *substitution) {
 	PooledTuple2<RefData**, RefData**> partValues;
 
 	DataLinkPooledStack<size_t> &linksAndBrs = substitution->varsAndBrackets;
-	DataLinkPooledStack<RefStructBracket* > old_brackets;
-	DataLinkPooledStack<RefStructBracket* > new_brackets;
+	DataLinkPooledStack<RefBracketBase* > old_brackets;
+	DataLinkPooledStack<RefBracketBase* > new_brackets;
 	RefData **l, **r;
 	MatchState *matchState;
 	RefLinkToVariable* link = 0;
@@ -150,7 +179,7 @@ RefChain *Session::substituteExpression(ChainSubstitution *substitution) {
 	// 2) вычислить длину нового вектора (сумма длин значений переменных - их количество + длина chain) и создать его
 	size_t newChainLength = substitution->leng;
 
-	size_t varsAndBracketsCount = substitution->varsAndBrackets.getLength(); // количество закрытых переменных и стр-скобок
+	size_t varsAndBracketsCount = substitution->varsAndBrackets.getLength(); // количество закрытых переменных и скобок
 	if (varsAndBracketsCount){
 		// заполняем значения переменных в partValues - чтоб потом сгенерировать результат
 		size_t idx = 0;
@@ -177,17 +206,18 @@ RefChain *Session::substituteExpression(ChainSubstitution *substitution) {
 			} else {
 				// стуктурная скобка
 				#ifdef TESTCODE
-				if (!ref_dynamic_cast<RefStructBracket>(*part_r)) SYSTEMERROR("alarm");
+				if (!ref_dynamic_cast<RefBracketBase>(*part_r)) SYSTEMERROR("alarm");
 				#endif
 				if (*part_r == old_brackets.top()){ // параскобка уже копировалась => позиция для ЗАКР скобки
 					old_brackets.top_pop();
-					RefStructBracket *nb = new_brackets.top_pop();
+					RefBracketBase *nb = new_brackets.top_pop();
 					nb->closed_ind = currPosition;
 					partValues.put((RefData**)&nb, (RefData**)&nb);
 					++currPosition;
 				} else { // новая параскобка (закр)
-					old_brackets.put((RefStructBracket*)*part_r);
-					RefStructBracket *nb = new RefStructBracket();
+					RefBracketBase* pr = (RefBracketBase*)*part_r;
+					old_brackets.put(pr);
+					RefBracketBase *nb = pr->newInstance();
 					nb->opened_ind = currPosition;
 					new_brackets.put(nb);
 					partValues.put((RefData**)&nb, (RefData**)&nb);
@@ -204,11 +234,29 @@ RefChain *Session::substituteExpression(ChainSubstitution *substitution) {
 
 
 	} else {
-		RefData** tmp_ptr = (RefData**)malloc((newChainLength+2)*sizeof(RefData*));
+		RefData** tmp_ptr = (RefData**)malloc( (newChainLength+2)*sizeof(RefData*) );
+		if (!tmp_ptr) RUNTIMEERROR("memory", "memory limit");
 		tmp_ptr[0] = nullDataPoint;
 		tmp_ptr[newChainLength+1] = nullDataPoint;
 		memcpy(tmp_ptr+1, substitution->get_first(), newChainLength*sizeof(RefData*));
-		return new RefChain(tmp_ptr, newChainLength);
+		// копирование скобок
+		RefData** iend = tmp_ptr+newChainLength+1;
+		RefBracketBase* ibr = 0;
+		RefChain *resultChain = new RefChain(tmp_ptr, newChainLength);
+
+		RefData** it = 0;
+		for (size_t i=1; i<newChainLength+1; ++i){
+			it = tmp_ptr+i;
+			if (ibr = ref_dynamic_cast<RefBracketBase>(*it)){
+				if (ibr->isOpen(substitution->first+i)){  // 
+					*it = ibr->newInstanceCopy(resultChain);
+				} else {
+					*it = *(it-(ibr->closed_ind - ibr->opened_ind));
+				}
+			}
+		}
+
+		return resultChain;
 	}
 //*/
 	// 2a) создать новый вектор нужной длины из подстановки. 
@@ -280,6 +328,15 @@ unistring getTextOfChain(RefData** from, RefData** to){
 // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **ll, RefData **rr, bool isdemaching, bool isRevers) {
+	#ifdef TESTCODE
+		if (ll-rr>1) SYSTEMERROR("alarm!");
+	#endif
+
+	//this->setTopDataSkob(rr+1);
+	//if (ll==rr+1){
+	//	ll=rr;
+	//}
+
     LOG("New MATCHING : tmplateChain=" << tmplate->toString() << "  isDematching="<<isdemaching);
     RefData **activeTemplate = 0, **l=0, **r=0;
 

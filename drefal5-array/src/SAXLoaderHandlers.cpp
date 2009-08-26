@@ -284,6 +284,11 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
             s->leftPart = loader->extractCurrChainFromStack();
         */
+		#ifdef TESTCODE
+		if (! dynamic_cast<ChainPattern*>(loader->getCurrChain()))  SYSTEMERROR("alarm");
+		#endif
+		((ChainPattern*) loader->getCurrChain())->closeDotIfNotYet();
+		//std::cout << "\n\n\n" << loader->getCurrChain()->toString() << "\n\n\n";
     } else
     if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
         /*

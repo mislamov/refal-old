@@ -131,15 +131,7 @@ RefChain* Lenw (RefData** beg, RefData** end, Session* s){
     return new RefChain(a);
 };
 
-inline unistring the_text(RefData **a, RefData **b){
-	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERROR("Numb", "error arguments");
-	unistring result = "";
-    for (size_t i=0; i<=leng; i++) {
-        result += a[i]->explode();
-    }
-	return result;
-}
+
 
 RefChain* Numb (RefData** beg, RefData** end, Session* s){
     /// todo: сделать не только integer и поверять ошибки

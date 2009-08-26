@@ -56,18 +56,44 @@ RefChain::RefChain(RefData* d) {
     leng = 1;
 };
 
-RefChain::RefChain(size_t system_size) {
+RefChain::RefChain(size_t size) { // size is not lenght
 	LOG("chain() systemsize not realised!");
 	RefChain();
 };
 
 
-RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, RefData** a31, RefData** a32) {
-	SYSTEMERROR("ne sdelano kopirovanie skobok");
+RefChain::RefChain(RefData** a11, RefData** a12, RefChain *f_result_chain, RefData** a31, RefData** a32) {
+#ifdef TESTCODE
+	if (a12-a11<-1) SYSTEMERROR("error");
+	if (a32-a31<-1) SYSTEMERROR("error");
+#endif
+	if (a11==a12+1) {
+		--a12;
+		a11=0;
+	}
+	if (a31==a32+1) {
+		--a32;
+		a31=0;
+	}
+
+	std::cout << "\nRefChain::RefChain( " << the_text(a11, a12) << " ; " << f_result_chain->toString() << " ; " << the_text(a31, a32) << " )\n\n";
+
+	//SYSTEMERROR("ne sdelano kopirovanie skobok");
+	RefData** a21 = f_result_chain->get_first(); //TODO: а если пустой результат?
+	RefData** a22 = f_result_chain->get_last();
+
     leng = 0;
-    if (a11) leng += a12-a11;
-    if (a21) leng += a22-a21;
-    if (a31) leng += a32-a31;
+	size_t leng1 = a11?a12-a11+1:0;
+	size_t leng2 = a22-a21+1;
+	size_t leng3 = a31?a32-a31+1:0;
+
+#ifdef TESTCODE
+	if (leng1<0 || leng2<0 || leng3<0) SYSTEMERROR("alarm");
+#endif
+
+	if (a11) leng += leng1;
+    if (a21) leng += leng2; 
+    if (a31) leng += leng3;
 
     if (!leng) {
 		first = (RefData**)malloc(sizeof(RefData*) * 2);
@@ -82,42 +108,102 @@ RefChain::RefChain(RefData** a11, RefData** a12, RefData** a21, RefData** a22, R
 	memset(first, 0xff, leng+2);
 
 	first[0] = nullDataPoint;
-    memcpy(first+1, a11, sizeof(RefData*) * (a12-a11));
-    memcpy(first[1+(a12-a11)], a21, sizeof(RefData*) * (a22-a21));
-    memcpy(first[1+(a12-a11)+(a22-a21)], a31, sizeof(RefData*) * (a32-a31));
-	//memset(first+leng, 0, sizeof(RefData*));
-	//memcpy(first+leng+1, &nullDataPoint, sizeof(RefData*));
+	//RefData** ffirst = first+1;
+    if (leng1) memcpy(first+1, a11, sizeof(RefData*) * leng1); // копируем первую половину старого view
+	if (leng2) memcpy(first+1+leng1, a21, sizeof(RefData*) * leng2); // копируем результат функции
+    if (leng3) memcpy(first+1+leng1+leng2, a31, sizeof(RefData*) * leng3); // копируем вторую половину старого view
 	first[leng+1] = nullDataPoint;
 
+	// выправляем скобки
+	RefData** item = 0;
+	RefBracketBase* britem = 0;
+	for (size_t i=0; i<leng1; ++i){ // выправляем скобки в первой половине старого view
+		item = first+1+i;
+		if (britem=ref_dynamic_cast<RefBracketBase>(*item)){
+			britem->chain = this;
+		}
+	};
+	for (size_t i=0; i<leng2; ++i){ // выправляем скобки в результате функции
+		item = first+1+leng1+i;
+		if (britem=ref_dynamic_cast<RefBracketBase>(*item)){
+			if (britem->isOpen(a21+i)){
+				britem->opened_ind += leng1;
+				britem->chain = this;
+			} else {
+				britem->closed_ind += leng1;
+			}
+		}
+	};
+	for (size_t i=0; i<leng3; ++i){ // выправляем скобки во второй половине старого view
+		item = first+1+leng1+leng2+i;
+		if (britem=ref_dynamic_cast<RefBracketBase>(*item)){
+			if (britem->isOpen(a31+i)){
+				britem->opened_ind += (leng1+leng2);
+				britem->chain = this;
+			} else {
+				britem->closed_ind += (leng1+leng2);
+			}
+		}
+	};
+
+	delete f_result_chain;
     return;
 
 };
 
 
-ChainSubstitution& ChainSubstitution::operator+=(RefLinkToVariable *vr) {
+RefChain& RefChain::operator+=(RefLinkToVariable *vr) {
 	*this += (RefData*)vr;
 	#ifdef TESTCODE
 	if (! ref_dynamic_cast<RefLinkToVariable>(*get_last())) SYSTEMERROR("alarm");
 	#endif
-	this->varsAndBrackets.put(leng);
+	this->varsAndBrackets.put(leng-1);
 	return *this;
 };
 
-RefChain& RefChain::operator+=(RefStructBracket *br) {
-	if (br->opened_ind == SIZE_MAX){ // (
-		*this += (RefBracketBase*)br;
-		*this += refNullGlobal; // add null dot after open bracket
-	} else {
-		*this += (RefBracketBase*)br;
+
+
+ChainPattern::ChainPattern() : RefChain(){
+	RefChain::operator +=( new RefData_DOT()); // первая точка - граница образца
+};
+
+// когда образец создан, необходимо его закрыть (если он еще не закрыт)
+void ChainPattern::closeDot(){
+	#ifdef TESTCODE
+		if (! this->get_first()) SYSTEMERROR("closing empty Pattern!");
+		RefData_DOT* dot = ref_dynamic_cast<RefData_DOT>(*(this->get_first()));
+		if ((dot->opened_ind != 0) || dot->isSetClosed() ) SYSTEMERROR("alarm");
+	#endif
+	RefChain::operator +=((RefData_DOT*) *(this->get_first()) );
+};
+
+// когда образец создан, необходимо его закрыть (если он еще не закрыт)
+void ChainPattern::closeDotIfNotYet(){
+	#ifdef TESTCODE
+		if (! ref_dynamic_cast<RefData_DOT>(*(this->get_first()))) SYSTEMERROR("alarm!");
+	#endif
+		if ( ( (RefData_DOT*)(*(this->get_first()) ) )->isSetClosed()){
+			return;
+		}
+		closeDot();
+};
+
+//  dot eeeee dot : : : : null
+ChainPattern& ChainPattern::operator+=(RefConditionBase *cn){
+	if (! ref_dynamic_cast<RefConditionBase>(*get_last())){
+		closeDotIfNotYet();
+		RefChain::operator +=( cn );
 	}
 	return *this;
-
 };
+
+
+
 
 RefChain& RefChain::operator+=(RefBracketBase *br) {
 	*this += (RefData*)br;
 	br->chain = this;
-	if (br->opened_ind == SIZE_MAX){		// [
+	if (! br->isSetOpened()){		// [
 		#ifdef TESTCODE
 		if (!ref_dynamic_cast<RefBracketBase>(* this->get_last())) SYSTEMERROR("alarm");
 		#endif
@@ -125,33 +211,25 @@ RefChain& RefChain::operator+=(RefBracketBase *br) {
 		#ifdef TESTCODE
 		if (! ref_dynamic_cast<RefBracketBase>(*get_last())) SYSTEMERROR("alarm");
 		#endif
-
-//		*this += refNullGlobal; // add null dot after open bracket
 	} else {								// ]
 		#ifdef TESTCODE
-		if (br->closed_ind != SIZE_MAX) SYSTEMERROR("chain + bracket alarm");
+		if (br->isSetClosed()) SYSTEMERROR("chain + bracket alarm");
 		if (!ref_dynamic_cast<RefBracketBase>(* get_last() )) SYSTEMERROR("alarm");
 		#endif
 		br->closed_ind = (get_last()-get_first());
 	}
+	varsAndBrackets.put( leng-1 );
 	return *this;
 };
 
-ChainSubstitution& ChainSubstitution::operator+=(RefBracketBase *br) {
-	RefStructBracket *brs = 0;
-	if (brs = ref_dynamic_cast<RefStructBracket>(br)) {
-		varsAndBrackets.put((br->closed_ind==SIZE_MAX) ? leng-1 : leng ); // если ( то был создан nullDot
-		RefChain::operator +=(brs);
+RefChain& RefChain::operator+=(RefStructBracket *br) {
+	if (! br->isSetOpened()){ // (
+		*this += (RefBracketBase*)br;
+		*this += refNullGlobal; // add null dot after open bracket
 	} else {
-		RefChain::operator +=(br);
+		*this += (RefBracketBase*)br;
 	}
-
 	return *this;
-};
-
-
-ChainSubstitution& ChainSubstitution::operator+=(RefData  *br){
-	return (ChainSubstitution&)RefChain::operator+=(br);
 };
 
 
@@ -175,7 +253,7 @@ RefChain& RefChain::operator+=(RefChain &ch) {
 
 
 RefChain& RefChain::operator+=(RefChain *ch) {
-	SYSTEMERROR("kopirovanie sjobok ne realisovano!");
+	SYSTEMERROR("kopirovanie sjobok ne realisovano!");/*
 	#ifdef TESTCODE
 	if (!first || !get_first()) SYSTEMERROR("null first of chain");
 	if (!ch->first || !ch->get_first()) SYSTEMERROR("null first of chain");
@@ -186,7 +264,7 @@ RefChain& RefChain::operator+=(RefChain *ch) {
     memcpy(&(first[leng+1]), ch->first+1, (ch->leng+1)*sizeof(RefData*)); // вместе с 0x00
     leng += ch->leng;
 	//memcpy(first+leng+1, &nullDataPoint, sizeof(RefData*));
-    return *this;
+    return *this;*/
 };
 
 
@@ -205,17 +283,6 @@ unistring RefChain::explode()     {
     }
     return result;
 };
-
-
-
-
-RefChain* RefChain::Copy(Session *s) {
-    if (!first) return new RefChain();
-
-    SYSTEMERROR("zaglushka");
-};
-
-
 
 
 
