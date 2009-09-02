@@ -402,6 +402,7 @@ template <class T>
 };
 
 
+
 #define SAVE_STATE(activeTemplate) { \
     s->getCurrentSopostStack()->push( new TVarBody(l, r, activeTemplate) ); \
     std::cout << "\nsave : "; print_vector(l, r); std::cout << "\n" << std::flush; \

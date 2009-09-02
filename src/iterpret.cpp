@@ -68,7 +68,7 @@ return 0;
         std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << std::flush;
         //return 0;
         argc[1] = //"minitest.ref";
-            "fn.ref";
+            "go.ref";
     }
 
     char
@@ -90,7 +90,7 @@ return 0;
     int err = 0;
     if (! strstr(pname, ".xml")) {
         ss0 << ".\\refgo.exe -e " /*<< refal_dir*/ << "refal_scaner " << pname << "\n";
-        ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << "refal_scaner " << pname << "\n";
+        ss1 << refal_dir << "refgo -e " << refal_dir << "refal_scaner " << pname << "\n";
         ss2 << pname << ".xml";
     } else {
         ss2 << pname;

@@ -39,8 +39,8 @@ inline RefData*  beginOfTerm(RefData *p){
 };
 
 inline RefData*  endOfTerm (RefData *p) {
-    RefBracketBase *&bb = reinterpret_cast<RefBracketBase *&>(p);
-    if (ref_dynamic_cast<RefBracketBase>(p) && bb->is_opened){
+    RefBracketBase *bb = ref_dynamic_cast<RefBracketBase>(p);
+    if (bb && bb->is_opened){
         return bb->other;
     };
     return p;
@@ -159,7 +159,10 @@ TResult  RefVariable_t::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 
     MOVE_TO_next_term(r);
     if (! (ref_dynamic_cast<RefData_DOT >(r) ) ) {
+
+        //l=endOfTerm(r);
         l=r;
+        r=endOfTerm(r);
         SAVE_STATE_AND_VAR( tpl);
         tpl = tpl->getNext();
         return GO;
@@ -185,12 +188,11 @@ TResult  RefVariable_e::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r)
 };
 
 TResult  RefVariable_E::init(RefData*&tpl, Session *s, RefData *&l, RefData *&r) {
-    //SYSTEMERROR("");
-    RefData *rr = s->getStackOfDataSkob()->top()->getPred();
-    if (r->getNext()!=rr) { // getNextSymbol! not nextTerm
+    RefData *rlast = s->getStackOfDataSkob()->top(), *rnext = next_term(r);
+    if (rnext!=rlast) { // getNextSymbol! not nextTerm
         // НЕ пустое значение
-        l = r->getNext(); // getNextSymbol! not nextTerm
-        r = rr;
+        l = rnext; // getNextSymbol! not nextTerm
+        r = rlast->getPred();
     }
     SAVE_STATE_AND_VAR(tpl);
     tpl = tpl->getNext();

@@ -146,9 +146,9 @@ bool   RefBracketBase::operator==(RefData &rd){ return false; };
 // only for ObjectExpressions !!! Возвращает копию цепочки. Вместо ссылок на переменные - значения. Так как применяется для правых частей
 // то открытых переменных быть не должно!
 RefChain* RefChain::Copy(Session *s){
-    //#ifdef DEBUG
-    //std::cout << "\n{ RefChain for copy: " << std::flush << this->toString() << std::flush;
-    //#endif
+    #ifdef DEBUG
+    std::cout << "\n{ RefChain for copy: " << std::flush << this->toString() << std::flush;
+    #endif
     RefData  *srcL = this->first;
     RefData  *srcR = this->second;
 
@@ -193,9 +193,11 @@ RefChain* RefChain::Copy(Session *s){
                 continue;
             };
             RefChain *ch = RefChain(tbody->first, tbody->second).Copy();
-            dst->next = ch->first;
-            ch->first->pred = dst;
-            dst = ch->second;
+            if (ch->first){
+                dst->next = ch->first;
+                ch->first->pred = dst;
+                dst = ch->second;
+            }
             delete ch;
             MOVE_TO_next_term(src);
             continue;

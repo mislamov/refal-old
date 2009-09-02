@@ -134,6 +134,7 @@ TResult RefVarForSymbol<T>::init(RefData *&tpl, Session* s, RefData *&l, RefData
 
 };
 
+
 template <class T>
 TResult RefVarForSymbol<T>::back(RefData *&tpl, Session* s, RefData *&l, RefData *&r) {
     RESTORE_STATE(tpl);
@@ -185,7 +186,7 @@ unistring RefSymbol<unistring>::toString() {
     return "\"" + getValue() + "\" ";
     #else
     //return getValue() + " ";
-    return "\"" + getValue() + "\" ";
+    return getValue() ;
     #endif
 }
 

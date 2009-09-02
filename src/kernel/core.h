@@ -19,7 +19,7 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define REFVERSION "D-Refal 0.0.8 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
+#define REFVERSION "D-Refal 0.0.9 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 //#define TESTCODE
 //#define DEBUG
 //#define UNICODE
@@ -82,8 +82,8 @@ typedef std::string  unistring;
 //#define _L(quote) L##quote
 #define _L(quote) quote
 
-typedef long            infint;
-typedef float           infreal;
+typedef long long           infint;
+typedef double          infreal;
 typedef int             ThisId;     // тип для хранения  идентификатора каждого дататайпа
 
 infint str2infint(unistring si);  // строку в число

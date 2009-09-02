@@ -282,7 +282,7 @@ TResult  RefCondition::init(RefData*&tpl, Session* s, RefData *&l, RefData *&r) 
     if (ref_dynamic_cast<RefFunctionBase >(own)) {
         // условие для предложения функции может быть только в конце шаблона и сопоставляться с пустым выражением в конце,
         // в отличие от условия в конце пользовательского шаблона
-        RefData_DOT *d = ref_dynamic_cast<RefData_DOT >(r->getNext());
+        RefData_DOT *d = ref_dynamic_cast<RefData_DOT >(next_term(r));
         if (!d) {
             tpl=tpl->getPred();
             return BACK;
