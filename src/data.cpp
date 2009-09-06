@@ -83,3 +83,24 @@ unistring RefChain::debug(){
 			}
 			return result;
 };
+
+unistring RefStructBrackets::explode(){		return "(" + chain->explode() + ") ";	};
+unistring RefExecBrackets::explode(){	return "<" + chain->explode() + "> ";	};
+
+
+TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+    s->MOVE_TO_next_term(r);
+	RefStructBrackets *br;
+	
+	if (r && (br=ref_dynamic_cast<RefStructBrackets>(*r)))
+};
+TResult RefStructBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+};
+
+
+TResult RefExecBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+	AchtungERROR;
+};
+TResult RefExecBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+	AchtungERROR;
+};
