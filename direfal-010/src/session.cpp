@@ -16,7 +16,7 @@ unistring getTextOfChain(RefData** from, RefData** to){
 };
 
 #define LOGSTEP(s) \
-	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r+1, argr)) << "\n" << std::flush;
+	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, argr)) << "\n" << std::flush;
 
 
 MatchState* Session::saveCurrentState(RefData** ll, RefData** rr, RefChain *tpl) { // сохраняет и возвращает ссылку на состояние сопоставления для предложения
@@ -32,16 +32,10 @@ MatchState* Session::saveCurrentState(RefData** ll, RefData** rr, RefChain *tpl)
 // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching, bool isRevers) {
-	RefData **argl=0, **argr=0;
+	RefData **argl = (*arg)[0], **argr=0;
 	if (! arg->isEmpty()){
-		argl = (*arg)[0];
 		argr = (*arg)[-1];
-	}
-	// argl==0 => пустая цепь после argr
-	// argl-argr=1 => пустая цепь после argr  (<F> => >F )
-	if (argl-argr == 1){
-		argl = 0;
-	}
+	} 
 
 	#ifdef TESTCODE
 	if (argl-argr>0) 
@@ -60,8 +54,8 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
     } else {
         // начинаем новое сопоставление с argl..argr
         result_sost = GO;
-        l = 0;
-        r = argl-1;
+		l = 0;
+		r = argl?argl-1:0;
         activeTemplate = (*tmplate)[0];
 
 		saveCurrentState(argl, argr, tmplate); // сохр. состояние перед вычислением условия предложения
@@ -80,7 +74,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
 			}
             LOGSTEP("GO  ");
             #ifdef TESTCODE
-            if (!r) {   SYSTEMERROR("RefData::init() tring to matching with NULL address!");            };
+            if (l && !r) {   SYSTEMERROR("RefData::init() tring to matching with NULL address!");            };
             #endif
             l=0;
             result_sost = (*activeTemplate)->init(activeTemplate, this, l, r); /// ШАГ ВПЕРЕД
@@ -171,7 +165,7 @@ unistring VarMap::debug(){
 
 
 void Session::MOVE_TO_next_term(RefData** &p){
-	if (p == current_view_r) {
+	if (p == current_view_r || !p) {
 		p=0;
 	} else {
 		++p;
@@ -179,7 +173,7 @@ void Session::MOVE_TO_next_term(RefData** &p){
 }
 
 void Session::MOVE_TO_pred_term(RefData** &p){
-	if (p == current_view_l) {
+	if (p == current_view_l || !p) {
 		p=0;
 	} else {
 		--p;

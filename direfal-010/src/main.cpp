@@ -25,18 +25,18 @@ int main ( int argv, char **argc ) {
 	RefChain *ch1 = new RefChain();
 	RefChain *ch2 = new RefChain();
 
-/*	*ch1 += new RefAlpha('A');
+	*ch1 += new RefAlpha('A');
 	*ch1 += new RefAlpha('b');
 	*ch1 += new RefAlpha('c');
 	*ch1 += new RefAlpha('d');
 	*ch1 += new RefAlpha('e');
-*/
+
 	//*ch2 += new RefAlpha('A');
 	//*ch2 += new RefAlpha('b');
 	//*ch2 += new RefAlpha('c');
 	*ch2 += new RefVariable_e("c");
 	//*ch2 += new RefAlpha('d');
-	//*ch2 += new RefAlpha('e');
+	*ch2 += new RefAlpha('e');
 
 	std::cout << "\n\n" ;
 	std::cout << ch1->debug() << "\n";

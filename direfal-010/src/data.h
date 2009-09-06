@@ -21,6 +21,9 @@
 
 #include "config.h"
 
+class RefChain;
+
+
 class RefObject {
 public:
 	virtual ~RefObject(){};
@@ -46,17 +49,41 @@ protected:
     unistring name;
 public:
 	inline RefVariable(unistring tname = EmptyUniString){ name=tname; };
-    inline unistring getName() {        return name;    }
-    inline void setName(unistring s) {        name = s;    }
+    inline unistring getName() {        return name;    };
+    inline void setName(unistring s) {        name = s;    };
 };
 
 
 class RefDataBracket : public RefData {
+public:
+	RefChain *chain;
+
+	RefDataBracket(RefChain *thechain) : RefData(){
+		chain = thechain;
+	};
 };
 
 
 class RefTemplBracket : public RefData {
 };
+
+
+class RefStructBrackets : public RefDataBracket {
+	inline RefStructBrackets(RefChain* thechain) : RefDataBracket(thechain){};
+	unistring explode();
+
+    TResult init(RefData **&, Session*, RefData **&, RefData **&);
+    TResult back(RefData **&, Session*, RefData **&, RefData **&);
+};
+
+class RefExecBrackets : public RefDataBracket {
+	inline RefExecBrackets(RefChain* thechain) : RefDataBracket(thechain){};
+	unistring explode();
+
+    TResult init(RefData **&, Session*, RefData **&, RefData **&);
+    TResult back(RefData **&, Session*, RefData **&, RefData **&);
+};
+
 
 class RefChain : public RefObject {
 	RefData** first;
@@ -72,6 +99,9 @@ public:
 
 	RefChain& operator+=(RefData  *ch);
 	RefData** operator[](signed long idx);
+
+	static RefStructBrackets* makeStructTerm(RefChain *ch){ return new RefStructBrackets(ch); }
+
 
 	inline bool isEmpty(){ return (leng==0); }
 

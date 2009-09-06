@@ -97,7 +97,7 @@ bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefV
 
 TResult  RefVariable_s::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->MOVE_TO_next_term(r);
-	if (*r && !ref_dynamic_cast<RefDataBracket>(*r) ) {
+	if (r && *r && !ref_dynamic_cast<RefDataBracket>(*r) ) {
         l=r;
         s->SAVE_VAR_STATE( tpl, l, r);
         MOVE_TO_next_template(tpl);
@@ -119,7 +119,7 @@ bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefV
 
 TResult  RefVariable_t::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->MOVE_TO_next_term(r);
-    if  (*r && (void*)r!=(void*)s->getTopBoard()) {
+    if  (r && *r && (void*)r!=(void*)s->getTopBoard()) {
         l=r;
         s->SAVE_VAR_STATE( tpl, l, r);
         MOVE_TO_next_template(tpl);
