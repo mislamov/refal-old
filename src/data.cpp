@@ -104,9 +104,7 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefDat
     s->MOVE_TO_next_term(r);
 	RefStructBrackets *br;
 	
-	// if (br->chain == this->chain) GO;  - проверить сильно оптимизирует ли
-
-	if (r && (br=ref_dynamic_cast<RefStructBrackets>(*r)) && s->matching(0, this->chain, br->chain, false)) {
+	if (r && (br=ref_dynamic_cast<RefStructBrackets>(*r)) && (/*br->chain == this->chain ||*/ s->matching(0, this->chain, br->chain, false))) {
 		s->MOVE_TO_next_template(tpl);
 		return GO;
 	}

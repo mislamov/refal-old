@@ -25,11 +25,12 @@ int main ( int argv, char **argc ) {
 	RefChain *ch1 = new RefChain();
 	RefChain *ch2 = new RefChain();
 	RefChain *ch3 = new RefChain();
+	RefChain *ch4 = new RefChain();
 
 
-	*ch3 += new RefAlpha('x');
-	*ch3 += new RefAlpha('y');
-	*ch3 += new RefAlpha('z');
+//	*ch3 += new RefAlpha('x');
+//	*ch3 += new RefAlpha('y');
+//	*ch3 += new RefAlpha('z');
 
 	*ch1 += new RefAlpha('A');
 	*ch1 += new RefAlpha('b');
