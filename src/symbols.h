@@ -154,18 +154,18 @@ TResult  RefSymbolBase<TT, tt>::init(RefData**& tpl, Session* s, RefData**& l, R
     s->MOVE_TO_next_term(r);
 	LOG(" " << this->debug() << " == " << ((r && *r) ? (*r)->debug() : "0"));
     if ( r && *r && (this==*r || *this == **r)) {
-        MOVE_TO_next_template(tpl);
+        s->MOVE_TO_next_template(tpl);
         return GO;
     }
 
-    MOVE_TO_pred_template(tpl);
+	s->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 
 
 template<class T, class t>
 TResult  RefSymbolBase<T, t>::back(RefData**&tpl, Session* s, RefData**&l, RefData**&r) {
-    MOVE_TO_pred_template(tpl);
+    s->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 

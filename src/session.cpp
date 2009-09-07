@@ -16,34 +16,19 @@ unistring getTextOfChain(RefData** from, RefData** to){
 };
 
 #define LOGSTEP(s) \
-	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, argr)) << "\n" << std::flush;
-
-
-MatchState* Session::saveCurrentState(RefData** ll, RefData** rr, RefChain *tpl) { // сохраняет и возвращает ссылку на состояние сопоставления для предложения
-		MatchState* res = new MatchState(current_view_l=ll, current_view_r=rr, tpl);
-        matchStates.push( res );
-		return res;
-};
+	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, (*arg)[-1])) << "\n" << std::flush;
 
 
 
 
-// сопоставляет образец tmplate с объектным выражением с l по r.
+
+// сопоставляет образец tmplate с объектным выражением arg.
 // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
-bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching, bool isRevers) {
-	RefData **argl = (*arg)[0], **argr=0;
-	if (! arg->isEmpty()){
-		argr = (*arg)[-1];
-	} 
+// Политика управления varMapб current_LR задается из вне.
+bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching) {
 
-	#ifdef TESTCODE
-	if (argl-argr>0) 
-		AchtungERROR;
-	#endif
-
-
-    LOG("New MATCHING : tmplateChain=" << tmplate->debug() << "  isDematching="<<isdemaching);
+	LOG("New MATCHING : tmplateChain=" << tmplate->debug() << "  isDematching="<<isdemaching);
     RefData **activeTemplate = 0, **l=0, **r=0;
 
     if (isdemaching) {
@@ -55,10 +40,9 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
         // начинаем новое сопоставление с argl..argr
         result_sost = GO;
 		l = 0;
-		r = argl?argl-1:0;
+		r = arg->isEmpty() ? 0 : (*arg)[0]-1 ;
         activeTemplate = (*tmplate)[0];
-
-		saveCurrentState(argl, argr, tmplate); // сохр. состояние перед вычислением условия предложения
+		current_view_borders.put((*arg)[0], (arg->isEmpty() ? 0 : (*arg)[-1]) );
     }
 
 	while (true) {
@@ -68,8 +52,8 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
 
         case GO: {
 			if (activeTemplate==(*tmplate)[-1]+1){ // достигнут правый край сопоставления! DataDOT
-				--activeTemplate;
-				result_sost = (r==argr) ? SUCCESS : BACK;
+				MOVE_TO_pred_template( activeTemplate ); // ?
+				result_sost = (r==(*arg)[-1]) ? SUCCESS : BACK;  // не двигали r вперед => сравниваем с (*arg)[-1]
 				break;
 			}
             LOGSTEP("GO  ");
@@ -82,7 +66,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
         }
         case BACK: {
 			if (activeTemplate==(*tmplate)[0]-1){ // достигнут левый край сопоставления! DataDOT
-				++activeTemplate;
+				++activeTemplate; // ?
 				result_sost = FAIL;
 				break;
 			}
@@ -92,6 +76,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
         }
 
         case SUCCESS :
+			current_view_borders.pop();
             return true;
 
         case ERROR :
@@ -99,11 +84,13 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
             #ifdef DEBUG
             LOG( "ERROR signal when maching!" );
             #endif
+			current_view_borders.pop();
             return false;
         case FAIL   :
             #ifdef DEBUG
             LOG( "FAIL signal when maching!" );
             #endif
+			current_view_borders.pop();
             return false;
 
 
@@ -114,6 +101,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
     };
 };
 
+/*
 unistring MatchState::debug(){
 		std::ostringstream s;
 
@@ -121,7 +109,7 @@ unistring MatchState::debug(){
 		s << varmap.debug();
 		return s.str();
 };
-
+*/
 
 
 
@@ -139,7 +127,7 @@ bool VarMap::findByName(unistring name, RefData** &l, RefData** &r) {
 };
 
 // ищет по ссылке на переменную ее облать видимости
-bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, MatchState *&matchState) {
+bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r) {
         for (size_t ind = last_ind; ind>=0; --ind) {
             if (pool[ind].i1==var) {
                 l = pool[ind].i2;
@@ -164,36 +152,19 @@ unistring VarMap::debug(){
 };
 
 
-void Session::MOVE_TO_next_term(RefData** &p){
-	if (p == current_view_r || !p) {
-		p=0;
-	} else {
-		++p;
-	}
-}
-
-void Session::MOVE_TO_pred_term(RefData** &p){
-	if (p == current_view_l || !p) {
-		p=0;
-	} else {
-		--p;
-	}
-}
-
-
+// TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено
 void Session::SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r) { // сохраняет состояние переменной
         RefVariable* var = ref_dynamic_cast<RefVariable>(*activeTemplate);
         if (var){
-            matchStates.top()->saveVar(this, (RefVariable*)var, l, r);
+            saveVar(this, (RefVariable*)var, l, r);
         }
-		LOG("save: " << var->getName() << " : " << ((l && *l) ? (*l)->debug() : "null") << " .. " <<  (r&& *r &&(current_view_l-1-r)?(*r)->debug():"null"));
+		LOG("save: " << var->getName() << " : " << ((l && *l) ? (*l)->debug() : "null") << " .. " <<  (r&& *r &&(current_view_l()-1-r)?(*r)->debug():"null"));
 };
     
-//void SAVE_VAR_STATE_AND_VALUE(RefData** activeTemplate); // сохраняет состояние и значение переменной
+// TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено
 void Session::RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r){ // восстанавливает состояние переменной
         RefVariable* var = ref_dynamic_cast<RefVariable>(*activeTemplate);
         if (!var) SYSTEMERROR("not var restoring!");
 
-        MatchState *varMatchState;
-        matchStates.top()->restoreVar(this, var, varMatchState, l, r); // для польз-переменной varMatchState хранит ее подсессию
+        restoreVar(this, var, l, r); // для польз-переменной varMatchState хранит ее подсессию
 };

@@ -21,7 +21,7 @@
 
 TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->SAVE_VAR_STATE(tpl, l, r);
-    MOVE_TO_next_template(tpl);
+    s->MOVE_TO_next_template(tpl);
     return GO;
 };
 
@@ -30,8 +30,8 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
 
     if (l) {
         // предыдущее значение не пустое
-        if ((void*)r == (void*)s->getTopBoard()) {
-            MOVE_TO_pred_template(tpl);
+		if ((void*)r == (void*)s->current_view_r()) {
+            s->MOVE_TO_pred_template(tpl);
             return BACK;
         };
         s->MOVE_TO_next_term(r);
@@ -40,14 +40,13 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         l = r;
     }
 
-	if (!r || (void*)r == (void*)s->getTopBoard()) {
-        MOVE_TO_pred_template(tpl);
+	if (!r || (void*)r == (void*)s->current_view_r()) {
+        s->MOVE_TO_pred_template(tpl);
         return BACK;
     };
     s->SAVE_VAR_STATE(tpl, l, r);
-    MOVE_TO_next_template(tpl);
+    s->MOVE_TO_next_template(tpl);
     return GO;
-
 };
 
 bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_e >(&rd)?true:false; };
@@ -56,7 +55,7 @@ bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefV
 
 
 TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData **&r ) {
-	RefData **rr = s->getTopBoard();
+	RefData **rr = s->current_view_r();
 	s->MOVE_TO_pred_term(rr);
 
 	RefData **rnext = r;
@@ -68,14 +67,14 @@ TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData *
         r = rr;
     }
     s->SAVE_VAR_STATE(tpl, l, r);
-	MOVE_TO_next_template(tpl);
+	s->MOVE_TO_next_template(tpl);
     return GO;
 };
 
 TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->RESTORE_VAR_STATE(tpl, l, r);
     if (!l) {
-		MOVE_TO_pred_template(tpl);
+		s->MOVE_TO_pred_template(tpl);
         return BACK;
     }
     #ifdef TESTCODE
@@ -87,7 +86,7 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
     }
     s->MOVE_TO_pred_term(r);
     s->SAVE_VAR_STATE( tpl, l, r);          /// todo оптимизировать: не удалять тело переменной в начале при ресторе, а изменять его параметры
-	MOVE_TO_next_template(tpl);
+	s->MOVE_TO_next_template(tpl);
     return GO;
 };
 
@@ -100,17 +99,17 @@ TResult  RefVariable_s::init(RefData**&tpl, Session *s, RefData **&l, RefData **
 	if (r && *r && !ref_dynamic_cast<RefDataBracket>(*r) ) {
         l=r;
         s->SAVE_VAR_STATE( tpl, l, r);
-        MOVE_TO_next_template(tpl);
+        s->MOVE_TO_next_template(tpl);
         return GO;
     }
 
-    MOVE_TO_pred_template(tpl);
+    s->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 
 TResult  RefVariable_s::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
 	s->RESTORE_VAR_STATE(tpl, l, r); /// todo: оптимизация. заменить на DROP_STATE
-    MOVE_TO_pred_template(tpl);
+    s->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_s >(&rd)?true:false; };
@@ -119,20 +118,20 @@ bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefV
 
 TResult  RefVariable_t::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->MOVE_TO_next_term(r);
-    if  (r && *r && (void*)r!=(void*)s->getTopBoard()) {
+    if  (r && *r && (void*)r!=(void*)s->current_view_r()) {
         l=r;
         s->SAVE_VAR_STATE( tpl, l, r);
-        MOVE_TO_next_template(tpl);
+        s->MOVE_TO_next_template(tpl);
         return GO;
     }
 
-    MOVE_TO_pred_template(tpl);
+    s->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 
 TResult  RefVariable_t::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->RESTORE_VAR_STATE(tpl, l, r);
-    MOVE_TO_pred_template(tpl);
+    s->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 bool    RefVariable_t::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_t >(&rd)?true:false; };

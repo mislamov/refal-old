@@ -7,7 +7,7 @@ class Session;
 
 
 template <class T>
-class DataLinkPooledStack {
+class PooledStack {
 	friend class Session;
 
 	size_t idx;  // pool+idx - элемент после последнего; pool+0 - первый элемент; idx - кол-во элементов
@@ -16,7 +16,7 @@ class DataLinkPooledStack {
 public:
 	inline size_t getCount(){ return idx; }
 
-	DataLinkPooledStack(){
+	inline PooledStack(){
 		idx = 0;
 		size = POOLSIZE_DEFAULT;
 		pool = (T*)malloc(sizeof(T)*size);
@@ -25,8 +25,8 @@ public:
 	};
 
 
-	//~DataLinkPooledStack(){ free(pool); };
-	void put(T l){
+	//~PooledStack(){ free(pool); };
+	inline void put(T l){
 		if (idx >= size-1){
 			size+=POOLSIZE_DEFAULT;
 			pool = (T*)realloc(pool, sizeof(T)*size);
@@ -36,32 +36,36 @@ public:
 		++idx;
 	};
 
-	T top_pop(){
+	inline T top_pop(){
 		#ifdef TESTCODE
 		if (!idx) SYSTEMERROR("link-stack is empty!");
 		#endif
 		return pool[--idx];
 	};
 
-	T top(){
+	inline T top(){
 		return pool[idx-1];
 	};
-	T getByIndex(size_t index){
+
+	inline T getByIndex(size_t index){
 		if (index <0 || index>=idx) return 0;
 		return pool[index];
-	}
-	size_t getLength(){ return idx; }
-	void clear(){
+	};
+
+	inline size_t getLength(){ return idx; };
+
+	inline void clear(){
 		idx = 0;
 		size = POOLSIZE_DEFAULT;
 		pool = (T*)realloc(pool, sizeof(T)*size);
 		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
 		memset(pool, 0xff, sizeof(T)*size);
-	}
-	void flush(){
+	};
+
+	inline void flush(){
 		pool = (T*)realloc(pool, sizeof(T)*idx);
 		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
-	}
+	};
 };
 
 
@@ -126,9 +130,8 @@ public:
     };
 
 };
-
-
 */
+
 
 template <class T1, class T2>
 class PooledTuple2 {
@@ -139,7 +142,7 @@ protected:
     size_t last_ind;	// индекс последнего в стеке элемента
     size_t poolsize;
 public:
-    PooledTuple2() {
+    inline PooledTuple2() {
 		#ifdef TESTCODE
 		if (sizeof(TUPLE2) != sizeof(T1)+sizeof(T2)) SYSTEMERROR("Platform depend collision! sizeof(TUPLE2) != sizeof( struct{T1 T2} ).");
 		#endif
@@ -152,12 +155,12 @@ public:
 		#endif
     };
 
-    ~PooledTuple2() {
+    inline ~PooledTuple2() {
         free(pool);
     };
 
     // сохраняет состояние item копированием
-    void put(T1 i1, T2 i2) {
+    inline void put(T1 i1, T2 i2) {
         ++last_ind ;
         if (last_ind >= poolsize) {
             // пул исчерпан
@@ -178,13 +181,30 @@ public:
         return;
     };
 
-    void top(T1 &i1, T2 &i2) {
+    inline void top(T1 &i1, T2 &i2) {
         TUPLE2* pool_last_ind = pool + last_ind;
 		i1 = pool_last_ind->i1;
 		i2 = pool_last_ind->i2;
 	};
 
-	bool top_pop(T1 &i1, T2 &i2) {
+    T1 top1() {
+        TUPLE2* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i1;
+	};
+
+    T2 top2() {
+        TUPLE2* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i2;
+	};
+
+	inline void pop(){
+		#ifdef TESTCODE
+		memset(pool+last_ind, 0xff, sizeof(TUPLE2));
+		#endif
+        --last_ind;
+	};
+
+	inline bool top_pop(T1 &i1, T2 &i2) {
 		if (!last_ind) {i1=0;i2=0; return false;}
         top(i1,i2);
 		#ifdef TESTCODE
