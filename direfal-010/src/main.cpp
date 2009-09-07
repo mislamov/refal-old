@@ -24,9 +24,18 @@ int main ( int argv, char **argc ) {
 
 	RefChain *ch1 = new RefChain();
 	RefChain *ch2 = new RefChain();
+	RefChain *ch3 = new RefChain();
+
+
+	*ch3 += new RefAlpha('x');
+	*ch3 += new RefAlpha('y');
+	*ch3 += new RefAlpha('z');
 
 	*ch1 += new RefAlpha('A');
 	*ch1 += new RefAlpha('b');
+
+	*ch1 += RefChain::makeStructTerm( ch3 );
+
 	*ch1 += new RefAlpha('c');
 	*ch1 += new RefAlpha('d');
 	*ch1 += new RefAlpha('e');
@@ -34,16 +43,20 @@ int main ( int argv, char **argc ) {
 	//*ch2 += new RefAlpha('A');
 	//*ch2 += new RefAlpha('b');
 	//*ch2 += new RefAlpha('c');
-	*ch2 += new RefVariable_e("c");
+	*ch2 += new RefVariable_e("1");
+	*ch2 += RefChain::makeStructTerm( ch3 );
+	*ch2 += new RefVariable_e("2");
 	//*ch2 += new RefAlpha('d');
-	*ch2 += new RefAlpha('e');
+	//*ch2 += new RefAlpha('e');
 
 	std::cout << "\n\n" ;
 	std::cout << ch1->debug() << "\n";
 	std::cout << ch2->debug() << "\n";
 	std::cout << "\n\n" ;
 
-	if (sess->matching(0, ch2, ch1, false, false)){
+
+	sess->createVarMap();
+	if (sess->matching(0, ch2, ch1, false)){
 		std::cout << "TRUE\n";
 	} else {
 		std::cout << "FALSE\n";

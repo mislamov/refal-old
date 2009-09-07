@@ -25,9 +25,8 @@
 #include "data.h"
 #include "poolTuples.h"
 
-class MatchState;
-
-class VarMap : public PooledTuple4<RefVariable*, RefData** , RefData** , MatchState*>{
+class VarMap : public PooledTuple3<RefVariable*, RefData** , RefData**>{
+	VarMap(const VarMap&){ AchtungERROR; };  // неконтроллируемое копирование нам не нужно
 public:
 	VarMap(void *own = 0) {        pool[0].i1 = (RefVariable*)own;    };
 
@@ -35,73 +34,120 @@ public:
     bool findByName(unistring name, RefData** &l, RefData** &r);
 
 	// ищет по ссылке на переменную ее облать видимости
-	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, MatchState *&matchState);
+	bool findByLink(RefVariable* var, RefData** &l, RefData** &r);
 
 	unistring debug();
 };
 
 
-// блок сопоставлений (откатываемый)
-class MatchState {
-    VarMap varmap; // карта сопоставления
-    RefData** view_l;   // аргумент сопоставления всего образца
-    RefData** view_r;
-public:
-	RefChain *tpl;
-
-	MatchState(RefData** ll, RefData** rr, RefChain *tl) {    view_l=ll;      view_r=rr;	tpl = tl;    };
-    // сохраняет состояние переменной
-    void saveVar(Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
-    void restoreVar(Session *s, RefVariable *varOrData, MatchState* &matchState, RefData **&l, RefData **&r);
-	bool findVar(RefVariable *var, RefData **&l, RefData **&r, MatchState* &matchState);
-	unistring debug();
-};
-
-
-// среда для вычисления пользовательской функции функции
+// среда для вычисления пользовательской функции
 class Session {
     TResult  result_sost;
 
-    RefData** current_view_l;
-    RefData** current_view_r;
+	PooledTuple2 <RefData**, RefData**>  current_view_borders; // активные view границы [для скобок]
+	//PooledTuple2 <RefData**, RefData**> deferred_view_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
+	//PooledTuple4 <RefData**, RefData**, RefData**, RefData**>  current_templ_borders; // активные view границы [для скобок] + точки выхода
+	//PooledTuple2 <RefData**, RefData**> deferred_templ_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
 
-    std::stack<MatchState*>  matchStates; // цепочка подсопоставлений
+	PooledStack<VarMap*>  varMapStack; // карты переменных
 
 public:
+	inline void createVarMap(){ varMapStack.put(new VarMap()); };
+
+	inline RefData** current_view_l(){ return current_view_borders.top1(); };
+	inline RefData** current_view_r(){ return current_view_borders.top2(); };
+	//inline RefData** current_templ_l(){ return current_templ_borders.top1(); };
+	//inline RefData** current_templ_r(){ return current_templ_borders.top2(); };
+
 	// сопоставление образца tmplate с аргументом l..r
-    bool  matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching, bool isRevers);
+    bool  matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching);
 
 	// готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
-    RefChain*  substituteExpression(RefChainSubstitution *);
+    RefChain*  substituteExpression(RefChainConstructor *);
 
 	void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r); // сохраняет состояние переменной
 	void RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r); // восстанавливает состояние переменной
-	RefData** getTopBoard(){ return current_view_r+1; };
 
-	MatchState* saveCurrentState(RefData** ll, RefData** rr, RefChain *tpl); // сохраняет и возвращает ссылку на состояние сопоставления
+	inline void saveVar    (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
+    inline void restoreVar (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
+	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r);
+
 	unistring debug();
 
-	void MOVE_TO_next_term(RefData** &p);
-	void MOVE_TO_pred_term(RefData** &p);
+	inline void MOVE_TO_next_term (RefData** &p);
+	inline void MOVE_TO_pred_term (RefData** &p);
+	inline void MOVE_TO_next_template (RefData** &p);
+	inline void MOVE_TO_pred_template (RefData** &p);
 
+	//inline void setNewView(); - должно передаваться в аргументе matching'а
+	//inline void setNewTempl(RefChain* ch);
 };
 
 
-inline void MatchState::saveVar(Session *s, RefVariable *varOrData, RefData **&l, RefData **&r) {
-    varmap.put(varOrData, l, r, 0);
+inline void Session::saveVar(Session *s, RefVariable *varOrData, RefData **&l, RefData **&r) {
+	varMapStack.top()->put(varOrData, l, r);
 };
 
-inline void MatchState::restoreVar(Session *s, RefVariable *varOrData, MatchState* &matchState, RefData **&l, RefData **&r) {
-    varmap.top_pop(varOrData, l, r, matchState);
+inline void Session::restoreVar(Session *s, RefVariable *varOrData, RefData **&l, RefData **&r) {
+    varMapStack.top()->top_pop(varOrData, l, r);
 };
 
-inline bool MatchState::findVar(RefVariable *var, RefData **&l, RefData **&r, MatchState* &matchState) {
-	return varmap.findByLink(var, l, r, matchState);
+inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r) {
+	return varMapStack.top()->findByLink(var, l, r);
+};
+
+/*
+inline void Session::JUMP_View (RefChain* ch, RefData** outL, RefData** outR){		// прыгаем в подцепочку данных (скобка)
+	if (ch->isEmpty()){
+		current_view_borders.put(0, 0, outL, outR);
+		return;
+	}
+	current_view_borders.put((*ch)[0], (*ch)[-1], outL, outR);
 };
 
 
+inline void Session::JUMP_Template (RefChain* tp, RefData** outL, RefData** outR){	// прыгаем в подшаблон (скобка/usertype-переменная)
+	if (tp->isEmpty()){
+		current_templ_borders.put(0, 0, outL, outR);
+		return;
+	}
+	current_templ_borders.put((*tp)[0], (*tp)[-1], outL, outR);
+};
+*/
 
+void Session::MOVE_TO_next_term(RefData** &p){
+	if (p == current_view_r() || !p) {
+		p = 0;
+		return;
+	}
+	++p;
+};
 
+void Session::MOVE_TO_pred_term(RefData** &p){
+	if (p == current_view_l() || !p) {
+		p = 0;
+		return;
+	}
+	--p;
+};
+
+void Session::MOVE_TO_next_template(RefData** &p){
+/*	if (p == current_view_r() || !p) {
+		if (current_view_borders.getLength()==1){
+			p = 0;
+		} else {
+			RefData **a, **b, **c, **d;
+			current_view_borders.top_pop(a, b, c, d);
+			deferred_view_borders.put(a, b);
+			p = d;
+		}
+		return;
+	}*/
+	++p;
+};
+void Session::MOVE_TO_pred_template(RefData** &p){
+	--p;
+};
 
 
 

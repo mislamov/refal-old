@@ -69,6 +69,7 @@ class RefTemplBracket : public RefData {
 
 
 class RefStructBrackets : public RefDataBracket {
+public:
 	inline RefStructBrackets(RefChain* thechain) : RefDataBracket(thechain){};
 	unistring explode();
 
@@ -77,6 +78,7 @@ class RefStructBrackets : public RefDataBracket {
 };
 
 class RefExecBrackets : public RefDataBracket {
+public:
 	inline RefExecBrackets(RefChain* thechain) : RefDataBracket(thechain){};
 	unistring explode();
 
@@ -106,18 +108,19 @@ public:
 	inline bool isEmpty(){ return (leng==0); }
 
 	unistring debug();
+	unistring explode();
 };
 
 
 
 // подстановка - цепочка без открытых переменных для генереации результатного объектного выражения
-class RefChainSubstitution : public RefChain {
+class RefChainConstructor : public RefChain {
 };
 
 
 //#define MOVE_TO_next_term(p) (++p); - в Session
 //#define MOVE_TO_pred_term(p) (--p); - в Session
-#define MOVE_TO_next_template(p) (++p);
-#define MOVE_TO_pred_template(p) (--p);
+//#define MOVE_TO_next_template(p) (++p); - в Session
+//#define MOVE_TO_pred_template(p) (--p); - в Session
 
 #endif

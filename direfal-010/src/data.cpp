@@ -19,7 +19,7 @@
 #include "data.h"
 //#include "symbols.h"
 //#include "sentence.h"
-//#include "session.h"
+#include "session.h"
 
 #include <stdlib.h>
 #include <iostream>
@@ -84,6 +84,18 @@ unistring RefChain::debug(){
 			return result;
 };
 
+unistring RefChain::explode(){
+		    unistring result = "";
+
+			for (size_t i=0; i<leng; i++) {
+				#ifdef TESTCODE
+					if (! first[i]) AchtungERROR;
+				#endif
+				result += first[i]->explode();
+			}
+			return result;
+};
+
 unistring RefStructBrackets::explode(){		return "(" + chain->explode() + ") ";	};
 unistring RefExecBrackets::explode(){	return "<" + chain->explode() + "> ";	};
 
@@ -92,9 +104,21 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefDat
     s->MOVE_TO_next_term(r);
 	RefStructBrackets *br;
 	
-	if (r && (br=ref_dynamic_cast<RefStructBrackets>(*r)))
+	// if (br->chain == this->chain) GO;  - проверить сильно оптимизирует ли
+
+	if (r && (br=ref_dynamic_cast<RefStructBrackets>(*r)) && s->matching(0, this->chain, br->chain, false)) {
+		s->MOVE_TO_next_template(tpl);
+		return GO;
+	}
+	s->MOVE_TO_pred_template(tpl);
+	return BACK;
+
+
 };
 TResult RefStructBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+	// if (br->chain == this->chain) BACK;  - проверить сильно оптимизирует ли. только в сочентании с частью в init!
+	AchtungERROR;
+	return BACK;
 };
 
 
