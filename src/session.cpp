@@ -16,7 +16,7 @@ unistring getTextOfChain(RefData** from, RefData** to){
 };
 
 #define LOGSTEP(s) \
-	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, (*arg)[-1])) << "\n" << std::flush;
+	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg->isEmpty()?0:(*arg)[-1])) << "\n" << std::flush;
 
 
 
@@ -33,16 +33,17 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
 
     if (isdemaching) {
         // продолжаем ранее успешное сопоставление
-		AchtungERROR;
-        //result_sost = BACK;
-        //activeTemplate = tmplate->get_last();
+		if (tmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
+        result_sost = BACK;
+		activeTemplate = tmplate->isEmpty() ? 0 : (*tmplate)[-1];
+		current_view_borders.put((*arg)[0], (arg->isEmpty() ? 0 : (*arg)[-1]) );
     } else {
         // начинаем новое сопоставление с argl..argr
+		if (tmplate->isEmpty()) return arg->isEmpty(); // дематчинг пустых векторов - неудача
         result_sost = GO;
 		l = 0;
 		r = arg->isEmpty() ? 0 : (*arg)[0]-1 ;
         activeTemplate = (*tmplate)[0];
-		if (!activeTemplate && !r) return true;
 		current_view_borders.put((*arg)[0], (arg->isEmpty() ? 0 : (*arg)[-1]) );
     }
 

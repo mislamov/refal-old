@@ -58,6 +58,20 @@ RefChain& RefChain::operator+=(RefData *ch) {
     return *this;
 };
 
+RefChain& RefChain::operator+=(RefChain *ch) {
+	sysize += ch->leng;
+	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
+	//LOG("realloc");
+	if (! first) RUNTIMEERROR("membuffer", "memory limit");
+	memcpy(first+leng, ch->first, sizeof(RefData*)*(ch->leng));
+	leng += ch->leng;
+	delete ch;
+	ch = 0;
+	return *this;
+};
+
+
+
 RefData** RefChain::operator[](signed long idx) {
 #ifdef TESTCODE
 	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng)) 
@@ -105,6 +119,7 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 	RefStructBrackets *br;
 	
 	if (r && (br=ref_dynamic_cast<RefStructBrackets>(*r)) && (/*br->chain == this->chain ||*/ s->matching(0, this->chain, br->chain, false))) {
+		s->saveBracketsFromView(this, (RefStructBrackets**)r);
 		s->MOVE_TO_next_template(tpl);
 		return GO;
 	}
@@ -115,7 +130,13 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 };
 TResult RefStructBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
 	// if (br->chain == this->chain) BACK;  - проверить сильно оптимизирует ли. только в сочентании с частью в init!
-	AchtungERROR;
+	RefStructBrackets* br = *(s->restoreBracketsFromView(this));
+
+	if (s->matching(0, this->chain, br->chain, true)){
+		s->MOVE_TO_next_template(tpl);
+		return GO;
+	}
+	s->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
 
@@ -126,3 +147,8 @@ TResult RefExecBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData 
 TResult RefExecBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
 	AchtungERROR;
 };
+
+
+
+
+

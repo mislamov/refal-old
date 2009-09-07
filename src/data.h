@@ -53,6 +53,11 @@ public:
     inline void setName(unistring s) {        name = s;    };
 };
 
+class RefLinkToVariable : public RefData {
+	unistring varname;
+
+};
+
 
 class RefDataBracket : public RefData {
 public:
@@ -100,6 +105,7 @@ public:
 	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
 
 	RefChain& operator+=(RefData  *ch);
+	RefChain& operator+=(RefChain *ch);
 	RefData** operator[](signed long idx);
 
 	static RefStructBrackets* makeStructTerm(RefChain *ch){ return new RefStructBrackets(ch); }
@@ -116,6 +122,7 @@ public:
 // подстановка - цепочка без открытых переменных для генереации результатного объектного выражения
 class RefChainConstructor : public RefChain {
 };
+
 
 
 //#define MOVE_TO_next_term(p) (++p); - в Session
