@@ -40,7 +40,7 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         l = r;
     }
 
-	if (!r || (void*)r == (void*)s->current_view_r()) {
+	if (!r) {
         s->MOVE_TO_pred_template(tpl);
         return BACK;
     };

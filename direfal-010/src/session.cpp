@@ -42,6 +42,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
 		l = 0;
 		r = arg->isEmpty() ? 0 : (*arg)[0]-1 ;
         activeTemplate = (*tmplate)[0];
+		if (!activeTemplate && !r) return true;
 		current_view_borders.put((*arg)[0], (arg->isEmpty() ? 0 : (*arg)[-1]) );
     }
 
@@ -66,7 +67,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
         }
         case BACK: {
 			if (activeTemplate==(*tmplate)[0]-1){ // достигнут левый край сопоставления! DataDOT
-				++activeTemplate; // ?
+				MOVE_TO_next_template( activeTemplate ); // ?
 				result_sost = FAIL;
 				break;
 			}
