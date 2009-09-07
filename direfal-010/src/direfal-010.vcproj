@@ -185,6 +185,10 @@
 				Name="system"
 				>
 				<File
+					RelativePath=".\symbols.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\system.cpp"
 					>
 				</File>

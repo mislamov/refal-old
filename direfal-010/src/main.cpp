@@ -27,28 +27,21 @@ int main ( int argv, char **argc ) {
 	RefChain *ch3 = new RefChain();
 	RefChain *ch4 = new RefChain();
 
+	ch3 = textToChain("xyz");
+	ch4 = textToChain("x");
+	*ch4 += new RefVariable_t("yyy");
+	*ch4 += textToChain("z");
 
-//	*ch3 += new RefAlpha('x');
-//	*ch3 += new RefAlpha('y');
-//	*ch3 += new RefAlpha('z');
-
-	*ch1 += new RefAlpha('A');
-	*ch1 += new RefAlpha('b');
-
+	ch1 = textToChain("Ab");
 	*ch1 += RefChain::makeStructTerm( ch3 );
+	*ch1 += textToChain("cde");
 
-	*ch1 += new RefAlpha('c');
-	*ch1 += new RefAlpha('d');
-	*ch1 += new RefAlpha('e');
-
-	//*ch2 += new RefAlpha('A');
-	//*ch2 += new RefAlpha('b');
-	//*ch2 += new RefAlpha('c');
 	*ch2 += new RefVariable_e("1");
-	*ch2 += RefChain::makeStructTerm( ch3 );
-	*ch2 += new RefVariable_e("2");
-	//*ch2 += new RefAlpha('d');
-	//*ch2 += new RefAlpha('e');
+	*ch2 += new RefVariable_s("yy");
+	//*ch2 += new RefVariable_e("2");
+	*ch2 += new RefAlpha('c');
+	*ch2 += new RefAlpha('d');
+	*ch2 += new RefAlpha('e');
 
 	std::cout << "\n\n" ;
 	std::cout << ch1->debug() << "\n";

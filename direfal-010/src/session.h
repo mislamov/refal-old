@@ -50,7 +50,7 @@ class Session {
 	//PooledTuple2 <RefData**, RefData**> deferred_templ_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
 
 	PooledStack<VarMap*>  varMapStack; // карты переменных
-
+	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
 public:
 	inline void createVarMap(){ varMapStack.put(new VarMap()); };
 
@@ -71,6 +71,19 @@ public:
 	inline void saveVar    (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
     inline void restoreVar (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
 	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r);
+
+	inline void saveBracketsFromView(RefStructBrackets* tpl, RefStructBrackets** br){
+		bracks.put(tpl, br);
+	};
+	inline RefStructBrackets** restoreBracketsFromView(RefStructBrackets* tpl){
+		RefStructBrackets **br  = 0;
+		RefStructBrackets* tpl2 = 0;
+		bracks.top_pop(tpl2, br);
+		#ifdef TESTCODE
+		if (tpl2 != tpl) AchtungERROR;
+		#endif
+		return br;
+	};
 
 	unistring debug();
 
