@@ -53,19 +53,13 @@ public:
     inline void setName(unistring s) {        name = s;    };
 };
 
-class RefLinkToVariable : public RefData {
-	unistring varname;
-
-};
 
 
 class RefDataBracket : public RefData {
 public:
 	RefChain *chain;
 
-	RefDataBracket(RefChain *thechain) : RefData(){
-		chain = thechain;
-	};
+	RefDataBracket(RefChain *thechain) : RefData(){		chain = thechain;	};
 };
 
 
@@ -93,6 +87,8 @@ public:
 
 
 class RefChain : public RefObject {
+friend bool eq(RefChain *, RefChain *);
+
 	RefData** first;
 	size_t leng;
 	size_t sysize;
@@ -104,17 +100,48 @@ public:
 	RefChain(RefData *);			// цпочка из одного терма
 	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
 
-	RefChain& operator+=(RefData  *ch);
-	RefChain& operator+=(RefChain *ch);
-	RefData** operator[](signed long idx);
+	RefChain&  operator+=(RefData  *ch);
+	RefChain&  operator+=(RefChain *ch); // удаляет *ch и обнуляет ch
+	RefChain&  operator+=(RefChain  ch); // только копирует *ch
+	RefData**  operator[](signed long idx);
+
+	RefVariable** findVariable(unistring vname);
 
 	static RefStructBrackets* makeStructTerm(RefChain *ch){ return new RefStructBrackets(ch); }
-
 
 	inline bool isEmpty(){ return (leng==0); }
 
 	unistring debug();
 	unistring explode();
+};
+
+inline RefChain*  operator+ (RefChain* x, RefChain y){
+	RefChain *res = new RefChain();
+	*res += x;
+	*res += y;
+	return res;
+};
+
+inline RefChain*  operator+ (RefData* x, RefData &y){
+	RefChain *res = new RefChain();
+	*res += x;
+	*res += &y;
+	return res;
+};
+
+inline RefChain*  operator+ (RefData &x, RefData &y){
+	RefChain *res = new RefChain();
+	*res += &x;
+	*res += &y;
+	return res;
+};
+
+
+inline RefChain*  operator+ (RefChain* x, RefData &y){
+	RefChain *res = new RefChain();
+	*res += x;
+	*res += &y;
+	return res;
 };
 
 
@@ -125,9 +152,47 @@ class RefChainConstructor : public RefChain {
 
 
 
+class RefLinkToVariable : public RefData {
+	RefVariable *lnk;
+	unistring path;
+public:
+
+	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+	inline unistring explode(){ return "@."+lnk->getName(); };
+
+	inline RefLinkToVariable(RefVariable *ln){lnk=ln; path=EmptyUniString; };
+	inline RefLinkToVariable(unistring varName, RefChain *chain){
+		RefVariable** cv = chain->findVariable(varName);
+		if (!cv) SYSTEMERROR("can't find variable '" << varName << "' in " << chain->debug());
+		lnk=*cv; 
+		path=EmptyUniString;
+	};
+
+	inline RefLinkToVariable(unistring varName, RefChain *chain, unistring thepath){
+		RefLinkToVariable::RefLinkToVariable(varName, chain);
+		path = thepath;
+	};
+
+};
+
+
+inline unistring getTextOfChain(RefData** from, RefData** to){
+	if (!from || !*from) return "[null]";
+	if (!to || (to-from)<0 || (to-from)>1024) return "[error string]";
+	unistring res = "";
+	int i = 0;
+	while(from+i <= to){
+		if(from[i]) res += from[i]->debug();
+		++i;
+	}
+	return res;
+};
+
+
 //#define MOVE_TO_next_term(p) (++p); - в Session
 //#define MOVE_TO_pred_term(p) (--p); - в Session
-//#define MOVE_TO_next_template(p) (++p); - в Session
+//#define s->MOVE_TO_next_template(p) (++p); - в Session
 //#define MOVE_TO_pred_template(p) (--p); - в Session
 
 #endif

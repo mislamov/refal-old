@@ -71,6 +71,7 @@ public:
 	inline void saveVar    (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
     inline void restoreVar (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
 	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r);
+	inline bool getVariableValue(RefVariable*, RefData**&, RefData**&);
 
 	inline void saveBracketsFromView(RefStructBrackets* tpl, RefStructBrackets** br){
 		bracks.put(tpl, br);
@@ -128,7 +129,7 @@ inline void Session::JUMP_Template (RefChain* tp, RefData** outL, RefData** outR
 };
 */
 
-void Session::MOVE_TO_next_term(RefData** &p){
+inline void Session::MOVE_TO_next_term(RefData** &p){
 	if (p == current_view_r() || !p) {
 		p = 0;
 		return;
@@ -136,7 +137,7 @@ void Session::MOVE_TO_next_term(RefData** &p){
 	++p;
 };
 
-void Session::MOVE_TO_pred_term(RefData** &p){
+inline void Session::MOVE_TO_pred_term(RefData** &p){
 	if (p == current_view_l() || !p) {
 		p = 0;
 		return;
@@ -144,7 +145,7 @@ void Session::MOVE_TO_pred_term(RefData** &p){
 	--p;
 };
 
-void Session::MOVE_TO_next_template(RefData** &p){
+inline void Session::MOVE_TO_next_template(RefData** &p){
 /*	if (p == current_view_r() || !p) {
 		if (current_view_borders.getLength()==1){
 			p = 0;
@@ -158,10 +159,14 @@ void Session::MOVE_TO_next_template(RefData** &p){
 	}*/
 	++p;
 };
-void Session::MOVE_TO_pred_template(RefData** &p){
+inline void Session::MOVE_TO_pred_template(RefData** &p){
 	--p;
 };
 
+
+inline bool Session::getVariableValue(RefVariable* var, RefData** &l, RefData** &r){
+	return findVar(var, l, r);
+};
 
 
 #endif

@@ -27,21 +27,18 @@ int main ( int argv, char **argc ) {
 	RefChain *ch3 = new RefChain();
 	RefChain *ch4 = new RefChain();
 
-	ch3 = textToChain("xyz");
-	ch4 = textToChain("x");
-	*ch4 += new RefVariable_t("yyy");
-	*ch4 += textToChain("z");
-
-	ch1 = textToChain("Ab");
-	*ch1 += RefChain::makeStructTerm( ch3 );
-	*ch1 += textToChain("cde");
-
-	*ch2 += new RefVariable_e("1");
-	*ch2 += new RefVariable_s("yy");
-	//*ch2 += new RefVariable_e("2");
-	*ch2 += new RefAlpha('c');
-	*ch2 += new RefAlpha('d');
-	*ch2 += new RefAlpha('e');
+	ch1 = textToChain("abcdefghABCDefGH");
+	ch2 = 
+		(new RefVariable_e("1")) +
+		*(new RefAlpha('d')) +
+		*(new RefVariable_e("0")) +
+		*(new RefVariable_e("2"));
+	*ch2 +=
+		*(new RefAlpha('D')) +
+		*(new RefLinkToVariable("0", ch2)) +
+		*(new RefAlpha('G')) +
+		*(new RefVariable_e("3")) +
+		*(new RefAlpha('G')) ;
 
 	std::cout << "\n\n" ;
 	std::cout << ch1->debug() << "\n";
@@ -55,6 +52,10 @@ int main ( int argv, char **argc ) {
 	} else {
 		std::cout << "FALSE\n";
 	}
+	std::cout << ch1->debug() << "\n";
+	std::cout << ch2->debug() << "\n";
+		
+	std::cout << sess->debug();
 
 	return 0;
 }
