@@ -2,19 +2,6 @@
 
 #include "function.h"
 
-
-unistring getTextOfChain(RefData** from, RefData** to){
-	if (!from || !*from) return "[null]";
-	if (!to || (to-from)<0 || (to-from)>1024) return "[error string]";
-	unistring res = "";
-	int i = 0;
-	while(from+i <= to){
-		if(from[i]) res += from[i]->debug();
-		++i;
-	}
-	return res;
-};
-
 #define LOGSTEP(s) \
 	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg->isEmpty()?0:(*arg)[-1])) << "\n" << std::flush;
 
@@ -101,6 +88,13 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
             break;
         }
     };
+};
+
+
+unistring Session::debug(){
+		std::ostringstream s;
+		s << varMapStack.top()->debug();
+		return s.str();
 };
 
 /*
