@@ -14,6 +14,9 @@
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 // Политика управления varMapб current_LR задается из вне.
 bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching) {
+#ifdef TESTCODE
+	if (! varMapStack.getCount()) SYSTEMERROR("createVarMap() wanted! No varmaps in stack for matching");
+#endif
 
 	LOG("New MATCHING : tmplateChain=" << tmplate->debug() << "  isDematching="<<isdemaching);
     RefData **activeTemplate = 0, **l=0, **r=0;
@@ -163,4 +166,41 @@ void Session::RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData*
         if (!var) SYSTEMERROR("not var restoring!");
 
         restoreVar(this, var, l, r); // для польз-переменной varMatchState хранит ее подсессию
+};
+
+
+// TODO: оптимизировать!
+RefChain*  Session::substituteExpression(RefChainConstructor *chain){
+	if (! chain->leng) return new RefChain();
+
+	RefChain *result = new RefChain(chain->leng);
+	RefLinkToVariable *link = 0;
+	RefDataBracket   *brack = 0;
+	RefData **enditem = (*chain)[-1]+1;
+	for(RefData **item = (*chain)[0]; item < enditem; ++item){
+		link = ref_dynamic_cast<RefLinkToVariable>(*item);
+		if (link){
+			RefData **endi, **i;
+			getVariableValue(link->lnk, i, endi);
+			++endi;
+			for( ; i < endi; ++i){
+				*result += *i;
+			}
+
+			continue;
+		}
+		brack = ref_dynamic_cast<RefDataBracket>(*item);
+		if (brack){
+			if (ref_dynamic_cast<RefStructBrackets>(brack)){
+				*result +=  new RefStructBrackets( substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
+			} else {
+				// RefExecBracket
+				*result +=  new RefExecBrackets( substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
+			}
+
+			continue;
+		}
+		*result += *item;
+	}
+	return result;
 };

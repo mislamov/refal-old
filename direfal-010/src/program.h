@@ -20,9 +20,11 @@
 #define PROGRAM_H_INCLUDED
 
 #include <map>
+#include <stack>
 
 #include "config.h"
 #include "data.h"
+#include "function.h"
 
 
 class RefModuleBase;
@@ -33,26 +35,50 @@ class RefProgram {
 public:
 	RefProgram();
 	void regModule(RefModuleBase *); // регистрация модуля в программе (перед загрузкой)
-    RefChain*  executeExpression (RefChain *); // вычисляет цепочку
+    RefChain*  executeExpression (RefChain* ); // вычисляет цепочку
+	RefFunctionBase *findFunction(RefData*  ); // ищет функцию в модулях по id
+
+	RefData* createSymbolByCode(unistring code, unistring value);
+	RefData* createVariableByTypename(unistring code, unistring value);
+
 };
 
 // модуль
 class RefModuleBase {
+    std::map<unistring, RefObject*> objects;
 public:
+	RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
+    void setObjectByName(unistring name, RefObject* o){objects[name] = o; };
     virtual unistring getName() =0;
 };
 
 class RefDllModule : public RefModuleBase {
-    std::map<unistring, RefObject*> objects;
 protected:
 	std::map<unistring, RefData*(*)(unistring)> dataConstructors;
 	std::map<unistring, RefData*(*)(unistring)> varConstructors;
 public:
-	RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
-    void setObjectByName(unistring name, RefObject* o){objects[name] = o; };
+	RefData* constructSymbol(unistring typecode, unistring value){
+		std::map<unistring, RefData*(*)(unistring)>::iterator iter = dataConstructors.find(typecode);
+		if (iter==dataConstructors.end()) return 0;
+		return (*iter->second)(value);
+	};
+	RefData* constructVariable(unistring typecode, unistring value){
+		std::map<unistring, RefData*(*)(unistring)>::iterator iter = varConstructors.find(typecode);
+		if (iter==varConstructors.end()) return 0;
+		return (*iter->second)(value);
+	};
+
 };
 
 class RefUserModule : public RefModuleBase {
+	unistring name;
+public:
+	RefUserModule(unistring thename){ name=thename; };
+	inline unistring getName(){ return name; };
+	unistring debug(){		return "@RefUserModule";	}
+
+    void initilizeAll(Session *){SYSTEMERROR("unrelised");};
+
 };
 
 #endif

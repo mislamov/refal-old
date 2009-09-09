@@ -172,6 +172,6 @@ TResult  RefSymbolBase<T, t>::back(RefData**&tpl, Session* s, RefData**&l, RefDa
 
 
 
-RefChain *textToChain(unistring str);
+RefChainConstructor *textToChain(unistring str);
 
 #endif
