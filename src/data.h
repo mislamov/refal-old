@@ -19,6 +19,8 @@
 #ifndef REF_DATA_H_INCLUDED
 #define REF_DATA_H_INCLUDED
 
+#include <string>
+
 #include "config.h"
 
 class RefChain;
@@ -88,6 +90,8 @@ public:
 
 class RefChain : public RefObject {
 friend bool eq(RefChain *, RefChain *);
+friend class Session;
+
 
 	RefData** first;
 	size_t leng;
@@ -110,10 +114,13 @@ public:
 	static RefStructBrackets* makeStructTerm(RefChain *ch){ return new RefStructBrackets(ch); }
 
 	inline bool isEmpty(){ return (leng==0); }
+	inline size_t getLength(){ return leng; }
 
 	unistring debug();
 	unistring explode();
 };
+
+
 
 inline RefChain*  operator+ (RefChain* x, RefChain y){
 	RefChain *res = new RefChain();
@@ -121,6 +128,7 @@ inline RefChain*  operator+ (RefChain* x, RefChain y){
 	*res += y;
 	return res;
 };
+
 
 inline RefChain*  operator+ (RefData* x, RefData &y){
 	RefChain *res = new RefChain();
@@ -146,34 +154,84 @@ inline RefChain*  operator+ (RefChain* x, RefData &y){
 
 
 
+
+
 // подстановка - цепочка без открытых переменных для генереации результатного объектного выражения
 class RefChainConstructor : public RefChain {
 };
 
 
 
-class RefLinkToVariable : public RefData {
+inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefChain y){
+	RefChainConstructor *res = new RefChainConstructor();
+	*res += x;
+	*res += y;
+	return res;
+};
+
+inline RefChainConstructor*  operator+ (RefChain* x, RefChainConstructor y){
+	RefChainConstructor *res = new RefChainConstructor();
+	*res += x;
+	*res += y;
+	return res;
+};
+
+inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefChainConstructor y){
+	RefChainConstructor *res = new RefChainConstructor();
+	*res += x;
+	*res += y;
+	return res;
+};
+
+inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefData &y){
+	RefChainConstructor *res = new RefChainConstructor();
+	*res += x;
+	*res += &y;
+	return res;
+};
+
+
+
+
+// интерфейс для элементов, которые необходимо проинициализировать перед использованием
+class NeedInitilize {
+public:
+    virtual bool initize(Session *, RefObject* ) = 0;
+};
+
+class RefLinkToVariable : public RefData, public NeedInitilize {
+	friend class Session;
 	RefVariable *lnk;
 	unistring path;
 public:
 
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-	inline unistring explode(){ return "@."+lnk->getName(); };
+	inline unistring explode(){ return " @."+lnk->getName()+" "; };
 
 	inline RefLinkToVariable(RefVariable *ln){lnk=ln; path=EmptyUniString; };
-	inline RefLinkToVariable(unistring varName, RefChain *chain){
-		RefVariable** cv = chain->findVariable(varName);
-		if (!cv) SYSTEMERROR("can't find variable '" << varName << "' in " << chain->debug());
-		lnk=*cv; 
-		path=EmptyUniString;
+	inline RefLinkToVariable(unistring varName){
+		path = varName;
 	};
 
-	inline RefLinkToVariable(unistring varName, RefChain *chain, unistring thepath){
-		RefLinkToVariable::RefLinkToVariable(varName, chain);
-		path = thepath;
+	inline RefLinkToVariable(unistring varName, unistring thepath){
+		RefLinkToVariable::RefLinkToVariable(varName);
+		path += "/" + thepath;
 	};
 
+	inline bool initize(Session *sess, RefObject* obj){
+		RefChain *chain = ref_dynamic_cast<RefChain>(obj);
+		#ifdef TESTCODE
+		if (!chain) SYSTEMERROR("Expected RefChain to init LinkToVariable" );
+		#endif
+		size_t i = path.find("/");
+		unistring name = path.substr(0, i);
+		path = ((i==string::npos) ? EmptyUniString : path.substr(i, string::npos));
+		
+		lnk = chain->findVariable(name);
+		if (!lnk) SYSTEMERROR("Variable [" << name << "] not found in " << chain->debug());
+		return true;		
+	};
 };
 
 

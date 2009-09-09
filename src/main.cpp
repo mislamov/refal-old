@@ -17,45 +17,153 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "direfal.h"
+#include "SAXLoader.hpp"
+
+#include "stringutils.h"
+
+#ifdef WIN32
+#include <time.h>
+#endif
+
+/*
+int main ( int argv, char **argc ) {
+	RefChain *chain1 = new RefChain();
+	RefChain *chain2 = new RefChain();
+
+	chain1 = textToChain("abcDEFghiDEFJKLmno");
+	chain2 = 
+			textToChain("abc")+
+			*(new RefVariable_s("D"))+
+			*(new RefVariable_s("E"))+
+			*(new RefVariable_s("F"))+
+			*textToChain("ghi");
+	*chain2 +=
+		*(new RefLinkToVariable("D", chain2))+
+			*(new RefLinkToVariable("E", chain2))+
+			*(new RefLinkToVariable("F", chain2))+
+				*textToChain("JKLmno");
+
+	std::cout << chain1->debug()<< "\n" ;
+	std::cout << chain2->debug()<< "\n" ;
+
+	Session *sess = new Session();
+	sess->createVarMap();
+	if (sess->matching(0, chain2, chain1, false)){
+		std::cout << "true\n";
+	} else {
+		std::cout << "false\n";
+	}
+	std::cout << sess->debug() << "\n\n";
+
+	RefChainConstructor *chain3 = 
+		textToChain("begnin ")+
+		*(new RefLinkToVariable("E", chain2))+
+		*textToChain(" end");
+
+	std::cout << chain3->debug() << "\n" << 
+	sess->substituteExpression(chain3)->debug() << "\n";
+}
+*/
+
 
 int main ( int argv, char **argc ) {
-	RefProgram *program = new RefProgram();
-	Session *sess = new Session();
+char *xmlFile;
+RefUserModule *mod; 
 
-	RefChain *ch1 = new RefChain();
-	RefChain *ch2 = new RefChain();
-	RefChain *ch3 = new RefChain();
-	RefChain *ch4 = new RefChain();
+	RefProgram program;
 
-	ch1 = textToChain("abcdefghABCDefGH");
-	ch2 = 
-		(new RefVariable_e("1")) +
-		*(new RefAlpha('d')) +
-		*(new RefVariable_e("0")) +
-		*(new RefVariable_e("2"));
-	*ch2 +=
-		*(new RefAlpha('D')) +
-		*(new RefLinkToVariable("0", ch2)) +
-		*(new RefAlpha('G')) +
-		*(new RefVariable_e("3")) +
-		*(new RefAlpha('G')) ;
+    std::cout << REFVERSION << "\n" << std::flush;
+    if (argv == 1) {
+        std::cout << "Usage: "<<argc[0]<<" <file_name.ref>\n\n" << std::flush;
+        //return 0;
+        argc[1] = //"minitest.ref";
+            "fn.ref";
+    }
 
-	std::cout << "\n\n" ;
-	std::cout << ch1->debug() << "\n";
-	std::cout << ch2->debug() << "\n";
-	std::cout << "\n\n" ;
+    char
+    *pname   = argc[1],
+               *binpath = getenv("REFAL_HOME");
 
+    if (binpath == NULL) {
+        SYSTEMERROR("Define REFAL_HOME variable into your environment");
+    }
+    std::string refal_dir = binpath;
 
-	sess->createVarMap();
-	if (sess->matching(0, ch2, ch1, false)){
-		std::cout << "TRUE\n";
+    if (refal_dir.at(refal_dir.length()-1) != '\\') {
+        refal_dir += '\\';
+    }
+
+    std::ostringstream ss0, ss1, ss2;
+    //std::cout << ss.str() << std::flush;
+
+    int err = 0;
+    if (! strstr(pname, ".xml")) {
+        ss0 << ".\\refgo.exe -e "  << "refal_scaner " << pname << "\n";
+        ss1 << refal_dir << "refgo -e " << refal_dir << "refal_scaner " << pname << "\n";
+        ss2 << pname << ".xml";
+    } else {
+        ss2 << pname;
+    }
+
+    err =  system(ss1.str().c_str());
+    if (err) {
+        err = system(ss0.str().c_str());
+        if (err) {
+            std::cout << ss0.str().c_str() << std::flush;
+            std::cout << ss1.str().c_str() << "\n" << std::flush;
+            return err;
+        }
+#ifdef DEBUG
+		LOG("program: " << ss0.str());
+#endif
+
 	} else {
-		std::cout << "FALSE\n";
+#ifdef DEBUG
+		LOG("program: " << ss1.str());
+#endif
 	}
-	std::cout << ch1->debug() << "\n";
-	std::cout << ch2->debug() << "\n";
-		
-	std::cout << sess->debug();
 
-	return 0;
+    xmlFile = new char[256];
+    strncpy(xmlFile, ss2.str().c_str(), 255);
+
+    Session *s = new Session();
+
+    mod = new RefUserModule(getModuleNameFromFileName(xmlFile));
+    err = loadModuleFromXmlFile ( mod, &program, xmlFile );
+    if (err) return err;
+    #ifdef DEBUG
+    std::cout << mod->debug() << "\n";
+    #endif
+
+//    time_t starttime, stoptime;
+//    time ( &starttime );
+
+#ifdef TESTCODE
+//    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
+//    std::cout << "program-data-size: " << co::datacount << "\n" << std::flush;
+//    std::cout << "program-obj-size : " << co::ocount << "\n============================================\n" << std::flush;
+#endif
+
+    RefChain *polez = new RefChain();
+
+	*polez += new RefExecBrackets(new RefChain(new RefWord ( "Go" )));
+
+	RefChain *result = program.executeExpression( polez );
+
+//    time ( &stoptime );
+    std::cout << "============================================\nTime: " 
+	//<< stringtime(localtime (&stoptime)) << "\n"
+//	<< difftime(stoptime, starttime) << " sec.\n" 
+	<< std::flush;
+    std::cout << "Result: " << result->debug() << "\n";
+
+    delete result;
+#ifdef TESTCODE
+//    std::cout << "datas in mem: " << co::datacount << "\n";
+//    std::cout << "objts in mem: " << co::ocount << "\n";
+#endif
+
+
+    return 0;
+
 }
