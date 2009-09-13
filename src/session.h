@@ -43,6 +43,7 @@ public:
 // среда для вычисления пользовательской функции
 class Session {
     TResult  result_sost;
+	RefProgram *program;
 
 	PooledTuple2 <RefData**, RefData**>  current_view_borders; // активные view границы [для скобок]
 	//PooledTuple2 <RefData**, RefData**> deferred_view_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
@@ -52,6 +53,7 @@ class Session {
 	PooledStack<VarMap*>  varMapStack; // карты переменных
 	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
 public:
+	inline Session(RefProgram *p){ program = p; }; 
 	inline void createVarMap(){ varMapStack.put(new VarMap()); };
 	inline VarMap* poptopVarMap(){ return varMapStack.top_pop(); };
 

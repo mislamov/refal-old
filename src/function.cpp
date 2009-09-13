@@ -48,3 +48,38 @@ unistring RefUserFunction::debug(){
 	result += "}";
 	return result;
 };
+
+
+TResult RefUserCondition::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+	if (! ref_dynamic_cast<RefTemplateBase>(this->own)){
+		if (r != s->current_view_r()){ // только в шаблоне условие может проверяться в середине аргумента
+			s->MOVE_TO_pred_template(tpl);
+			return BACK;
+		}
+	}
+
+	RefChain *rp, *rpp = s->substituteExpression(this->rightPart);
+	rp = s->program->executeExpression(rpp, s);
+	if (rp!=rpp) delete rpp;
+
+	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], false)){
+		s->saveConditionArg(this, rp); // сохраняем аргумент условия для возможного отката
+		s->MOVE_TO_next_template(tpl);
+		return GO;
+	}
+	s->MOVE_TO_pred_template(tpl);
+	return BACK;
+};
+
+
+TResult RefUserCondition::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+	RefChain *rp  =  s->restoreConditionArg(this);
+	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], true)){
+		s->saveConditionArg(this, rp); // возвращаем аргумент условия в хранилище
+		s->MOVE_TO_next_template(tpl);
+		return GO;
+	}
+	delete rp; // аргумент условия для отката больше не нужен
+	s->MOVE_TO_pred_template(tpl);
+	return BACK;
+};
