@@ -3,7 +3,7 @@
 #include "function.h"
 
 #define LOGSTEP(s) \
-	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg->isEmpty()?0:(*arg)[-1])) << "\n" << std::flush;
+	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg_l?0:arg_r)) << "\n" << std::flush;
 
 
 
@@ -13,7 +13,7 @@
 // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 // Политика управления varMapб current_LR задается из вне.
-bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching) {
+bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, bool isdemaching) {
 #ifdef TESTCODE
 	if (! varMapStack.getCount()) SYSTEMERROR("createVarMap() wanted! No varmaps in stack for matching");
 #endif
@@ -26,15 +26,15 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
 		if (tmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
         result_sost = BACK;
 		activeTemplate = tmplate->isEmpty() ? 0 : (*tmplate)[-1];
-		current_view_borders.put((*arg)[0], (arg->isEmpty() ? 0 : (*arg)[-1]) );
+		current_view_borders.put(arg_l, (arg_l ? 0 : arg_r) );
     } else {
         // начинаем новое сопоставление с argl..argr
-		if (tmplate->isEmpty()) return arg->isEmpty(); // дематчинг пустых векторов - неудача
+		if (tmplate->isEmpty()) return !arg_l; // дематчинг пустых векторов - неудача
         result_sost = GO;
 		l = 0;
-		r = arg->isEmpty() ? 0 : (*arg)[0]-1 ;
+		r = arg_l ? 0 : arg_l-1 ;
         activeTemplate = (*tmplate)[0];
-		current_view_borders.put((*arg)[0], (arg->isEmpty() ? 0 : (*arg)[-1]) );
+		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
     }
 
 	while (true) {
@@ -45,7 +45,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefChain *arg, boo
         case GO: {
 			if (activeTemplate==(*tmplate)[-1]+1){ // достигнут правый край сопоставления! DataDOT
 				MOVE_TO_pred_template( activeTemplate ); // ?
-				result_sost = (r==(*arg)[-1]) ? SUCCESS : BACK;  // не двигали r вперед => сравниваем с (*arg)[-1]
+				result_sost = (r==arg_r) ? SUCCESS : BACK;  // не двигали r вперед => сравниваем с (*arg)[-1]
 				break;
 			}
             LOGSTEP("GO  ");

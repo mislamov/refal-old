@@ -24,6 +24,7 @@
 #include "config.h"
 
 class RefChain;
+class RefProgram;
 
 
 class RefObject {
@@ -55,6 +56,25 @@ public:
     inline void setName(unistring s) {        name = s;    };
 };
 
+class RefTemplateBase;
+
+// usertype-переменная
+class RefUserVar : public RefVariable {
+    unistring type;
+	RefTemplateBase *templ;
+public:
+	RefUserVar(){};
+	RefUserVar(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; };
+    CLASS_OBJECT_CAST(RefUserVarNotInit);
+
+	void setTempl(RefTemplateBase *ntempl){ templ = ntempl; };
+    unistring getType() {        return type;    };
+	void setType(unistring ntype) {      type = ntype;    };
+    unistring explode() {        return " @RefUserVar ";    };
+    bool operator ==(RefData &rd) {        return false;    };
+	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
+};
 
 
 class RefDataBracket : public RefData {
@@ -89,8 +109,8 @@ public:
 
 
 class RefChain : public RefObject {
-friend bool eq(RefChain *, RefChain *);
-friend class Session;
+	friend bool eq(RefChain *, RefChain *);
+	friend class Session;
 
 
 	RefData** first;
@@ -109,7 +129,7 @@ public:
 	RefChain&  operator+=(RefChain  ch); // только копирует *ch
 	RefData**  operator[](signed long idx);
 
-	RefVariable** findVariable(unistring vname);
+	//RefVariable** findVariable(unistring vname);
 
 	static RefStructBrackets* makeStructTerm(RefChain *ch){ return new RefStructBrackets(ch); }
 
@@ -118,6 +138,8 @@ public:
 
 	unistring debug();
 	unistring explode();
+
+	void compile(RefChain *, RefProgram * =0);
 };
 
 
@@ -193,13 +215,10 @@ inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefData &y){
 
 
 
-// интерфейс для элементов, которые необходимо проинициализировать перед использованием
-class NeedInitilize {
-public:
-    virtual bool initize(Session *, RefObject* ) = 0;
-};
 
-class RefLinkToVariable : public RefData, public NeedInitilize {
+class RefLinkToVariable : public RefData {
+	friend class RefChain;
+
 	friend class Session;
 	RefVariable *lnk;
 	unistring path;
@@ -207,31 +226,29 @@ public:
 
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-	inline unistring explode(){ return " @."+lnk->getName()+" "; };
+	inline unistring explode(){ return " @."+(lnk?lnk->getName():"$notinit")+" "; };
 
 	inline RefLinkToVariable(RefVariable *ln){lnk=ln; path=EmptyUniString; };
 	inline RefLinkToVariable(unistring varName){
 		path = varName;
+		lnk=0;
 	};
 
-	inline RefLinkToVariable(unistring varName, unistring thepath){
+/*	inline RefLinkToVariable(unistring varName, unistring thepath){
 		RefLinkToVariable::RefLinkToVariable(varName);
 		path += "/" + thepath;
 	};
 
-	inline bool initize(Session *sess, RefObject* obj){
-		RefChain *chain = ref_dynamic_cast<RefChain>(obj);
-		#ifdef TESTCODE
-		if (!chain) SYSTEMERROR("Expected RefChain to init LinkToVariable" );
-		#endif
+	inline bool initize(Session *sess, RefChain *chain){
 		size_t i = path.find("/");
 		unistring name = path.substr(0, i);
-		path = ((i==string::npos) ? EmptyUniString : path.substr(i, string::npos));
+		path = ((i==std::string::npos) ? EmptyUniString : path.substr(i, std::string::npos));
 		
-		lnk = chain->findVariable(name);
-		if (!lnk) SYSTEMERROR("Variable [" << name << "] not found in " << chain->debug());
+		RefVariable **var = chain->findVariable(name);
+		if (!var) SYSTEMERROR("Variable [" << name << "] not found in " << chain->debug());
+		lnk = *var;
 		return true;		
-	};
+	};*/
 };
 
 

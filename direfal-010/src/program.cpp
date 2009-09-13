@@ -37,51 +37,81 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 
 
 //TODO: оптимизировать - без рекурсии
-RefChain*  RefProgram::executeExpression (RefChain *chain){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
 	RefChain* result = new RefChain(chain->getLength());
 	for (RefData **iter=(*chain)[0], **iend = (*chain)[-1]+1; iter < iend; ++iter){
 		RefDataBracket *databr = ref_dynamic_cast<RefDataBracket>(*iter);
 		if (databr){
 			if (ref_dynamic_cast<RefStructBrackets>(databr)){
-				*result += new RefStructBrackets( executeExpression(databr->chain) );
+				*result += new RefStructBrackets( executeExpression(databr->chain, sess) );
 			} else {
 				#ifdef TESTCODE
 				if (! ref_dynamic_cast<RefExecBrackets>(databr)) AchtungERROR;
 				#endif
 				//RefExecBrackets
-				RefChain *arg = executeExpression(databr->chain); // вычисляем внутренние exec-скобки
+				RefChain *arg = executeExpression(databr->chain, sess); // вычисляем внутренние exec-скобки
 				if (arg->isEmpty()) SYSTEMERROR("Unexpected empty argument for function call-brackets! " << databr->chain->debug());
 				RefData **functionid = (*arg)[0];
 				//TODO: сделать привязку функциональных вызовов по именнованым областям
-				RefFunctionBase *func = this->findFunction(*functionid);
-				if (!func) RUNTIMEERROR((*functionid)->explode(), "Function not found in program");
-				//RefChain *fresult = func->
+				RefWord *fname = ref_dynamic_cast<RefWord>(*functionid);
+				RefFunctionBase *func = 0;
+				if (!fname || !(func = this->findFunction(fname->getValue()))){
+					RUNTIMEERROR((*functionid)->explode(), "Function not found in program");
+				}
+				RefChain *fresult;
+				if (arg->getLength() > 1){
+					fresult = func->eval((*arg)[1], (*arg)[-1], sess);
+				} else {
+					#ifdef TESTCODE
+					if (arg->getLength() != 1) AchtungERROR;
+					#endif
+					fresult = func->eval(0, 0, sess);
+				}
+				delete arg;
+				arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
+				delete fresult;
+				*result += arg;
+				delete arg;
 			}
 		} else {
-
+			*result += *iter;
 		}
 	}
+return result;
 };
 
-RefFunctionBase* RefProgram::findFunction(RefData *func_id){
-	unistring id;
-	if (! ref_dynamic_cast<RefWord>(func_id)){
-		RUNTIMEERROR(func_id->explode(), "only Compound-symbol supported!");
-	}
-	id = ((RefWord*)func_id)->getValue();
-
+RefFunctionBase* RefProgram::findFunction(unistring id){
 	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
 	RefModuleBase* mod = 0;
 
+	RefFunctionBase* obj;
 	while (modit != end){
 		mod = &(*modit->second);
-		RefObject* obj = mod->getObjectByName(id);
-		if (ref_dynamic_cast<RefFunctionBase>(obj)){
-			return (RefFunctionBase*)obj;
+		
+		if (obj = mod->getFunctionByName(id)){
+			return obj;
 		}
 		++modit;
 	};
 	RUNTIMEERROR("FindFunction", "function " << id << " not found in program");
+	return 0;
+};
+
+
+RefTemplateBase* RefProgram::findTemplate(unistring id){
+	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	RefModuleBase* mod = 0;
+
+	RefTemplateBase* obj;
+	while (modit != end){
+		mod = &(*modit->second);
+		
+		if (obj = mod->getTemplateByName(id)){
+			return obj;
+		}
+		++modit;
+	};
+	RUNTIMEERROR("FindTemplate", "template" << id << " not found in program");
 	return 0;
 };
 
@@ -130,11 +160,11 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 		} else {
 			usermod = dynamic_cast<RefUserModule*>(mod);
 			if (!usermod) SYSTEMERROR("unknown children of RefModuleBase");
-			RefObject *obj = usermod->getObjectByName(code);
-			if (obj){
-				RefTemplateBase *templ = ref_dynamic_cast<RefTemplateBase>(obj);
+			RefTemplateBase *tp = usermod->getTemplateByName(code);
+			if (tp){
+				RefTemplateBase *templ = ref_dynamic_cast<RefTemplateBase>(tp);
 				if (templ){
-					return new RefUserVarNotInit(templ, code, value);
+					return new RefUserVar(code, value);
 				}
 			} 
 		}
@@ -142,4 +172,38 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 	}
 
 	return 0;
+};
+
+void RefUserModule::initilizeAll(){
+	std::map<unistring, RefFunctionBase*>::iterator funit = functions.begin(), fend = functions.end();
+	std::map<unistring, RefTemplateBase*>::iterator tplit = templates.begin(), tend = templates.end();
+
+	while (tplit != tend){
+		tplit->second->initilizeAll();
+		++tplit;
+	}
+
+	while (funit != fend){
+		funit->second->initilizeAll();
+		++funit;
+	}
+
+};
+
+unistring RefUserModule::debug(){
+	unistring result = "\n@UserModule " + getName() + "\n";
+
+	std::map<unistring, RefFunctionBase*>::iterator funit = functions.begin(), fend = functions.end();
+	std::map<unistring, RefTemplateBase*>::iterator tplit = templates.begin(), tend = templates.end();
+
+	while (tplit != tend){
+		result += tplit->second->debug() + "\n";
+		++tplit;
+	}
+
+	while (funit != fend){
+		result += funit->second->debug() + "\n";
+		++funit;
+	}
+	return result;	
 };

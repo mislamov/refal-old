@@ -1,9 +1,11 @@
 #include "symbols.h"
 
-RefChainConstructor* textToChain(unistring str){
-	RefChainConstructor *res = new RefChainConstructor();
-	for (size_t i=0; i<str.length(); i++){
-		*res += new RefAlpha(str[i]);
+RefChainConstructor *textToChain(unistring str){
+	RefChainConstructor *ch = new RefChainConstructor();
+	size_t len = str.length();
+	for (size_t i=0; i<len; ++i){
+		*ch += new RefAlpha(str[i]);
 	}
-	return res;
+	return ch;
 };
+
