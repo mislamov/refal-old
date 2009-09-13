@@ -38,6 +38,9 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 
 //TODO: оптимизировать - без рекурсии
 RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
+	if (chain->isEmpty()) {
+		return chain; // new RefChain();
+	}
 	RefChain* result = new RefChain(chain->getLength());
 	for (RefData **iter=(*chain)[0], **iend = (*chain)[-1]+1; iter < iend; ++iter){
 		RefDataBracket *databr = ref_dynamic_cast<RefDataBracket>(*iter);
@@ -69,9 +72,8 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				}
 				delete arg;
 				arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
-				delete fresult;
-				*result += arg;
-				delete arg;
+				if (arg!=fresult) delete fresult;
+				*result += arg;  // arg уничтожен оператором +=
 			}
 		} else {
 			*result += *iter;

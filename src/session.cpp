@@ -2,9 +2,13 @@
 
 #include "function.h"
 
+#ifdef DEBUG
 #define LOGSTEP(s) \
-	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg_l?0:arg_r)) << "\n" << std::flush;
-
+	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg_l?arg_r:0)) << "\n" << std::flush;
+	//std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg_l?0:arg_r)) << "\n" << std::flush;
+#else
+#define LOGSTEP(s)
+#endif
 
 
 
@@ -26,13 +30,13 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
 		if (tmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
         result_sost = BACK;
 		activeTemplate = tmplate->isEmpty() ? 0 : (*tmplate)[-1];
-		current_view_borders.put(arg_l, (arg_l ? 0 : arg_r) );
+		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
     } else {
         // начинаем новое сопоставление с argl..argr
 		if (tmplate->isEmpty()) return !arg_l; // дематчинг пустых векторов - неудача
         result_sost = GO;
 		l = 0;
-		r = arg_l ? 0 : arg_l-1 ;
+		r = arg_l ? arg_l-1 : 0;
         activeTemplate = (*tmplate)[0];
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
     }
@@ -182,9 +186,11 @@ RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 		if (link){
 			RefData **endi, **i;
 			getVariableValue(link->lnk, i, endi);
-			++endi;
-			for( ; i < endi; ++i){
-				*result += *i;
+			if (i){
+				++endi;
+				for( ; i < endi; ++i){
+					*result += *i;
+				}
 			}
 
 			continue;

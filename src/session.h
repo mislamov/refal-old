@@ -166,6 +166,9 @@ inline void Session::MOVE_TO_pred_template(RefData** &p){
 
 
 inline bool Session::getVariableValue(RefVariable* var, RefData** &l, RefData** &r){
+#ifdef TESTCODE
+	if (!var) AchtungERROR;
+#endif
 	return findVar(var, l, r);
 };
 
