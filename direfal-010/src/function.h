@@ -107,8 +107,8 @@ public:
 	};
 
 	unistring explode(){ return "@RefUserCondition( " + rightPart->explode() + " ~ " + leftPart->explode() + " )"; };
-	TResult init(RefData **&, Session*, RefData **&, RefData **&){ AchtungERROR; };
-	TResult back(RefData **&, Session*, RefData **&, RefData **&){ AchtungERROR; };
+	TResult init(RefData **&, Session*, RefData **&, RefData **&);
+	TResult back(RefData **&, Session*, RefData **&, RefData **&);
 
 };
 

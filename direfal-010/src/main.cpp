@@ -126,7 +126,7 @@ RefUserModule *mod;
     xmlFile = new char[256];
     strncpy(xmlFile, ss2.str().c_str(), 255);
 
-    Session *s = new Session();
+	Session *s = new Session(&program);
 
     mod = new RefUserModule(getModuleNameFromFileName(xmlFile));
     err = loadModuleFromXmlFile ( mod, &program, xmlFile );
