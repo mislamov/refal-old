@@ -88,11 +88,11 @@ RefChain& RefChain::operator+=(RefChain ch) {
 
 
 RefData** RefChain::operator[](signed long idx) {
-#ifdef TESTCODE
+/*#ifdef TESTCODE
 	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng)) 
 		AchtungERROR;
-#endif
-	return	(idx<0) ? first+leng+idx : first+idx;
+#endif*/
+	return	leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
 };
 
 
@@ -142,7 +142,7 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 						0, 
 						this->chain, 
 						(*(br->chain))[0], 
-						(*(br->chain))[0]?(*(br->chain))[-1]:0, 
+						(*(br->chain))[-1], 
 						false
 						)
 			)
@@ -327,7 +327,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			}
 
 			bracks = ref_dynamic_cast<RefDataBracket>(*point);
-			if (bracks) { // смотрим в скобки
+			if (bracks && !bracks->chain->isEmpty()) { // смотрим в скобки
 				subchains.put(point+1, end);
 				subchains.put((*(bracks->chain))[0], (*(bracks->chain))[-1]+1);
 				break;

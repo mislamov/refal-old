@@ -559,7 +559,7 @@ RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn)
 #ifdef TESTCODE
 	RefData* res = currentProgram->createVariableByTypename(nametype, vn);
 	RefVariable* result = dynamic_cast<RefVariable*>(res);
-	if (! result) SYSTEMERROR("not variable");
+	if (! result) SYSTEMERROR("unknown variable type: " << nametype << "." << vn);
 #else
 	RefVariableBase* result = (RefVariableBase* )currentProgram->createVariableByTypename(nametype, vn);
 #endif

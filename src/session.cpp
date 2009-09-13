@@ -29,7 +29,7 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
         // продолжаем ранее успешное сопоставление
 		if (tmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
         result_sost = BACK;
-		activeTemplate = tmplate->isEmpty() ? 0 : (*tmplate)[-1];
+		activeTemplate = (*tmplate)[-1];
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
     } else {
         // начинаем новое сопоставление с argl..argr
