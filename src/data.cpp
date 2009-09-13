@@ -20,10 +20,13 @@
 //#include "symbols.h"
 //#include "sentence.h"
 #include "session.h"
+#include "program.h"
 
 #include <stdlib.h>
 #include <iostream>
 #include <sstream>
+#include <map>
+#include <stack>
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
 
@@ -39,6 +42,7 @@ RefChain::RefChain(size_t size) { // size is not lenght
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
 };
+
 
 RefChain& RefChain::operator+=(RefData *ch) {
 
@@ -131,7 +135,17 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefDat
     s->MOVE_TO_next_term(r);
 	RefStructBrackets *br;
 	
-	if (r && (br=ref_dynamic_cast<RefStructBrackets>(*r)) && (/*br->chain == this->chain ||*/ s->matching(0, this->chain, br->chain, false))) {
+	if (r 
+		&& (br=ref_dynamic_cast<RefStructBrackets>(*r)) 
+		&& (s->matching(
+						0, 
+						this->chain, 
+						(*(br->chain))[0], 
+						(*(br->chain))[0]?(*(br->chain))[-1]:0, 
+						false
+						)
+			)
+	){
 		s->saveBracketsFromView(this, (RefStructBrackets**)r);
 		s->MOVE_TO_next_template(tpl);
 		return GO;
@@ -145,7 +159,7 @@ TResult RefStructBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 	// if (br->chain == this->chain) BACK;  - проверить сильно оптимизирует ли. только в сочентании с частью в init!
 	RefStructBrackets* br = *(s->restoreBracketsFromView(this));
 
-	if (s->matching(0, this->chain, br->chain, true)){
+	if (s->matching(0, this->chain, (*(br->chain))[0],  (*(br->chain))[0]?(*(br->chain))[-1]:0, true)){
 		s->MOVE_TO_next_template(tpl);
 		return GO;
 	}
@@ -161,7 +175,7 @@ TResult RefExecBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData 
 	AchtungERROR;
 };
 
-
+/*
 RefVariable** RefChain::findVariable(unistring vname){
 	RefVariable *var = 0;
 	RefVariable **tvar = 0;
@@ -176,7 +190,7 @@ RefVariable** RefChain::findVariable(unistring vname){
 	}
 	return 0;
 };
-
+*/
 
 
 inline bool eq_not_empty(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br){
@@ -255,5 +269,85 @@ TResult RefLinkToVariable::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 };
 
 
+void RefChain::compile(RefChain *ownchain, RefProgram *program){
+	if (isEmpty()) return;
 
+obhod po skobkam?
+
+	std::map<unistring, RefVariable*> vars;
+	std::stack<RefData**> lnks;
+
+	RefVariable *var;
+	RefLinkToVariable *link;
+	RefUserVar *uservar;
+
+	if (ownchain != this && !ownchain->isEmpty())
+	for(RefData 
+		**end = (*ownchain)[-1]+1,
+		**point = (*ownchain)[0];
+		point < end;
+		++point){
+			uservar = ref_dynamic_cast<RefUserVar>(*point);
+			if (uservar){ // запоминаем заготовку для переменной
+				if (! program) SYSTEMERROR("program not null expected");
+				uservar->setTempl( program->findTemplate(uservar->getType()) );
+				vars[uservar->getName()] = uservar;
+				continue;
+			}
+			
+			var = ref_dynamic_cast<RefVariable>(*point);
+			if (var){ // запоминаем переменную
+				vars[var->getName()] = var;
+				continue;
+			}
+
+
+		}
+	
+	for(RefData 
+		**end = (*this)[-1]+1,
+		**point = (*this)[0];
+		point < end;
+		++point){
+
+			uservar = ref_dynamic_cast<RefUserVar>(*point);
+			if (uservar){ // запоминаем заготовку для переменной
+				if (! program) SYSTEMERROR("program not null expected");
+				uservar->setTempl( program->findTemplate(uservar->getType()) );
+				vars[uservar->getName()] = uservar;
+				continue;
+			}
+			
+			var = ref_dynamic_cast<RefVariable>(*point);
+			if (var){ // запоминаем переменную
+				vars[var->getName()] = var;
+				continue;
+			}
+
+			link = ref_dynamic_cast<RefLinkToVariable>(*point);
+			if (link){ // запоминаем ссылку
+				lnks.push(point);
+				continue;
+			}
+
+			// не ссылка и не переменная
+	}
+
+		// компиляция ссылок на переменные
+		RefLinkToVariable** tmp = 0;
+		while (! lnks.empty()){
+			#ifdef TESTCODE
+			if (!dynamic_cast<RefLinkToVariable*>(*(lnks.top()))) AchtungERROR;
+			#endif
+			tmp = (RefLinkToVariable**) lnks.top();
+
+			size_t i = (*tmp)->path.find( varPathSeparator );	
+			// ссылка на часть внешней переменной
+			unistring name = (*tmp)->path.substr(0, i);
+			(*tmp)->path = (i!=unistring::npos) ? (*tmp)->path.substr(i+1) : EmptyUniString;
+
+			(*tmp)->lnk = vars[name];
+			lnks.pop();
+		}
+};
 

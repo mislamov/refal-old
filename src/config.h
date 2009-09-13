@@ -209,6 +209,7 @@ T* ref_dynamic_cast(RefObject* d) {
 	return dynamic_cast<T*>(d);
 }
 
+const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
 
 /*
 template <class T>

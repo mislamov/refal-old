@@ -54,12 +54,12 @@ class rf_module_##func : public RefBuildInFunction { \
 		unistring getName(){ return #func; };  \
 		RefChain* eval(RefData** fr, RefData** to, Session* s){ return func(fr, to, s); };		\
 	};  \
-	setObjectByName(#func,  new rf_module_##func());
+	setFunctionByName(#func,  new rf_module_##func());
 
 
 
 #define DEFINE_MODULE_FUNCTION_ALIAS(alias, func) \
-	setObjectByName(#alias,  getObjectByName(#func));
+	setFunctionByName(#alias,  getFunctionByName(#func));
 
 
 

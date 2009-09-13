@@ -27,10 +27,18 @@ class RefSentence;
 
 // рефал-функция
 class RefFunctionBase : public RefObject {
+protected:
 	virtual unistring getName() = 0;
+public:
+	virtual void initilizeAll(){};
+	virtual RefChain* eval(RefData**, RefData**, Session*) = 0;
+	virtual unistring debug() = 0;
+
 };
 
 class RefBuildInFunction : public RefFunctionBase {
+public:
+	unistring debug(){ return "Function " + getName(); };
 };
 
 class RefUserFunction : public RefFunctionBase {
@@ -40,31 +48,42 @@ public:
 
 	inline RefUserFunction(unistring tname){		name = tname;	}
 	unistring getName() { return name; };
+	unistring debug();
 
-
+	void initilizeAll();
+	RefChain* eval(RefData**, RefData**, Session*);
 };
 
-// локальное условие (для переменной)
+
+
+// локальное условие (ограничение на переменную)
 class RefTemplateBase : public RefObject {
+public:
+	virtual void initilizeAll() = 0;
+	virtual unistring debug() =0;
+	
 };
 
+// пользовательский шаблон
 class RefUserTemplate : public RefTemplateBase {
 	unistring name;
 	RefChain *leftPart;
-	RefChain *rightPart;
 public:
 	inline RefUserTemplate(unistring tname){ name = tname; }
 	unistring getName() { return name; };
 	inline void setLeftPart (RefChain *lp){ leftPart  = lp; };
-	inline void setRightPart(RefChain *rp){ rightPart = rp; };
 	
+	void initilizeAll();
+	unistring debug(){
+		return "Template " + getName() + "  ::=  " + leftPart->debug();
+	}
 };
 
 // предложение
 class RefSentence : public RefObject {
 public:
 	RefChain *leftPart;
-	RefChain *rightPart;
+	RefChainConstructor *rightPart;
 };
 
 // глобальное условие для сопоставления
@@ -94,24 +113,6 @@ public:
 };
 
 
-
-// класс - непроинициализированная переменная внешнего типа. После инициализации заменяется на пару {RefTemplateBridgeVar RefTemplateBridgeVar}
-class RefUserVarNotInit : public RefVariable, public NeedInitilize {
-    unistring type;
-	RefTemplateBase *templ;
-public:
-	RefUserVarNotInit(){};
-	RefUserVarNotInit(RefTemplateBase *ntempl, unistring ntype, unistring nname){ type=ntype; name=nname; ntempl=templ; };
-    CLASS_OBJECT_CAST(RefUserVarNotInit);
-    bool initize(Session *){SYSTEMERROR("unexpected");}; // замещается на пару
-    void setType(unistring ttype) {        type = ttype;    };
-    unistring getType() {        return type;    };
-    unistring explode() {        return "@RefUserVarNotInit.toString()";    }
-    bool operator ==(RefData &rd) {        return false;    };
-	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
-    ~RefUserVarNotInit() {    };
-};
 
 
 

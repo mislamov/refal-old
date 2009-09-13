@@ -35,8 +35,9 @@ class RefProgram {
 public:
 	RefProgram();
 	void regModule(RefModuleBase *); // регистрация модуля в программе (перед загрузкой)
-    RefChain*  executeExpression (RefChain* ); // вычисляет цепочку
-	RefFunctionBase *findFunction(RefData*  ); // ищет функцию в модулях по id
+    RefChain*  executeExpression (RefChain*, Session*); // вычисляет цепочку
+	RefFunctionBase *findFunction(unistring  ); // ищет функцию в модулях по id
+	RefTemplateBase *findTemplate(unistring  ); // ищет шаблон в модулях по id
 
 	RefData* createSymbolByCode(unistring code, unistring value);
 	RefData* createVariableByTypename(unistring code, unistring value);
@@ -45,10 +46,24 @@ public:
 
 // модуль
 class RefModuleBase {
-    std::map<unistring, RefObject*> objects;
+protected:
+    //std::map<unistring, RefObject*> objects;
+	std::map<unistring, RefFunctionBase*> functions;
+	std::map<unistring, RefTemplateBase*> templates;
 public:
-	RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
-    void setObjectByName(unistring name, RefObject* o){objects[name] = o; };
+	//RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
+	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0){return functions[nm];};
+	RefTemplateBase* getTemplateByName(unistring nm, Session *s=0){return templates[nm];};
+
+    //void setObjectByName(unistring name, RefObject* o){objects[name] = o; };
+    void setFunctionByName(unistring name, RefFunctionBase* o){
+		if (functions.find(name) != functions.end()) COMPILETIMEERROR(name, "function multi-definition");
+		functions[name] = o; 
+	};
+    void setTemplateByName(unistring name, RefTemplateBase* o){
+		if (templates.find(name) != templates.end()) COMPILETIMEERROR(name, "template multi-definition");
+		templates[name] = o; 
+	};
     virtual unistring getName() =0;
 };
 
@@ -75,10 +90,8 @@ class RefUserModule : public RefModuleBase {
 public:
 	RefUserModule(unistring thename){ name=thename; };
 	inline unistring getName(){ return name; };
-	unistring debug(){		return "@RefUserModule";	}
-
-    void initilizeAll(Session *){SYSTEMERROR("unrelised");};
-
+	unistring debug();
+	virtual void initilizeAll();
 };
 
 #endif

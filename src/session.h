@@ -53,6 +53,7 @@ class Session {
 	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
 public:
 	inline void createVarMap(){ varMapStack.put(new VarMap()); };
+	inline VarMap* poptopVarMap(){ return varMapStack.top_pop(); };
 
 	inline RefData** current_view_l(){ return current_view_borders.top1(); };
 	inline RefData** current_view_r(){ return current_view_borders.top2(); };
@@ -60,7 +61,7 @@ public:
 	//inline RefData** current_templ_r(){ return current_templ_borders.top2(); };
 
 	// сопоставление образца tmplate с аргументом l..r
-    bool  matching(RefObject *initer, RefChain *tmplate, RefChain *arg, bool isdemaching);
+    bool  matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, bool isdemaching);
 
 	// готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
     RefChain*  substituteExpression(RefChainConstructor *);

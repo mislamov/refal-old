@@ -16,8 +16,6 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
-
 #include <xercesc/util/XMLUniDefs.hpp>
 #include <xercesc/sax/AttributeList.hpp>
 #include "symbols.h"
@@ -242,7 +240,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
             #endif
             RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
-			loader->currentModule->setObjectByName(f->getName(), f);
+			loader->currentModule->setFunctionByName(f->getName(), f);
     } else
     if ( theCommand.compare(_L("TEMPLATE")) == 0) {
             #ifdef TESTCODE
@@ -253,7 +251,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
             //loader->getCurrChain()->dearoundByDots(); // шаблону доты не нужны
             t->setLeftPart( loader->extractCurrChainFromStack() );
-			loader->currentModule->setObjectByName( t->getName(), t);
+			loader->currentModule->setTemplateByName( t->getName(), t);
     } else
     if ( theCommand.compare(_L("SENTENCE")) == 0) {
             #ifdef TESTCODE
@@ -308,18 +306,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("LNK")) == 0) {  //
         // берем по текущему тексту и получаем ссылку на переменную
-        // ссылка на часть внешней ли переменной?
-        size_t i;
-        if ((i = loader->currentchars.find( varPathSeparator ))!=unistring::npos){
-            // ссылка на часть внешней переменной
-            unistring name = loader->currentchars.substr(0, i);
-            unistring path = loader->currentchars.substr(i+1);
-            *(loader->getCurrChain()) += new RefLinkToVariable(name, (loader->getCurrChainNotConstructor()), path);
-        } else {
-            // ссылка на целую переменную
-            *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars, (loader->getCurrChainNotConstructor()));
-            //std::cout << loader->getCurrChain()->second->toString();
-        }
+        *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars);
+        //std::cout << loader->getCurrChain()->second->toString();
     } else
     if ( theCommand.compare(_L("TEXT")) == 0) {  //
         unistring text = loader->currentchars;
@@ -581,10 +569,10 @@ RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn)
     }
 
     // создаем пользовательскую переменную
-    RefUserVarNotInit *v = new RefUserVarNotInit();
+    RefUserVar *v = new RefUserVar();
     v->setName(vn);
     v->setType(nametype);
-    currentModule->initItems.push(v);
+    //currentModule->initItems.push(v);
     return v;
 };
 

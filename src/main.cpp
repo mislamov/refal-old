@@ -134,6 +134,8 @@ RefUserModule *mod;
     #ifdef DEBUG
     std::cout << mod->debug() << "\n";
     #endif
+	program.regModule(mod);
+
 
 //    time_t starttime, stoptime;
 //    time ( &starttime );
@@ -148,7 +150,7 @@ RefUserModule *mod;
 
 	*polez += new RefExecBrackets(new RefChain(new RefWord ( "Go" )));
 
-	RefChain *result = program.executeExpression( polez );
+	RefChain *result = program.executeExpression( polez, s );
 
 //    time ( &stoptime );
     std::cout << "============================================\nTime: " 
