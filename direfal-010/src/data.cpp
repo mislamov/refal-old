@@ -62,6 +62,7 @@ RefChain& RefChain::operator+=(RefData *ch) {
     return *this;
 };
 
+// после - ch не существует!
 RefChain& RefChain::operator+=(RefChain *ch) {
 	sysize += ch->leng;
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
@@ -230,7 +231,7 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
         return ERROR;
     };
 
-	std::cout << "\n@: " << getTextOfChain(ldata, rdata) << "  ~  " << getTextOfChain(r, r+2) << "\n";
+//	std::cout << "\n@: " << getTextOfChain(ldata, rdata) << "  ~  " << getTextOfChain(r+1, r+2) << "...\n";
 
 	if (!ldata){ // пустые
         s->MOVE_TO_next_template(tpl);
@@ -240,6 +241,10 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 	RefDataBracket *brA=0, *brB=0;
 	while(ldata<=rdata){
 		s->MOVE_TO_next_term(r);
+		if (!r){  // аргументы кончились
+				s->MOVE_TO_pred_template(tpl);
+				return BACK;
+		}
 
 		brA = ref_dynamic_cast<RefDataBracket>(*ldata);
 		if (brA){
@@ -268,47 +273,37 @@ TResult RefLinkToVariable::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 	return BACK;
 };
 
-
+// компиляция цепочки после построения. расстановка ссылок
+// ownchain - левая часть для подстановки this. Тоже компилируется
 void RefChain::compile(RefChain *ownchain, RefProgram *program){
+#ifdef DEBUG
+	std::cout << "compile: " << explode() << "  OWN:  " << (ownchain?ownchain->explode():"$null") << "\n";
+#endif
 	if (isEmpty()) return;
-
-obhod po skobkam?
 
 	std::map<unistring, RefVariable*> vars;
 	std::stack<RefData**> lnks;
 
 	RefVariable *var;
 	RefLinkToVariable *link;
+	RefDataBracket *bracks;
 	RefUserVar *uservar;
 
-	if (ownchain != this && !ownchain->isEmpty())
-	for(RefData 
-		**end = (*ownchain)[-1]+1,
-		**point = (*ownchain)[0];
-		point < end;
-		++point){
-			uservar = ref_dynamic_cast<RefUserVar>(*point);
-			if (uservar){ // запоминаем заготовку для переменной
-				if (! program) SYSTEMERROR("program not null expected");
-				uservar->setTempl( program->findTemplate(uservar->getType()) );
-				vars[uservar->getName()] = uservar;
-				continue;
-			}
-			
-			var = ref_dynamic_cast<RefVariable>(*point);
-			if (var){ // запоминаем переменную
-				vars[var->getName()] = var;
-				continue;
-			}
 
+	PooledTuple2<RefData**, RefData**> subchains;
+	subchains.put((*this)[0], (*this)[-1]+1);
+	if (ownchain && ownchain!=this && !ownchain->isEmpty()){
+		subchains.put((*ownchain)[0], (*ownchain)[-1]+1);
+	}
 
-		}
-	
-	for(RefData 
-		**end = (*this)[-1]+1,
-		**point = (*this)[0];
-		point < end;
-		++point){
+	while(subchains.getLength()){
+		RefData 
+			**end = subchains.top2(),
+			**point = subchains.top1();
+		subchains.pop();
+		for(;
+			point < end;
+			++point){
 
 			uservar = ref_dynamic_cast<RefUserVar>(*point);
 			if (uservar){ // запоминаем заготовку для переменной
@@ -324,18 +319,26 @@ obhod po skobkam?
 				continue;
 			}
 
+			
 			link = ref_dynamic_cast<RefLinkToVariable>(*point);
-			if (link){ // запоминаем ссылку
+			if (link && !link->lnk){ // запоминаем ссылку
 				lnks.push(point);
 				continue;
 			}
 
-			// не ссылка и не переменная
+			bracks = ref_dynamic_cast<RefDataBracket>(*point);
+			if (bracks) { // смотрим в скобки
+				subchains.put(point+1, end);
+				subchains.put((*(bracks->chain))[0], (*(bracks->chain))[-1]+1);
+				break;
+			}
+		}
 	}
 
+
 		// компиляция ссылок на переменные
-		RefLinkToVariable** tmp = 0;
-		while (! lnks.empty()){
+	RefLinkToVariable** tmp = 0;
+	while (! lnks.empty()){
 			#ifdef TESTCODE
 			if (!dynamic_cast<RefLinkToVariable*>(*(lnks.top()))) AchtungERROR;
 			#endif
@@ -348,6 +351,6 @@ obhod po skobkam?
 
 			(*tmp)->lnk = vars[name];
 			lnks.pop();
-		}
+	}
 };
 

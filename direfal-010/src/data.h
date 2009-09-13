@@ -42,6 +42,7 @@ public:
 	virtual bool operator ==(RefData &rd) { SYSTEMERROR("alarm!"); return false; };
 
 	virtual unistring debug(){ return explode(); };
+	virtual unistring toString(){ return explode()+" "; };
 };
 
 
@@ -125,7 +126,7 @@ public:
 	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
 
 	RefChain&  operator+=(RefData  *ch);
-	RefChain&  operator+=(RefChain *ch); // удаляет *ch и обнуляет ch
+	RefChain&  operator+=(RefChain *ch); // удаляет *ch 
 	RefChain&  operator+=(RefChain  ch); // только копирует *ch
 	RefData**  operator[](signed long idx);
 
@@ -226,7 +227,7 @@ public:
 
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-	inline unistring explode(){ return " @."+(lnk?lnk->getName():"$notinit")+" "; };
+	inline unistring explode(){ return " @."+(lnk?lnk->getName():"$notinit$"+path)+" "; };
 
 	inline RefLinkToVariable(RefVariable *ln){lnk=ln; path=EmptyUniString; };
 	inline RefLinkToVariable(unistring varName){

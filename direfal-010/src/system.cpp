@@ -146,7 +146,7 @@ RefChain* Lenw (RefData** beg, RefData** end, Session* s){
 
 RefChain* Numb (RefData** beg, RefData** end, Session* s){
     /// todo: сделать не только integer и поверять ошибки
-    long l = strtol(the_text(beg, end).c_str(), NULL, 10);
+    long l = strtol(the_explode(beg, end).c_str(), NULL, 10);
     RefInteger *a = new RefInteger(l);
     return new RefChain(a);
 };
@@ -176,14 +176,14 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       char * buffer;
 
       std::ifstream is;
-      is.open ( the_text(beg, end).c_str(), std::ios::binary );
+      is.open ( the_explode(beg, end).c_str(), std::ios::binary );
 
       // get length of file:
       is.seekg (0, std::ios::end);
       length = is.tellg();
       is.seekg (0, std::ios::beg);
 	  if (length < 0) {
-		  std::cerr << "Can`r open file: " << the_text(beg, end) << std::flush;
+		  std::cerr << "Can`r open file: " << the_explode(beg, end) << std::flush;
 		  return 0;
 	  }
 
@@ -211,7 +211,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
 
 RefChain* Card (RefData** beg, RefData** end, Session* s){
     if (beg) {
-		RUNTIMEERROR("Card", "Not empty args in Card : " << the_text(beg, end));
+		RUNTIMEERROR("Card", "Not empty args in Card : " << the_explode(beg, end));
         return 0;
     }
     unistring sline; /// todo LOCALE
@@ -238,7 +238,7 @@ RefChain* Card (RefData** beg, RefData** end, Session* s){
 
 
 RefChain* Implode (RefData** beg, RefData** end, Session* s){
-	return new RefChain(new RefWord(the_text(beg, end)));
+	return new RefChain(new RefWord(the_explode(beg, end)));
 };
 
 RefChain* Explode (RefData** lft, RefData** rht, Session* s){
@@ -257,7 +257,7 @@ RefChain* Explode (RefData** lft, RefData** rht, Session* s){
 
 
 RefChain* ExplodeAll (RefData** lft, RefData** rht, Session* s){
-    unistring str = the_text(lft, rht);
+    unistring str = the_explode(lft, rht);
     RefChain *result = StrToChain(str);
     return result;
 };
@@ -269,7 +269,7 @@ RefChain* Prout (RefData** lft, RefData** rht, Session* s){
             << "\n############################### STDOUT ###############################\n"
             << ":####:\t"
     #endif
-            << the_text(lft, rht) << "\n"
+			<< the_text(lft, rht) << "\n"
     #ifdef DEBUG
             << "\n######################################################################\n"
     #endif
