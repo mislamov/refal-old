@@ -23,6 +23,7 @@
 #include <stack>
 
 #include "data.h"
+#include "function.h"
 #include "poolTuples.h"
 
 class VarMap : public PooledTuple3<RefVariable*, RefData** , RefData**>{
@@ -40,6 +41,10 @@ public:
 };
 
 
+struct SessionStatePoint {
+	size_t conditionsArgsCount;
+};
+
 // среда для вычисления пользовательской функции
 class Session {
     TResult  result_sost;
@@ -49,11 +54,15 @@ class Session {
 	//PooledTuple2 <RefData**, RefData**> deferred_view_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
 	//PooledTuple4 <RefData**, RefData**, RefData**, RefData**>  current_templ_borders; // активные view границы [для скобок] + точки выхода
 	//PooledTuple2 <RefData**, RefData**> deferred_templ_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
+	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
 
 	PooledStack<VarMap*>  varMapStack; // карты переменных
 	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
+private:
+	inline Session(){};
 public:
 	inline Session(RefProgram *p){ program = p; }; 
+	inline RefProgram *getProgram(){ return program; };
 	inline void createVarMap(){ varMapStack.put(new VarMap()); };
 	inline VarMap* poptopVarMap(){ return varMapStack.top_pop(); };
 
@@ -61,6 +70,31 @@ public:
 	inline RefData** current_view_r(){ return current_view_borders.top2(); };
 	//inline RefData** current_templ_l(){ return current_templ_borders.top1(); };
 	//inline RefData** current_templ_r(){ return current_templ_borders.top2(); };
+	inline void saveConditionArg(RefConditionBase* cnd, RefChain *arg){ conditionsArgs.put(cnd,	arg); };
+	inline RefChain* restoreConditionArg(RefConditionBase* cnd){ 
+		RefConditionBase* cnd0; 
+		RefChain *res; 
+		conditionsArgs.top_pop(cnd0, res); 
+		#ifdef TESTCODE
+		if (cnd!=cnd0) AchtungERROR;
+		#endif
+		return res;
+	};
+
+	SessionStatePoint* getState(){ 
+		SessionStatePoint *ss = new SessionStatePoint(); 
+		ss->conditionsArgsCount=conditionsArgs.getLength(); 
+		return ss; 
+	};
+	void backToState(SessionStatePoint* ss){
+		#ifdef TESTCODE
+		if (ss->conditionsArgsCount > conditionsArgs.getLength()) AchtungERROR;
+		#endif
+		// заглушка
+		for(size_t i=conditionsArgs.getLength(); i!=ss->conditionsArgsCount; --i){
+			conditionsArgs.pop();  //TODO: собрать тут мусор! нужен не просто pop, а delete, delete, pop
+		}
+	};
 
 	// сопоставление образца tmplate с аргументом l..r
     bool  matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, bool isdemaching);
@@ -76,15 +110,16 @@ public:
 	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r);
 	inline bool getVariableValue(RefVariable*, RefData**&, RefData**&);
 
-	inline void saveBracketsFromView(RefStructBrackets* tpl, RefStructBrackets** br){
+	void saveBracketsFromView(RefStructBrackets* tpl, RefStructBrackets** br){
 		bracks.put(tpl, br);
 	};
-	inline RefStructBrackets** restoreBracketsFromView(RefStructBrackets* tpl){
+	RefStructBrackets** restoreBracketsFromView(RefStructBrackets* tpl){
 		RefStructBrackets **br  = 0;
 		RefStructBrackets* tpl2 = 0;
 		bracks.top_pop(tpl2, br);
 		#ifdef TESTCODE
-		if (tpl2 != tpl) AchtungERROR;
+		if (tpl2 != tpl) 
+			AchtungERROR;
 		#endif
 		return br;
 	};
@@ -168,9 +203,10 @@ inline void Session::MOVE_TO_pred_template(RefData** &p){
 
 
 inline bool Session::getVariableValue(RefVariable* var, RefData** &l, RefData** &r){
-#ifdef TESTCODE
-	if (!var) AchtungERROR;
-#endif
+	#ifdef TESTCODE
+	if (!var) 
+		AchtungERROR;
+	#endif
 	return findVar(var, l, r);
 };
 

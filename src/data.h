@@ -253,7 +253,7 @@ public:
 };
 
 
-inline unistring getTextOfChain(RefData** from, RefData** to){
+inline unistring chain_to_text(RefData** from, RefData** to){
 	if (!from || !*from) return "[null]";
 	if (!to || (to-from)<0 || (to-from)>1024) return "[error string]";
 	unistring res = "";

@@ -105,6 +105,8 @@ public:
 		#endif
 		rightPart = (RefChainConstructor*)ch; 
 	};
+	inline RefChain *getLeftPart(){ return leftPart; };
+	inline RefChainConstructor *getRightPart(){ return rightPart; };
 
 	unistring explode(){ return "@RefUserCondition( " + rightPart->explode() + " ~ " + leftPart->explode() + " )"; };
 	TResult init(RefData **&, Session*, RefData **&, RefData **&);
