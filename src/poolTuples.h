@@ -38,7 +38,8 @@ public:
 
 	inline T top_pop(){
 		#ifdef TESTCODE
-		if (!idx) SYSTEMERROR("link-stack is empty!");
+		if (!idx) 
+			SYSTEMERROR("link-stack is empty!");
 		#endif
 		return pool[--idx];
 	};
