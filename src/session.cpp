@@ -41,13 +41,20 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
     }
 
+	this->setTmplate(tmplate);
 	while (true) {
         // сопоставляем текущий шаблон
 
         switch (result_sost) {
 
         case GO: {
-			if (activeTemplate==(*tmplate)[-1]+1){ // достигнут правый край сопоставления! DataDOT
+			if (activeTemplate==(*tmplate())[-1]+1){ // достигнут правый край сопоставления! DataDOT
+				if (userVarJumpPoints.getLength()){ // это был user-шаблон
+					RefUserVar** var = userVarJumpPoints.top_pop();
+					(*var)->success(activeTemplate, this, l, r);
+					result_sost = GO;
+					break;
+				}
 				MOVE_TO_pred_template( activeTemplate ); // ?
 				result_sost = (r==arg_r) ? SUCCESS : BACK;  // не двигали r вперед => сравниваем с (*arg)[-1]
 				break;
@@ -61,7 +68,13 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
             break;
         }
         case BACK: {
-			if (activeTemplate==(*tmplate)[0]-1){ // достигнут левый край сопоставления! DataDOT
+			if (activeTemplate==(*tmplate())[0]-1){ // достигнут левый край сопоставления! DataDOT
+				if (userVarJumpPoints.getLength()){ // это был user-шаблон
+					RefUserVar** var = userVarJumpPoints.top_pop();
+					(*var)->failed(activeTemplate, this, l, r);
+					result_sost = BACK;
+					break;
+				}
 				MOVE_TO_next_template( activeTemplate ); // ?
 				result_sost = FAIL;
 				break;

@@ -2,13 +2,13 @@
 #include "function.h"
 #include "session.h"
 
-void RefUserFunction::initilizeAll(){
+void RefUserFunction::initilizeAll(RefProgram *program){
             std::list<RefSentence *>::iterator 
 					sent = body.begin(), // перебор предложений функции
 					stopsent = body.end();
 			while (sent != stopsent){
-				(*sent)->leftPart->compile( (*sent)->leftPart );
-				(*sent)->rightPart->compile( (*sent)->leftPart );
+				(*sent)->leftPart->compile( (*sent)->leftPart, program );
+				(*sent)->rightPart->compile( (*sent)->leftPart, program );
 				++sent;                
             };  // std: body.end() - элемент после последнего
 
@@ -34,8 +34,8 @@ RefChain* RefUserFunction::eval(RefData **l, RefData **r, Session *sess){
 			RUNTIMEERROR(getName(), "no good sentense");
 };
 
-void RefUserTemplate::initilizeAll(){
-	leftPart->compile(leftPart);
+void RefUserTemplate::initilizeAll(RefProgram *program){
+	leftPart->compile(leftPart, program);
 };
 
 unistring RefUserFunction::debug(){

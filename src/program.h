@@ -91,7 +91,7 @@ public:
 	RefUserModule(unistring thename){ name=thename; };
 	inline unistring getName(){ return name; };
 	unistring debug();
-	virtual void initilizeAll();
+	virtual void initilizeAll(RefProgram* program);
 };
 
 #endif

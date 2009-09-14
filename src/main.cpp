@@ -129,12 +129,12 @@ RefUserModule *mod;
 	Session *s = new Session(&program);
 
     mod = new RefUserModule(getModuleNameFromFileName(xmlFile));
+	program.regModule(mod);
     err = loadModuleFromXmlFile ( mod, &program, xmlFile );
     if (err) return err;
     #ifdef DEBUG
     std::cout << mod->debug() << "\n";
     #endif
-	program.regModule(mod);
 
 
 //    time_t starttime, stoptime;

@@ -98,6 +98,7 @@ RefData** RefChain::operator[](signed long idx) {
 
 
 
+
 unistring RefChain::debug(){
 		    unistring result = "";
 			result += "[";
@@ -368,3 +369,75 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	}
 };
 
+
+TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	RefData **lold, **rold;
+	this->saveVarMap( sess->poptopVarMap() ); // сохраняем карту переменных
+	sess->restoreVar(sess, this, lold, rold); // начало аргумента переменной
+	if (rold != r){
+		sess->MOVE_TO_next_term(rold);
+		l = rold;
+	} else {
+		l = 0;	// значение переменной пустое
+	}
+	sess->saveVar(sess, this, l, r); // сохраняем полное значение
+
+	tpl = (RefData**) sess->userVarJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
+	sess->popTmplate();
+
+
+	#ifdef TESTCODE
+	if (*tpl != this) AchtungERROR;
+	#endif
+
+	sess->MOVE_TO_next_template(tpl); // двигаемся дальше
+	return GO;
+};
+
+TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	delete sess->poptopVarMap();
+	sess->restoreVar(sess, this, l, r);		 // забываем переменную
+	tpl = (RefData**) sess->userVarJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
+	sess->popTmplate();
+	
+
+	#ifdef TESTCODE
+	if (*tpl != this) AchtungERROR;
+	#endif
+	
+	sess->MOVE_TO_pred_template(tpl);
+	return BACK;
+};
+
+
+TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	#ifdef TESTCODE
+	if (*tpl != this) AchtungERROR;
+	if (! dynamic_cast<RefUserTemplate*>(templ)) notrealisedERROR;
+	#endif
+
+	RefUserTemplate* usertemplate = (RefUserTemplate*)templ;
+	if (usertemplate->getLeftPart()->isEmpty()){
+		notrealisedERROR;
+		//sess->MOVE_TO_next_template(tpl);
+		//return GO;
+	}
+	sess->saveVar(sess, this, l=0, r);
+	sess->createVarMap();
+	sess->userVarJumpPoints.put((RefUserVar**)tpl);
+	sess->setTmplate(usertemplate->getLeftPart());
+	tpl = usertemplate->getLeftPart()->at(0);
+	return GO;
+};
+
+TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	#ifdef TESTCODE
+	if (*tpl != this) AchtungERROR;
+	#endif
+	sess->userVarJumpPoints.put((RefUserVar**)tpl);
+	sess->setTmplate(((RefUserTemplate*)templ)->getLeftPart());
+	sess->putVarMap( this->restoreVarMap() );
+
+	tpl = ((RefUserTemplate*)templ)->getLeftPart()->at(-1);
+	return BACK;
+};

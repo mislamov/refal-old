@@ -30,7 +30,7 @@ class RefFunctionBase : public RefObject {
 protected:
 	virtual unistring getName() = 0;
 public:
-	virtual void initilizeAll(){};
+	virtual void initilizeAll(RefProgram* program){};
 	virtual RefChain* eval(RefData**, RefData**, Session*) = 0;
 	virtual unistring debug() = 0;
 
@@ -50,7 +50,7 @@ public:
 	unistring getName() { return name; };
 	unistring debug();
 
-	void initilizeAll();
+	void initilizeAll(RefProgram *);
 	RefChain* eval(RefData**, RefData**, Session*);
 };
 
@@ -59,7 +59,7 @@ public:
 // локальное условие (ограничение на переменную)
 class RefTemplateBase : public RefObject {
 public:
-	virtual void initilizeAll() = 0;
+	virtual void initilizeAll(RefProgram *) = 0;
 	virtual unistring debug() =0;
 	
 };
@@ -72,8 +72,9 @@ public:
 	inline RefUserTemplate(unistring tname){ name = tname; }
 	unistring getName() { return name; };
 	inline void setLeftPart (RefChain *lp){ leftPart  = lp; };
+	inline RefChain* getLeftPart(){ return leftPart; };
 	
-	void initilizeAll();
+	void initilizeAll(RefProgram *);
 	unistring debug(){
 		return "Template " + getName() + "  ::=  " + leftPart->debug();
 	}

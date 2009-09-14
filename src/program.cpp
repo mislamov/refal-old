@@ -179,17 +179,17 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 	return 0;
 };
 
-void RefUserModule::initilizeAll(){
+void RefUserModule::initilizeAll(RefProgram* program){
 	std::map<unistring, RefFunctionBase*>::iterator funit = functions.begin(), fend = functions.end();
 	std::map<unistring, RefTemplateBase*>::iterator tplit = templates.begin(), tend = templates.end();
 
 	while (tplit != tend){
-		tplit->second->initilizeAll();
+		tplit->second->initilizeAll(program);
 		++tplit;
 	}
 
 	while (funit != fend){
-		funit->second->initilizeAll();
+		funit->second->initilizeAll(program);
 		++funit;
 	}
 
