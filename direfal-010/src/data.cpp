@@ -158,9 +158,10 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 };
 TResult RefStructBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
 	// if (br->chain == this->chain) BACK;  - проверить сильно оптимизирует ли. только в сочентании с частью в init!
-	RefStructBrackets* br = *(s->restoreBracketsFromView(this));
+	RefStructBrackets** br = s->restoreBracketsFromView(this);
 
-	if (s->matching(0, this->chain, (*(br->chain))[0],  (*(br->chain))[0]?(*(br->chain))[-1]:0, true)){
+	if (s->matching(0, this->chain, (*((*br)->chain))[0],  (*((*br)->chain))[0]?(*((*br)->chain))[-1]:0, true)){
+		s->saveBracketsFromView(this, br);
 		s->MOVE_TO_next_template(tpl);
 		return GO;
 	}
@@ -231,7 +232,7 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
         return ERROR;
     };
 
-//	std::cout << "\n@: " << getTextOfChain(ldata, rdata) << "  ~  " << getTextOfChain(r+1, r+2) << "...\n";
+//	std::cout << "\n@: " << chain_to_text(ldata, rdata) << "  ~  " << chain_to_text(r+1, r+2) << "...\n";
 
 	if (!ldata){ // пустые
         s->MOVE_TO_next_template(tpl);
@@ -276,9 +277,6 @@ TResult RefLinkToVariable::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 // компиляция цепочки после построения. расстановка ссылок
 // ownchain - левая часть для подстановки this. Тоже компилируется
 void RefChain::compile(RefChain *ownchain, RefProgram *program){
-#ifdef DEBUG
-	std::cout << "compile: " << explode() << "  OWN:  " << (ownchain?ownchain->explode():"$null") << "\n";
-#endif
 	if (isEmpty()) return;
 
 	std::map<unistring, RefVariable*> vars;
@@ -288,6 +286,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	RefLinkToVariable *link;
 	RefDataBracket *bracks;
 	RefUserVar *uservar;
+	RefUserCondition *cond;
 
 
 	PooledTuple2<RefData**, RefData**> subchains;
@@ -301,6 +300,11 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			**end = subchains.top2(),
 			**point = subchains.top1();
 		subchains.pop();
+
+		#ifdef DEBUG
+		std::cout << "compile: " << chain_to_text(point, end-1) << "\n";
+		#endif
+
 		for(;
 			point < end;
 			++point){
@@ -330,6 +334,16 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			if (bracks && !bracks->chain->isEmpty()) { // смотрим в скобки
 				subchains.put(point+1, end);
 				subchains.put((*(bracks->chain))[0], (*(bracks->chain))[-1]+1);
+				break;
+			}
+
+			cond = ref_dynamic_cast<RefUserCondition>(*point);
+			if (cond){
+				subchains.put(point+1, end);
+				if (! cond->getRightPart()->isEmpty()) 
+					subchains.put(cond->getRightPart()->operator [](0), cond->getRightPart()->operator [](-1)+1);
+				if (! cond->getLeftPart()->isEmpty()) 
+					subchains.put(cond->getLeftPart()->operator [](0), cond->getLeftPart()->operator [](-1)+1);
 				break;
 			}
 		}

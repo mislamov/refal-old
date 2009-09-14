@@ -4,8 +4,8 @@
 
 #ifdef DEBUG
 #define LOGSTEP(s) \
-	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg_l?arg_r:0)) << "\n" << std::flush;
-	//std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":getTextOfChain(r?r+1:0, arg_l?0:arg_r)) << "\n" << std::flush;
+	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0)) << "\n" << std::flush;
+	//std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?0:arg_r)) << "\n" << std::flush;
 #else
 #define LOGSTEP(s)
 #endif
@@ -108,7 +108,7 @@ unistring Session::debug(){
 unistring MatchState::debug(){
 		std::ostringstream s;
 
-		s << "****\tMatchState:\t" << std::flush << getTextOfChain(view_l, view_r) << "\t~\t" << tpl->debug() << "\n";
+		s << "****\tMatchState:\t" << std::flush << chain_to_text(view_l, view_r) << "\t~\t" << tpl->debug() << "\n";
 		s << varmap.debug();
 		return s.str();
 };
@@ -148,7 +148,7 @@ unistring VarMap::debug(){
 		s << "****\t\tVarMap pool:" << std::flush << "\n";
 		size_t ind = last_ind;
 		while(ind){
-			s << "****\t\t\t" << ind << ") " << std::flush << pool[ind].i1->debug() << " : " << getTextOfChain( pool[ind].i2,  pool[ind].i3 ) << "\n";
+			s << "****\t\t\t" << ind << ") " << std::flush << pool[ind].i1->debug() << " : " << chain_to_text( pool[ind].i2,  pool[ind].i3 ) << "\n";
 			--ind;
 		};
 		return s.str();

@@ -1,3 +1,4 @@
+#include "program.h"
 #include "function.h"
 #include "session.h"
 
@@ -19,12 +20,16 @@ RefChain* RefUserFunction::eval(RefData **l, RefData **r, Session *sess){
 				sent != send;
 				++sent) {
 					sess->createVarMap();
+					SessionStatePoint *state = sess->getState();
+
 					if (sess->matching(*sent, (*sent)->leftPart, l, r, false)) {
-                    //LOG(step++ <<  "\tsucessfull!");
-					RefChain *tmp = sess->substituteExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
-					delete sess->poptopVarMap();
-					return tmp;
-				}
+						//LOG(step++ <<  "\tsucessfull!");
+						RefChain *tmp = sess->substituteExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
+
+						sess->backToState(state);
+						delete sess->poptopVarMap();
+						return tmp;
+					}
 			}
 			RUNTIMEERROR(getName(), "no good sentense");
 };
@@ -59,7 +64,7 @@ TResult RefUserCondition::init(RefData **&tpl, Session* s, RefData **&l, RefData
 	}
 
 	RefChain *rp, *rpp = s->substituteExpression(this->rightPart);
-	rp = s->program->executeExpression(rpp, s);
+	rp = s->getProgram()->executeExpression(rpp, s);
 	if (rp!=rpp) delete rpp;
 
 	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], false)){
