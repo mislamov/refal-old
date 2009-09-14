@@ -5,7 +5,6 @@
 #ifdef DEBUG
 #define LOGSTEP(s) \
 	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0)) << "\n" << std::flush;
-	//std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?0:arg_r)) << "\n" << std::flush;
 #else
 #define LOGSTEP(s)
 #endif
@@ -48,9 +47,9 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
         switch (result_sost) {
 
         case GO: {
-			if (activeTemplate==(*tmplate())[-1]+1){ // достигнут правый край сопоставления! DataDOT
+			if (activeTemplate == this->tmplate()->at(-1)+1){ // достигнут правый край сопоставления! DataDOT
 				if (userVarJumpPoints.getLength()){ // это был user-шаблон
-					RefUserVar** var = userVarJumpPoints.top_pop();
+					RefUserVar** var = userVarJumpPoints.top();
 					(*var)->success(activeTemplate, this, l, r);
 					result_sost = GO;
 					break;
@@ -61,16 +60,18 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
 			}
             LOGSTEP("GO  ");
             #ifdef TESTCODE
-            if (l && !r) {   SYSTEMERROR("RefData::init() tring to matching with NULL address!");            };
+            if (l && !r) {   
+				SYSTEMERROR("RefData::init() tring to matching with NULL address!");            
+			};
             #endif
             l=0;
             result_sost = (*activeTemplate)->init(activeTemplate, this, l, r); /// ШАГ ВПЕРЕД
             break;
         }
         case BACK: {
-			if (activeTemplate==(*tmplate())[0]-1){ // достигнут левый край сопоставления! DataDOT
+			if (activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
 				if (userVarJumpPoints.getLength()){ // это был user-шаблон
-					RefUserVar** var = userVarJumpPoints.top_pop();
+					RefUserVar** var = userVarJumpPoints.top();
 					(*var)->failed(activeTemplate, this, l, r);
 					result_sost = BACK;
 					break;

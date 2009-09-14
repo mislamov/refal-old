@@ -72,7 +72,7 @@ public:
 
 	inline RefChain* tmplate(){ return currentTemplates.top(); };
 	inline void setTmplate(RefChain *t){ currentTemplates.put(t); };
-	inline void popTmplate(){ currentTemplates.pop(); };
+	inline void popTmplate(){ currentTemplates.top_pop(); };
 
 	inline RefData** current_view_l(){ return current_view_borders.top1(); };
 	inline RefData** current_view_r(){ return current_view_borders.top2(); };
