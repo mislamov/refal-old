@@ -58,13 +58,21 @@ class Session {
 
 	PooledStack<VarMap*>  varMapStack; // карты переменных
 	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
+	PooledStack<RefChain *> currentTemplates;
 private:
 	inline Session(){};
 public:
+	PooledStack<RefUserVar**> userVarJumpPoints;
+
 	inline Session(RefProgram *p){ program = p; }; 
 	inline RefProgram *getProgram(){ return program; };
 	inline void createVarMap(){ varMapStack.put(new VarMap()); };
 	inline VarMap* poptopVarMap(){ return varMapStack.top_pop(); };
+	inline void putVarMap(VarMap* vm){ varMapStack.put(vm); };
+
+	inline RefChain* tmplate(){ return currentTemplates.top(); };
+	inline void setTmplate(RefChain *t){ currentTemplates.put(t); };
+	inline void popTmplate(){ currentTemplates.pop(); };
 
 	inline RefData** current_view_l(){ return current_view_borders.top1(); };
 	inline RefData** current_view_r(){ return current_view_borders.top2(); };

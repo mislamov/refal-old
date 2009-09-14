@@ -233,7 +233,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if (! theCommand.compare(_L("BEGIN"))) {
         // модуль прочитан полностью
-		loader->currentModule->initilizeAll();
+		loader->currentModule->initilizeAll(loader->currentProgram);
     } else
     if ( theCommand.compare(_L("FUNCTION")) == 0) {
             #ifdef TESTCODE
@@ -555,24 +555,19 @@ void SAXPrintHandlers::processingInstruction(const  XMLCh* const target
 
 // возвращает переменную
 RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn){
-	
-#ifdef TESTCODE
 	RefData* res = currentProgram->createVariableByTypename(nametype, vn);
-	RefVariable* result = dynamic_cast<RefVariable*>(res);
-	if (! result) SYSTEMERROR("unknown variable type: " << nametype << "." << vn);
-#else
-	RefVariableBase* result = (RefVariableBase* )currentProgram->createVariableByTypename(nametype, vn);
-#endif
 
-    if (result) {
-        return result;
+    if (res) {
+		#ifdef TESTCODE
+		if (! dynamic_cast<RefVariable*>(res)) AchtungERROR;
+		#endif
+		return (RefVariable*)res;
     }
 
     // создаем пользовательскую переменную
     RefUserVar *v = new RefUserVar();
     v->setName(vn);
     v->setType(nametype);
-    //currentModule->initItems.push(v);
     return v;
 };
 

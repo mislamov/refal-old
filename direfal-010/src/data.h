@@ -25,6 +25,7 @@
 
 class RefChain;
 class RefProgram;
+class VarMap;
 
 
 class RefObject {
@@ -63,18 +64,25 @@ class RefTemplateBase;
 class RefUserVar : public RefVariable {
     unistring type;
 	RefTemplateBase *templ;
+	VarMap* varmap;
 public:
 	RefUserVar(){};
 	RefUserVar(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; };
     CLASS_OBJECT_CAST(RefUserVarNotInit);
 
+	inline void saveVarMap(VarMap* vm){ varmap = vm; };
+	inline VarMap* restoreVarMap(){ return varmap; };
 	void setTempl(RefTemplateBase *ntempl){ templ = ntempl; };
     unistring getType() {        return type;    };
 	void setType(unistring ntype) {      type = ntype;    };
     unistring explode() {        return " @RefUserVar ";    };
     bool operator ==(RefData &rd) {        return false;    };
-	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){SYSTEMERROR("unexpected");};
+
+	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+
 };
 
 
@@ -129,6 +137,7 @@ public:
 	RefChain&  operator+=(RefChain *ch); // удаляет *ch 
 	RefChain&  operator+=(RefChain  ch); // только копирует *ch
 	RefData**  operator[](signed long idx);
+	inline RefData**  at(signed long idx){ return (*this)[idx]; };
 
 	//RefVariable** findVariable(unistring vname);
 
@@ -140,7 +149,7 @@ public:
 	unistring debug();
 	unistring explode();
 
-	void compile(RefChain *, RefProgram * =0);
+	void compile(RefChain *, RefProgram *);
 };
 
 

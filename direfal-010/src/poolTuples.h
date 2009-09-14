@@ -187,12 +187,12 @@ public:
 		i2 = pool_last_ind->i2;
 	};
 
-    T1 top1() {
+    inline T1 top1() {
         TUPLE2* pool_last_ind = pool + last_ind;
 		return pool_last_ind->i1;
 	};
 
-    T2 top2() {
+    inline T2 top2() {
         TUPLE2* pool_last_ind = pool + last_ind;
 		return pool_last_ind->i2;
 	};
