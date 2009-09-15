@@ -377,6 +377,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 // вызываетс€ сразу после удачного сопоставлени€ (вместо init правой границы)
 TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefUserVar::success\n";
 	RefData **lold, **rold;
 	VarMap *vm=0, *vm2=0;
 	vm = sess->poptopVarMap(); // сохран€ем карту переменных
@@ -406,6 +407,7 @@ TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData
 
 // вызываетс€ сразу после Ќ≈удачного сопоставлени€ (вместо back левой границы)
 TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefUserVar::faild\n";
 	delete sess->poptopVarMap();
 	VarMap* tmp = 0;
 	sess->restoreVar(this, l, r, tmp);		 // забываем переменную
@@ -425,6 +427,7 @@ TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData
 };
 
 TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefUserVar::init\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
 	if (! dynamic_cast<RefUserTemplate*>(templ)) notrealisedERRORs(sess);
@@ -446,6 +449,7 @@ TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **
 
 // вызываетс€ только после ранее удачного сопоставлени€
 TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefUserVar::back\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
 	#endif
@@ -456,8 +460,8 @@ TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **
 	#ifdef TESTCODE
 		if (!vm) unexpectedERRORs(sess);
 	#endif
-	sess->putVarMap( vm );
 	sess->saveVar(this, l?0:l, l?l-1:r, 0);
+	sess->putVarMap( vm );
 
 	tpl = ((RefUserTemplate*)templ)->getLeftPart()->at(-1);
 	return BACK;

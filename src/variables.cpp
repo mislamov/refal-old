@@ -64,8 +64,34 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         s->MOVE_TO_pred_template(tpl);
         return BACK;
 	}
-        
 	l = (l?l:r); 
+
+
+	RefData **tmp = tpl;
+	IRefSymbol *symb = 0;
+	s->MOVE_TO_next_template(tmp);
+	if (tmp && (symb=ref_dynamic_cast<IRefSymbol>(*tmp))){ // если следующий элемент шаблона - символ
+#ifdef DEBUG
+		std::cout << "e-symbol optimization\n";
+#endif
+
+		do {
+			s->MOVE_TO_next_term(r);
+		} while( r && !(*symb == **r) );
+		if (!r){
+			s->MOVE_TO_pred_template(tpl);
+			return BACK;
+		}
+
+		--r;
+		s->saveVar((RefVariable*)*tpl, l, r);
+		++r;
+		s->MOVE_TO_next_template(tpl);
+		s->MOVE_TO_next_template(tpl);
+		return GO;
+	}
+
+
 
 	s->saveVar((RefVariable*)*tpl, l, r);
     s->MOVE_TO_next_template(tpl);
