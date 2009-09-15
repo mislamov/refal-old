@@ -33,11 +33,11 @@ unistring the_explode(RefData **a, RefData **b){
 		return "";
 	}
 	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERROR("the_explode(**, **)", "error arguments");
+	if (!a || !b || leng<0) RUNTIMEERRORn("the_explode(**, **) : error arguments");
 	unistring result = "";
     for (size_t i=0; i<=leng; i++) {
 		#ifdef TESTCODE
-		if (! a[i]) AchtungERROR;
+		if (! a[i]) AchtungERRORn;
 		#endif
 		result += a[i]->explode();
     }
@@ -50,11 +50,11 @@ unistring the_text(RefData **a, RefData **b){
 		return "";
 	}
 	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERROR("the_text(**, **)", "error arguments");
+	if (!a || !b || leng<0) RUNTIMEERRORn("the_text(**, **) : error arguments");
 	unistring result = "";
     for (size_t i=0; i<=leng; i++) {
 		#ifdef TESTCODE
-		if (! a[i]) AchtungERROR;
+		if (! a[i]) AchtungERRORn;
 		#endif
 		result += a[i]->toString();
     }

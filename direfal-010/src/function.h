@@ -23,16 +23,18 @@
 
 #include "data.h"
 
+
 class RefSentence;
 
 // рефал-функция
 class RefFunctionBase : public RefObject {
 protected:
-	virtual unistring getName() = 0;
-public:
-	virtual void initilizeAll(RefProgram* program){};
 	virtual RefChain* eval(RefData**, RefData**, Session*) = 0;
+public:
+	virtual unistring getName() = 0;
+	virtual void initilizeAll(RefProgram* program){};
 	virtual unistring debug() = 0;
+	RefChain* exec(RefData** l, RefData** r, Session* s);
 
 };
 
@@ -103,7 +105,7 @@ public:
 	inline void setLeftPart(RefChain *ch){ leftPart = ch; };
 	inline void setRightPart(RefChain *ch){ 
 		#ifdef TESTCODE
-		if (! dynamic_cast<RefChainConstructor*>(ch)) SYSTEMERROR("RefChainConstructor expected!");
+		if (! dynamic_cast<RefChainConstructor*>(ch)) SYSTEMERRORn("RefChainConstructor expected!");
 		#endif
 		rightPart = (RefChainConstructor*)ch; 
 	};

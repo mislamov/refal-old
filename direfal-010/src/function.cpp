@@ -2,6 +2,26 @@
 #include "function.h"
 #include "session.h"
 
+
+RefChain* RefFunctionBase::exec(RefData** l, RefData** r, Session* s){
+		RefFunctionBase *tmp;
+
+		#ifdef DEBUG
+		std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >\n";
+		#endif
+
+		s->execTrace.put(this, l, r);
+		RefChain* res = eval(l, r, s);
+		s->execTrace.top_pop(tmp, l, r); // ?
+
+		#ifdef DEBUG
+		std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >  ==>>  " << res->debug() << "\n";
+		#endif
+
+		return res;
+};
+
+
 void RefUserFunction::initilizeAll(RefProgram *program){
             std::list<RefSentence *>::iterator 
 					sent = body.begin(), // перебор предложений функции
@@ -16,9 +36,6 @@ void RefUserFunction::initilizeAll(RefProgram *program){
 
 RefChain* RefUserFunction::eval(RefData **l, RefData **r, Session *sess){
             // перебор предложений функции
-#ifdef DEBUG
-	std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >\n";
-#endif
 			for(std::list<RefSentence *>::iterator sent = body.begin(), send = body.end();
 				sent != send;
 				++sent) {
@@ -26,14 +43,7 @@ RefChain* RefUserFunction::eval(RefData **l, RefData **r, Session *sess){
 					SessionStatePoint *state = sess->getState();
 
 					if (sess->matching(*sent, (*sent)->leftPart, l, r, false)) {
-//#ifdef DEBUG
-//	std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " > SUCCESS!\n";
-//#endif
-						//LOG(step++ <<  "\tsucessfull!");
 						RefChain *tmp = sess->substituteExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
-#ifdef DEBUG
-	std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >  ==>>  " << tmp->debug() << "\n";
-#endif
 
 						sess->backToState(state);
 						delete sess->poptopVarMap();
@@ -41,7 +51,7 @@ RefChain* RefUserFunction::eval(RefData **l, RefData **r, Session *sess){
 					}
 					delete sess->poptopVarMap();
 			}
-			RUNTIMEERROR(getName(), "no good sentense");
+			RUNTIMEERRORs(sess, "no good sentense");
 };
 
 void RefUserTemplate::initilizeAll(RefProgram *program){

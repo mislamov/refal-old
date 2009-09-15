@@ -23,7 +23,7 @@
 // TODO: подумать над возможностью пердавать 2 chain в аргументах, а не 1 chain и 2 dot.
 bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l, RefData **arg_r, bool isdemaching) {
 #ifdef TESTCODE
-	if (! varMapStack.getCount()) SYSTEMERROR("createVarMap() wanted! No varmaps in stack for matching");
+	if (! varMapStack.getCount()) SYSTEMERRORs(this, "createVarMap() wanted! No varmaps in stack for matching");
 #endif
 
 	//LOG("New MATCHING : tmplateChain=" << thetmplate->debug() << "  isDematching="<<isdemaching);
@@ -58,7 +58,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
 					#ifdef TESTCODE
-						if (! userVarJumpPoints.getLength()) AchtungERROR;
+						if (! userVarJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
 					RefUserVar** var = userVarJumpPoints.top();
 					(*var)->success(activeTemplate, this, l, r);
@@ -72,7 +72,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
             LOGSTEP("GO  ");
             #ifdef TESTCODE
             if (l && !r) {   
-				SYSTEMERROR("RefData::init() tring to matching with NULL address!");            
+				SYSTEMERRORs(this, "RefData::init() tring to matching with NULL address!");            
 			};
             #endif
             l=0;
@@ -85,7 +85,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
 					#ifdef TESTCODE
-						if (! userVarJumpPoints.getLength()) AchtungERROR;
+						if (! userVarJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
 					RefUserVar** var = userVarJumpPoints.top();
 					(*var)->failed(activeTemplate, this, l, r);
@@ -182,6 +182,28 @@ bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&v
             return false;
 };
 
+bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r){
+    #ifdef TESTCODE
+	if (path == EmptyUniString) {
+		AchtungERRORn;
+	}
+    #endif
+	long t_from  = 0;
+    long t_to    = -1;
+    unistring vname;
+	VarMap *vm = this;
+
+	do {
+        t_from = t_to+1;
+        t_to   = path.find(varPathSeparator, t_from);
+        vname = path.substr(t_from, t_to-t_from);
+
+		if (!vm) return false;
+		vm->findByName(vname, l, r, vm);
+    } while (t_to != std::string::npos);
+	return true;
+}
+
 	
 unistring VarMap::debug(){
 		std::ostringstream s;
@@ -226,7 +248,12 @@ RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 		link = ref_dynamic_cast<RefLinkToVariable>(*item);
 		if (link){
 			RefData **endi, **i;
-			findVar(link->lnk, i, endi);
+			VarMap* vm = 0;
+			findVar(link->lnk, i, endi, vm);
+			if (link->path != EmptyUniString){
+				// заглядывание в пользовательскую переменную
+				if (! vm->folowByWay(link->path, i, endi)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
+			}
 			if (i){
 				++endi;
 				for( ; i < endi; ++i){
@@ -251,3 +278,13 @@ RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 	}
 	return result;
 };
+
+
+void Session::printExecTrace(){
+	unistring tab = "";
+	while (execTrace.getLength()){
+		std::cout << tab  << "<" << execTrace.top1()->getName() << " " << chain_to_text(execTrace.top2(), execTrace.top3()) << " >\n";
+		execTrace.pop();
+		tab += "   ";
+	}
+}

@@ -5,7 +5,7 @@ unistring getModuleNameFromFileName(unistring fname){
     if (!i) {
         fname = fname;
     } else {
-        SYSTEMERROR("--== zaglushka module using ==--");
+        SYSTEMERRORn("--== zaglushka module using ==--");
         fname = "errornaME.TXT";
     }
 

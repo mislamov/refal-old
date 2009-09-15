@@ -85,7 +85,7 @@ RefUserModule *mod;
                *binpath = getenv("REFAL_HOME");
 
     if (binpath == NULL) {
-        SYSTEMERROR("Define REFAL_HOME variable into your environment");
+        SYSTEMERRORn("Define REFAL_HOME variable into your environment");
     }
     std::string refal_dir = binpath;
 

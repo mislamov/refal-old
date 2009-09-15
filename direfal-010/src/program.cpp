@@ -30,9 +30,9 @@ RefProgram::RefProgram(){
 
 void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в программе (перед загрузкой)
 		if (module->getName() == EmptyUniString) 
-			SYSTEMERROR("Empty module name");
+			SYSTEMERRORn("Empty module name");
 		if (modules.find(module->getName()) != modules.end()) 
-			SYSTEMERROR("Several loads of module [" << module->getName() << "] ");
+			SYSTEMERRORn("Several loads of module [" << module->getName() << "] ");
 		modules[module->getName()] = module;
 };
 
@@ -52,26 +52,26 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				*result += new RefStructBrackets( executeExpression(databr->chain, sess) );
 			} else {
 				#ifdef TESTCODE
-				if (! ref_dynamic_cast<RefExecBrackets>(databr)) AchtungERROR;
+				if (! ref_dynamic_cast<RefExecBrackets>(databr)) AchtungERRORs(sess);
 				#endif
 				//RefExecBrackets
 				RefChain *arg = executeExpression(databr->chain, sess); // вычисляем внутренние exec-скобки
-				if (arg->isEmpty()) SYSTEMERROR("Unexpected empty argument for function call-brackets! " << databr->chain->debug());
+				if (arg->isEmpty()) SYSTEMERRORs(sess, "Unexpected empty argument for function call-brackets! " << databr->chain->debug());
 				RefData **functionid = (*arg)[0];
 				//TODO: сделать привязку функциональных вызовов по именнованым областям
 				RefWord *fname = ref_dynamic_cast<RefWord>(*functionid);
 				RefFunctionBase *func = 0;
 				if (!fname || !(func = this->findFunction(fname->getValue()))){
-					RUNTIMEERROR((*functionid)->explode(), "Function not found in program");
+					RUNTIMEERRORs(sess, "Function not found in program");
 				}
 				RefChain *fresult;
 				if (arg->getLength() > 1){
-					fresult = func->eval((*arg)[1], (*arg)[-1], sess);
+					fresult = func->exec((*arg)[1], (*arg)[-1], sess);
 				} else {
 					#ifdef TESTCODE
-					if (arg->getLength() != 1) AchtungERROR;
+					if (arg->getLength() != 1) AchtungERRORs(sess);
 					#endif
-					fresult = func->eval(0, 0, sess);
+					fresult = func->exec(0, 0, sess);
 				}
 				delete arg;
 				arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
@@ -99,7 +99,7 @@ RefFunctionBase* RefProgram::findFunction(unistring id){
 		}
 		++modit;
 	};
-	RUNTIMEERROR("FindFunction", "function " << id << " not found in program");
+	RUNTIMEERRORn("function " << id << " not found in program");
 	return 0;
 };
 
@@ -117,7 +117,7 @@ RefTemplateBase* RefProgram::findTemplate(unistring id){
 		}
 		++modit;
 	};
-	RUNTIMEERROR("FindTemplate", "template" << id << " not found in program");
+	RUNTIMEERRORn("template" << id << " not found in program");
 	return 0;
 };
 
@@ -138,7 +138,7 @@ RefData* RefProgram::createSymbolByCode(unistring code, unistring value){
 		++modit;
 	}
 
-	COMPILETIMEERROR("Loader", "Definition for " << code << " not found in loaded modules");
+	COMPILETIMEERRORn("Definition for " << code << " not found in loaded modules");
 };
 
 
@@ -161,11 +161,11 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 				return result;
 			}
 			if (result) {
-				SYSTEMERROR("not variable loading like variable: " << result->debug());
+				SYSTEMERRORn("not variable loading like variable: " << result->debug());
 			}
 		} else {
 			usermod = dynamic_cast<RefUserModule*>(mod);
-			if (!usermod) SYSTEMERROR("unknown children of RefModuleBase");
+			if (!usermod) SYSTEMERRORn("unknown children of RefModuleBase");
 			RefTemplateBase *tp = usermod->getTemplateByName(code);
 			if (tp){
 				RefTemplateBase *templ = ref_dynamic_cast<RefTemplateBase>(tp);
@@ -218,13 +218,13 @@ unistring RefUserModule::debug(){
 
 void RefModuleBase::setFunctionByName(unistring name, RefFunctionBase* o){
 	std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(name);
-	if (iter != functions.end()) { COMPILETIMEERROR(name, "function multi-definition"); }
+	if (iter != functions.end()) { COMPILETIMEERRORn("function multi-definition"); }
 		functions[name] = o; 	
 };
     
 void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o){
 	std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(name);
-		if (iter != templates.end()) {	COMPILETIMEERROR(name, "template multi-definition"); }
+		if (iter != templates.end()) {	COMPILETIMEERRORn("template multi-definition"); }
 		templates[name] = o; 	
 };
 

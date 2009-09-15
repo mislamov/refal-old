@@ -40,8 +40,8 @@ public:
     virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0;
 
-	virtual bool operator >(RefData &rd)  { RUNTIMEERROR("operator >", "Not comparable for" << explode() << " and " << rd.explode()); };
-	virtual bool operator ==(RefData &rd) { notrealisedERROR; };
+	virtual bool operator >(RefData &rd)  { RUNTIMEERRORn("Not comparable for" << explode() << " and " << rd.explode()); };
+	virtual bool operator ==(RefData &rd) { notrealisedERRORn; };
 
 	virtual unistring debug(){ return explode()+" "; };
 	virtual unistring toString(){ return explode()+" "; };

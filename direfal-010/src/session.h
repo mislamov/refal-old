@@ -28,17 +28,16 @@
 
 class VarMap : public PooledTuple4<RefVariable*, RefData** , RefData**, VarMap*>{
 	RefObject *creator;
-	VarMap(const VarMap&){ AchtungERROR; };  // неконтроллируемое копирование нам не нужно
+	VarMap(const VarMap&){ AchtungERRORn; };  // неконтроллируемое копирование нам не нужно
 public:
-	VarMap(RefObject *cr = 0) {        
-		creator = cr;
-	};
+	VarMap(RefObject *cr = 0) {	creator = cr;};
 
     // ищет по имени переменной ее облать видимости
     bool findByName(unistring name, RefData** &l, RefData** &r, VarMap*&);
-
 	// ищет по ссылке на переменную ее облать видимости
 	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap*&);
+	// ищет по текстовому пути
+	bool folowByWay(unistring path, RefData** &l, RefData** &r);
 
 	unistring debug();
 };
@@ -66,6 +65,7 @@ private:
 	inline Session(){};
 public:
 	PooledStack<RefUserVar**> userVarJumpPoints;
+	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
 
 	inline Session(RefProgram *p){ program = p; }; 
 	inline RefProgram *getProgram(){ return program; };
@@ -87,7 +87,7 @@ public:
 		RefChain *res; 
 		conditionsArgs.top_pop(cnd0, res); 
 		#ifdef TESTCODE
-		if (cnd!=cnd0) AchtungERROR;
+		if (cnd!=cnd0) AchtungERRORs(this);
 		#endif
 		return res;
 	};
@@ -99,7 +99,7 @@ public:
 	};
 	void backToState(SessionStatePoint* ss){
 		#ifdef TESTCODE
-		if (ss->conditionsArgsCount > conditionsArgs.getLength()) AchtungERROR;
+		if (ss->conditionsArgsCount > conditionsArgs.getLength()) AchtungERRORs(this);
 		#endif
 		// заглушка
 		for(size_t i=conditionsArgs.getLength(); i!=ss->conditionsArgsCount; --i){
@@ -131,12 +131,13 @@ public:
 		bracks.top_pop(tpl2, br);
 		#ifdef TESTCODE
 		if (tpl2 != tpl) 
-			AchtungERROR;
+			AchtungERRORs(this);
 		#endif
 		return br;
 	};
 
 	unistring debug();
+	void printExecTrace();
 
 	inline RefData** GET_next_term (RefData** p);
 	inline RefData** GET_pred_term (RefData** p);
@@ -161,7 +162,7 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Va
 	varMapStack.top()->top_pop(varNew, l, r, vm);
 	#ifdef TESTCODE
 	if (var != varNew){
-		AchtungERROR;
+		AchtungERRORs(this);
 	}
 	#endif
 };
@@ -170,10 +171,10 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
 	VarMap* vm = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
 	#ifdef TESTCODE
-	if (vm) AchtungERROR;
+	if (vm) AchtungERRORs(this);
 	if (var != varNew){
 		std::cout << this->debug();
-		AchtungERROR;
+		AchtungERRORs(this);
 	}
 	#endif
 };
@@ -186,7 +187,7 @@ inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r) {
 	#ifdef TESTCODE
 		bool res = varMapStack.top()->findByLink(var, l, r, vm);
 		if (vm) {
-			unexpectedERROR;
+			unexpectedERRORs(this);
 		}
 		return res;
 	#else

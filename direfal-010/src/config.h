@@ -269,12 +269,23 @@ inline std::string replace(std::string text, std::string s, std::string d)
 }
 
 
-#define AchtungERROR SYSTEMERROR("Achtung!")
-#define notrealisedERROR SYSTEMERROR("Not realised!")
-#define unexpectedERROR  SYSTEMERROR("Unexpected execution!")
+#define AchtungERRORn SYSTEMERRORn("Achtung!")
+#define notrealisedERRORn SYSTEMERRORn("Not realised!")
+#define unexpectedERRORn  SYSTEMERRORn("Unexpected execution!")
+
+#define AchtungERRORs(sess)		SYSTEMERRORs(sess, "Achtung!")
+#define notrealisedERRORs(sess)	SYSTEMERRORs(sess, "Not realised!")
+#define unexpectedERRORs(sess)	SYSTEMERRORs(sess, "Unexpected execution!")
 
 #ifdef DEBUG
-    #define SYSTEMERROR(msg) { \
+    #define SYSTEMERRORn(msg) { \
+        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+		std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+        exit(-1); \
+        };
+    #define SYSTEMERRORs(sess, msg) { \
+		sess->printExecTrace(); \
+		std::cout << sess->debug(); \
         std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
 		std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         exit(-1); \
@@ -284,26 +295,42 @@ inline std::string replace(std::string text, std::string s, std::string d)
         std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
         };
 #else
-    #define SYSTEMERROR(msg) { \
+    #define SYSTEMERRORn(msg) { \
         std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
         std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         exit(-1); \
         };
-    /*#define SYSTEMERROR(msg) { \
-        std::cout << "\n\n######## SYSTEM ERROR ########:: " << msg << "\n\n" << std::flush; \
+    #define SYSTEMERRORs(sess, msg) { \
+		sess->printExecTrace(); \
+		std::cout << sess->debug(); \
+        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+        std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         exit(-1); \
-        };*/
-
+        };
     #define LOG(msg) {}
 #endif
 
-#define RUNTIMEERROR(fname, msg) { \
-    std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
+#define RUNTIMEERRORn(msg) { \
+    std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
+    exit(-1); \
+	};
+
+#define RUNTIMEERRORs(sess, msg) { \
+	sess->printExecTrace(); \
+		std::cout << sess->debug(); \
+    std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
     exit(-1); \
     };
 
-#define COMPILETIMEERROR(fname, msg) { \
-    std::cout << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : Error in function " << fname << " :: " << msg << "\n" << std::flush; \
+#define COMPILETIMEERRORn(msg) { \
+    std::cout << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
+    exit(-1); \
+    };
+
+#define COMPILETIMEERRORs(sess, msg) { \
+	sess->printExecTrace(); \
+		std::cout << sess->debug(); \
+    std::cout << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
     exit(-1); \
     };
 

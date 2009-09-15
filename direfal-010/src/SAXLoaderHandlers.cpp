@@ -77,13 +77,13 @@ try {
     if ( theCommand.compare(_L("BEGIN")) == 0 ) {
     } else
     if ( theCommand.compare(_L("FUNCTION")) == 0) {
-            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("FUNCTION WITHOUT name");
+            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERRORn("FUNCTION WITHOUT name");
             loader->putValueToStack(theCommand, new RefUserFunction(toWstring(attributes.getValue("name"))));
     } else
     if ( theCommand.compare(_L("TEMPLATE")) == 0) {
             loader->templateOrSent = "T";
-            //SYSTEMERROR("Templates are switched off! (testing)");
-            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("TEMPLATE WITHOUT name");
+            //SYSTEMERRORn("Templates are switched off! (testing)");
+            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERRORn("TEMPLATE WITHOUT name");
             loader->putValueToStack(theCommand, new RefUserTemplate(toWstring(attributes.getValue("name"))));
     } else
     if ( theCommand.compare(_L("SENTENCE")) == 0) {
@@ -112,22 +112,22 @@ try {
 		loader->createChainToStack();
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
-		AchtungERROR;
+		AchtungERRORn;
 		/*
-            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERROR("GROUP WITHOUT name-attribute");
+            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERRORn("GROUP WITHOUT name-attribute");
             RefGroupBracket *gbropen = new RefGroupBracket(toWstring(attributes.getValue("name")));
             loader->putValueToStack( theCommand, (RefObject *)(gbropen) );
             *(loader->getCurrChain()) += gbropen;
 			*/
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {
-		SYSTEMERROR("not yet");
+		SYSTEMERRORn("not yet");
 		/*
             ref_variant_vopr  *vopr  = new ref_variant_vopr();
             ref_variant_vert  *vert  = new ref_variant_vert();
             vert->vopr = vopr;
             #ifdef TESTCODE
-            if (! dynamic_cast<RefGroupBracket *>(loader->getCurrChain()->second)) SYSTEMERROR("bad variant build");
+            if (! dynamic_cast<RefGroupBracket *>(loader->getCurrChain()->second)) SYSTEMERRORn("bad variant build");
             #endif
             vopr->begbr = loader->getCurrChain()->second;
             loader->putValueToStack( "VARIANTS-vopr" , vopr);  //  добавим позже в конец цепочки
@@ -139,7 +139,7 @@ try {
 		*/
     } else
     if ( theCommand.compare(_L("THE-VARIANT")) == 0) { //       | => x
-		SYSTEMERROR("not yet");
+		SYSTEMERRORn("not yet");
 		/*
 			ref_variant_vert    *vert   = new ref_variant_vert();
             ref_variant_dot     *dot    = new ref_variant_dot();
@@ -152,7 +152,7 @@ try {
 		*/
     } else
     if ( theCommand.compare(_L("REPEAT")) == 0 ) {
-		SYSTEMERROR("not yet");
+		SYSTEMERRORn("not yet");
 		/*
         infint min = str2infint(toWstring(attributes.getValue("from")));
         infint max = str2infint(toWstring(attributes.getValue("to")));
@@ -174,10 +174,10 @@ try {
         loader->putValueToStack(theCommand, tmp);
     } else  
 
-    SYSTEMERROR("unknown tag name: " << theCommand); */
+    SYSTEMERRORn("unknown tag name: " << theCommand); */
 #ifdef TESTCODE
 } catch(int i) {
-    SYSTEMERROR("excepion!");
+    SYSTEMERRORn("excepion!");
 }
 #endif
 }
@@ -207,7 +207,7 @@ unistring getVarName(unistring &str){
         for (; (i>0)&&str[i]!='.'; i--){
             name = str[i] + name;
         }
-        if (!i) SYSTEMERROR("No dot in VARiable discription!");
+        if (!i) SYSTEMERRORn("No dot in VARiable discription!");
         for (i-=1; (i>=0); i--){
             tip = str[i]+tip;
         }
@@ -229,7 +229,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     try {
     #endif
     if (! theCommand.compare(_L("ERROR"))) {
-        SYSTEMERROR(loader->currentchars);
+        SYSTEMERRORn(loader->currentchars);
     } else
     if (! theCommand.compare(_L("BEGIN"))) {
         // модуль прочитан полностью
@@ -237,14 +237,14 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("FUNCTION")) == 0) {
             #ifdef TESTCODE
-            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not RefUserFunction in FUNCTION-stack !!!");
+            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not RefUserFunction in FUNCTION-stack !!!");
             #endif
             RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
 			loader->currentModule->setFunctionByName(f->getName(), f);
     } else
     if ( theCommand.compare(_L("TEMPLATE")) == 0) {
             #ifdef TESTCODE
-            if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERROR("not TEMPLATE in TEMPLATE-stack !!!");
+            if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERRORn("not TEMPLATE in TEMPLATE-stack !!!");
             #endif
             //RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
             RefUserTemplate *t =  (RefUserTemplate*)( loader->extractValueFromStack("TEMPLATE") );
@@ -255,13 +255,13 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("SENTENCE")) == 0) {
             #ifdef TESTCODE
-            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
-            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERROR("not FUNCTION in FUNCTION-stack !!!");
+            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
+            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not FUNCTION in FUNCTION-stack !!!");
             #endif
             RefSentence     *s =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
 			RefChain *rch = loader->extractCurrChainFromStack();
 #ifdef TESTCODE
-			if (! dynamic_cast<RefChainConstructor*>(rch)) SYSTEMERROR("alarm xml construct");
+			if (! dynamic_cast<RefChainConstructor*>(rch)) SYSTEMERRORn("alarm xml construct");
 #endif
 			s->rightPart = (RefChainConstructor*)rch;
             s->leftPart  = loader->extractCurrChainFromStack();
@@ -273,20 +273,20 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
 
         /*
             #ifdef TESTCODE
-            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
+            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
             #endif
             RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
             s->leftPart = loader->extractCurrChainFromStack();
         */
 		#ifdef TESTCODE
-		if (! dynamic_cast<RefChain*>(loader->getCurrChain()))  SYSTEMERROR("alarm");
+		if (! dynamic_cast<RefChain*>(loader->getCurrChain()))  SYSTEMERRORn("alarm");
 		#endif
 		//std::cout << "\n\n\n" << loader->getCurrChain()->toString() << "\n\n\n";
     } else
     if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
         /*
             #ifdef TESTCODE
-            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERROR("not SENTENCE in SENTENCE-stack !!!");
+            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
             #endif
             RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
             s->rightPart = loader->extractCurrChainFromStack();
@@ -320,16 +320,16 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
 		*(loader->getCurrChain()) += new RefStructBrackets(tmp);
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
-		AchtungERROR;
+		AchtungERRORn;
 		/*
             #ifdef TESTCODE
-            if (! dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERROR("not RefGroupBracket in GROUP-stack !!!");
+            if (! dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERRORn("not RefGroupBracket in GROUP-stack !!!");
             #endif
             RefGroupBracket *gbrclose =  (RefGroupBracket*)( loader->extractValueFromStack(theCommand) );
             *(loader->getCurrChain()) += gbrclose;*/
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {  //   | => x ?
-		SYSTEMERROR("not realised");
+		SYSTEMERRORn("not realised");
 		/*
             ref_variant_vopr  *vopr  = (ref_variant_vopr *) loader->extractValueFromStack("VARIANTS-vopr" );
             ref_variant_vert  *vert  = (ref_variant_vert *) loader->extractValueFromStack("VARIANTS-vert" );
@@ -342,14 +342,14 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     if ( theCommand.compare(_L("THE-VARIANT")) == 0 ) {
     } else
     if ( theCommand.compare(_L("REPEAT")) == 0 ) {
-		SYSTEMERROR("not realised");
+		SYSTEMERRORn("not realised");
 		/*
         ref_repeater *repeater = (ref_repeater *)loader->extractValueFromStack( "REPEAT" );
         *(loader->getCurrChain()) += new ref_repeater(repeater);
 		*/
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
-		AchtungERROR; 
+		AchtungERRORn; 
 		//            *(loader->getCurrChain()) += new RefMatchingCutter();
     } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
@@ -368,15 +368,15 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
         std::cout << "\n##########################################################################################";
         std::cout << "\n####:ERROR: \t" << loader->currentchars;
         std::cout << "\n##########################################################################################\n";
-        SYSTEMERROR("ABORT");
+        SYSTEMERRORn("ABORT");
 	} else
 	if (tmpvdata = loader->currentProgram->createSymbolByCode(theCommand, loader->currentchars)){
 			*(loader->getCurrChain()) += tmpvdata;
 	} else
-		SYSTEMERROR("unknown tag name: " << theCommand);
+		SYSTEMERRORn("unknown tag name: " << theCommand);
     #ifdef TESTCODE
     } catch(int i) {
-        SYSTEMERROR("excepion!");
+        SYSTEMERRORn("excepion!");
     }
     #endif
 
@@ -559,7 +559,7 @@ RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn)
 
     if (res) {
 		#ifdef TESTCODE
-		if (! dynamic_cast<RefVariable*>(res)) AchtungERROR;
+		if (! dynamic_cast<RefVariable*>(res)) AchtungERRORn;
 		#endif
 		return (RefVariable*)res;
     }
@@ -580,7 +580,7 @@ RefData* LoaderHeap::getNewEmptyRefSymbolByTypeName(unistring nametype){
         return result;
     }
 
-    SYSTEMERROR("Unknown Refal-symbol: " << nametype );
+    SYSTEMERRORn("Unknown Refal-symbol: " << nametype );
     //return new RefUserVar(nametype);
 }
 */
