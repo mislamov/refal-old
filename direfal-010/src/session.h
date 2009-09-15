@@ -26,16 +26,19 @@
 #include "function.h"
 #include "poolTuples.h"
 
-class VarMap : public PooledTuple3<RefVariable*, RefData** , RefData**>{
+class VarMap : public PooledTuple4<RefVariable*, RefData** , RefData**, VarMap*>{
+	RefObject *creator;
 	VarMap(const VarMap&){ AchtungERROR; };  // неконтроллируемое копирование нам не нужно
 public:
-	VarMap(void *own = 0) {        pool[0].i1 = (RefVariable*)own;    };
+	VarMap(RefObject *cr = 0) {        
+		creator = cr;
+	};
 
     // ищет по имени переменной ее облать видимости
-    bool findByName(unistring name, RefData** &l, RefData** &r);
+    bool findByName(unistring name, RefData** &l, RefData** &r, VarMap*&);
 
 	// ищет по ссылке на переменную ее облать видимости
-	bool findByLink(RefVariable* var, RefData** &l, RefData** &r);
+	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap*&);
 
 	unistring debug();
 };
@@ -66,7 +69,7 @@ public:
 
 	inline Session(RefProgram *p){ program = p; }; 
 	inline RefProgram *getProgram(){ return program; };
-	inline void createVarMap(){ varMapStack.put(new VarMap()); };
+	inline void createVarMap(RefObject *creator){ varMapStack.put(new VarMap(creator)); };
 	inline VarMap* poptopVarMap(){ return varMapStack.top_pop(); };
 	inline void putVarMap(VarMap* vm){ varMapStack.put(vm); };
 
@@ -110,13 +113,14 @@ public:
 	// готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
     RefChain*  substituteExpression(RefChainConstructor *);
 
-	void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r); // сохраняет состояние переменной
-	void RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r); // восстанавливает состояние переменной
+	//void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r); // сохраняет состояние переменной
+	//void RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r); // восстанавливает состояние переменной
 
-	inline void saveVar    (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
-    inline void restoreVar (Session *s, RefVariable *varOrData, RefData **&l, RefData **&r);
+	inline void saveVar    (RefVariable *var, RefData **l, RefData **r, VarMap* =0);
+    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r);
+    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, VarMap*&);
 	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r);
-	inline bool getVariableValue(RefVariable*, RefData**&, RefData**&);
+	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r, VarMap*&);
 
 	void saveBracketsFromView(RefStructBrackets* tpl, RefStructBrackets** br){
 		bracks.put(tpl, br);
@@ -148,17 +152,48 @@ public:
 };
 
 
-inline void Session::saveVar(Session *s, RefVariable *varOrData, RefData **&l, RefData **&r) {
-	varMapStack.top()->put(varOrData, l, r);
+inline void Session::saveVar(RefVariable *var, RefData **l, RefData **r, VarMap* vm) {
+	varMapStack.top()->put(var, l, r, vm);
 };
 
-inline void Session::restoreVar(Session *s, RefVariable *varOrData, RefData **&l, RefData **&r) {
-    varMapStack.top()->top_pop(varOrData, l, r);
+inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, VarMap* &vm) {
+	RefVariable *varNew = 0;
+	varMapStack.top()->top_pop(varNew, l, r, vm);
+	#ifdef TESTCODE
+	if (var != varNew){
+		AchtungERROR;
+	}
+	#endif
+};
+inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
+	RefVariable *varNew = 0;
+	VarMap* vm = 0;
+	varMapStack.top()->top_pop(varNew, l, r, vm);
+	#ifdef TESTCODE
+	if (vm) AchtungERROR;
+	if (var != varNew){
+		std::cout << this->debug();
+		AchtungERROR;
+	}
+	#endif
 };
 
+inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, VarMap* &vm) {
+	return varMapStack.top()->findByLink(var, l, r, vm);
+};
 inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r) {
-	return varMapStack.top()->findByLink(var, l, r);
+	VarMap* vm = 0;	
+	#ifdef TESTCODE
+		bool res = varMapStack.top()->findByLink(var, l, r, vm);
+		if (vm) {
+			unexpectedERROR;
+		}
+		return res;
+	#else
+		return varMapStack.top()->findByLink(var, l, r, vm);
+	#endif
 };
+
 
 /*
 inline void Session::JUMP_View (RefChain* ch, RefData** outL, RefData** outR){		// прыгаем в подцепочку данных (скобка)
@@ -206,14 +241,6 @@ inline RefData** Session::GET_pred_template(RefData** p){
 	return p-1;
 };
 
-
-inline bool Session::getVariableValue(RefVariable* var, RefData** &l, RefData** &r){
-	#ifdef TESTCODE
-	if (!var) 
-		AchtungERROR;
-	#endif
-	return findVar(var, l, r);
-};
 
 
 #endif

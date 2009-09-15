@@ -16,20 +16,30 @@ void RefUserFunction::initilizeAll(RefProgram *program){
 
 RefChain* RefUserFunction::eval(RefData **l, RefData **r, Session *sess){
             // перебор предложений функции
+#ifdef DEBUG
+	std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >\n";
+#endif
 			for(std::list<RefSentence *>::iterator sent = body.begin(), send = body.end();
 				sent != send;
 				++sent) {
-					sess->createVarMap();
+					sess->createVarMap(this);
 					SessionStatePoint *state = sess->getState();
 
 					if (sess->matching(*sent, (*sent)->leftPart, l, r, false)) {
+//#ifdef DEBUG
+//	std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " > SUCCESS!\n";
+//#endif
 						//LOG(step++ <<  "\tsucessfull!");
 						RefChain *tmp = sess->substituteExpression( (*sent)->rightPart ); // создаем копию rightPart'а с заменой переменных на значения
+#ifdef DEBUG
+	std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >  ==>>  " << tmp->debug() << "\n";
+#endif
 
 						sess->backToState(state);
 						delete sess->poptopVarMap();
 						return tmp;
 					}
+					delete sess->poptopVarMap();
 			}
 			RUNTIMEERROR(getName(), "no good sentense");
 };
