@@ -154,19 +154,23 @@ public:
 
 
 inline void Session::saveVar(RefVariable *var, RefData **l, RefData **r, VarMap* vm) {
+	//std::cout << "Session::saveVar(for " << var->toString() << ")\n";
 	varMapStack.top()->put(var, l, r, vm);
 };
 
 inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, VarMap* &vm) {
+	//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
 	#ifdef TESTCODE
 	if (var != varNew){
-		AchtungERRORs(this);
+		SYSTEMERRORs(this, "restoreVar: tring " << var->toString() << "  when  " << varNew->toString() << " expect!"); 
+		//AchtungERRORs(this);
 	}
 	#endif
 };
 inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
+	//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	VarMap* vm = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
