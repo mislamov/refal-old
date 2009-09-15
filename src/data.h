@@ -40,11 +40,13 @@ public:
     virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0;
 
 	virtual bool operator >(RefData &rd)  { RUNTIMEERROR("operator >", "Not comparable for" << explode() << " and " << rd.explode()); };
-	virtual bool operator ==(RefData &rd) { SYSTEMERROR("alarm!"); return false; };
+	virtual bool operator ==(RefData &rd) { notrealisedERROR; };
 
-	virtual unistring debug(){ return explode(); };
+	virtual unistring debug(){ return explode()+" "; };
 	virtual unistring toString(){ return explode()+" "; };
 };
+
+
 
 
 
@@ -75,8 +77,7 @@ public:
 	void setTempl(RefTemplateBase *ntempl){ templ = ntempl; };
     unistring getType() {        return type;    };
 	void setType(unistring ntype) {      type = ntype;    };
-    unistring explode() {        return " @RefUserVar ";    };
-    bool operator ==(RefData &rd) {        return false;    };
+	unistring explode();
 
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
@@ -91,6 +92,8 @@ public:
 	RefChain *chain;
 
 	RefDataBracket(RefChain *thechain) : RefData(){		chain = thechain;	};
+	virtual unistring debug() = 0;
+
 };
 
 
@@ -102,6 +105,7 @@ class RefStructBrackets : public RefDataBracket {
 public:
 	inline RefStructBrackets(RefChain* thechain) : RefDataBracket(thechain){};
 	unistring explode();
+	unistring debug();
 
     TResult init(RefData **&, Session*, RefData **&, RefData **&);
     TResult back(RefData **&, Session*, RefData **&, RefData **&);
@@ -111,6 +115,7 @@ class RefExecBrackets : public RefDataBracket {
 public:
 	inline RefExecBrackets(RefChain* thechain) : RefDataBracket(thechain){};
 	unistring explode();
+	unistring debug();
 
     TResult init(RefData **&, Session*, RefData **&, RefData **&);
     TResult back(RefData **&, Session*, RefData **&, RefData **&);

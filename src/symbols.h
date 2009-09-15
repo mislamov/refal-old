@@ -27,51 +27,24 @@
 class RefAlphaBase;
 
 
-inline unistring the_explode(RefData **a, RefData **b){
-	if (!a) {
-		return "";
-	}
-	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERROR("the_explode(**, **)", "error arguments");
-	unistring result = "";
-    for (size_t i=0; i<=leng; i++) {
-		#ifdef TESTCODE
-		if (! a[i]) AchtungERROR;
-		#endif
-		result += a[i]->explode();
-    }
-	return result;
-}
+unistring the_explode(RefData **a, RefData **b);
+unistring the_text(RefData **a, RefData **b);
+RefChainConstructor *textToChain(unistring str);
 
 
-inline unistring the_text(RefData **a, RefData **b){
-	if (!a) {
-		return "";
-	}
-	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERROR("the_text(**, **)", "error arguments");
-	unistring result = "";
-    for (size_t i=0; i<=leng; i++) {
-		#ifdef TESTCODE
-		if (! a[i]) AchtungERROR;
-		#endif
-		result += a[i]->toString();
-    }
-	return result;
-}
-
+class IRefSymbol : public RefData {};
 
 template <class T, class t>
-class RefSymbolBase : public RefData {
+class RefSymbolBase : public IRefSymbol {
 public:
     RefSymbolBase(){};
     virtual ~RefSymbolBase(){};
     virtual t getValue() = 0;
     bool operator ==(RefData &rd) {
-        RefData *tmp = &rd;
-        void* rr = dynamic_cast<RefAlphaBase*>(tmp);
         return ref_dynamic_cast<T>(&rd) && ((T*)&rd)->getValue()==this->getValue();
     };
+	bool operator >(RefData &rd){ notrealisedERROR; };
+
     TResult init(RefData**&, Session* , RefData**&, RefData**&);
     TResult back(RefData**&, Session* , RefData**&, RefData**&);
     unistring explode(){
@@ -79,6 +52,10 @@ public:
         os << getValue();
         return os.str();
         };
+    unistring debug(){        
+		unistring tmp = explode() + " ";
+		return explode() + " ";        
+	};
 };
 
 
@@ -87,6 +64,7 @@ public:
     CLASS_OBJECT_CAST(RefAlphaBase);
     virtual ~RefAlphaBase(){};
 	virtual unistring toString(){ return explode(); };
+	virtual unistring debug(){ return explode(); };
 };
 
 class RefIntegerBase : public RefSymbolBase<RefIntegerBase, infint> {
@@ -153,11 +131,7 @@ public:
 	RefWord(unistring val){ value = val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
-    unistring debug() {
-		std::ostringstream ss;
-        ss << '"' << replace(value, "\n", "\\n") << "\" ";
-        return ss.str();
-	}
+    unistring debug() ;
 };
 
 
@@ -170,10 +144,12 @@ public:
 };
 
 
+
+
 template <class TT, class tt>
 TResult  RefSymbolBase<TT, tt>::init(RefData**& tpl, Session* s, RefData**& l, RefData**& r) {
     s->MOVE_TO_next_term(r);
-	LOG(" " << this->debug() << " == " << ((r && *r) ? (*r)->debug() : "0"));
+//	LOG(" " << this->debug() << " == " << ((r && *r) ? (*r)->debug() : "0"));
     if ( r && *r && (this==*r || *this == **r)) {
         s->MOVE_TO_next_template(tpl);
         return GO;
@@ -191,8 +167,5 @@ TResult  RefSymbolBase<T, t>::back(RefData**&tpl, Session* s, RefData**&l, RefDa
 };
 
 
-
-
-RefChainConstructor *textToChain(unistring str);
 
 #endif

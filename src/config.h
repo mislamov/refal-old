@@ -21,7 +21,7 @@
 
 #define REFVERSION "DiRefal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 #define TESTCODE
-#define DEBUG
+//#define DEBUG
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины
@@ -271,6 +271,7 @@ inline std::string replace(std::string text, std::string s, std::string d)
 
 #define AchtungERROR SYSTEMERROR("Achtung!")
 #define notrealisedERROR SYSTEMERROR("Not realised!")
+#define unexpectedERROR  SYSTEMERROR("Unexpected execution!")
 
 #ifdef DEBUG
     #define SYSTEMERROR(msg) { \
