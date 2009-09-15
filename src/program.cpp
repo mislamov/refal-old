@@ -23,6 +23,7 @@
 
 
 RefProgram::RefProgram(){
+	step = 0;
 	this->regModule(new ModSystem());
 }
 

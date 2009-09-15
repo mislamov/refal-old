@@ -231,7 +231,8 @@ inline bool eq(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br){
 
 TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
 	RefData **ldata, **rdata;
-	if ( ! s->getVariableValue(this->lnk, ldata, rdata) ) {
+	VarMap* vm = 0;
+	if ( ! s->findVar(this->lnk, ldata, rdata, vm) ) {
         SYSTEMERROR("INTERNAL ERROR: link to not exists variable! link = " << this->debug());
         return ERROR;
     };
@@ -240,7 +241,7 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 
 	if (!ldata){ // пустые
         s->MOVE_TO_next_template(tpl);
-        return GO; // ссылка на пустой отрезок - верна
+        return GO; // ссылка на пустой отрезок всегда сопоставляется с пустым значением
 	}
 
 	RefDataBracket *brA=0, *brB=0;
@@ -306,7 +307,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 		subchains.pop();
 
 		#ifdef DEBUG
-		std::cout << "compile: " << chain_to_text(point, end-1) << "\n";
+		//std::cout << "compile: " << chain_to_text(point, end-1) << "\n";
 		#endif
 
 		for(;
@@ -352,9 +353,8 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			}
 		}
 	}
-
-
-		// компиляция ссылок на переменные
+		
+	// компиляция ссылок на переменные
 	RefLinkToVariable** tmp = 0;
 	while (! lnks.empty()){
 			#ifdef TESTCODE
@@ -372,18 +372,22 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	}
 };
 
-
+// вызывается сразу после удачного сопоставления (вместо init правой границы)
 TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
 	RefData **lold, **rold;
-	this->saveVarMap( sess->poptopVarMap() ); // сохраняем карту переменных
-	sess->restoreVar(sess, this, lold, rold); // начало аргумента переменной
+	VarMap *vm=0, *vm2=0;
+	vm = sess->poptopVarMap(); // сохраняем карту переменных
+	sess->restoreVar(this, lold, rold, vm2); // начало аргумента переменной
+	#ifdef TESTCODE
+		if (vm2) unexpectedERROR;
+	#endif
 	if (rold != r){
 		sess->MOVE_TO_next_term(rold);
 		l = rold;
 	} else {
 		l = 0;	// значение переменной пустое
 	}
-	sess->saveVar(sess, this, l, r); // сохраняем полное значение
+	sess->saveVar(this, l, r, vm); // сохраняем полное значение
 
 	tpl = (RefData**) sess->userVarJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
 	sess->popTmplate();
@@ -397,9 +401,14 @@ TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData
 	return GO;
 };
 
+// вызывается сразу после НЕудачного сопоставления (вместо back левой границы)
 TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
 	delete sess->poptopVarMap();
-	sess->restoreVar(sess, this, l, r);		 // забываем переменную
+	VarMap* tmp = 0;
+	sess->restoreVar(this, l, r, tmp);		 // забываем переменную
+	#ifdef TESTCODE
+		if (tmp) unexpectedERROR;
+	#endif
 	tpl = (RefData**) sess->userVarJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
 	sess->popTmplate();
 	
@@ -411,7 +420,6 @@ TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData
 	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
-
 
 TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
 	#ifdef TESTCODE
@@ -425,21 +433,28 @@ TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **
 		//sess->MOVE_TO_next_template(tpl);
 		//return GO;
 	}
-	sess->saveVar(sess, this, l=0, r);
-	sess->createVarMap();
+	sess->saveVar(this, l=0, r, 0);
+	sess->createVarMap(this);
 	sess->userVarJumpPoints.put((RefUserVar**)tpl);
 	sess->setTmplate(usertemplate->getLeftPart());
 	tpl = usertemplate->getLeftPart()->at(0);
 	return GO;
 };
 
+// вызывается только после ранее удачного сопоставления
 TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERROR;
 	#endif
 	sess->userVarJumpPoints.put((RefUserVar**)tpl);
 	sess->setTmplate(((RefUserTemplate*)templ)->getLeftPart());
-	sess->putVarMap( this->restoreVarMap() );
+	VarMap *vm = 0; // восстанавливаем карту переменных
+	sess->restoreVar(this, l, r, vm);
+	#ifdef TESTCODE
+		if (!vm) unexpectedERROR;
+	#endif
+	sess->putVarMap( vm );
+	sess->saveVar(this, l?0:l, l?l-1:r, 0);
 
 	tpl = ((RefUserTemplate*)templ)->getLeftPart()->at(-1);
 	return BACK;

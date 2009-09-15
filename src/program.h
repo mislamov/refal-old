@@ -33,6 +33,8 @@ class RefModuleBase;
 class RefProgram {
 	std::map<unistring, RefModuleBase*> modules;
 public:
+	long long step;
+
 	RefProgram();
 	void regModule(RefModuleBase *); // регистрация модуля в программе (перед загрузкой)
     RefChain*  executeExpression (RefChain*, Session*); // вычисляет цепочку

@@ -30,6 +30,7 @@ class VarMap;
 
 class RefObject {
 public:
+	virtual unistring debug(){ return " $RefObject "; };
 	virtual ~RefObject(){};
 };
 
@@ -66,14 +67,11 @@ class RefTemplateBase;
 class RefUserVar : public RefVariable {
     unistring type;
 	RefTemplateBase *templ;
-	VarMap* varmap;
 public:
-	RefUserVar(){};
+	RefUserVar(){ templ=0; };
 	RefUserVar(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; };
     CLASS_OBJECT_CAST(RefUserVarNotInit);
 
-	inline void saveVarMap(VarMap* vm){ varmap = vm; };
-	inline VarMap* restoreVarMap(){ return varmap; };
 	void setTempl(RefTemplateBase *ntempl){ templ = ntempl; };
     unistring getType() {        return type;    };
 	void setType(unistring ntype) {      type = ntype;    };
@@ -267,15 +265,16 @@ public:
 };
 
 
-inline unistring chain_to_text(RefData** from, RefData** to){
+inline unistring chain_to_text(RefData** from, RefData** to, int showleng = 256){
 	if (!from || !*from) return "[null]";
-	if (!to || (to-from)<0 || (to-from)>1024) return "[error string]";
+	if (!to || (to-from)<0) return "[error string]";
 	unistring res = "";
 	int i = 0;
-	while(from+i <= to){
+	while(from+i <= to && (showleng<=0 || i<showleng)){
 		if(from[i]) res += from[i]->debug();
 		++i;
 	}
+	if (i==showleng) res += "... ";
 	return res;
 };
 

@@ -1,12 +1,13 @@
 #include "session.h"
 
 #include "function.h"
+#include "program.h"
 
 #ifdef DEBUG
 #define LOGSTEP(s) \
-	std::cout << s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0)) << "\n" << std::flush;
+	std::cout << s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0, 50)) << "\n" << std::flush;
 #define LOGMATCH() \
-	std::cout << "\n\n######\n" << (isdemaching?"UN   |":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r)) << "\n" << std::flush;
+	std::cout << "\n\nSTEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"UN   |":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r, 50)) << "\n" << std::flush;
 #else
 #define LOGSTEP(s)
 #define LOGMATCH()
@@ -134,7 +135,11 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 
 unistring Session::debug(){
 		std::ostringstream s;
-		s << varMapStack.top()->debug();
+
+		for (int i=varMapStack.getCount()-1; i>=0; --i){
+			s << "--------------------------------------- " << i+1 << "\n";
+			s << varMapStack.pool[i]->debug();
+		}
 		return s.str();
 };
 
@@ -151,12 +156,13 @@ unistring MatchState::debug(){
 
 
 
-    // ищет по имени переменной ее облать видимости
-bool VarMap::findByName(unistring name, RefData** &l, RefData** &r) {
+// ищет по имени переменной ее облать видимости
+bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, VarMap *&vm) {
         for (size_t ind = last_ind; ind>=0; --ind) {
             if (pool[ind].i1->getName()==name) {
-                l = pool[ind].i2;
-                r = pool[ind].i3;
+                l  = pool[ind].i2;
+                r  = pool[ind].i3;
+				vm = pool[ind].i4;
                 return true;
             }
         }
@@ -164,11 +170,12 @@ bool VarMap::findByName(unistring name, RefData** &l, RefData** &r) {
 };
 
 // ищет по ссылке на переменную ее облать видимости
-bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r) {
+bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&vm) {
         for (size_t ind = last_ind; ind>=0; --ind) {
             if (pool[ind].i1==var) {
                 l = pool[ind].i2;
                 r = pool[ind].i3;
+				vm = pool[ind].i4;
                 return true;
             }
         }
@@ -179,7 +186,7 @@ bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r) {
 unistring VarMap::debug(){
 		std::ostringstream s;
 
-		s << "****\t\tVarMap pool:" << std::flush << "\n";
+		s << "****\t\tVarMap pool:   (by"<< (creator?creator->debug().substr(0, 15):" 0 ") <<")" << std::flush << "\n";
 		size_t ind = last_ind;
 		while(ind){
 			s << "****\t\t\t" << ind << ") " << std::flush << pool[ind].i1->debug() << " : " << chain_to_text( pool[ind].i2,  pool[ind].i3 ) << "\n";
@@ -188,9 +195,9 @@ unistring VarMap::debug(){
 		return s.str();
 };
 
-
+/*
 // TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено
-void Session::SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r) { // сохраняет состояние переменной
+void Session::saveVar   (RefData** activeTemplate, RefData** &l, RefData** &r) { // сохраняет состояние переменной
         RefVariable* var = ref_dynamic_cast<RefVariable>(*activeTemplate);
         if (var){
             saveVar(this, (RefVariable*)var, l, r);
@@ -199,13 +206,13 @@ void Session::SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData*
 };
     
 // TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено
-void Session::RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r){ // восстанавливает состояние переменной
+void Session::restoreVar(RefData** activeTemplate, RefData** &l, RefData** &r){ // восстанавливает состояние переменной
         RefVariable* var = ref_dynamic_cast<RefVariable>(*activeTemplate);
         if (!var) SYSTEMERROR("not var restoring!");
 
         restoreVar(this, var, l, r); // для польз-переменной varMatchState хранит ее подсессию
 };
-
+*/
 
 // TODO: оптимизировать!
 RefChain*  Session::substituteExpression(RefChainConstructor *chain){
@@ -219,7 +226,7 @@ RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 		link = ref_dynamic_cast<RefLinkToVariable>(*item);
 		if (link){
 			RefData **endi, **i;
-			getVariableValue(link->lnk, i, endi);
+			findVar(link->lnk, i, endi);
 			if (i){
 				++endi;
 				for( ; i < endi; ++i){

@@ -15,6 +15,8 @@ class PooledStack {
 	T* pool;
 public:
 	inline size_t getCount(){ return idx; }
+	inline size_t getLength(){ return idx; };
+
 
 	inline PooledStack(){
 		idx = 0;
@@ -53,7 +55,6 @@ public:
 		return pool[index];
 	};
 
-	inline size_t getLength(){ return idx; };
 
 	inline void clear(){
 		idx = 0;
@@ -377,7 +378,7 @@ public:
         ++last_ind ;
         if (last_ind >= poolsize) {
             // пул исчерпан
-            LOG("TUPLE4-pool is full. realloc!");
+            //LOG("TUPLE4-pool is full. realloc!");
             poolsize += POOLSIZE_DEFAULT;
             pool = (TUPLE4*) realloc(pool, poolsize*sizeof(TUPLE4) );
             if (!pool) RUNTIMEERROR("TUPLE4-pool", "not anouth memory");

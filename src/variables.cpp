@@ -41,14 +41,14 @@ TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **
 		// соотв-ий символ найден
 		l = (l==r-1)?0:l+1;
 		--r;
-		s->SAVE_VAR_STATE(tpl, l, r);
+		s->saveVar((RefVariable*)*tpl, l, r);
 		++r;
 		s->MOVE_TO_next_template(tpl);
 		s->MOVE_TO_next_template(tpl);
 		return GO;
 	}
 
-    s->SAVE_VAR_STATE(tpl, l, r);
+    s->saveVar((RefVariable*)*tpl, l, r);
     s->MOVE_TO_next_template(tpl);
     return GO;
 };
@@ -57,7 +57,7 @@ TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **
 
 
 TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
-	s->RESTORE_VAR_STATE(tpl, l, r);
+	s->restoreVar((RefVariable*)*tpl, l, r);
 
     s->MOVE_TO_next_term(r);
 	if (!r){ // достигнули конца цепочки
@@ -67,7 +67,7 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         
 	l = (l?l:r); 
 
-	s->SAVE_VAR_STATE(tpl, l, r);
+	s->saveVar((RefVariable*)*tpl, l, r);
     s->MOVE_TO_next_template(tpl);
     return GO;
 };
@@ -89,13 +89,13 @@ TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData *
         l = rnext; // getNextSymbol! not nextTerm
         r = rr;
     }
-    s->SAVE_VAR_STATE(tpl, l, r);
+    s->saveVar((RefVariable*)*tpl, l, r);
 	s->MOVE_TO_next_template(tpl);
     return GO;
 };
 
 TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
-    s->RESTORE_VAR_STATE(tpl, l, r);
+    s->restoreVar((RefVariable*)*tpl, l, r);
     if (!l) {
 		s->MOVE_TO_pred_template(tpl);
         return BACK;
@@ -108,7 +108,7 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         l = 0;
     }
     s->MOVE_TO_pred_term(r);
-    s->SAVE_VAR_STATE( tpl, l, r);          /// todo оптимизировать: не удалять тело переменной в начале при ресторе, а изменять его параметры
+    s->saveVar((RefVariable*)*tpl, l, r);          /// todo оптимизировать: не удалять тело переменной в начале при ресторе, а изменять его параметры
 	s->MOVE_TO_next_template(tpl);
     return GO;
 };
@@ -121,7 +121,7 @@ TResult  RefVariable_s::init(RefData**&tpl, Session *s, RefData **&l, RefData **
     s->MOVE_TO_next_term(r);
 	if (r && *r && !ref_dynamic_cast<RefDataBracket>(*r) ) {
         l=r;
-        s->SAVE_VAR_STATE( tpl, l, r);
+        s->saveVar((RefVariable*)*tpl, l, r);
         s->MOVE_TO_next_template(tpl);
         return GO;
     }
@@ -131,7 +131,7 @@ TResult  RefVariable_s::init(RefData**&tpl, Session *s, RefData **&l, RefData **
 };
 
 TResult  RefVariable_s::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
-	s->RESTORE_VAR_STATE(tpl, l, r); /// todo: оптимизация. заменить на DROP_STATE
+	s->restoreVar((RefVariable*)*tpl, l, r); /// todo: оптимизация. заменить на DROP_STATE
     s->MOVE_TO_pred_template(tpl);
     return BACK;
 };
@@ -143,7 +143,7 @@ TResult  RefVariable_t::init(RefData**&tpl, Session *s, RefData **&l, RefData **
     s->MOVE_TO_next_term(r);
     if  (r && *r && (void*)r!=(void*)s->current_view_r()) {
         l=r;
-        s->SAVE_VAR_STATE( tpl, l, r);
+        s->saveVar( (RefVariable*)*tpl, l, r);
         s->MOVE_TO_next_template(tpl);
         return GO;
     }
@@ -153,7 +153,7 @@ TResult  RefVariable_t::init(RefData**&tpl, Session *s, RefData **&l, RefData **
 };
 
 TResult  RefVariable_t::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
-    s->RESTORE_VAR_STATE(tpl, l, r);
+    s->restoreVar((RefVariable*)*tpl, l, r);
     s->MOVE_TO_pred_template(tpl);
     return BACK;
 };

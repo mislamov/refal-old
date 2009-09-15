@@ -63,6 +63,11 @@ class RefAlphaBase : public RefSymbolBase<RefAlphaBase, unichar> {
 public:
     CLASS_OBJECT_CAST(RefAlphaBase);
     virtual ~RefAlphaBase(){};
+	virtual unistring explode(){ 
+		if (getValue() == '\n') return "\\n";
+		if (getValue() == '\t') return "\\t";
+		return RefSymbolBase<RefAlphaBase, unichar>::explode(); 
+	};
 	virtual unistring toString(){ return explode(); };
 	virtual unistring debug(){ return explode(); };
 };
