@@ -39,7 +39,7 @@ RefData*   word_creator(unistring value){
 };
 
 RefData*  alpha_creator(unistring value){
-	if (value.length() != 1) SYSTEMERROR("Data for alpha incorrect: '" << value << "'");
+	if (value.length() != 1) SYSTEMERRORn("Data for alpha incorrect: '" << value << "'");
 	return new RefAlpha(value[0]);
 };
 
@@ -52,7 +52,7 @@ RefData*   real_creator(unistring value){
 };
 
 RefData*   byte_creator(unistring value){
-	if (sizeof(value.c_str()) != sizeof(char)) SYSTEMERROR("Data for byte incorrect: '" << value << "'");
+	if (sizeof(value.c_str()) != sizeof(char)) SYSTEMERRORn("Data for byte incorrect: '" << value << "'");
 	return new RefByte( *(value.c_str()) );
 };
 
@@ -63,7 +63,7 @@ RefChain* Dec (RefData** beg, RefData** end, Session* s){
     RefInteger *b = ref_dynamic_cast<RefInteger >(*end);
 
 	if (!a || !b || (beg+1 != end)){
-        RUNTIMEERROR("Dec", "error arguments");
+        RUNTIMEERRORs(s, "error arguments");
         return 0;
     };
     a = new RefInteger(a->getValue() - b->getValue());
@@ -77,7 +77,7 @@ RefChain* Div (RefData** beg, RefData** end, Session* s){
     RefInteger *a = ref_dynamic_cast<RefInteger >(*beg);
     RefInteger *b = ref_dynamic_cast<RefInteger >(*end);
     if (!a || !b || (beg+1 != end)){
-        RUNTIMEERROR("Div", "error arguments");
+        RUNTIMEERRORs(s, "error arguments");
         return 0;
     };
     //std::cout << "\n\nDiv: " << a->getValue() << " / " << b->getValue() ;
@@ -95,7 +95,7 @@ RefChain* Sum (RefData** beg, RefData** end, Session* s){
         a = ref_dynamic_cast<RefInteger >(*beg);
 
         if (! a){
-            RUNTIMEERROR("Sum", "error arguments");
+            RUNTIMEERRORs(s, "error arguments");
             return 0;
         }
         thesum += a->getValue();
@@ -116,7 +116,7 @@ RefChain* Mul (RefData** beg, RefData** end, Session* s){
         a = ref_dynamic_cast<RefInteger >(*beg);
 
         if (! a){
-            RUNTIMEERROR("Mul", "error arguments");
+            RUNTIMEERRORs(s, "error arguments");
             return 0;
         }
         thesum *= a->getValue();
@@ -155,7 +155,7 @@ RefChain* Numb (RefData** beg, RefData** end, Session* s){
 RefChain*  Compare(RefData** beg, RefData** end, Session* s){
     RefData *a = 0;
     if (beg+1 != end){
-        RUNTIMEERROR("Compare", "Must be 2 arguments");
+        RUNTIMEERRORs(s, "Must be 2 arguments");
         return 0;
     }
 
@@ -211,7 +211,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
 
 RefChain* Card (RefData** beg, RefData** end, Session* s){
     if (beg) {
-		RUNTIMEERROR("Card", "Not empty args in Card : " << the_explode(beg, end));
+		RUNTIMEERRORs(s, "Not empty args in Card : " << the_explode(beg, end));
         return 0;
     }
     unistring sline; /// todo LOCALE
@@ -242,9 +242,9 @@ RefChain* Implode (RefData** beg, RefData** end, Session* s){
 };
 
 RefChain* Explode (RefData** lft, RefData** rht, Session* s){
-    if (lft != rht) RUNTIMEERROR("Explode", "must be one argument");
+    if (lft != rht) RUNTIMEERRORs(s, "must be one argument");
     RefWord* ww = ref_dynamic_cast<RefWord>(*lft);
-    if (! ww) RUNTIMEERROR("Explode", "must be compund-symbol argument");
+    if (! ww) RUNTIMEERRORs(s, "must be compund-symbol argument");
 
     long i = 0;
     unistring str = ww->getValue();

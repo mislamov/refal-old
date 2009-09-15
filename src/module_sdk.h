@@ -25,20 +25,20 @@
 	class class_name : public RefDllModule {	\
 	public:	\
 		unistring getName(){ return mod_name; };	\
-		unistring explode(){SYSTEMERROR("unrelised");}; \
+		unistring explode(){SYSTEMERRORn("unrelised");}; \
 		class_name() : RefDllModule() {
 
 #define SYMBOL_DEFINITIONS 
 
 #define DEFINE_MODULE_SYMBOL_CLASS(code, creator)\
-	if (dataConstructors.find( #code )!=dataConstructors.end()) SYSTEMERROR("redefinition symbol-code: " << #code);\
+	if (dataConstructors.find( #code )!=dataConstructors.end()) SYSTEMERRORn("redefinition symbol-code: " << #code);\
 	dataConstructors[#code] = &creator;
 		
 
 #define VAR_DEFINITIONS
 
 #define DEFINE_MODULE_VARIABLE_CLASS(code, creator)\
-	if (varConstructors.find( #code )!=varConstructors.end()) SYSTEMERROR("redefinition variable-code: " << #code);\
+	if (varConstructors.find( #code )!=varConstructors.end()) SYSTEMERRORn("redefinition variable-code: " << #code);\
 	varConstructors[#code] = &creator;
 		
 

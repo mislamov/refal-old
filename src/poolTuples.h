@@ -22,7 +22,7 @@ public:
 		idx = 0;
 		size = POOLSIZE_DEFAULT;
 		pool = (T*)malloc(sizeof(T)*size);
-		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
+		if (!pool) RUNTIMEERRORn("memory limit");
 		memset(pool, 0xff, sizeof(T)*size);
 	};
 
@@ -32,7 +32,7 @@ public:
 		if (idx >= size-1){
 			size+=POOLSIZE_DEFAULT;
 			pool = (T*)realloc(pool, sizeof(T)*size);
-			if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
+			if (!pool) RUNTIMEERRORn("memory limit");
 		};
 		pool[idx] = l;
 		++idx;
@@ -41,7 +41,7 @@ public:
 	inline T top_pop(){
 		#ifdef TESTCODE
 		if (!idx) 
-			SYSTEMERROR("link-stack is empty!");
+			SYSTEMERRORn("link-stack is empty!");
 		#endif
 		return pool[--idx];
 	};
@@ -60,13 +60,13 @@ public:
 		idx = 0;
 		size = POOLSIZE_DEFAULT;
 		pool = (T*)realloc(pool, sizeof(T)*size);
-		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
+		if (!pool) RUNTIMEERRORn("memory limit");
 		memset(pool, 0xff, sizeof(T)*size);
 	};
 
 	inline void flush(){
 		pool = (T*)realloc(pool, sizeof(T)*idx);
-		if (!pool) RUNTIMEERROR("Mem-buffer", "memory limit");
+		if (!pool) RUNTIMEERRORn("memory limit");
 	};
 };
 
@@ -103,7 +103,7 @@ public:
             LOG("T-pool is full. realloc!");
             poolsize += POOLSIZE_DEFAULT;
             pool = (T*) realloc(pool, poolsize*sizeof(T) );
-            if (!pool) RUNTIMEERROR("T-pool", "not anouth memory");
+            if (!pool) RUNTIMEERROR("T-pool : not anouth memory");
 			#ifdef TESTCODE
 			memset(pool+last_ind, 0xff, sizeof(T)*POOLSIZE_DEFAULT);
 			#endif
@@ -146,7 +146,7 @@ protected:
 public:
     inline PooledTuple2() {
 		#ifdef TESTCODE
-		if (sizeof(TUPLE2) != sizeof(T1)+sizeof(T2)) SYSTEMERROR("Platform depend collision! sizeof(TUPLE2) != sizeof( struct{T1 T2} ).");
+		if (sizeof(TUPLE2) != sizeof(T1)+sizeof(T2)) SYSTEMERRORn("Platform depend collision! sizeof(TUPLE2) != sizeof( struct{T1 T2} ).");
 		#endif
 
         last_ind = 0;
@@ -169,7 +169,7 @@ public:
             //LOG("TUPLE2-pool is full. realloc!");
             poolsize += POOLSIZE_DEFAULT;
             pool = (TUPLE2*) realloc(pool, poolsize*sizeof(TUPLE2) );
-            if (!pool) RUNTIMEERROR("TUPLE2-pool", "not anouth memory");
+			if (!pool) RUNTIMEERRORn("TUPLE2-pool : not anouth memory");
 
 			#ifdef TESTCODE
 			memset(pool+last_ind, 0xff, sizeof(TUPLE2)*POOLSIZE_DEFAULT);
@@ -257,7 +257,7 @@ protected:
 public:
     PooledTuple3() {
 		#ifdef TESTCODE
-		if (sizeof(TUPLE3) != sizeof(T1)+sizeof(T2)+sizeof(T3)) SYSTEMERROR("Platform depend collision! sizeof(TUPLE3) != sizeof( struct{T1 T2 T3} ).");
+		if (sizeof(TUPLE3) != sizeof(T1)+sizeof(T2)+sizeof(T3)) SYSTEMERRORn("Platform depend collision! sizeof(TUPLE3) != sizeof( struct{T1 T2 T3} ).");
 		#endif
 
         last_ind = 0;
@@ -280,7 +280,7 @@ public:
             //LOG("TUPLE3-pool is full. realloc!");
             poolsize += POOLSIZE_DEFAULT;
             pool = (TUPLE3*) realloc(pool, poolsize*sizeof(TUPLE3) );
-            if (!pool) RUNTIMEERROR("TUPLE3-pool", "not anouth memory");
+			if (!pool) RUNTIMEERRORn("TUPLE3-pool : not anouth memory");
 
 			#ifdef TESTCODE
 			memset(pool+last_ind, 0xff, sizeof(TUPLE3)*POOLSIZE_DEFAULT);
@@ -303,9 +303,34 @@ public:
 	};
 
 
+	
+    inline T1 top1() {
+        TUPLE3* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i1;
+	};
+
+    inline T2 top2() {
+        TUPLE3* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i2;
+	};
+
+    inline T3 top3() {
+        TUPLE3* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i3;
+	};
+
 	bool top_pop(T1 &i1, T2 &i2, T3 &i3) {
 		if (!last_ind) {i1=0;i2=0;i3=0; return false;}
         top(i1,i2,i3);
+		#ifdef TESTCODE
+		memset(pool+last_ind, 0xff, sizeof(TUPLE3));
+		#endif
+        --last_ind;
+		return true;
+	};
+
+	bool pop() {
+		if (!last_ind) {return false;}
 		#ifdef TESTCODE
 		memset(pool+last_ind, 0xff, sizeof(TUPLE3));
 		#endif
@@ -358,7 +383,7 @@ protected:
 public:
     PooledTuple4() {
 		#ifdef TESTCODE
-		if (sizeof(TUPLE4) != sizeof(T1)+sizeof(T2)+sizeof(T3)+sizeof(T4)) SYSTEMERROR("Platform depend collision! sizeof(TUPLE4) != sizeof( struct{T1 T2 T3 T4} ).");
+		if (sizeof(TUPLE4) != sizeof(T1)+sizeof(T2)+sizeof(T3)+sizeof(T4)) SYSTEMERRORn("Platform depend collision! sizeof(TUPLE4) != sizeof( struct{T1 T2 T3 T4} ).");
 		#endif
 
         last_ind = 0;
@@ -381,7 +406,7 @@ public:
             //LOG("TUPLE4-pool is full. realloc!");
             poolsize += POOLSIZE_DEFAULT;
             pool = (TUPLE4*) realloc(pool, poolsize*sizeof(TUPLE4) );
-            if (!pool) RUNTIMEERROR("TUPLE4-pool", "not anouth memory");
+			if (!pool) RUNTIMEERRORn("TUPLE4-pool : not anouth memory");
 
 			#ifdef TESTCODE
 			memset(pool+last_ind, 0xff, sizeof(TUPLE4)*POOLSIZE_DEFAULT);

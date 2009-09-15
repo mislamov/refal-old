@@ -154,7 +154,7 @@ class LoaderHeap {
             std::stack<RefObject*>  &svalue   = stackstags[name];
             //std::cout << "\n--stackstags["<<name<<"]("<< stackstags[name].size() <<")" << std::flush;
             #ifdef TESTCODE
-            if (svalue.empty()) SYSTEMERROR("unexpected extracter query: " << name);
+            if (svalue.empty()) SYSTEMERRORn("unexpected extracter query: " << name);
             #endif
             RefObject* value = svalue.top();
             //std::cout << "\n--extractValueFromStack["<<name<<"]::" << value->toString();
@@ -169,7 +169,7 @@ class LoaderHeap {
             #ifdef TESTCODE
             //std::cout << "\nsvalue.size()==" << svalue.size() << "   svalue.size()==0:" << bool(svalue.size()==0);
             if ( svalue.size()==0 )
-                SYSTEMERROR("unexpected extracter query: " << name << std::flush);
+                SYSTEMERRORn("unexpected extracter query: " << name << std::flush);
             #endif
             RefObject* value = svalue.top();
             //svalue.pop();
@@ -189,7 +189,7 @@ class LoaderHeap {
 		
         RefChain* extractCurrChainFromStack(){
             #ifdef TESTCODE
-            if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
+            if (stckChains.empty()) SYSTEMERRORn("tring extract from empty stckChains");
             #endif
             RefChain *r = stckChains.top();
             stckChains.pop();
@@ -199,14 +199,14 @@ class LoaderHeap {
             return stckChains.top();
         }
         RefChain* getCurrChainNotConstructor(){
-            if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
+            if (stckChains.empty()) SYSTEMERRORn("tring extract from empty stckChains");
             RefChain *r = stckChains.top();
 			if (dynamic_cast<RefChainConstructor*>(r)){
 				RefChain *rr = r;
 				stckChains.pop();
-				if (stckChains.empty()) SYSTEMERROR("tring extract from empty stckChains");
+				if (stckChains.empty()) SYSTEMERRORn("tring extract from empty stckChains");
 				r = stckChains.top();
-				if (dynamic_cast<RefChainConstructor*>(r)) SYSTEMERROR("two RefChainConstructors in stack!");
+				if (dynamic_cast<RefChainConstructor*>(r)) SYSTEMERRORn("two RefChainConstructors in stack!");
 				stckChains.push(rr);
 			}
 			return r;

@@ -101,7 +101,7 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         return BACK;
     }
     #ifdef TESTCODE
-    if (! r)SYSTEMERROR("alarm!");
+    if (! r)SYSTEMERRORs(s, "alarm!");
     #endif
 
     if (l==r) {

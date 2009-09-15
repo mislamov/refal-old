@@ -43,7 +43,7 @@ public:
     bool operator ==(RefData &rd) {
         return ref_dynamic_cast<T>(&rd) && ((T*)&rd)->getValue()==this->getValue();
     };
-	bool operator >(RefData &rd){ notrealisedERROR; };
+	bool operator >(RefData &rd){ notrealisedERRORn; };
 
     TResult init(RefData**&, Session* , RefData**&, RefData**&);
     TResult back(RefData**&, Session* , RefData**&, RefData**&);

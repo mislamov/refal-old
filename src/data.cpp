@@ -47,14 +47,14 @@ RefChain::RefChain(size_t size) { // size is not lenght
 RefChain& RefChain::operator+=(RefData *ch) {
 
 	#ifdef TESTCODE
-	if (leng>sysize) SYSTEMERROR("Achtung!")
+	if (leng>sysize) SYSTEMERRORn("Achtung!")
 	#endif
 
 	if (leng == sysize){
 		sysize += RefChain::alloc_portion;
 		first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 		//LOG("realloc");
-		if (! first) RUNTIMEERROR("membuffer", "memory limit");
+		if (! first) RUNTIMEERRORn("memory limit");
 	}
 	first[leng] = ch;
 	++leng;
@@ -67,7 +67,7 @@ RefChain& RefChain::operator+=(RefChain *ch) {
 	sysize += ch->leng;
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
-	if (! first) RUNTIMEERROR("membuffer", "memory limit");
+	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch->first, sizeof(RefData*)*(ch->leng));
 	leng += ch->leng;
 	delete ch;
@@ -79,7 +79,7 @@ RefChain& RefChain::operator+=(RefChain ch) {
 	sysize += ch.leng;
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
-	if (! first) RUNTIMEERROR("membuffer", "memory limit");
+	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch.first, sizeof(RefData*)*(ch.leng));
 	leng += ch.leng;
 	return *this;
@@ -90,7 +90,7 @@ RefChain& RefChain::operator+=(RefChain ch) {
 RefData** RefChain::operator[](signed long idx) {
 /*#ifdef TESTCODE
 	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng)) 
-		AchtungERROR;
+		AchtungERRORn;
 #endif*/
 	return	leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
 };
@@ -122,7 +122,7 @@ unistring RefChain::explode(){
 
 			for (size_t i=0; i<leng; i++) {
 				#ifdef TESTCODE
-					if (! first[i]) AchtungERROR;
+					if (! first[i]) AchtungERRORn;
 				#endif
 				result += first[i]->explode();
 			}
@@ -174,10 +174,10 @@ TResult RefStructBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 
 
 TResult RefExecBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-	AchtungERROR;
+	AchtungERRORs(s);
 };
 TResult RefExecBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-	AchtungERROR;
+	AchtungERRORs(s);
 };
 
 /*
@@ -233,11 +233,14 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 	RefData **ldata, **rdata;
 	VarMap* vm = 0;
 	if ( ! s->findVar(this->lnk, ldata, rdata, vm) ) {
-        SYSTEMERROR("INTERNAL ERROR: link to not exists variable! link = " << this->debug());
+        SYSTEMERRORs(s, "INTERNAL ERROR: link to not exists variable! link = " << this->debug());
         return ERROR;
     };
 
-//	std::cout << "\n@: " << chain_to_text(ldata, rdata) << "  ~  " << chain_to_text(r+1, r+2) << "...\n";
+	if (path != EmptyUniString && !vm->folowByWay(path, ldata, rdata)){
+		RUNTIMEERRORs(s, "Wrong way for variable " << lnk->toString() << " : " << path);
+	}
+
 
 	if (!ldata){ // пустые
         s->MOVE_TO_next_template(tpl);
@@ -316,7 +319,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 			uservar = ref_dynamic_cast<RefUserVar>(*point);
 			if (uservar){ // запоминаем заготовку для переменной
-				if (! program) SYSTEMERROR("program not null expected");
+				if (! program) SYSTEMERRORn("program not null expected");
 				uservar->setTempl( program->findTemplate(uservar->getType()) );
 				vars[uservar->getName()] = uservar;
 				continue;
@@ -358,7 +361,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	RefLinkToVariable** tmp = 0;
 	while (! lnks.empty()){
 			#ifdef TESTCODE
-			if (!dynamic_cast<RefLinkToVariable*>(*(lnks.top()))) AchtungERROR;
+			if (!dynamic_cast<RefLinkToVariable*>(*(lnks.top()))) AchtungERRORn;
 			#endif
 			tmp = (RefLinkToVariable**) lnks.top();
 
@@ -379,7 +382,7 @@ TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData
 	vm = sess->poptopVarMap(); // сохраняем карту переменных
 	sess->restoreVar(this, lold, rold, vm2); // начало аргумента переменной
 	#ifdef TESTCODE
-		if (vm2) unexpectedERROR;
+		if (vm2) unexpectedERRORs(sess);
 	#endif
 	if (rold != r){
 		sess->MOVE_TO_next_term(rold);
@@ -394,7 +397,7 @@ TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData
 
 
 	#ifdef TESTCODE
-	if (*tpl != this) AchtungERROR;
+	if (*tpl != this) AchtungERRORs(sess);
 	#endif
 
 	sess->MOVE_TO_next_template(tpl); // двигаемся дальше
@@ -407,14 +410,14 @@ TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData
 	VarMap* tmp = 0;
 	sess->restoreVar(this, l, r, tmp);		 // забываем переменную
 	#ifdef TESTCODE
-		if (tmp) unexpectedERROR;
+		if (tmp) unexpectedERRORs(sess);
 	#endif
 	tpl = (RefData**) sess->userVarJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
 	sess->popTmplate();
 	
 
 	#ifdef TESTCODE
-	if (*tpl != this) AchtungERROR;
+	if (*tpl != this) AchtungERRORs(sess);
 	#endif
 	
 	sess->MOVE_TO_pred_template(tpl);
@@ -423,13 +426,13 @@ TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData
 
 TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
 	#ifdef TESTCODE
-	if (*tpl != this) AchtungERROR;
-	if (! dynamic_cast<RefUserTemplate*>(templ)) notrealisedERROR;
+	if (*tpl != this) AchtungERRORs(sess);
+	if (! dynamic_cast<RefUserTemplate*>(templ)) notrealisedERRORs(sess);
 	#endif
 
 	RefUserTemplate* usertemplate = (RefUserTemplate*)templ;
 	if (usertemplate->getLeftPart()->isEmpty()){
-		notrealisedERROR;
+		notrealisedERRORs(sess);
 		//sess->MOVE_TO_next_template(tpl);
 		//return GO;
 	}
@@ -444,14 +447,14 @@ TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **
 // вызывается только после ранее удачного сопоставления
 TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
 	#ifdef TESTCODE
-	if (*tpl != this) AchtungERROR;
+	if (*tpl != this) AchtungERRORs(sess);
 	#endif
 	sess->userVarJumpPoints.put((RefUserVar**)tpl);
 	sess->setTmplate(((RefUserTemplate*)templ)->getLeftPart());
 	VarMap *vm = 0; // восстанавливаем карту переменных
 	sess->restoreVar(this, l, r, vm);
 	#ifdef TESTCODE
-		if (!vm) unexpectedERROR;
+		if (!vm) unexpectedERRORs(sess);
 	#endif
 	sess->putVarMap( vm );
 	sess->saveVar(this, l?0:l, l?l-1:r, 0);
