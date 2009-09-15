@@ -3,7 +3,7 @@ $ENTRY Go {
 }
 
 F {
-	(E.code) e. 'x'  END.next  
+	(E.code) e. 'x'  E.next  
 					=  <Prout 'error'>;
 
 	e.e = <Prout 'success'>;
