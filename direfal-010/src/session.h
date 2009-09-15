@@ -50,7 +50,7 @@ class Session {
     TResult  result_sost;
 	RefProgram *program;
 
-	PooledTuple2 <RefData**, RefData**>  current_view_borders; // активные view границы [для скобок]
+	PooledTuple2 <RefData**, RefData**>  current_view_borders; // крайние view-элементы активного аргумента [для скобок]
 	//PooledTuple2 <RefData**, RefData**> deferred_view_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
 	//PooledTuple4 <RefData**, RefData**, RefData**, RefData**>  current_templ_borders; // активные view границы [для скобок] + точки выхода
 	//PooledTuple2 <RefData**, RefData**> deferred_templ_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
@@ -134,10 +134,14 @@ public:
 
 	unistring debug();
 
-	inline void MOVE_TO_next_term (RefData** &p);
-	inline void MOVE_TO_pred_term (RefData** &p);
-	inline void MOVE_TO_next_template (RefData** &p);
-	inline void MOVE_TO_pred_template (RefData** &p);
+	inline RefData** GET_next_term (RefData** p);
+	inline RefData** GET_pred_term (RefData** p);
+	inline RefData** GET_next_template (RefData** p);
+	inline RefData** GET_pred_template (RefData** p);
+	inline void MOVE_TO_next_term (RefData** &p){ p=GET_next_term(p); };
+	inline void MOVE_TO_pred_term (RefData** &p){ p=GET_pred_term(p); };
+	inline void MOVE_TO_next_template (RefData** &p){ p=GET_next_template(p); };
+	inline void MOVE_TO_pred_template (RefData** &p){ p=GET_pred_template(p); };
 
 	//inline void setNewView(); - должно передаваться в аргументе matching'а
 	//inline void setNewTempl(RefChain* ch);
@@ -175,38 +179,31 @@ inline void Session::JUMP_Template (RefChain* tp, RefData** outL, RefData** outR
 };
 */
 
-inline void Session::MOVE_TO_next_term(RefData** &p){
+inline RefData** Session::GET_next_term(RefData** p){
 	if (p == current_view_r() || !p) {
-		p = 0;
-		return;
+		return 0;
 	}
-	++p;
+	return p+1;
 };
 
-inline void Session::MOVE_TO_pred_term(RefData** &p){
+inline RefData** Session::GET_pred_term(RefData** p){
 	if (p == current_view_l() || !p) {
-		p = 0;
-		return;
+		return 0;
 	}
-	--p;
+	return p-1;
 };
 
-inline void Session::MOVE_TO_next_template(RefData** &p){
-/*	if (p == current_view_r() || !p) {
-		if (current_view_borders.getLength()==1){
-			p = 0;
-		} else {
-			RefData **a, **b, **c, **d;
-			current_view_borders.top_pop(a, b, c, d);
-			deferred_view_borders.put(a, b);
-			p = d;
-		}
-		return;
-	}*/
-	++p;
+inline RefData** Session::GET_next_template(RefData** p){
+	if (tmplate()->at(-1) == p) {
+		return 0;
+	}
+	return p+1;
 };
-inline void Session::MOVE_TO_pred_template(RefData** &p){
-	--p;
+inline RefData** Session::GET_pred_template(RefData** p){
+	if (tmplate()->at(0) == p) {
+		return 0;
+	}
+	return p-1;
 };
 
 

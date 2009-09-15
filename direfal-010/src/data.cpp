@@ -100,16 +100,16 @@ RefData** RefChain::operator[](signed long idx) {
 
 
 unistring RefChain::debug(){
-		    unistring result = "";
+		    unistring result = "";/*
 			result += "[";
-			result += " leng=";
+			result += "l";
 			char tmp[256];
 			result += ltoa( leng, tmp, 10);
-			result += " size=";
+			result += "s";
 			result += ltoa( sysize, tmp, 10);
-			result += " ";
+			//result += " ";
 			//result += ltoa( RefChain::alloc_portion, tmp, 10);
-			result += "] ";
+			result += "] ";*/
 
 			for (size_t i=0; i<leng; i++) {
 				result += (first[i] ? first[i]->debug() : " \x0000 ");
@@ -131,6 +131,8 @@ unistring RefChain::explode(){
 
 unistring RefStructBrackets::explode(){		return "(" + chain->explode() + ") ";	};
 unistring RefExecBrackets::explode(){	return "<" + chain->explode() + "> ";	};
+unistring RefStructBrackets::debug(){		return "(" + chain->debug() + ") ";	};
+unistring RefExecBrackets::debug(){	return "<" + chain->debug() + "> ";	};
 
 
 TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
@@ -204,13 +206,14 @@ inline bool eq_not_empty(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br)
 			brB = ref_dynamic_cast<RefDataBracket>(*Bl);
 			if (!brB || !eq(brA->chain, brB->chain)) return false;	
 		} else {
-			if ((*Al != *Bl) || !(**Al == **Bl)) return false;
+			if ((*Al != *Bl) && !(**Al == **Bl)) return false;
 		}
 		++Al;
 		++Bl;
 	}
 	return true;
 };
+
 inline bool eq(RefChain *ch1, RefChain *ch2){
 	if (ch1->leng != ch2->leng) return false; // не одинаковые по длине
 	if (! ch1->leng) return true; // пустые
@@ -441,3 +444,9 @@ TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **
 	tpl = ((RefUserTemplate*)templ)->getLeftPart()->at(-1);
 	return BACK;
 };
+
+
+unistring RefUserVar::explode() {        
+	return " @" + (templ?templ->getName():"$null$") + "." + getName();
+};
+

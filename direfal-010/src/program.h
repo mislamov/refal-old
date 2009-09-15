@@ -52,18 +52,21 @@ protected:
 	std::map<unistring, RefTemplateBase*> templates;
 public:
 	//RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
-	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0){return functions[nm];};
-	RefTemplateBase* getTemplateByName(unistring nm, Session *s=0){return templates[nm];};
+	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0){ 
+		std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(nm);
+		if (iter != functions.end()) return iter->second;
+		return 0;
+	};
+	RefTemplateBase* getTemplateByName(unistring nm, Session *s=0){
+		std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(nm);
+		if (iter != templates.end()) return iter->second;
+		return 0;
+
+	};
 
     //void setObjectByName(unistring name, RefObject* o){objects[name] = o; };
-    void setFunctionByName(unistring name, RefFunctionBase* o){
-		if (functions.find(name) != functions.end()) COMPILETIMEERROR(name, "function multi-definition");
-		functions[name] = o; 
-	};
-    void setTemplateByName(unistring name, RefTemplateBase* o){
-		if (templates.find(name) != templates.end()) COMPILETIMEERROR(name, "template multi-definition");
-		templates[name] = o; 
-	};
+    void setFunctionByName(unistring name, RefFunctionBase* o);
+    void setTemplateByName(unistring name, RefTemplateBase* o);
     virtual unistring getName() =0;
 };
 
@@ -72,16 +75,8 @@ protected:
 	std::map<unistring, RefData*(*)(unistring)> dataConstructors;
 	std::map<unistring, RefData*(*)(unistring)> varConstructors;
 public:
-	RefData* constructSymbol(unistring typecode, unistring value){
-		std::map<unistring, RefData*(*)(unistring)>::iterator iter = dataConstructors.find(typecode);
-		if (iter==dataConstructors.end()) return 0;
-		return (*iter->second)(value);
-	};
-	RefData* constructVariable(unistring typecode, unistring value){
-		std::map<unistring, RefData*(*)(unistring)>::iterator iter = varConstructors.find(typecode);
-		if (iter==varConstructors.end()) return 0;
-		return (*iter->second)(value);
-	};
+	RefData* constructSymbol(unistring typecode, unistring value);
+	RefData* constructVariable(unistring typecode, unistring value);
 
 };
 

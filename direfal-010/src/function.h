@@ -61,6 +61,7 @@ class RefTemplateBase : public RefObject {
 public:
 	virtual void initilizeAll(RefProgram *) = 0;
 	virtual unistring debug() =0;
+	virtual unistring getName() =0;
 	
 };
 
@@ -109,7 +110,7 @@ public:
 	inline RefChain *getLeftPart(){ return leftPart; };
 	inline RefChainConstructor *getRightPart(){ return rightPart; };
 
-	unistring explode(){ return "@RefUserCondition( " + rightPart->explode() + " ~ " + leftPart->explode() + " )"; };
+	unistring explode(){ return " , $UserCondition[ " + rightPart->explode() + " ::: " + leftPart->explode() + " ]"; };
 	TResult init(RefData **&, Session*, RefData **&, RefData **&);
 	TResult back(RefData **&, Session*, RefData **&, RefData **&);
 

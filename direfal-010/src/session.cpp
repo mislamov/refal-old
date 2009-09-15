@@ -4,9 +4,12 @@
 
 #ifdef DEBUG
 #define LOGSTEP(s) \
-	std::cout << s << "\t" << (*activeTemplate?(*activeTemplate)->debug():"null") << " ~ " << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0)) << "\n" << std::flush;
+	std::cout << s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0)) << "\n" << std::flush;
+#define LOGMATCH() \
+	std::cout << "\n\n######\n" << (isdemaching?"UN   |":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r)) << "\n" << std::flush;
 #else
 #define LOGSTEP(s)
+#define LOGMATCH()
 #endif
 
 
@@ -16,45 +19,52 @@
 // isdemaching - признак того, что надо продолжить матчинг от предыдущего удачного состояния (напр в цепочке условий)
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 // Политика управления varMapб current_LR задается из вне.
-bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, bool isdemaching) {
+// TODO: подумать над возможностью пердавать 2 chain в аргументах, а не 1 chain и 2 dot.
+bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l, RefData **arg_r, bool isdemaching) {
 #ifdef TESTCODE
 	if (! varMapStack.getCount()) SYSTEMERROR("createVarMap() wanted! No varmaps in stack for matching");
 #endif
 
-	LOG("New MATCHING : tmplateChain=" << tmplate->debug() << "  isDematching="<<isdemaching);
+	//LOG("New MATCHING : tmplateChain=" << thetmplate->debug() << "  isDematching="<<isdemaching);
     RefData **activeTemplate = 0, **l=0, **r=0;
 
     if (isdemaching) {
         // продолжаем ранее успешное сопоставление
-		if (tmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
+		if (thetmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
         result_sost = BACK;
-		activeTemplate = (*tmplate)[-1];
+		activeTemplate = (*thetmplate)[-1];
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
     } else {
         // начинаем новое сопоставление с argl..argr
-		if (tmplate->isEmpty()) return !arg_l; // дематчинг пустых векторов - неудача
+		if (thetmplate->isEmpty()) return !arg_l; // дематчинг пустых векторов - неудача
         result_sost = GO;
 		l = 0;
 		r = arg_l ? arg_l-1 : 0;
-        activeTemplate = (*tmplate)[0];
+        activeTemplate = (*thetmplate)[0];
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
     }
 
-	this->setTmplate(tmplate);
+	this->setTmplate(thetmplate);
+	LOGMATCH();
+
 	while (true) {
         // сопоставляем текущий шаблон
 
         switch (result_sost) {
 
         case GO: {
-			if (activeTemplate == this->tmplate()->at(-1)+1){ // достигнут правый край сопоставления! DataDOT
-				if (userVarJumpPoints.getLength()){ // это был user-шаблон
+			if (!activeTemplate || activeTemplate == tmplate()->at(-1)+1){ // достигнут правый край сопоставления! DataDOT
+				//TODO: привести все методы к одному условию
+				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
+					#ifdef TESTCODE
+						if (! userVarJumpPoints.getLength()) AchtungERROR;
+					#endif
 					RefUserVar** var = userVarJumpPoints.top();
 					(*var)->success(activeTemplate, this, l, r);
 					result_sost = GO;
 					break;
 				}
-				MOVE_TO_pred_template( activeTemplate ); // ?
+				activeTemplate = activeTemplate ? GET_pred_template(activeTemplate) : tmplate()->at(-1);  // когда шаблон исчерпан, а аргумент еще нет - ошибка
 				result_sost = (r==arg_r) ? SUCCESS : BACK;  // не двигали r вперед => сравниваем с (*arg)[-1]
 				break;
 			}
@@ -69,14 +79,19 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
             break;
         }
         case BACK: {
-			if (activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
-				if (userVarJumpPoints.getLength()){ // это был user-шаблон
+			//if (activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
+			if (!activeTemplate || activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
+				//TODO: привести все методы к одному условию
+				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
+					#ifdef TESTCODE
+						if (! userVarJumpPoints.getLength()) AchtungERROR;
+					#endif
 					RefUserVar** var = userVarJumpPoints.top();
 					(*var)->failed(activeTemplate, this, l, r);
 					result_sost = BACK;
 					break;
 				}
-				MOVE_TO_next_template( activeTemplate ); // ?
+				//activeTemplate = activeTemplate ? GET_next_template(activeTemplate) : tmplate()->at(0);  // когда шаблон исчерпан, а аргумент еще нет - ошибка
 				result_sost = FAIL;
 				break;
 			}
@@ -86,21 +101,26 @@ bool  Session::matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, R
         }
 
         case SUCCESS :
+            #ifdef DEBUG
+			std::cout << "SUCCESS\n######\n";
+            #endif
 			current_view_borders.pop();
+			popTmplate();
             return true;
 
         case ERROR :
-            //return -1;
             #ifdef DEBUG
-            LOG( "ERROR signal when maching!" );
+			std::cout << "ERROR\n######\n";
             #endif
 			current_view_borders.pop();
+			popTmplate();
             return false;
         case FAIL   :
             #ifdef DEBUG
-            LOG( "FAIL signal when maching!" );
+			std::cout << "FAIL\n######\n";
             #endif
 			current_view_borders.pop();
+			popTmplate();
             return false;
 
 
@@ -175,7 +195,7 @@ void Session::SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData*
         if (var){
             saveVar(this, (RefVariable*)var, l, r);
         }
-		LOG("save: " << var->getName() << " : " << ((l && *l) ? (*l)->debug() : "null") << " .. " <<  (r&& *r &&(current_view_l()-1-r)?(*r)->debug():"null"));
+//		LOG("save: " << var->getName() << " : " << ((l && *l) ? (*l)->debug() : "null") << " .. " <<  (r&& *r &&(current_view_l()-1-r)?(*r)->debug():"null"));
 };
     
 // TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено

@@ -16,35 +16,58 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+#include "symbols.h"
 #include "variables.h"
 #include "session.h"
 
 TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+	RefData **tmp = tpl;
+	IRefSymbol *symb = 0;
+	s->MOVE_TO_next_template(tmp);
+
+	
+	if (tmp && (symb=ref_dynamic_cast<IRefSymbol>(*tmp))){ // если следующий элемент шаблона - символ
+#ifdef DEBUG
+		std::cout << "e-symbol optimization\n";
+#endif
+		l = r;
+		do {
+			s->MOVE_TO_next_term(r);
+		} while( r && !(*symb == **r) );
+		if (!r){
+			s->MOVE_TO_pred_template(tpl);
+			return BACK;
+		}
+		// соотв-ий символ найден
+		l = (l==r-1)?0:l+1;
+		--r;
+		s->SAVE_VAR_STATE(tpl, l, r);
+		++r;
+		s->MOVE_TO_next_template(tpl);
+		s->MOVE_TO_next_template(tpl);
+		return GO;
+	}
+
     s->SAVE_VAR_STATE(tpl, l, r);
     s->MOVE_TO_next_template(tpl);
     return GO;
 };
 
+  
+
+
 TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
-    s->RESTORE_VAR_STATE(tpl, l, r);
+	s->RESTORE_VAR_STATE(tpl, l, r);
 
-    if (l) {
-        // предыдущее значение не пустое
-		if ((void*)r == (void*)s->current_view_r()) {
-            s->MOVE_TO_pred_template(tpl);
-            return BACK;
-        };
-        s->MOVE_TO_next_term(r);
-    } else {
-        s->MOVE_TO_next_term(r);
-        l = r;
-    }
-
-	if (!r) {
+    s->MOVE_TO_next_term(r);
+	if (!r){ // достигнули конца цепочки
         s->MOVE_TO_pred_template(tpl);
         return BACK;
-    };
-    s->SAVE_VAR_STATE(tpl, l, r);
+	}
+        
+	l = (l?l:r); 
+
+	s->SAVE_VAR_STATE(tpl, l, r);
     s->MOVE_TO_next_template(tpl);
     return GO;
 };

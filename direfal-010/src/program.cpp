@@ -212,3 +212,32 @@ unistring RefUserModule::debug(){
 	}
 	return result;	
 };
+
+
+
+void RefModuleBase::setFunctionByName(unistring name, RefFunctionBase* o){
+	std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(name);
+	if (iter != functions.end()) { COMPILETIMEERROR(name, "function multi-definition"); }
+		functions[name] = o; 	
+};
+    
+void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o){
+	std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(name);
+		if (iter != templates.end()) {	COMPILETIMEERROR(name, "template multi-definition"); }
+		templates[name] = o; 	
+};
+
+
+RefData* RefDllModule::constructSymbol(unistring typecode, unistring value){
+		std::map<unistring, RefData*(*)(unistring)>::iterator iter = dataConstructors.find(typecode);
+		if (iter==dataConstructors.end()) return 0;
+		return (*iter->second)(value);
+};
+	
+	
+RefData* RefDllModule::constructVariable(unistring typecode, unistring value){
+		std::map<unistring, RefData*(*)(unistring)>::iterator iter = varConstructors.find(typecode);
+		if (iter==varConstructors.end()) return 0;
+		return (*iter->second)(value);
+};
+
