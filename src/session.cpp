@@ -61,8 +61,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 						if (! userVarJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
 					RefUserVar** var = userVarJumpPoints.top();
-					(*var)->success(activeTemplate, this, l, r);
-					result_sost = GO;
+					result_sost = (*var)->success(activeTemplate, this, l, r);
 					break;
 				}
 				activeTemplate = activeTemplate ? GET_pred_template(activeTemplate) : tmplate()->at(-1);  // когда шаблон исчерпан, а аргумент еще нет - ошибка
@@ -88,8 +87,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 						if (! userVarJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
 					RefUserVar** var = userVarJumpPoints.top();
-					(*var)->failed(activeTemplate, this, l, r);
-					result_sost = BACK;
+					result_sost = (*var)->failed(activeTemplate, this, l, r);;
 					break;
 				}
 				//activeTemplate = activeTemplate ? GET_next_template(activeTemplate) : tmplate()->at(0);  // когда шаблон исчерпан, а аргумент еще нет - ошибка
