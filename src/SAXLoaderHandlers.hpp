@@ -139,10 +139,11 @@ private :
 
 class LoaderHeap {
         std::map<unistring, std::stack<RefObject*> > stackstags;
-        std::stack<RefChain *>  stckChains;
 
     public:
-        RefUserModule *currentModule;
+        std::stack<RefChain *>  stckChains;
+
+		RefUserModule *currentModule;
 		RefProgram    *currentProgram;
 		RefUserCondition*  currentCondition;
         std::stack<unistring >  activeTag;
