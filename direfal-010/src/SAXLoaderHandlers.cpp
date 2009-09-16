@@ -112,13 +112,9 @@ try {
 		loader->createChainToStack();
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
-		AchtungERRORn;
-		/*
-            if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERRORn("GROUP WITHOUT name-attribute");
-            RefGroupBracket *gbropen = new RefGroupBracket(toWstring(attributes.getValue("name")));
-            loader->putValueToStack( theCommand, (RefObject *)(gbropen) );
-            *(loader->getCurrChain()) += gbropen;
-			*/
+        if (! attributes.getLength() || !attributes.getValue("name")) SYSTEMERRORn("GROUP WITHOUT name-attribute");
+		*(loader->getCurrChain()) += (new RefUserVar("", toWstring(attributes.getValue("name"))));
+		loader->createChainToStack();
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {
 		SYSTEMERRORn("not yet");
@@ -320,13 +316,13 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
 		*(loader->getCurrChain()) += new RefStructBrackets(tmp);
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
-		AchtungERRORn;
-		/*
-            #ifdef TESTCODE
-            if (! dynamic_cast<RefGroupBracket *>(loader->getValueFromStack(theCommand))) SYSTEMERRORn("not RefGroupBracket in GROUP-stack !!!");
-            #endif
-            RefGroupBracket *gbrclose =  (RefGroupBracket*)( loader->extractValueFromStack(theCommand) );
-            *(loader->getCurrChain()) += gbrclose;*/
+		RefChain* tmp = loader->extractCurrChainFromStack();
+		RefUserVar **uv = reinterpret_cast<RefUserVar**>(loader->getCurrChain()->at(-1));
+        #ifdef TESTCODE
+		if (! tmp) AchtungERRORn;
+		if (! dynamic_cast<RefUserVar *>(*uv)) AchtungERRORn;
+		#endif
+		(*uv)->setTempl(tmp);
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {  //   | => x ?
 		SYSTEMERRORn("not realised");

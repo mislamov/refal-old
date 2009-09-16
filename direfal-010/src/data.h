@@ -61,18 +61,23 @@ public:
     inline void setName(unistring s) {        name = s;    };
 };
 
-class RefTemplateBase;
+class RefUserTemplate;
 
 // usertype-переменна€
 class RefUserVar : public RefVariable {
     unistring type;
-	RefTemplateBase *templ;
+	//RefTemplateBase *templInstant;
+	RefUserTemplate *templInstant;
+	RefChain *templ;
 public:
-	RefUserVar(){ templ=0; };
-	RefUserVar(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; };
+	RefUserVar(){ templ=0; templInstant=0; };
+	RefUserVar(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; templInstant=0; };
     CLASS_OBJECT_CAST(RefUserVarNotInit);
 
-	void setTempl(RefTemplateBase *ntempl){ templ = ntempl; };
+	//void setTempl(RefChain *ntm){ templ = ntm; };
+	void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
+	//void setTemplInstant(RefTemplateBase *ntempli){ templInstant = ntempli; templ= ntempli->};
+	void setTemplInstant(RefUserTemplate *ntempli);
     unistring getType() {        return type;    };
 	void setType(unistring ntype) {      type = ntype;    };
 	unistring explode();
@@ -136,9 +141,9 @@ public:
 	RefChain(RefData *);			// цпочка из одного терма
 	RefChain(size_t systemsize);	// пуста€ цепочка дл€ systemsize элементов
 
-	RefChain&  operator+=(RefData  *ch);
-	RefChain&  operator+=(RefChain *ch); // удал€ет *ch 
-	RefChain&  operator+=(RefChain  ch); // только копирует *ch
+	RefChain*  operator+=(RefData  *ch);
+	RefChain*  operator+=(RefChain *ch); // удал€ет *ch 
+	RefChain*  operator+=(RefChain  ch); // только копирует *ch
 	RefData**  operator[](signed long idx);
 	inline RefData**  at(signed long idx){ return (*this)[idx]; };
 

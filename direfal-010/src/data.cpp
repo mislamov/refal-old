@@ -44,7 +44,7 @@ RefChain::RefChain(size_t size) { // size is not lenght
 };
 
 
-RefChain& RefChain::operator+=(RefData *ch) {
+RefChain* RefChain::operator+=(RefData *ch) {
 
 	#ifdef TESTCODE
 	if (leng>sysize) SYSTEMERRORn("Achtung!")
@@ -59,11 +59,11 @@ RefChain& RefChain::operator+=(RefData *ch) {
 	first[leng] = ch;
 	++leng;
 
-    return *this;
+    return this;
 };
 
 // после - ch не существует!
-RefChain& RefChain::operator+=(RefChain *ch) {
+RefChain* RefChain::operator+=(RefChain *ch) {
 	sysize += ch->leng;
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
@@ -72,17 +72,17 @@ RefChain& RefChain::operator+=(RefChain *ch) {
 	leng += ch->leng;
 	delete ch;
 	ch = 0;
-	return *this;
+	return this;
 };
 
-RefChain& RefChain::operator+=(RefChain ch) {
+RefChain* RefChain::operator+=(RefChain ch) {
 	sysize += ch.leng;
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
 	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch.first, sizeof(RefData*)*(ch.leng));
 	leng += ch.leng;
-	return *this;
+	return this;
 };
 
 
@@ -282,6 +282,14 @@ TResult RefLinkToVariable::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 	return BACK;
 };
 
+
+void RefUserVar::setTemplInstant(RefUserTemplate *ntempli){ 
+	templInstant = ntempli; 
+	templ = ntempli->getLeftPart(); 
+};
+
+
+
 // компиляция цепочки после построения. расстановка ссылок
 // ownchain - левая часть для подстановки this. Тоже компилируется
 void RefChain::compile(RefChain *ownchain, RefProgram *program){
@@ -317,10 +325,15 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			point < end;
 			++point){
 
-			uservar = ref_dynamic_cast<RefUserVar>(*point);
+			uservar = ref_dynamic_cast<RefUserVar>(*point); // польз переменная или группа
 			if (uservar){ // запоминаем заготовку для переменной
 				if (! program) SYSTEMERRORn("program not null expected");
-				uservar->setTempl( program->findTemplate(uservar->getType()) );
+				#ifdef TESTCODE
+				if (uservar->getType() != EmptyUniString && ! ref_dynamic_cast<RefUserTemplate>(program->findTemplate(uservar->getType()) )) notrealisedERRORn("not RefUserTemplate");
+				#endif
+				if (uservar->getType() != EmptyUniString) {
+					uservar->setTemplInstant((RefUserTemplate*) program->findTemplate(uservar->getType()) );
+				}
 				vars[uservar->getName()] = uservar;
 				continue;
 			}
@@ -430,11 +443,10 @@ TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **
 	//std::cout << "RefUserVar::init\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
-	if (! dynamic_cast<RefUserTemplate*>(templ)) notrealisedERRORs(sess);
+	if (templInstant && ! dynamic_cast<RefUserTemplate*>(templInstant)) notrealisedERRORs(sess);
 	#endif
 
-	RefUserTemplate* usertemplate = (RefUserTemplate*)templ;
-	if (usertemplate->getLeftPart()->isEmpty()){
+	if (templ->isEmpty()){
 		notrealisedERRORs(sess);
 		//sess->MOVE_TO_next_template(tpl);
 		//return GO;
@@ -442,8 +454,8 @@ TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **
 	sess->saveVar(this, l=0, r, 0);
 	sess->createVarMap(this);
 	sess->userVarJumpPoints.put((RefUserVar**)tpl);
-	sess->setTmplate(usertemplate->getLeftPart());
-	tpl = usertemplate->getLeftPart()->at(0);
+	sess->setTmplate(templ);
+	tpl = templ->at(0);
 	return GO;
 };
 
@@ -454,7 +466,7 @@ TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **
 	if (*tpl != this) AchtungERRORs(sess);
 	#endif
 	sess->userVarJumpPoints.put((RefUserVar**)tpl);
-	sess->setTmplate(((RefUserTemplate*)templ)->getLeftPart());
+	sess->setTmplate(templ);
 	VarMap *vm = 0; // восстанавливаем карту переменных
 	sess->restoreVar(this, l, r, vm);
 	#ifdef TESTCODE
@@ -463,12 +475,12 @@ TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **
 	sess->saveVar(this, l?0:l, l?l-1:r, 0);
 	sess->putVarMap( vm );
 
-	tpl = ((RefUserTemplate*)templ)->getLeftPart()->at(-1);
+	tpl = templ->at(-1);
 	return BACK;
 };
 
 
 unistring RefUserVar::explode() {        
-	return " @" + (templ?templ->getName():"$null$") + "." + getName();
+	return " " + (templInstant?templInstant->getName():("{ "+templ->explode()+" }")) + "." + getName();
 };
 
