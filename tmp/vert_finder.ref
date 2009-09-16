@@ -1,4 +1,4 @@
-$ENTRY Go{ = <Ud 'kak dela tvoi kak i ovt i'>
+$ENTRY Go{ = <Ud <Card>>
 }
 Ud {0 = ;
 e.1' 'e.2 = <qia (<Vert e.1>)(e.2)><Ud e.2>;

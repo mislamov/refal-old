@@ -5,7 +5,7 @@ $ENTRY Go {
 IsVarName {
 	e.name,
 		e.name : e.1 e.2,
-		e.1 : {'s'|'f'| 'h' s.s |'d'} = <IsVarName e.2>;
+		e.1 : {'s'|'f'|'d'|'h' s.s} = <IsVarName e.2>;
 	= true;
 
 	e.else = false;

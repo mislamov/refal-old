@@ -1,4 +1,4 @@
-$ENTRY Go { = <Sing 99>;};
+$ENTRY Go { = <Sing 10>;};
 
 Sing {
     s.N = <Prout <Verse s.N>>;

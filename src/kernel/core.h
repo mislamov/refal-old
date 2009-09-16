@@ -82,8 +82,8 @@ typedef std::string  unistring;
 //#define _L(quote) L##quote
 #define _L(quote) quote
 
-typedef long long           infint;
-typedef double          infreal;
+typedef long long            infint;
+typedef long double          infreal;
 typedef int             ThisId;     // тип для хранения  идентификатора каждого дататайпа
 
 infint str2infint(unistring si);  // строку в число

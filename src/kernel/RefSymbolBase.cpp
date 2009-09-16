@@ -185,8 +185,8 @@ unistring RefSymbol<unistring>::toString() {
     #ifdef DEBUG
     return "\"" + getValue() + "\" ";
     #else
-    //return getValue() + " ";
-    return getValue() ;
+    return getValue() + " ";
+    //return "\"" + getValue() + "\" ";
     #endif
 }
 

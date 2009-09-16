@@ -6,16 +6,10 @@ Run {
 	e.abc s.d,
 		e.abc : s.a s.b s.c,
 		<Verifi e.abc> : false
+
 		=	<Prout 'abc = 'e.abc'    b = ' s.b>;
 
-
-        e.abc s.d,
-                e.abc : s.a s.b s.c,
-                <Verifi e.abc> : true
-                =       <Prout 'success:: e.abc (with "c") = 'e.abc'    s.b = ' s.b>;
-
-
-	e.else = <Prout 'fail'>;
+	e.else = <Prout 'success'>;
 }
 
 Verifi {
