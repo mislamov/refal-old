@@ -120,11 +120,15 @@ unistring RefChain::debug(){
 unistring RefChain::explode(){
 		    unistring result = "";
 
-			for (size_t i=0; i<leng; i++) {
-				#ifdef TESTCODE
-					if (! first[i]) AchtungERRORn;
-				#endif
-				result += first[i]->explode();
+			if (!this){
+				result = " $null ";
+			}else{
+				for (size_t i=0; i<leng; i++) {
+					#ifdef TESTCODE
+						if (! first[i]) AchtungERRORn;
+					#endif
+					result += first[i]->explode();
+				}
 			}
 			return result;
 };
@@ -283,7 +287,7 @@ TResult RefLinkToVariable::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 };
 
 
-void RefUserVar::setTemplInstant(RefUserTemplate *ntempli){ 
+void RefVarChains::setTemplInstant(RefUserTemplate *ntempli){ 
 	templInstant = ntempli; 
 	templ = ntempli->getLeftPart(); 
 };
@@ -301,7 +305,8 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	RefVariable *var;
 	RefLinkToVariable *link;
 	RefDataBracket *bracks;
-	RefUserVar *uservar;
+	RefVarChains *uservar;
+	RefVariantsChains *uservarich;
 	RefUserCondition *cond;
 
 
@@ -325,7 +330,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			point < end;
 			++point){
 
-			uservar = ref_dynamic_cast<RefUserVar>(*point); // польз переменная или группа
+			uservar = ref_dynamic_cast<RefVarChains>(*point); // польз переменная или группа
 			if (uservar){ // запоминаем заготовку для переменной
 				if (! program) SYSTEMERRORn("program not null expected");
 				#ifdef TESTCODE
@@ -334,9 +339,19 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				if (uservar->getType() != EmptyUniString) {
 					uservar->setTemplInstant((RefUserTemplate*) program->findTemplate(uservar->getType()) );
 				}
-				vars[uservar->getName()] = uservar;
-				continue;
+				vars[uservar->getName()] = uservar; // todo: переделать на ссылки - так как есть безымянные переменные
+  				continue;
 			}
+
+			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // польз переменная или группа
+			if (uservarich){ // запоминаем заготовку для переменной
+				vars[uservarich->getName()] = uservarich;
+				subchains.put(point+1, end);
+				subchains.put((*(uservarich->))[0], (*(bracks->chain))[-1]+1);
+				break;
+			}
+
+			
 			
 			var = ref_dynamic_cast<RefVariable>(*point);
 			if (var){ // запоминаем переменную
@@ -389,8 +404,8 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 };
 
 // вызывается сразу после удачного сопоставления (вместо init правой границы)
-TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
-	//std::cout << "RefUserVar::success\n";
+TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefVarChains::success\n";
 	RefData **lold, **rold;
 	VarMap *vm=0, *vm2=0;
 	vm = sess->poptopVarMap(); // сохраняем карту переменных
@@ -406,7 +421,7 @@ TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData
 	}
 	sess->saveVar(this, l, r, vm); // сохраняем полное значение
 
-	tpl = (RefData**) sess->userVarJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
+	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
 	sess->popTmplate();
 
 
@@ -419,15 +434,15 @@ TResult RefUserVar::success(RefData **&tpl, Session* sess, RefData **&l, RefData
 };
 
 // вызывается сразу после НЕудачного сопоставления (вместо back левой границы)
-TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
-	//std::cout << "RefUserVar::faild\n";
+TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefVarChains::faild\n";
 	delete sess->poptopVarMap();
 	VarMap* tmp = 0;
 	sess->restoreVar(this, l, r, tmp);		 // забываем переменную
 	#ifdef TESTCODE
 		if (tmp) unexpectedERRORs(sess);
 	#endif
-	tpl = (RefData**) sess->userVarJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
+	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
 	sess->popTmplate();
 	
 
@@ -439,8 +454,8 @@ TResult RefUserVar::failed (RefData **&tpl, Session* sess, RefData **&l, RefData
 	return BACK;
 };
 
-TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
-	//std::cout << "RefUserVar::init\n";
+TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefVarChains::init\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
 	if (templInstant && ! dynamic_cast<RefUserTemplate*>(templInstant)) notrealisedERRORs(sess);
@@ -453,19 +468,19 @@ TResult RefUserVar::init(RefData **&tpl, Session* sess, RefData **&l, RefData **
 	}
 	sess->saveVar(this, l=0, r, 0);
 	sess->createVarMap(this);
-	sess->userVarJumpPoints.put((RefUserVar**)tpl);
+	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ);
 	tpl = templ->at(0);
 	return GO;
 };
 
 // вызывается только после ранее удачного сопоставления
-TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
-	//std::cout << "RefUserVar::back\n";
+TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefVarChains::back\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
 	#endif
-	sess->userVarJumpPoints.put((RefUserVar**)tpl);
+	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ);
 	VarMap *vm = 0; // восстанавливаем карту переменных
 	sess->restoreVar(this, l, r, vm);
@@ -480,7 +495,127 @@ TResult RefUserVar::back(RefData **&tpl, Session* sess, RefData **&l, RefData **
 };
 
 
-unistring RefUserVar::explode() {        
+unistring RefVarChains::explode() {        
 	return " " + (templInstant?templInstant->getName():("{ "+templ->explode()+" }")) + "." + getName();
 };
 
+
+
+
+
+
+
+
+
+TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	#ifdef TESTCODE
+	if (*tpl != this) AchtungERRORs(sess);
+	#endif
+
+	if (templs.empty()){ notrealisedERRORs(sess);	}
+	sess->saveVar(this, l=0, r, 0);
+	sess->createVarMap(this);
+	sess->termChainsJumpPoints.put(tpl);
+	RefChain *templ;
+	sess->setTmplate(templ = templs.getByIndex(0));
+	tpl = templ->at(0);
+
+	sess->variants_idxs.push(0); // добавляем индекс для варианта
+	return GO;
+};
+
+
+// вызывается сразу после удачного сопоставления (вместо init правой границы)
+TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	RefData **lold, **rold;
+	VarMap *vm=0, *vm2=0;
+	vm = sess->poptopVarMap(); // сохраняем карту переменных
+	sess->restoreVar(this, lold, rold, vm2); // начало аргумента переменной
+	#ifdef TESTCODE
+	if (vm2) unexpectedERRORs(sess);
+	#endif
+	if (rold != r){
+		sess->MOVE_TO_next_term(rold);
+		l = rold;
+	} else {
+		l = 0;	// значение переменной пустое
+	}
+	sess->saveVar(this, l, r, vm); // сохраняем полное значение
+
+	tpl = sess->termChainsJumpPoints.top_pop(); 
+	sess->poptopTmplate();
+
+	#ifdef TESTCODE
+	if (*tpl != this) AchtungERRORs(sess);
+	#endif
+
+	sess->MOVE_TO_next_template(tpl); // двигаемся дальше
+	return GO;
+};
+
+
+// вызывается сразу после НЕудачного сопоставления (вместо back левой границы)
+TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+
+	long idx = sess->variants_idxs.top();
+	if (++idx == templs.getCount()){
+		// варианты закончились
+		delete sess->poptopVarMap(); 
+		sess->variants_idxs.pop();		//todo: перенестив varmap?
+		VarMap* tmp = 0;
+		sess->restoreVar(this, l, r, tmp);		 // забываем переменную
+		#ifdef TESTCODE
+		if (tmp) unexpectedERRORs(sess);
+		#endif
+		tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем
+		sess->poptopTmplate();
+
+		#ifdef TESTCODE
+		if (*tpl != this) AchtungERRORs(sess);
+		#endif
+		
+		sess->MOVE_TO_pred_template(tpl);
+		return BACK;
+	}
+
+	sess->variants_idxs.settop(idx);
+	RefChain *templ;
+	sess->popTmplate();
+	sess->setTmplate(templ = templs.getByIndex(idx));
+	tpl = templ->at(0);
+
+	r = sess->preCurrentMapStack()->top3();
+	return GO;
+};
+
+
+// вызывается только после ранее удачного сопоставления
+TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	//std::cout << "RefVarChains::back\n";
+	#ifdef TESTCODE
+	if (*tpl != this) AchtungERRORs(sess);
+	#endif
+	sess->termChainsJumpPoints.put(tpl);
+	RefChain *templ;
+	sess->setTmplate(templ = templs.getByIndex(sess->variants_idxs.top()));
+	VarMap *vm = 0; // восстанавливаем карту переменных
+	sess->restoreVar(this, l, r, vm);
+	#ifdef TESTCODE
+		if (!vm) unexpectedERRORs(sess);
+	#endif
+	sess->saveVar(this, l?0:l, l?l-1:r, 0);
+	sess->putVarMap( vm );
+
+	tpl = templ->at(-1);
+	return BACK;
+};
+
+unistring RefVariantsChains::explode(){
+	size_t idx = templs.getCount();
+	unistring res = templs.getByIndex(idx-1)->explode() + " }." + name + " ";
+	for (--idx; idx; --idx){
+		res = templs.getByIndex(idx-1)->explode() + " | " + res;
+	}
+	res = "{ " + res;
+	return res;
+};

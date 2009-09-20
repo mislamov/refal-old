@@ -64,18 +64,21 @@ class Session {
 private:
 	inline Session(){};
 public:
-	PooledStack<RefUserVar**> userVarJumpPoints;
+	PooledStack<RefData**> termChainsJumpPoints;
 	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
-
+	PooledStack<long> variants_idxs;
 	inline Session(RefProgram *p){ program = p; }; 
 	inline RefProgram *getProgram(){ return program; };
 	inline void createVarMap(RefObject *creator){ varMapStack.put(new VarMap(creator)); };
+	inline VarMap* currentMapStack(){ return varMapStack.top(); };
+	inline VarMap* preCurrentMapStack(){ return varMapStack.pretop(); };
 	inline VarMap* poptopVarMap(){ return varMapStack.top_pop(); };
 	inline void putVarMap(VarMap* vm){ varMapStack.put(vm); };
 
 	inline RefChain* tmplate(){ return currentTemplates.top(); };
 	inline void setTmplate(RefChain *t){ currentTemplates.put(t); };
-	inline void popTmplate(){ currentTemplates.top_pop(); };
+	inline RefChain* poptopTmplate(){ return currentTemplates.top_pop(); };
+	inline void popTmplate(){ currentTemplates.pop(); };
 
 	inline RefData** current_view_l(){ return current_view_borders.top1(); };
 	inline RefData** current_view_r(){ return current_view_borders.top2(); };
@@ -154,23 +157,23 @@ public:
 
 
 inline void Session::saveVar(RefVariable *var, RefData **l, RefData **r, VarMap* vm) {
-	//std::cout << "Session::saveVar(for " << var->toString() << ")\n";
+//std::cout << "Session::saveVar(for " << var->toString() << ")\n";
 	varMapStack.top()->put(var, l, r, vm);
 };
 
 inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, VarMap* &vm) {
-	//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
+//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
 	#ifdef TESTCODE
 	if (var != varNew){
-		SYSTEMERRORs(this, "restoreVar: tring " << var->toString() << "  when  " << varNew->toString() << " expect!"); 
+		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!"); 
 		//AchtungERRORs(this);
 	}
 	#endif
 };
 inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
-	//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
+//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	VarMap* vm = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);

@@ -21,7 +21,7 @@
 
 #define REFVERSION "DiRefal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 #define TESTCODE
-//#define DEBUG
+#define DEBUG
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины
@@ -167,7 +167,7 @@ enum RefDataTypesForCast {
     castRefVariable_s    =  B32(00000000, 00000000, 00000000, 00000100) | castRefVariable,
     castRefVariable_t    =  B32(00000000, 00000000, 00000000, 00001000) | castRefVariable,
     castRefVariable_END  =  B32(00000000, 00000000, 00000000, 00010000) | castRefVariable,
-    castRefUserVarNotInit=  B32(00000000, 00000000, 00000000, 00100000) | castRefVariable,
+    castRefVarChainsNotInit=  B32(00000000, 00000000, 00000000, 00100000) | castRefVariable,
     castRefVarAlpha      =  B32(00000000, 00000000, 00000000, 01000000) | castRefVariable,
     castRefVarByte       =  B32(00000000, 00000000, 00000000, 10000000) | castRefVariable,
     castRefVarInteger    =  B32(00000000, 00000000, 00000001, 00000000) | castRefVariable,
