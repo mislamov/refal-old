@@ -22,6 +22,7 @@
 #include <string>
 
 #include "config.h"
+#include "poolTuples.h"
 
 class RefChain;
 class RefProgram;
@@ -63,16 +64,16 @@ public:
 
 class RefUserTemplate;
 
-// usertype-переменная
-class RefUserVar : public RefVariable {
+// usertype-переменная, группа
+class RefVarChains : public RefVariable {
     unistring type;
 	//RefTemplateBase *templInstant;
 	RefUserTemplate *templInstant;
 	RefChain *templ;
 public:
-	RefUserVar(){ templ=0; templInstant=0; };
-	RefUserVar(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; templInstant=0; };
-    CLASS_OBJECT_CAST(RefUserVarNotInit);
+	RefVarChains(){ templ=0; templInstant=0; };
+	RefVarChains(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; templInstant=0; };
+    CLASS_OBJECT_CAST(RefVarChainsNotInit);
 
 	//void setTempl(RefChain *ntm){ templ = ntm; };
 	void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
@@ -82,12 +83,35 @@ public:
 	void setType(unistring ntype) {      type = ntype;    };
 	unistring explode();
 
-	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
 	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
 	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
 
 };
+
+
+
+
+// usertype-переменная, группа
+class RefVariantsChains : public RefVariable {
+	PooledStack<RefChain *> templs;
+public:
+	RefVariantsChains(unistring tname = EmptyUniString){ name = tname; };
+
+	void addTempl(RefChain *ntm){ templs.put(ntm); };
+
+	unistring explode();
+
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+
+};
+
+
+
 
 
 class RefDataBracket : public RefData {

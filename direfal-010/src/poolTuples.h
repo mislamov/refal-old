@@ -16,7 +16,7 @@ class PooledStack {
 public:
 	inline size_t getCount(){ return idx; }
 	inline size_t getLength(){ return idx; };
-
+	inline bool empty(){ return !idx; };
 
 	inline PooledStack(){
 		idx = 0;
@@ -28,6 +28,7 @@ public:
 
 
 	//~PooledStack(){ free(pool); };
+	inline void push(T l){ return put(l); }
 	inline void put(T l){
 		if (idx >= size-1){
 			size+=POOLSIZE_DEFAULT;
@@ -46,8 +47,37 @@ public:
 		return pool[--idx];
 	};
 
+
+	inline void pop(){
+		#ifdef TESTCODE
+		if (!idx) 
+			SYSTEMERRORn("link-stack is empty!");
+		#endif
+		--idx;
+	};
+
 	inline T top(){
+		#ifdef TESTCODE
+		if (idx<=0) 
+			SYSTEMERRORn("link-stack is empty!");
+		#endif
 		return pool[idx-1];
+	};
+
+	inline T pretop(){
+		#ifdef TESTCODE
+		if (idx<=1) 
+			SYSTEMERRORn("link-stack is not anouth!");
+		#endif
+		return pool[idx-2];
+	};
+
+	inline void settop(T t){
+		#ifdef TESTCODE
+		if (idx<=0) 
+			SYSTEMERRORn("link-stack is empty!");
+		#endif
+		pool[idx-1] = t;
 	};
 
 	inline T getByIndex(size_t index){
@@ -428,6 +458,24 @@ public:
 		i2 = pool_last_ind->i2;
 		i3 = pool_last_ind->i3;
 		i4 = pool_last_ind->i4;
+	};
+
+		
+    inline T1 top1() {
+        TUPLE4* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i1;
+	};
+    inline T2 top2() {
+        TUPLE4* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i2;
+	};
+    inline T3 top3() {
+        TUPLE4* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i3;
+	};
+    inline T4 top4() {
+        TUPLE4* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i4;
 	};
 
 

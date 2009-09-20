@@ -58,10 +58,15 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
 					#ifdef TESTCODE
-						if (! userVarJumpPoints.getLength()) AchtungERRORs(this);
+						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
-					RefUserVar** var = userVarJumpPoints.top();
-					result_sost = (*var)->success(activeTemplate, this, l, r);
+					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
+					if (var1) {
+						result_sost = var1->success(activeTemplate, this, l, r);
+					}else{
+						RefVariantsChains* var2 = ref_dynamic_cast<RefVariantsChains>(* termChainsJumpPoints.top());
+						result_sost = var2->success(activeTemplate, this, l, r);
+					}
 					break;
 				}
 				activeTemplate = activeTemplate ? GET_pred_template(activeTemplate) : tmplate()->at(-1);  // когда шаблон исчерпан, а аргумент еще нет - ошибка
@@ -84,10 +89,15 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
 					#ifdef TESTCODE
-						if (! userVarJumpPoints.getLength()) AchtungERRORs(this);
+						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
-					RefUserVar** var = userVarJumpPoints.top();
-					result_sost = (*var)->failed(activeTemplate, this, l, r);;
+					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
+					if (var1){
+						result_sost = var1->failed(activeTemplate, this, l, r);
+					}else{
+						RefVariantsChains* var2 = ref_dynamic_cast<RefVariantsChains>(* termChainsJumpPoints.top());
+						result_sost = var2->failed(activeTemplate, this, l, r);
+					}
 					break;
 				}
 				//activeTemplate = activeTemplate ? GET_next_template(activeTemplate) : tmplate()->at(0);  // когда шаблон исчерпан, а аргумент еще нет - ошибка

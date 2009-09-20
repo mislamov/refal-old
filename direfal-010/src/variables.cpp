@@ -104,8 +104,8 @@ bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefV
 
 
 TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData **&r ) {
-	RefData **rr = s->current_view_r();
-	s->MOVE_TO_pred_term(rr);
+	/*	RefData **rr = s->current_view_r();
+	//s->MOVE_TO_pred_term(rr);
 
 	RefData **rnext = r;
 	s->MOVE_TO_next_term(rnext);
@@ -115,9 +115,18 @@ TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData *
         l = rnext; // getNextSymbol! not nextTerm
         r = rr;
     }
+	*/
+	RefData **rnext = r;
+	s->MOVE_TO_next_term(rnext);
+
+	if (rnext){
+		l=rnext;
+		r=s->current_view_r();
+	}
     s->saveVar((RefVariable*)*tpl, l, r);
 	s->MOVE_TO_next_template(tpl);
     return GO;
+
 };
 
 TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
@@ -127,7 +136,8 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         return BACK;
     }
     #ifdef TESTCODE
-    if (! r)SYSTEMERRORs(s, "alarm!");
+    if (! r)
+		SYSTEMERRORs(s, "alarm!");
     #endif
 
     if (l==r) {

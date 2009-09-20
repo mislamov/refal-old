@@ -170,7 +170,7 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 			if (tp){
 				RefTemplateBase *templ = ref_dynamic_cast<RefTemplateBase>(tp);
 				if (templ){
-					return new RefUserVar(code, value);
+					return new RefVarChains(code, value);
 				}
 			} 
 		}
