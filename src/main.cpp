@@ -98,8 +98,8 @@ RefUserModule *mod;
 
     int err = 0;
     if (! strstr(pname, ".xml")) {
-        ss0 << ".\\refgo.exe -e "  << "refal_scaner " << pname << "\n";
-        ss1 << refal_dir << "refgo -e " << refal_dir << "refal_scaner " << pname << "\n";
+        ss0 << ".\\refgo.exe -e "  << "direfal_scaner " << pname << "\n";
+        ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << "direfal_scaner " << pname << "\n";
         ss2 << pname << ".xml";
     } else {
         ss2 << pname;

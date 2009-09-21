@@ -1,21 +1,13 @@
+Template digit ::= {'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'} ;
+Template digits::= { digit. | digit. digits. } ;
 
 
-$ENTRY Go{
-	=	<Run 'abc<HTML>dfgh</HTML>ijklm<TAG1>nop<TAG2>qrst</TAG2>uvwxyz</TAG1>zxy'>;
-};
+Template IP ::= digits. '.' digits. '.' digits. '.' digits. ;
 
 
+Go { = <Prout <F <Mount 'rbc.html'>>>;}
 
-Template Tags ::= 
-	'<' e.word '>' e.body '</' e.word '>';
-
-
-Template OwnTags ::= 
-	Tags.this,
-	Tags.this : '<' e.word '>' e.body '</' e.word '>',
-	e.body 	  : e.1 Tags.inside e.2;
-
-Run {
-	e.1 OwnTags.t e.2 = <Prout 'parent-tags: ' OwnTags.t> <Run e.2>;
-	e.else = <Prout 'no found'>;
+F {
+	e. IP.ip E.next = <Prout @.ip> <F @.next>;
+	e. = ;
 }

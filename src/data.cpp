@@ -340,14 +340,23 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 					uservar->setTemplInstant((RefUserTemplate*) program->findTemplate(uservar->getType()) );
 				}
 				vars[uservar->getName()] = uservar; // todo: переделать на ссылки - так как есть безымянные переменные
-  				continue;
+
+				if (uservar->templInstant == 0){
+					// группа
+					subchains.put(point+1, end);
+					subchains.put(uservar->templ->at(0), uservar->templ->at(-1)+1);
+					break;
+				}
+				continue;
 			}
 
 			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // польз переменная или группа
 			if (uservarich){ // запоминаем заготовку для переменной
 				vars[uservarich->getName()] = uservarich;
 				subchains.put(point+1, end);
-				subchains.put((*(uservarich->))[0], (*(bracks->chain))[-1]+1);
+				for(int i=uservarich->templs.getCount(); i; --i){
+					subchains.put(uservarich->templs.getByIndex(i-1)->at(0), uservarich->templs.getByIndex(i-1)->at(-1)+1);
+				}
 				break;
 			}
 
