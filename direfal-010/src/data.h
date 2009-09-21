@@ -66,11 +66,15 @@ class RefUserTemplate;
 
 // usertype-переменная, группа
 class RefVarChains : public RefVariable {
-    unistring type;
+	friend class RefChain;
+
+	unistring type;
 	//RefTemplateBase *templInstant;
 	RefUserTemplate *templInstant;
 	RefChain *templ;
 public:
+
+
 	RefVarChains(){ templ=0; templInstant=0; };
 	RefVarChains(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; templInstant=0; };
     CLASS_OBJECT_CAST(RefVarChainsNotInit);
@@ -95,6 +99,8 @@ public:
 
 // usertype-переменная, группа
 class RefVariantsChains : public RefVariable {
+	friend class RefChain;
+
 	PooledStack<RefChain *> templs;
 public:
 	RefVariantsChains(unistring tname = EmptyUniString){ name = tname; };

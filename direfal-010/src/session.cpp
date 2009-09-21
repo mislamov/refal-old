@@ -61,6 +61,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
+					std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
 					if (var1) {
 						result_sost = var1->success(activeTemplate, this, l, r);
 					}else{
@@ -91,6 +92,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 					#ifdef TESTCODE
 						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
+						std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 					if (var1){
 						result_sost = var1->failed(activeTemplate, this, l, r);
