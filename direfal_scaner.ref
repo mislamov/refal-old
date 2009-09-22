@@ -18,6 +18,202 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+
+ScanObjectExprWithExecs_ { e.e = <PProut "\nScanObjectExprWithExecs: " e.e><ScanObjectExprWithExecs_ e.e>; }
+ScanObjectExprWithExecs {
+	=;
+
+	"$separator"	e.e = 	<ScanObjectExprWithExecs e.e>;
+	"$not"		e.e = 	"<NOT/>"  <ScanObjectExprWithExecs e.e>;
+	
+	/* отсечение */
+	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
+
+	/* разделитель вариантов */
+	('|')  e.e = "|" <ScanObjectExprWithExecs e.e>;
+
+	/* групповые скобки c именем */
+	('{')  e.oexp  ('}')('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false,
+		<Type t.varname> : {
+			'W' s.sub t.varname = "<GROUP_F name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+			e.else = <MakeError ScanObjectExprWithExecs 'bad varname for GROUP-brackets'>;
+		};
+
+	/* ВАРИАНТЫ */
+	('{')  e.oexp  ('}')"["(e.from)".."(e.to)"]"('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname "\">" 
+		"<REPEAT from=\"" e.from "\" to=\"" e.to "\">" 
+			"<GROUP_F name=\""  <GetRandomName> "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+	('{')  e.oexp  ('}')"["(e.from)"..." "]" ('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname "\">" 
+		"<REPEAT from=\"" e.from "\" to=\"inf\">" 
+			"<GROUP_F name=\""  <GetRandomName> "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+	('{')  e.oexp  ('}')"[" "..."(e.to)"]" ('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname "\">" 
+		"<REPEAT from=\"0\" to=\""e.to"\">" 
+			"<GROUP_F name=\"" <GetRandomName>  "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+	('{')  e.oexp  ('}')"[" (e.fromto)"]" ('.')(t.varname) e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\"" t.varname  "\">" 
+		"<REPEAT from=\""e.fromto"\" to=\""e.fromto"\">" 
+			"<GROUP_F name=\"" <GetRandomName>  "\">"
+			e.oexp_I 
+			"</GROUP_F>"
+		"</REPEAT>" 
+		"</GROUP_F>" 
+		<ScanObjectExprWithExecs e.e>;
+
+
+
+	/* групповые скобки без имени */
+	('{')  e.oexp  ('}') e.e,
+		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
+		<ExistError  e.oexp_I> : false
+	=	"<GROUP_F name=\""  /*<GetRandomName>*/  "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+
+		
+	
+	
+
+	/* Скобки */
+	('(') e.inside (')') e.next,
+	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
+	<ExistError  e.insidescaned_I> : false
+	=	"<BRACKET>"  e.insidescaned_I "</BRACKET>" <ScanObjectExprWithExecs  e.next >;
+
+	('<') (t.word) e.inside ('>') e.next,
+	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
+	<ExistError  e.insidescaned_I> : false
+
+	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
+
+
+
+
+	/* продолжение ссылки напеременную */
+	"$path" ('/')(t.1) e.next, 
+		<Type t.1> : 'W' s.sub1 t.1
+		=	'/' <Explode t.1> <ScanObjectExprWithExecs  "$path" e.next>;
+
+	/* конец ссылки напеременную */
+	"$path" e.next		
+		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
+
+
+
+	/*ссылка на переменную*/
+	(t.1)('.')(t.2)('/') e.next,
+	<Type t.1> : 'W' s.sub1 t.1,
+	<Type t.2> : 'W' s.sub2 t.2
+	=	"<LNK>" <Explode t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+
+	/*ссылка на переменную c числовым именем*/
+	(t.1)('.')(t.2)('/') e.next,
+	<Type t.1> : 'W' s.sub1 t.1,
+	<Type t.2> : 'N' s.sub2 t.2
+	=	"<LNK>" <Symb t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+
+	/*ссылка на переменную c @-именем*/
+	('@')('.')(t.2)('/') e.next,
+	<Type t.2> : 'N' s.sub2 t.2
+	=	"<LNK>" <Symb t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+	('@')('.')(t.2)('/') e.next,
+	<Type t.2> : 'W' s.sub2 t.2
+	=	"<LNK>" <Explode t.2>
+		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+
+	/*переменная*/
+	(t.1)('.')(t.2) e.next,
+	<Type t.1> : 'W' s.sub1 t.1,
+	<Type t.2> : 'W' s.sub2 t.2
+	=	"<VAR>" <Explode t.1> '.' <Explode t.2> "</VAR>"
+		<ScanObjectExprWithExecs e.next>;
+
+	/*переменная с числовым именем*/
+	(t.1)('.')(t.2) e.next,
+	<Type t.1> : 'W' s.sub1 t.1,
+	<Type t.2> : 'N' s.sub2 t.2
+	=	"<VAR>" <Explode t.1> '.' <Symb t.2> "</VAR>"
+		<ScanObjectExprWithExecs e.next>;
+	/**/
+
+	/*переменная без имени*/
+	(t.1)('.') "$separator" e.next,
+	<Type t.1> : 'W' s.sub1 t.1
+	=
+		"<VAR>" <Explode t.1> '.' "</VAR>"
+		<ScanObjectExprWithExecs e.next>;
+	/**/
+
+	/* ссылка на переменную с НЕ числовым именем*/
+	('@')('.')(t.2) e.next,
+	<Type t.2> : 'W' s.sub2 t.2
+	=	"<LNK>" <Explode t.2> "</LNK>"
+		<ScanObjectExprWithExecs e.next>;
+	/**/
+
+	/* ссылка на переменную с числовым именем*/
+	('@')('.')(t.2) e.next,
+	<Type t.2> : 'N' s.sub2 t.2
+	=	"<LNK>" <Symb t.2> "</LNK>"
+		<ScanObjectExprWithExecs e.next>;
+	/**/
+
+	/*просто слово или число*/
+	(s.1) e.next, <Type s.1> :
+				{
+					'N' s.sub s.1 = "<INT>" <Symb s.1> "</INT>"   <ScanObjectExprWithExecs e.next>;
+					'W' s.sub s.1 = "<WORD>" <Explode s.1> "</WORD>" <ScanObjectExprWithExecs e.next>;
+					/*s.0 s.sub s.1 = "<WORD>" s.1 "</WORD>" <ScanObjectExprWithExecs e.next>;*/
+					s.T s.sub s.1 = "@ERROR:" ('unkonown symbol in object-expression = "' s.1 '" of type [' s.T s.sub '] in ' (s.1) e.next);
+				};
+
+
+	/*термальное предложение*/
+	(e.1) e.next  =  "<WORD>" e.1 "</WORD>" <ScanObjectExprWithExecs e.next>;
+
+	/* не возможно появления тут аргумента вида (t.1) e.2   !!! */
+
+	s.s e.next = "<TEXT>" s.s "</TEXT>" <ScanObjectExprWithExecs e.next>;
+
+	e.error = <MakeError ScanObjectExprWithExecs e.error>;
+
+}
+
+
+
+
 Repeat {
 	t.fname e.arg While (e.exp),
 	<Mu t.fname e.arg> : {
@@ -228,197 +424,6 @@ IsWordNumbDot {
 	t.else = false;
 }
 
-ScanObjectExprWithExecs_ { e.e = <PProut "\nScanObjectExprWithExecs: " e.e><ScanObjectExprWithExecs_ e.e>; }
-ScanObjectExprWithExecs {
-	=;
-
-	"$separator"	e.e = 	<ScanObjectExprWithExecs e.e>;
-	"$not"		e.e = 	"<NOT/>"  <ScanObjectExprWithExecs e.e>;
-	
-	/* отсечение */
-	('!')  e.e = "<CUTTER/>" <ScanObjectExprWithExecs e.e>;
-
-	/* разделитель вариантов */
-	('|')  e.e = "|" <ScanObjectExprWithExecs e.e>;
-
-	/* групповые скобки c именем */
-	('{')  e.oexp  ('}')('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
-		<ExistError  e.oexp_I> : false,
-		<Type t.varname> : {
-			'W' s.sub t.varname = "<GROUP_F name=\"" <Explode t.varname> "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
-			'N' s.sub t.varname = "<GROUP_F name=\"" <Symb t.varname>    "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
-			e.else = <MakeError ScanObjectExprWithExecs 'bad varname for GROUP-brackets'>;
-		};
-
-	/* ВАРИАНТЫ */
-	('{')  e.oexp  ('}')"["(e.from)".."(e.to)"]"('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
-		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\"" t.varname "\">" 
-		"<REPEAT from=\"" e.from "\" to=\"" e.to "\">" 
-			"<GROUP_F name=\""  <GetRandomName> "\">"
-			e.oexp_I 
-			"</GROUP_F>"
-		"</REPEAT>" 
-		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
-
-	('{')  e.oexp  ('}')"["(e.from)"..." "]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
-		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\"" t.varname "\">" 
-		"<REPEAT from=\"" e.from "\" to=\"inf\">" 
-			"<GROUP_F name=\""  <GetRandomName> "\">"
-			e.oexp_I 
-			"</GROUP_F>"
-		"</REPEAT>" 
-		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
-
-	('{')  e.oexp  ('}')"[" "..."(e.to)"]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
-		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\"" t.varname "\">" 
-		"<REPEAT from=\"0\" to=\""e.to"\">" 
-			"<GROUP_F name=\"" <GetRandomName>  "\">"
-			e.oexp_I 
-			"</GROUP_F>"
-		"</REPEAT>" 
-		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
-
-	('{')  e.oexp  ('}')"[" (e.fromto)"]" ('.')(t.varname) e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
-		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\"" t.varname  "\">" 
-		"<REPEAT from=\""e.fromto"\" to=\""e.fromto"\">" 
-			"<GROUP_F name=\"" <GetRandomName>  "\">"
-			e.oexp_I 
-			"</GROUP_F>"
-		"</REPEAT>" 
-		"</GROUP_F>" 
-		<ScanObjectExprWithExecs e.e>;
-
-
-
-	/* групповые скобки без имени */
-	('{')  e.oexp  ('}') e.e,
-		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
-		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\""  /*<GetRandomName>*/  "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
-
-		
-	
-	
-
-	/* Скобки */
-	('(') e.inside (')') e.next,
-	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
-	<ExistError  e.insidescaned_I> : false
-	=	"<BRACKET>"  e.insidescaned_I "</BRACKET>" <ScanObjectExprWithExecs  e.next >;
-
-	('<') (t.word) e.inside ('>') e.next,
-	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
-	<ExistError  e.insidescaned_I> : false
-
-	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
-
-
-
-
-	/* продолжение ссылки напеременную */
-	"$path" ('/')(t.1) e.next, 
-		<Type t.1> : 'W' s.sub1 t.1
-		=	'/' <Explode t.1> <ScanObjectExprWithExecs  "$path" e.next>;
-
-	/* конец ссылки напеременную */
-	"$path" e.next		
-		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
-
-
-
-	/*ссылка на переменную*/
-	(t.1)('.')(t.2)('/') e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<LNK>" <Explode t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
-
-	/*ссылка на переменную c числовым именем*/
-	(t.1)('.')(t.2)('/') e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<LNK>" <Symb t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
-
-	/*ссылка на переменную c @-именем*/
-	('@')('.')(t.2)('/') e.next,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<LNK>" <Symb t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
-	('@')('.')(t.2)('/') e.next,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<LNK>" <Explode t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
-
-	/*переменная*/
-	(t.1)('.')(t.2) e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<VAR>" <Explode t.1> '.' <Explode t.2> "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-
-	/*переменная с числовым именем*/
-	(t.1)('.')(t.2) e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<VAR>" <Explode t.1> '.' <Symb t.2> "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
-
-	/*переменная без имени*/
-	(t.1)('.') "$separator" e.next,
-	<Type t.1> : 'W' s.sub1 t.1
-	=	"<VAR>" <Explode t.1> '.' "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
-
-	/* ссылка на переменную с НЕ числовым именем*/
-	('@')('.')(t.2) e.next,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<LNK>" <Explode t.2> "</LNK>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
-
-	/* ссылка на переменную с числовым именем*/
-	('@')('.')(t.2) e.next,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<LNK>" <Symb t.2> "</LNK>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
-
-	/*просто слово или число*/
-	(s.1) e.next, <Type s.1> :
-				{
-					'N' s.sub s.1 = "<INT>" <Symb s.1> "</INT>"   <ScanObjectExprWithExecs e.next>;
-					'W' s.sub s.1 = "<WORD>" <Explode s.1> "</WORD>" <ScanObjectExprWithExecs e.next>;
-					/*s.0 s.sub s.1 = "<WORD>" s.1 "</WORD>" <ScanObjectExprWithExecs e.next>;*/
-					s.T s.sub s.1 = "@ERROR:" ('unkonown symbol in object-expression = "' s.1 '" of type [' s.T s.sub '] in ' (s.1) e.next);
-				};
-
-
-	/*термальное предложение*/
-	(e.1) e.next  =  "<WORD>" e.1 "</WORD>" <ScanObjectExprWithExecs e.next>;
-
-	/* не возможно появления тут аргумента вида (t.1) e.2   !!! */
-
-	s.s e.next = "<TEXT>" s.s "</TEXT>" <ScanObjectExprWithExecs e.next>;
-
-	e.error = <MakeError ScanObjectExprWithExecs e.error>;
-
-}
-
 
 ScanIfs_ { e.e = <PProut "\nScanIfs: " e.e/*<DeScob e.e>*/><PProut "\nScanIfs: " <DeScob e.e>><ScanIfs_ e.e>; }
 ScanIfs {
@@ -516,16 +521,19 @@ DeScob {
 
 GetRand { ,<Rp rand'='<+ 1 <Cp rand>>>:e.e = <Implode 'rrrr98358935897389457'<Symb <Cp rand>>> ;  }
 
+*Arg1{ = <Arg 1>; };
+
+Arg1{ = 'fn.ref'; }
 
 $ENTRY Go { 
 	,<Br rand'='0>:,
 	<Br scanbl'='0>:,
-	<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>> : e.program,
+	<Preproc <FindAndUseBlock() <Scan <Mount <Arg1> >>>> : e.program,
 	<ExistError e.program> : false
 	=
-		<Open 'w' 3 <Arg 1>'.xml'>
+		<Open 'w' 3 <Arg1>'.xml'>
 		<Put 3 
-			<DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg 1> >>>>"</BEGIN>">
+			<DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg1> >>>>"</BEGIN>">
 		>;
 		
 		
@@ -639,7 +647,9 @@ FixVarLinksInSent_ {
 */
 
 /* переводит закр. перем. в ссылки */
-FixVarLinks{
+FixVarLinks{ e.e = <FixVarLinks_ e.e>; };
+
+FixVarLinks_{
 
 	"<SENTENCE>" e.body "</SENTENCE>" e.2 = "<SENTENCE>" <FixVarLinks2 e.body> "</SENTENCE>" <FixVarLinks e.2>;
 	t.template   e.body "</TEMPLATE>" e.2,	
@@ -656,9 +666,15 @@ FixVarLinks{
 	e.e=e.e;
 }
 */
+
+/* для шаблонов */
+FixVarLinks2_{
+	e.e = <Prout "\n\n" e.e><FixVarLinks2_ e.e>;
+}
 FixVarLinks2{
 	e.1 "<VAR>" e.var "</VAR>" e.2 "<VAR>" e.var "</VAR>" e.3,
-	    e.var : e.vtype '.' s.vname1 e.vname2
+	    e.var : e.vtype '.' s.vname1 e.vname2,
+	    <Type s.vname1> : 'L' e.else1
 		    =   <FixVarLinks2 e.1 "<VAR>" e.var "</VAR>" e.2 "<LNK>" s.vname1 e.vname2 "</LNK>" e.3 >;
 
 	e.e = e.e;

@@ -8,6 +8,6 @@ Template IP ::= digits. '.' digits. '.' digits. '.' digits. ;
 Go { = <Prout <F <Mount 'rbc.html'>>>;}
 
 F {
-	e. IP.ip E.next = <Prout @.ip> <F @.next>;
+	e. '"' IP.ip '"' E.next = <Prout @.ip> <F @.next>;
 	e. = ;
 }
