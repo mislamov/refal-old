@@ -681,11 +681,15 @@ TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, R
 
     if (currentStep < getMax()) {
         sess->repeats_idxs.push( currentStep );
+		sess->termChainsJumpPoints.put(tpl);
+		sess->setTmplate(templ);
 		tpl = templ->at(0); // внутри
         return GO;
     }
     --currentStep;
-    sess->repeats_idxs.push( currentStep );	
+    sess->repeats_idxs.push( currentStep );
+		sess->termChainsJumpPoints.put(tpl);
+	sess->setTmplate(templ);
 	tpl = templ->at(-1);
     return BACK;
 };

@@ -1,7 +1,13 @@
-$ENTRY Go { = <Run 'abcdefghijklmnopqrstuvwxyz'>; }
-
-Run {
-	e.1 'd' { e. 'l' e. }.grsk s.4 s.5 'v' e.6 = <Prout '@grsk = ' @.grsk>;
-	e.e = <Prout 'bad group'>;
+$ENTRY Go {
+	= <Run <Mount 'rbc.html'>>;
 }
 
+
+
+Run {
+	e.1 {{'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'} e. }.num s.nonum E.3,
+		$NOT s.nonum : {'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'}
+	=	<Prout @.num><Run E.3>;
+	e.e = <Prout '****'>;
+	
+}
