@@ -559,6 +559,7 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 	#endif
 
 	sess->MOVE_TO_next_template(tpl); // двигаемся дальше
+	sess->variants_idxs_done.push(sess->variants_idxs.top_pop());
 	return GO;
 };
 
@@ -605,8 +606,14 @@ TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 	if (*tpl != this) AchtungERRORs(sess);
 	#endif
 	sess->termChainsJumpPoints.put(tpl);
+	sess->variants_idxs.push(sess->variants_idxs_done.top_pop());
+
 	RefChain *templ;
 	sess->setTmplate(templ = templs.getByIndex(sess->variants_idxs.top()));
+#ifdef TESTCODE
+	if (!templ) AchtungERRORs(sess);
+#endif
+
 	VarMap *vm = 0; // восстанавливаем карту переменных
 	sess->restoreVar(this, l, r, vm);
 	#ifdef TESTCODE

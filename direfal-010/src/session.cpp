@@ -5,7 +5,7 @@
 
 #ifdef DEBUG
 #define LOGSTEP(s) \
-	std::cout << s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0, 50)) << "\n" << std::flush;
+	std::cout <<variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0, 50)) << "\n" << std::flush;
 #define LOGMATCH() \
 	std::cout << "\n\nSTEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r, 50)) << "\n" << std::flush;
 #else
@@ -61,7 +61,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
-					std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+					//std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
 					if (var1) {
 						result_sost = var1->success(activeTemplate, this, l, r);
 					}else{
@@ -92,7 +92,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 					#ifdef TESTCODE
 						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
-						std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+						//std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 					if (var1){
 						result_sost = var1->failed(activeTemplate, this, l, r);
@@ -145,6 +145,17 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 
 unistring Session::debug(){
 		std::ostringstream s;
+
+		s << "variants_idxs: ";
+		for(int i=0; i<variants_idxs.getCount(); ++i){
+			s << variants_idxs.getByIndex(i) << " ";
+		}
+		s << "\n";
+		s << "variants_idxs_done: ";
+		for(int i=0; i<variants_idxs_done.getCount(); ++i){
+			s << variants_idxs_done.getByIndex(i) << " ";
+		}
+		s << "\n";
 
 		for (int i=varMapStack.getCount()-1; i>=0; --i){
 			s << "--------------------------------------- " << i+1 << "\n";

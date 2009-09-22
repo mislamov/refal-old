@@ -67,6 +67,7 @@ public:
 	PooledStack<RefData**> termChainsJumpPoints;
 	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
 	PooledStack<long> variants_idxs;
+	PooledStack<long> variants_idxs_done;
 	inline Session(RefProgram *p){ program = p; }; 
 	inline RefProgram *getProgram(){ return program; };
 	inline void createVarMap(RefObject *creator){ varMapStack.put(new VarMap(creator)); };
