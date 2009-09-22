@@ -51,7 +51,7 @@ RefChain* RefUserFunction::eval(RefData **l, RefData **r, Session *sess){
 					}
 					delete sess->poptopVarMap();
 			}
-			RUNTIMEERRORs(sess, "no good sentense");
+			RUNTIMEERRORs(sess, this->getName() << " FAIL");
 };
 
 void RefUserTemplate::initilizeAll(RefProgram *program){
@@ -87,11 +87,18 @@ TResult RefUserCondition::init(RefData **&tpl, Session* s, RefData **&l, RefData
 	rp = s->getProgram()->executeExpression(rpp, s);
 	if (rp!=rpp) delete rpp;
 
-	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], false)){
+	// сохраняем состояние
+	SessionStatePoint *sess_state = s->getState();
+
+	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], false) == !withnot){
 		s->saveConditionArg(this, rp); // сохраняем аргумент условия для возможного отката
 		s->MOVE_TO_next_template(tpl);
 		return GO;
 	}
+
+	// восстанавливаем состояние
+	s->backToState(sess_state);
+
 	s->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
@@ -99,7 +106,7 @@ TResult RefUserCondition::init(RefData **&tpl, Session* s, RefData **&l, RefData
 
 TResult RefUserCondition::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
 	RefChain *rp  =  s->restoreConditionArg(this);
-	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], true)){
+	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], true)  == !withnot){
 		s->saveConditionArg(this, rp); // возвращаем аргумент условия в хранилище
 		s->MOVE_TO_next_template(tpl);
 		return GO;

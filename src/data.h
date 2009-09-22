@@ -97,7 +97,8 @@ public:
 
 
 
-// usertype-переменная, группа
+// выриант
+// TODO: совместить с RefVarChains
 class RefVariantsChains : public RefVariable {
 	friend class RefChain;
 
@@ -115,6 +116,32 @@ public:
 	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
 
 };
+
+
+// [ .. ]
+class RefRepeaterChain : public RefData {
+	friend class RefChain;
+
+	RefChain *templ;
+
+	infint min;
+    infint max;
+public:
+	RefRepeaterChain(infint a, infint b){ min=a; max=b; };
+
+	inline infint getMin(){ return min; };
+	inline infint getMax(){ return max; };
+
+	void setTempl(RefChain *ntm){ templ = ntm; };
+
+	unistring explode();
+
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+};
+
 
 
 

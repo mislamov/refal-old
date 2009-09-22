@@ -61,6 +61,7 @@ typedef long long       infint;
 typedef double          infreal;
 typedef int             ThisId;     // тип для хранения  идентификатора каждого дататайпа
 
+
 const unistring EmptyUniString = _L("");
 const unistring DefaultVarName = _L("");
 
@@ -266,7 +267,7 @@ inline std::string replace(std::string text, std::string s, std::string d)
     index+=d.length();
   }
   return text;
-}
+};
 
 
 #define AchtungERRORn SYSTEMERRORn("Achtung!")

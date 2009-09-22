@@ -27,6 +27,10 @@
 #include <locale>
 
 
+infint str2infint(unistring si){  // строку в число
+    return atol(si.c_str());
+};
+
 typedef std::basic_string<XMLCh> XercesString;
 
 unistring toWstring(const XercesString& str, unsigned int len){
@@ -136,14 +140,12 @@ try {
 		loader->createChainToStack();
 	} else
     if ( theCommand.compare(_L("REPEAT")) == 0 ) {
-		SYSTEMERRORn("not yet");
-		/*
         infint min = str2infint(toWstring(attributes.getValue("from")));
         infint max = str2infint(toWstring(attributes.getValue("to")));
-        ref_repeater *repeater = new ref_repeater(min, max);
+
+		RefRepeaterChain *repeater = new RefRepeaterChain(min, max);
         loader->putValueToStack( "REPEAT" , repeater);
-        *(loader->getCurrChain()) += repeater;
-		*/
+		loader->createPatternToStack();
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
     } else
@@ -324,11 +326,9 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     if ( theCommand.compare(_L("THE-VARIANT")) == 0 ) {
     } else
     if ( theCommand.compare(_L("REPEAT")) == 0 ) {
-		SYSTEMERRORn("not realised");
-		/*
-        ref_repeater *repeater = (ref_repeater *)loader->extractValueFromStack( "REPEAT" );
-        *(loader->getCurrChain()) += new ref_repeater(repeater);
-		*/
+        RefRepeaterChain *repeater = (RefRepeaterChain *)loader->extractValueFromStack( "REPEAT" );
+		repeater->setTempl(loader->extractCurrChainFromStack());
+        *(loader->getCurrChain()) += repeater;
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
 		AchtungERRORn; 
