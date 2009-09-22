@@ -45,7 +45,8 @@ public:
 
 struct SessionStatePoint {
 	size_t conditionsArgsCount;
-	VarMap* topVarMap; 
+	VarMap* topVarMap;
+	size_t topVarMap_leng;
 	RefChain *currentTemplateTop;		// не должен измениться после матчинга
 	RefData** termChainsJumpPointsTop;	// не должен измениться после матчинга
 	size_t count_variants_idxs;		// не должен измениться после матчинга
@@ -106,6 +107,7 @@ public:
 		SessionStatePoint *ss = new SessionStatePoint(); 
 		ss->conditionsArgsCount = conditionsArgs.getLength(); 
 		ss->topVarMap = currentMapStack();
+		ss->topVarMap_leng = ss->topVarMap->getLength(); 
 		ss->count_variants_idxs_done = variants_idxs_done.getLength();
 		ss->count_repeats_idxs_done  = repeats_idxs_done.getLength();
 
@@ -130,6 +132,7 @@ public:
 			if (varMapStack.empty()) {unexpectedERRORn;};
 			#endif
 		}
+		ss->topVarMap->setLength( ss->topVarMap_leng );
 		variants_idxs_done.setLength(ss->count_variants_idxs_done);
 		repeats_idxs_done.setLength (ss->count_repeats_idxs_done);
 

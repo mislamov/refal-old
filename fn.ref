@@ -1,21 +1,15 @@
+$ENTRY Go {
+	= <Prout '2..4 digit-numbers:'><Run <Mount 'rbc.html'>>;
+}
 
 
-$ENTRY Go{
-	=	<Run 'abc<HTML>dfgh</HTML>ijklm<TAG1>nop<TAG2>qrst</TAG2>uvwxyz</TAG1>zxy'>;
-};
-
-
-
-Template Tags ::= 
-	'<' e.word '>' e.body '</' e.word '>';
-
-
-Template OwnTags ::= 
-	Tags.this,
-	Tags.this : '<' e.word '>' e.body '</' e.word '>',
-	e.body 	  : e.1 Tags.inside e.2;
+Template nonum ::= s.s, s.s : $not {'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'} ;
 
 Run {
-	e.1 OwnTags.t e.2 = <Prout 'parent-tags: ' OwnTags.t> <Run e.2>;
-	e.else = <Prout 'no found'>;
+
+	e.1 {'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'0'}[2..4].num nonum. '2' E.3
+	=	<Prout @.num><Run '2' E.3>;
+	e.e = <Prout '****'>;
+
+
 }

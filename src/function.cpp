@@ -90,7 +90,9 @@ TResult RefUserCondition::init(RefData **&tpl, Session* s, RefData **&l, RefData
 	// сохраняем состояние
 	SessionStatePoint *sess_state = s->getState();
 
+
 	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], false) == !withnot){
+		if (withnot){ s->backToState(sess_state); };
 		s->saveConditionArg(this, rp); // сохраняем аргумент условия для возможного отката
 		s->MOVE_TO_next_template(tpl);
 		return GO;
@@ -106,7 +108,9 @@ TResult RefUserCondition::init(RefData **&tpl, Session* s, RefData **&l, RefData
 
 TResult RefUserCondition::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
 	RefChain *rp  =  s->restoreConditionArg(this);
-	if (s->matching(this, leftPart, (*rp)[0], (*rp)[-1], true)  == !withnot){
+
+	// отрицательные условия всегда пробрасывают откат, так как их открытые переменные запрещено использовать
+	if (!withnot && s->matching(this, leftPart, (*rp)[0], (*rp)[-1], true)){
 		s->saveConditionArg(this, rp); // возвращаем аргумент условия в хранилище
 		s->MOVE_TO_next_template(tpl);
 		return GO;
