@@ -163,10 +163,6 @@ TResult	  ref_variant_vert::back(RefData*&tpl, Session *s, RefData *&l, RefData 
 
 
 
-void      ref_variant_vert::forceback (RefData*&tpl, Session *s)	{
-    SYSTEMERROR("not released");
-    s->matchSessions.back()->StackOfVariants.pop();
-};
 bool	  ref_variant_vert::operator==(RefData&rd) {
     return false;
 };
@@ -191,9 +187,6 @@ TResult     ref_variant_vopr::back(RefData*&tpl, Session* s, RefData *&l, RefDat
 
 bool ref_variant_vopr::operator==(RefData&rd) {
     return false;
-};
-void ref_variant_vopr::forceback(RefData*&tpl, Session* s) {
-    //s->matchSessions.back()->StackOfVariants.pop();
 };
 
 

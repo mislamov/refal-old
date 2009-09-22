@@ -143,7 +143,6 @@ CLASS_OBJECT_CAST(RefStructBracket);
     bool       operator ==(RefData &);
     TResult    init(RefData *&tpl,  Session* , RefData *&, RefData *& );
     TResult    back(RefData *&tpl,  Session* , RefData *&, RefData *& );
-    void    forceback(RefData *&, Session *);
     unistring toString() {
         std::ostringstream s;
         s << (is_opened?"(":") ") ;//<< "." << (long)this << ":other=" << (long)other;

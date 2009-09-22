@@ -181,10 +181,6 @@ public:
     BASE_CLASS_CAST(RefConditionBase);
 RefConditionBase(RefData *r=0) : RefData(r) {};
     ~RefConditionBase() {};
-    void forceback(Session *) {
-        SYSTEMERROR("RefConditionBase.forceback NOT DEFINE");
-    };
-
 };
 
 class RefCondition : public RefConditionBase {
@@ -247,7 +243,6 @@ public:
     virtual bool operator ==(RefData &rd) {
         SYSTEMERROR("alarm");
     };
-    virtual void    forceback(RefData *&a, Session* s) {};
 
 
 };
@@ -344,8 +339,6 @@ RefTemplateBridgeVar(RefTemplateBridgeVar *nd, RefData* rp = 0) : RefBracketBase
         return cp;
     };
 
-    virtual void    forceback(RefData *&a, Session* s);
-
 };
 
 // мосты между лев.частью и внешним шаблоном. Со стороны внешнего шаблона
@@ -377,7 +370,6 @@ RefTemplateBridgeTmpl (RefTemplateBridgeTmpl *nd, RefData* rp = 0) : RefBracketB
     unistring getName() {
         SYSTEMERROR("unexpected call");
     };
-    virtual void    forceback(Session* s) {};
 
 };
 

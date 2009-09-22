@@ -173,10 +173,6 @@ public:
 
 	virtual TResult init(RefData *&activeTemplate, Session* s, RefData *&currentPoint, RefData *&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData *&activeTemplate, Session* s, RefData *&currentRight, RefData *&currentLeft)=0;
-    virtual void    forceback(RefData *&activeTemplate, Session* s) {
-        SYSTEMERROR("RefData.forceback NOT DEFINE for "
-                    << toString());
-    };; // принудительный откат. Точка убирает из сессии свое состояние
 
 
     virtual RefData*  Copy(RefData* where=0) = 0;
@@ -204,7 +200,6 @@ public:
         #endif
         return "";
     };
-    void forceback(RefData *&, Session *) {};
 };
 
 
@@ -227,7 +222,6 @@ public:
 
     ~RefVariable();
 
-    virtual void    forceback(RefData *&, Session* s) { }; // принудительный откат. Точка убирает из сессии свое состоян
     RefVariable(unistring name = EmptyUniString, RefData *rp = 0);
 
 	virtual unistring getName() {
@@ -263,7 +257,6 @@ public:
     virtual RefData*  Copy(RefData* where=0);
 
     RefLinkToVariable(unistring name, RefData *rp = 0);
-    void forceback(RefData *&, Session *) {};
 
     virtual unistring getPath() {
         return EmptyUniString;

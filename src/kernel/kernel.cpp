@@ -100,13 +100,6 @@ TResult RefStructBracket::back(RefData*&tpl, Session* s, RefData *&l, RefData *&
 };
 
 
-void RefStructBracket::forceback(RefData*&tpl, Session *s) {
-    if (! this->is_opened) { // )
-        s->matchSessions.back()->StackOfDataSkob_done.pop();
-    }
-    return;
-}
-
 
 
 

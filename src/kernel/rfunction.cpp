@@ -464,12 +464,6 @@ TResult  RefTemplateBridgeVar::back(RefData*&tpl, Session* s, RefData *&l, RefDa
 
 
 
-void    RefTemplateBridgeVar::forceback(RefData *&a, Session* s) {
-    if (! is_opened){  /// [}]
-        /// TODO: очистить мусор и субсессии в переменной
-    }
-};
-
 
 /**************  вызываемые ( $Template ) ********************
 **************************************************************/
@@ -589,11 +583,6 @@ TResult  RefMatchingCutter::back(RefData *&tpl, Session* s, RefData *&, RefData 
         } else {
             finish = sess->pole_zrenija->first; // datadot
         }
-        /*
-        while (tpl!=finish) {
-            tpl=tpl->getPred();
-            tpl->forceback();
-        }*/
 
         tpl=finish;
         return BACK;

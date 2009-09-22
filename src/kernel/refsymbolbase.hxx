@@ -103,7 +103,6 @@ public:
     //virtual void setValueFromString(unistring) = 0;
     virtual void setValueFromString(unistring);
 
-    void forceback(RefData *&, Session *){};
 };
 //template <class T> const RefDataTypesForCast RefSymbol<T> ::getClassTypeCast = castUseRTTI;
 //

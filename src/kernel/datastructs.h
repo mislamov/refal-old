@@ -77,7 +77,6 @@ public:
     TResult	   init	      (RefData *&tpl, Session *s, RefData *&l, RefData *&);
     TResult	   back	      (RefData *&tpl, Session *s, RefData *&l, RefData *&r);
     bool operator==(RefData&rd);
-    void forceback(RefData *&, Session* s) {};
 
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
@@ -103,7 +102,6 @@ public:
 
     ref_variant_vert( RefData* rp=0);
     bool operator==(RefData&rd);
-    void forceback (RefData *&, Session *s);
 
     TResult  init(RefData *&tpl, Session* s, RefData *&l, RefData *&); //
     TResult  back(RefData *&tpl, Session* s, RefData *&l, RefData *&r); //
@@ -128,7 +126,6 @@ public:
     virtual RefData* Copy(RefData *where=0) {
         SYSTEMERROR("zagl");
     };
-    void forceback(RefData *&, Session* s) {};
     virtual unistring toString() {
         return "=>";
         std::ostringstream ss;
@@ -154,7 +151,6 @@ public:
     virtual unistring toString() {
         return "-?-";
     };
-    void forceback(RefData *&, Session* s);
 
 };
 
@@ -200,7 +196,6 @@ public:
     virtual unistring toString() {
         return (is_opened ? "{" : ("}."+name) );
     };
-    virtual void forceback(RefData *&, Session *) { /** todo: очищать подсессию до открывающей скобки */};
 };
 
 
@@ -252,7 +247,6 @@ ref_repeater(ref_repeater *oth, RefData *rp=0) : RefBracketBase(oth, rp) { };
         ss << "[.." << getMin() << ".." << getMax() << "]";
         return ss.str();
     };
-    virtual void forceback(RefData *&, Session *) { /** todo: */};
 
 
 };
