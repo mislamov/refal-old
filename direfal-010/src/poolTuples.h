@@ -98,6 +98,13 @@ public:
 		pool = (T*)realloc(pool, sizeof(T)*idx);
 		if (!pool) RUNTIMEERRORn("memory limit");
 	};
+
+	inline void setLength(size_t newlen){
+		#ifdef TESTCODE
+		if (newlen > idx) AchtungERRORn;
+		#endif
+		idx = newlen;
+	};
 };
 
 
@@ -247,6 +254,12 @@ public:
 	};
 
 	size_t getLength(){ return last_ind; }
+	inline void setLength(size_t newlen){
+		#ifdef TESTCODE
+		if (newlen > last_ind) AchtungERRORn;
+		#endif
+		last_ind = newlen;
+	};
 
 	bool getByIndex(size_t index, T1 &i1, T2 &i2){
 		if (index<=0 || index>last_ind) {
@@ -369,6 +382,12 @@ public:
 	};
 
 	size_t getLength(){ return last_ind; }
+	inline void setLength(size_t newlen){
+		#ifdef TESTCODE
+		if (newlen > last_ind) AchtungERRORn;
+		#endif
+		last_ind = newlen;
+	};
 
 	bool getByIndex(size_t index, T1 &i1, T2 &i2, T3 &i3){
 		if (index<=0 || index>last_ind) {
@@ -490,6 +509,12 @@ public:
 	};
 
 	size_t getLength(){ return last_ind; }
+	inline void setLength(size_t newlen){
+		#ifdef TESTCODE
+		if (newlen > last_ind) AchtungERRORn;
+		#endif
+		last_ind = newlen;
+	};
 
 	bool getByIndex(size_t index, T1 &i1, T2 &i2, T3 &i3, T4 &i4){
 		if (index<=0 || index>last_ind) {

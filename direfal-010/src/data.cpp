@@ -414,6 +414,10 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 // вызываетс€ сразу после удачного сопоставлени€ (вместо init правой границы)
 TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+#ifdef TESTCODE
+	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
+#endif
+
 	//std::cout << "RefVarChains::success\n";
 	RefData **lold, **rold;
 	VarMap *vm=0, *vm2=0;
@@ -444,6 +448,10 @@ TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefDa
 
 // вызываетс€ сразу после Ќ≈удачного сопоставлени€ (вместо back левой границы)
 TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+#ifdef TESTCODE
+	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
+#endif
+
 	//std::cout << "RefVarChains::faild\n";
 	delete sess->poptopVarMap();
 	VarMap* tmp = 0;
@@ -524,8 +532,8 @@ TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 	if (templs.empty()){ notrealisedERRORs(sess);	}
 	sess->saveVar(this, l=0, r, 0);
 	sess->createVarMap(this);
-	sess->termChainsJumpPoints.put(tpl);
 	RefChain *templ;
+	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ = templs.getByIndex(0));
 	tpl = templ->at(0);
 
@@ -536,6 +544,10 @@ TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 
 // вызываетс€ сразу после удачного сопоставлени€ (вместо init правой границы)
 TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+#ifdef TESTCODE
+	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
+#endif
+
 	RefData **lold, **rold;
 	VarMap *vm=0, *vm2=0;
 	vm = sess->poptopVarMap(); // сохран€ем карту переменных
@@ -552,7 +564,7 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 	sess->saveVar(this, l, r, vm); // сохран€ем полное значение
 
 	tpl = sess->termChainsJumpPoints.top_pop(); 
-	sess->poptopTmplate();
+	sess->popTmplate();
 
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
@@ -566,6 +578,9 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 
 // вызываетс€ сразу после Ќ≈удачного сопоставлени€ (вместо back левой границы)
 TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+#ifdef TESTCODE
+	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
+#endif
 
 	long idx = sess->variants_idxs.top();
 	if (++idx == templs.getCount()){
@@ -578,7 +593,7 @@ TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, 
 		if (tmp) unexpectedERRORs(sess);
 		#endif
 		tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем
-		sess->poptopTmplate();
+		sess->popTmplate();
 
 		#ifdef TESTCODE
 		if (*tpl != this) AchtungERRORs(sess);
@@ -605,10 +620,10 @@ TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
 	#endif
-	sess->termChainsJumpPoints.put(tpl);
 	sess->variants_idxs.push(sess->variants_idxs_done.top_pop());
 
 	RefChain *templ;
+	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ = templs.getByIndex(sess->variants_idxs.top()));
 #ifdef TESTCODE
 	if (!templ) AchtungERRORs(sess);
@@ -635,3 +650,88 @@ unistring RefVariantsChains::explode(){
 	res = "{ " + res;
 	return res;
 };
+
+
+unistring RefRepeaterChain::explode(){ 
+	std::ostringstream ss;
+	ss << "[ " << templ->explode() << "][" << min << ".." << max << "]";
+	return ss.str();
+};
+
+
+TResult RefRepeaterChain::init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	if (templ->isEmpty()) SYSTEMERRORs(sess, "unexpected empty chain for repeater");
+	// [
+	if (! getMin()) { // [0..x]
+		sess->MOVE_TO_next_template(tpl);
+        sess->repeats_idxs_done.push(0);
+		return GO;
+    }
+	// [n..x]
+    sess->repeats_idxs.push(0);
+	sess->termChainsJumpPoints.put(tpl);
+	sess->setTmplate(templ);
+	tpl = templ->at(0);
+    return GO;
+};
+
+TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+	///   ]
+	infint currentStep = sess->repeats_idxs_done.top_pop();
+
+    if (currentStep < getMax()) {
+        sess->repeats_idxs.push( currentStep );
+		tpl = templ->at(0); // внутри
+        return GO;
+    }
+    --currentStep;
+    sess->repeats_idxs.push( currentStep );	
+	tpl = templ->at(-1);
+    return BACK;
+};
+
+TResult RefRepeaterChain::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+#ifdef TESTCODE
+	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
+#endif
+    ///  ]
+	infint currentStep = sess->repeats_idxs.top_pop();
+    ++currentStep;
+
+    if (currentStep < getMin()) {
+        sess->repeats_idxs.push(currentStep);  ///todo: рптимизировать ++(...top()) ?
+		tpl=templ->at(0); // остаемс€ внутри варианта
+        return GO;
+    }
+	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем
+	sess->popTmplate();
+
+	sess->MOVE_TO_next_template(tpl); // уходим из варианта
+	sess->repeats_idxs_done.push(currentStep);
+    return GO;
+};
+
+TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+#ifdef TESTCODE
+	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
+#endif
+	///   [
+    infint currentStep = sess->repeats_idxs.top();
+    if (currentStep) {
+        sess->repeats_idxs.settop(--currentStep);
+		tpl=templ->at(-1); // внутри
+        return BACK;
+    }
+	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем
+	sess->popTmplate();
+
+	sess->repeats_idxs.pop();
+    sess->MOVE_TO_pred_template(tpl); // выходим из варианта
+    return BACK;
+    
+};
+
+
+
+
+

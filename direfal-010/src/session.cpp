@@ -47,26 +47,36 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 
 	this->setTmplate(thetmplate);
 	LOGMATCH();
+	bool ireturn = false;
 
-	while (true) {
+	while (! ireturn) {
         // сопоставляем текущий шаблон
 
         switch (result_sost) {
 
         case GO: {
 			if (!activeTemplate || activeTemplate == tmplate()->at(-1)+1){ // достигнут правый край сопоставления! DataDOT
+				activeTemplate = 0;
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
 					#ifdef TESTCODE
 						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
+					#ifdef DEBUG
+						std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+					#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
-					//std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+					
 					if (var1) {
 						result_sost = var1->success(activeTemplate, this, l, r);
 					}else{
 						RefVariantsChains* var2 = ref_dynamic_cast<RefVariantsChains>(* termChainsJumpPoints.top());
-						result_sost = var2->success(activeTemplate, this, l, r);
+						if (var2){
+							result_sost = var2->success(activeTemplate, this, l, r);
+						} else {
+							RefRepeaterChain* var3 = ref_dynamic_cast<RefRepeaterChain>(* termChainsJumpPoints.top());
+							result_sost = var3->success(activeTemplate, this, l, r);
+						}
 					}
 					break;
 				}
@@ -87,18 +97,26 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
         case BACK: {
 			//if (activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
 			if (!activeTemplate || activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
+				activeTemplate = 0;
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
 					#ifdef TESTCODE
-						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
+						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);						
 					#endif
-						//std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+					#ifdef DEBUG
+						std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+					#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 					if (var1){
 						result_sost = var1->failed(activeTemplate, this, l, r);
 					}else{
 						RefVariantsChains* var2 = ref_dynamic_cast<RefVariantsChains>(* termChainsJumpPoints.top());
-						result_sost = var2->failed(activeTemplate, this, l, r);
+						if (var2){
+							result_sost = var2->failed(activeTemplate, this, l, r);
+						} else {
+							RefRepeaterChain* var3 = ref_dynamic_cast<RefRepeaterChain>(* termChainsJumpPoints.top());
+							result_sost = var3->failed(activeTemplate, this, l, r);
+						}
 					}
 					break;
 				}
@@ -115,31 +133,32 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
             #ifdef DEBUG
 			std::cout << "SUCCESS\n######\n";
             #endif
-			current_view_borders.pop();
-			popTmplate();
-            return true;
+			ireturn = true;
+			break;
 
         case ERROR :
             #ifdef DEBUG
 			std::cout << "ERROR\n######\n";
             #endif
-			current_view_borders.pop();
-			popTmplate();
-            return false;
+			ireturn = true;
+			break;
         case FAIL   :
             #ifdef DEBUG
 			std::cout << "FAIL\n######\n";
             #endif
-			current_view_borders.pop();
-			popTmplate();
-            return false;
-
-
+			ireturn = true;
+			break;
 
         default:
+			SYSTEMERRORs(this, "Unexpected result_sost value");
             break;
         }
     };
+
+
+	current_view_borders.pop();
+	popTmplate();
+	return (result_sost==SUCCESS);
 };
 
 

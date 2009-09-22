@@ -45,6 +45,13 @@ public:
 
 struct SessionStatePoint {
 	size_t conditionsArgsCount;
+	VarMap* topVarMap; 
+	RefChain *currentTemplateTop;		// не должен измениться после матчинга
+	RefData** termChainsJumpPointsTop;	// не должен измениться после матчинга
+	size_t count_variants_idxs;		// не должен измениться после матчинга
+	size_t count_variants_idxs_done;
+	size_t count_repeats_idxs;	// не должен измениться после матчинга
+	size_t count_repeats_idxs_done;
 };
 
 // среда для вычисления пользовательской функции
@@ -53,9 +60,6 @@ class Session {
 	RefProgram *program;
 
 	PooledTuple2 <RefData**, RefData**>  current_view_borders; // крайние view-элементы активного аргумента [для скобок]
-	//PooledTuple2 <RefData**, RefData**> deferred_view_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
-	//PooledTuple4 <RefData**, RefData**, RefData**, RefData**>  current_templ_borders; // активные view границы [для скобок] + точки выхода
-	//PooledTuple2 <RefData**, RefData**> deferred_templ_borders; // отложенные (успешные) view границы - для откатов [для скобок, usertype-переменных]
 	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
 
 	PooledStack<VarMap*>  varMapStack; // карты переменных
@@ -68,6 +72,8 @@ public:
 	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
 	PooledStack<long> variants_idxs;
 	PooledStack<long> variants_idxs_done;
+	PooledStack<infint> repeats_idxs;
+	PooledStack<infint> repeats_idxs_done;
 	inline Session(RefProgram *p){ program = p; }; 
 	inline RefProgram *getProgram(){ return program; };
 	inline void createVarMap(RefObject *creator){ varMapStack.put(new VarMap(creator)); };
@@ -78,7 +84,7 @@ public:
 
 	inline RefChain* tmplate(){ return currentTemplates.top(); };
 	inline void setTmplate(RefChain *t){ currentTemplates.put(t); };
-	inline RefChain* poptopTmplate(){ return currentTemplates.top_pop(); };
+	//inline RefChain* poptopTmplate(){ return currentTemplates.top_pop(); };
 	inline void popTmplate(){ currentTemplates.pop(); };
 
 	inline RefData** current_view_l(){ return current_view_borders.top1(); };
@@ -98,17 +104,44 @@ public:
 
 	SessionStatePoint* getState(){ 
 		SessionStatePoint *ss = new SessionStatePoint(); 
-		ss->conditionsArgsCount=conditionsArgs.getLength(); 
+		ss->conditionsArgsCount = conditionsArgs.getLength(); 
+		ss->topVarMap = currentMapStack();
+		ss->count_variants_idxs_done = variants_idxs_done.getLength();
+		ss->count_repeats_idxs_done  = repeats_idxs_done.getLength();
+
+		#ifdef TESTCODE
+		ss->currentTemplateTop		= currentTemplates.empty()?0:currentTemplates.top();		// не должен измениться после матчинга
+		ss->termChainsJumpPointsTop	= termChainsJumpPoints.empty()?0:termChainsJumpPoints.top();	// не должен измениться после матчинга
+		ss->count_variants_idxs		= variants_idxs.getLength();			// не должен измениться после матчинга
+		ss->count_repeats_idxs		= repeats_idxs.getLength();			// не должен измениться после матчинга
+		#endif
 		return ss; 
 	};
+
 	void backToState(SessionStatePoint* ss){
 		#ifdef TESTCODE
 		if (ss->conditionsArgsCount > conditionsArgs.getLength()) AchtungERRORs(this);
 		#endif
-		// заглушка
-		for(size_t i=conditionsArgs.getLength(); i!=ss->conditionsArgsCount; --i){
-			conditionsArgs.pop();  //TODO: собрать тут мусор! нужен не просто pop, а delete, delete, pop
+
+		conditionsArgs.setLength(ss->conditionsArgsCount); 
+		while(ss->topVarMap != varMapStack.top()){
+			delete varMapStack.top_pop();
+			#ifdef TESTCODE
+			if (varMapStack.empty()) {unexpectedERRORn;};
+			#endif
 		}
+		variants_idxs_done.setLength(ss->count_variants_idxs_done);
+		repeats_idxs_done.setLength (ss->count_repeats_idxs_done);
+
+		#ifdef TESTCODE
+		if (ss->currentTemplateTop && ss->currentTemplateTop		!= currentTemplates.top()) SYSTEMERRORs(this, "unexpected  changes in SessionState");		// не должен измениться после матчинга
+		if (ss->termChainsJumpPointsTop	 &&   ss->termChainsJumpPointsTop	!= termChainsJumpPoints.top()) SYSTEMERRORs(this, "unexpected  changes in SessionState");	// не должен измениться после матчинга
+		if (!ss->currentTemplateTop      &&  !currentTemplates.empty()) SYSTEMERRORs(this, "unexpected  changes in SessionState");		// не должен измениться после матчинга
+		if (!ss->termChainsJumpPointsTop &&  !termChainsJumpPoints.empty()) SYSTEMERRORs(this, "unexpected  changes in SessionState");	// не должен измениться после матчинга
+		if (ss->count_variants_idxs		!= variants_idxs.getLength()) SYSTEMERRORs(this, "unexpected  changes in SessionState");			// не должен измениться после матчинга
+		if (ss->count_repeats_idxs		!= repeats_idxs.getLength()) SYSTEMERRORs(this, "unexpected  changes in SessionState");			// не должен измениться после матчинга
+		#endif
+
 	};
 
 	// сопоставление образца tmplate с аргументом l..r
@@ -179,10 +212,11 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
 	VarMap* vm = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
 	#ifdef TESTCODE
-	if (vm) AchtungERRORs(this);
-	if (var != varNew){
-		std::cout << this->debug();
-		AchtungERRORs(this);
+	if (var != varNew){		
+		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!"); 
+	}
+	if (vm) {
+		unexpectedERRORs(this);
 	}
 	#endif
 };
@@ -203,25 +237,6 @@ inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r) {
 	#endif
 };
 
-
-/*
-inline void Session::JUMP_View (RefChain* ch, RefData** outL, RefData** outR){		// прыгаем в подцепочку данных (скобка)
-	if (ch->isEmpty()){
-		current_view_borders.put(0, 0, outL, outR);
-		return;
-	}
-	current_view_borders.put((*ch)[0], (*ch)[-1], outL, outR);
-};
-
-
-inline void Session::JUMP_Template (RefChain* tp, RefData** outL, RefData** outR){	// прыгаем в подшаблон (скобка/usertype-переменная)
-	if (tp->isEmpty()){
-		current_templ_borders.put(0, 0, outL, outR);
-		return;
-	}
-	current_templ_borders.put((*tp)[0], (*tp)[-1], outL, outR);
-};
-*/
 
 inline RefData** Session::GET_next_term(RefData** p){
 	if (p == current_view_r() || !p) {
