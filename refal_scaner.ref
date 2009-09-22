@@ -662,7 +662,8 @@ FixVarLinks{
 */
 FixVarLinks2{
 	e.1 "<VAR>" e.var "</VAR>" e.2 "<VAR>" e.var "</VAR>" e.3,
-	    e.var : e.vtype '.' s.vname1 e.vname2
+	    e.var : e.vtype '.' s.vname1 e.vname2,
+	    <Type s.vname1> : 'L' e.else1
 		    =   <FixVarLinks2 e.1 "<VAR>" e.var "</VAR>" e.2 "<LNK>" s.vname1 e.vname2 "</LNK>" e.3 >;
 
 	e.e = e.e;
