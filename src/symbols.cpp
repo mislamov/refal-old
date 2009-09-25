@@ -42,7 +42,7 @@ unistring the_explode(RefData **a, RefData **b){
 		result += a[i]->explode();
     }
 	return result;
-}
+};
 
 
 unistring the_text(RefData **a, RefData **b){
@@ -59,14 +59,15 @@ unistring the_text(RefData **a, RefData **b){
 		result += a[i]->toString();
     }
 	return result;
-}
+};
 
 
 unistring RefWord::debug() {
 		std::ostringstream ss;
         ss << '"' << replace(value, "\n", "\\n") << "\" ";
         return ss.str();	
-}
+};
+
 
 
 

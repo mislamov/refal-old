@@ -58,6 +58,11 @@ inline RefData*   var_s_creator(unistring value){ return new RefVariable_s(value
 inline RefData*   var_t_creator(unistring value){ return new RefVariable_t(value); };
 inline RefData*   var_e_creator(unistring value){ return new RefVariable_e(value); };
 inline RefData*   var_E_creator(unistring value){ return new RefVariable_E(value); };
+inline RefData*   var_int_creator  (unistring value){ return new RefVarInteger(value); };
+inline RefData*   var_real_creator (unistring value){ return new RefVarReal (value); };
+inline RefData*   var_word_creator (unistring value){ return new RefVarWord (value); };
+inline RefData*   var_alpha_creator(unistring value){ return new RefVarAlpha(value); };
+inline RefData*   var_byte_creator (unistring value){ return new RefVarByte (value); };
 
 
 
@@ -75,7 +80,12 @@ VAR_DEFINITIONS
 		DEFINE_MODULE_VARIABLE_CLASS(s,  var_s_creator);
 		DEFINE_MODULE_VARIABLE_CLASS(t,  var_t_creator);
 		DEFINE_MODULE_VARIABLE_CLASS(e,  var_e_creator);
-		DEFINE_MODULE_VARIABLE_CLASS(E,  var_E_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(E,  var_e_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(int,    var_int_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(real,   var_real_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(word,   var_word_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(alpha,  var_alpha_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(byte,   var_byte_creator);
 
 
 FUNCTION_DEFINITIONS
