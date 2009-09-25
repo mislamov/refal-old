@@ -173,4 +173,57 @@ TResult  RefSymbolBase<T, t>::back(RefData**&tpl, Session* s, RefData**&l, RefDa
 
 
 
+
+
+/***********************
+*   Переменные
+************************/
+template <class T> class RefVarForSymbol : public RefVariable
+{
+public:
+    TResult init(RefData**&, Session* , RefData**&, RefData**&);
+    TResult back(RefData**&, Session* , RefData**&, RefData**&);
+	RefVarForSymbol (unistring name) : RefVariable(name) {};
+
+    virtual unistring explode(){        return "RefVarForSymbol<T>."+getName();    }
+};
+
+
+template <class T>
+TResult RefVarForSymbol<T>::init(RefData**&tpl, Session* sess, RefData**&l, RefData**&r){
+	sess->MOVE_TO_next_term(r);
+    if (ref_dynamic_cast<T >(*r)){
+        l=r;
+		sess->saveVar(this, l, r);
+		sess->MOVE_TO_next_template(tpl);
+        return GO;
+    }
+
+	sess->MOVE_TO_pred_template(tpl);
+    return BACK;
+};
+
+
+template <class T>
+TResult RefVarForSymbol<T>::back(RefData**&tpl, Session* sess, RefData**&l, RefData**&r){
+	sess->restoreVar(this, l, r);
+	sess->MOVE_TO_pred_template(tpl);
+    return BACK;
+};
+
+
+
+typedef RefVarForSymbol<RefIntegerBase>  RefVarInteger;
+typedef RefVarForSymbol<RefRealBase>     RefVarReal;
+typedef RefVarForSymbol<RefWordBase>     RefVarWord;
+typedef RefVarForSymbol<RefAlphaBase>    RefVarAlpha;
+typedef RefVarForSymbol<RefByteBase>     RefVarByte;
+
+
+
+
+
+
+
+
 #endif

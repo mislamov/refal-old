@@ -117,7 +117,7 @@ RefTemplateBase* RefProgram::findTemplate(unistring id){
 		}
 		++modit;
 	};
-	RUNTIMEERRORn("template" << id << " not found in program");
+	RUNTIMEERRORn("template [" << id << "] not found in program");
 	return 0;
 };
 
