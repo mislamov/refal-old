@@ -29,9 +29,9 @@ RefProgram::RefProgram(){
 
 
 void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в программе (перед загрузкой)
-		if (module->getName() == EmptyUniString) 
+		if (module->getName() == EmptyUniString)
 			SYSTEMERRORn("Empty module name");
-		if (modules.find(module->getName()) != modules.end()) 
+		if (modules.find(module->getName()) != modules.end())
 			SYSTEMERRORn("Several loads of module [" << module->getName() << "] ");
 		modules[module->getName()] = module;
 };
@@ -93,7 +93,7 @@ RefFunctionBase* RefProgram::findFunction(unistring id){
 	RefFunctionBase* obj;
 	while (modit != end){
 		mod = &(*modit->second);
-		
+
 		if (obj = mod->getFunctionByName(id)){
 			return obj;
 		}
@@ -111,7 +111,7 @@ RefTemplateBase* RefProgram::findTemplate(unistring id){
 	RefTemplateBase* obj;
 	while (modit != end){
 		mod = &(*modit->second);
-		
+
 		if (obj = mod->getTemplateByName(id)){
 			return obj;
 		}
@@ -125,7 +125,6 @@ RefTemplateBase* RefProgram::findTemplate(unistring id){
 
 RefData* RefProgram::createSymbolByCode(unistring code, unistring value){
 	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
-	RefModuleBase* mod = 0;
 	RefDllModule* dllmod = 0;
 	RefData* result = 0;
 
@@ -172,7 +171,7 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 				if (templ){
 					return new RefVarChains(code, value);
 				}
-			} 
+			}
 		}
 		++modit;
 	}
@@ -211,7 +210,7 @@ unistring RefUserModule::debug(){
 		result += funit->second->debug() + "\n";
 		++funit;
 	}
-	return result;	
+	return result;
 };
 
 
@@ -219,13 +218,13 @@ unistring RefUserModule::debug(){
 void RefModuleBase::setFunctionByName(unistring name, RefFunctionBase* o){
 	std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(name);
 	if (iter != functions.end()) { COMPILETIMEERRORn("function multi-definition"); }
-		functions[name] = o; 	
+		functions[name] = o;
 };
-    
+
 void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o){
 	std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(name);
 		if (iter != templates.end()) {	COMPILETIMEERRORn("template multi-definition"); }
-		templates[name] = o; 	
+		templates[name] = o;
 };
 
 
@@ -234,8 +233,8 @@ RefData* RefDllModule::constructSymbol(unistring typecode, unistring value){
 		if (iter==dataConstructors.end()) return 0;
 		return (*iter->second)(value);
 };
-	
-	
+
+
 RefData* RefDllModule::constructVariable(unistring typecode, unistring value){
 		std::map<unistring, RefData*(*)(unistring)>::iterator iter = varConstructors.find(typecode);
 		if (iter==varConstructors.end()) return 0;

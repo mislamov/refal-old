@@ -67,8 +67,6 @@ void SAXPrintHandlers::startDocument(){
 
 
 void SAXPrintHandlers::startElement(const   XMLCh* const  name,  AttributeList&  attributes){
-    RefObject *tmp = 0;
-
     unistring theCommand = toWstring(name);
     //LOG( _L("SAXPrintHandlers::startElement::[") << theCommand << "] (attr: "<< attributes.getLength() << " )" );
     loader->activeTag.push(theCommand);
@@ -154,13 +152,8 @@ try {
 			loader->currentCondition = new RefUserCondition(isnot);
     } else
     if ( theCommand.compare(_L("ERROR")) == 0 ) {
-    } /*else
-    //*****************   выделить в менеджер для простого добавления пользовательских типов  *****************
-    if (tmp = loader->getNewEmptyRefSymbolByTypeName(theCommand)){ // рефал-символ
-        loader->putValueToStack(theCommand, tmp);
-    } else  
+    }
 
-    SYSTEMERRORn("unknown tag name: " << theCommand); */
 #ifdef TESTCODE
 } catch(int i) {
     SYSTEMERRORn("excepion!");
@@ -331,7 +324,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
         *(loader->getCurrChain()) += repeater;
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
-		//SYSTEMERRORn("cutter not realised!"); 
+		//SYSTEMERRORn("cutter not realised!");
 		*(loader->getCurrChain()) += new RefMatchingCutter();
     } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
@@ -406,7 +399,7 @@ static const XMLCh  gXMLDecl2[] =
 //  SAXPrintHandlers: Constructors and Destructor
 // ---------------------------------------------------------------------------
 SAXPrintHandlers::SAXPrintHandlers( const   char* const              encodingName
-                                    , const XMLFormatter::UnRepFlags unRepFlags, 
+                                    , const XMLFormatter::UnRepFlags unRepFlags,
 									RefUserModule *mod,
 									RefProgram    *prog) :
 

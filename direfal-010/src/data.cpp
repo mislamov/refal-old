@@ -89,7 +89,7 @@ RefChain* RefChain::operator+=(RefChain ch) {
 
 RefData** RefChain::operator[](signed long idx) {
 /*#ifdef TESTCODE
-	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng)) 
+	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng))
 		AchtungERRORn;
 #endif*/
 	return	leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
@@ -142,14 +142,14 @@ unistring RefExecBrackets::debug(){	return "<" + chain->debug() + "> ";	};
 TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
     s->MOVE_TO_next_term(r);
 	RefStructBrackets *br;
-	
-	if (r 
-		&& (br=ref_dynamic_cast<RefStructBrackets>(*r)) 
+
+	if (r
+		&& (br=ref_dynamic_cast<RefStructBrackets>(*r))
 		&& (s->matching(
-						0, 
-						this->chain, 
-						(*(br->chain))[0], 
-						(*(br->chain))[-1], 
+						0,
+						this->chain,
+						(*(br->chain))[0],
+						(*(br->chain))[-1],
 						false
 						)
 			)
@@ -208,7 +208,7 @@ inline bool eq_not_empty(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br)
 		brA = ref_dynamic_cast<RefDataBracket>(*Al);
 		if (brA){
 			brB = ref_dynamic_cast<RefDataBracket>(*Bl);
-			if (!brB || !eq(brA->chain, brB->chain)) return false;	
+			if (!brB || !eq(brA->chain, brB->chain)) return false;
 		} else {
 			if ((*Al != *Bl) && !(**Al == **Bl)) return false;
 		}
@@ -264,18 +264,18 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 			brB = ref_dynamic_cast<RefDataBracket>(*r);
 			if (!brB || !eq(brA->chain, brB->chain)) {
 				s->MOVE_TO_pred_template(tpl);
-				return BACK;		
+				return BACK;
 			}
 		} else {
 			if ((*ldata != *r) && !(**ldata == **r)) {
 				s->MOVE_TO_pred_template(tpl);
-				return BACK;		
+				return BACK;
 			}
 		}
 		s->MOVE_TO_next_term(ldata);
 	}
-	
-	
+
+
     s->MOVE_TO_next_template(tpl);
     return GO; // ссылка на пустой отрезок - верна
 };
@@ -287,9 +287,9 @@ TResult RefLinkToVariable::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 };
 
 
-void RefVarChains::setTemplInstant(RefUserTemplate *ntempli){ 
-	templInstant = ntempli; 
-	templ = ntempli->getLeftPart(); 
+void RefVarChains::setTemplInstant(RefUserTemplate *ntempli){
+	templInstant = ntempli;
+	templ = ntempli->getLeftPart();
 };
 
 
@@ -320,7 +320,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	}
 
 	while(subchains.getLength()){
-		RefData 
+		RefData
 			**end = subchains.top2(),
 			**point = subchains.top1();
 		subchains.pop();
@@ -337,7 +337,9 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			if (uservar){ // запоминаем заготовку для переменной
 				if (! program) SYSTEMERRORn("program not null expected");
 				#ifdef TESTCODE
-				if (uservar->getType() != EmptyUniString && ! ref_dynamic_cast<RefUserTemplate>(program->findTemplate(uservar->getType()) )) notrealisedERRORn("not RefUserTemplate");
+				if ((uservar->getType() != EmptyUniString) && !(ref_dynamic_cast<RefUserTemplate>(program->findTemplate(uservar->getType()) ))) {
+				    notrealisedERRORn;
+				}
 				#endif
 				if (uservar->getType() != EmptyUniString) {
 					uservar->setTemplInstant((RefUserTemplate*) program->findTemplate(uservar->getType()) );
@@ -365,15 +367,15 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				break;
 			}
 
-			
-			
+
+
 			var = ref_dynamic_cast<RefVariable>(*point);
 			if (var){ // запоминаем переменную
 				vars[var->getName()] = var;
 				continue;
 			}
 
-			
+
 			link = ref_dynamic_cast<RefLinkToVariable>(*point);
 			if (link && !link->lnk){ // запоминаем ссылку
 				lnks.push(point);
@@ -390,15 +392,15 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			cond = ref_dynamic_cast<RefUserCondition>(*point);
 			if (cond){
 				subchains.put(point+1, end);
-				if (! cond->getRightPart()->isEmpty()) 
+				if (! cond->getRightPart()->isEmpty())
 					subchains.put(cond->getRightPart()->operator [](0), cond->getRightPart()->operator [](-1)+1);
-				if (! cond->getLeftPart()->isEmpty()) 
+				if (! cond->getLeftPart()->isEmpty())
 					subchains.put(cond->getLeftPart()->operator [](0), cond->getLeftPart()->operator [](-1)+1);
 				break;
 			}
 		}
 	}
-		
+
 	// компиляция ссылок на переменные
 	RefLinkToVariable** tmp = 0;
 	while (! lnks.empty()){
@@ -407,7 +409,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			#endif
 			tmp = (RefLinkToVariable**) lnks.top();
 
-			size_t i = (*tmp)->path.find( varPathSeparator );	
+			size_t i = (*tmp)->path.find( varPathSeparator );
 			// ссылка на часть внешней переменной
 			unistring name = (*tmp)->path.substr(0, i);
 			(*tmp)->path = (i!=unistring::npos) ? (*tmp)->path.substr(i+1) : EmptyUniString;
@@ -466,12 +468,12 @@ TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefDa
 	#endif
 	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
 	sess->popTmplate();
-	
+
 
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
 	#endif
-	
+
 	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
@@ -517,7 +519,7 @@ TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData 
 };
 
 
-unistring RefVarChains::explode() {        
+unistring RefVarChains::explode() {
 	return " " + (templInstant?templInstant->getName():("{ "+templ->explode()+" }")) + "." + getName();
 };
 
@@ -568,7 +570,7 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 	}
 	sess->saveVar(this, l, r, vm); // сохраняем полное значение
 
-	tpl = sess->termChainsJumpPoints.top_pop(); 
+	tpl = sess->termChainsJumpPoints.top_pop();
 	sess->popTmplate();
 
 	#ifdef TESTCODE
@@ -587,10 +589,10 @@ TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, 
 	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
 #endif
 
-	long idx = sess->variants_idxs.top();
+	size_t idx = sess->variants_idxs.top();
 	if (++idx == templs.getCount()){
 		// варианты закончились
-		delete sess->poptopVarMap(); 
+		delete sess->poptopVarMap();
 		sess->variants_idxs.pop();		//todo: перенестив varmap?
 		VarMap* tmp = 0;
 		sess->restoreVar(this, l, r, tmp);		 // забываем переменную
@@ -603,7 +605,7 @@ TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, 
 		#ifdef TESTCODE
 		if (*tpl != this) AchtungERRORs(sess);
 		#endif
-		
+
 		sess->MOVE_TO_pred_template(tpl);
 		return BACK;
 	}
@@ -657,7 +659,7 @@ unistring RefVariantsChains::explode(){
 };
 
 
-unistring RefRepeaterChain::explode(){ 
+unistring RefRepeaterChain::explode(){
 	std::ostringstream ss;
 	ss << "[ " << templ->explode() << "][" << min << ".." << max << "]";
 	return ss.str();
@@ -737,16 +739,16 @@ TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, R
 	sess->repeats_idxs.pop();
     sess->MOVE_TO_pred_template(tpl); // выходим из варианта
     return BACK;
-    
+
 };
 
 
 
-TResult RefMatchingCutter::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ 
-	s->MOVE_TO_next_template(tpl); 
+TResult RefMatchingCutter::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+	s->MOVE_TO_next_template(tpl);
 	return GO;
 };
-TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ 
+TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
 	// если отсекается пользовательская переменная
 	// если отсекается текущая цепочка
 	tpl=0;

@@ -199,7 +199,7 @@ public:
 	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
 
 	RefChain*  operator+=(RefData  *ch);
-	RefChain*  operator+=(RefChain *ch); // удаляет *ch 
+	RefChain*  operator+=(RefChain *ch); // удаляет *ch
 	RefChain*  operator+=(RefChain  ch); // только копирует *ch
 	RefData**  operator[](signed long idx);
 	inline RefData**  at(signed long idx){ return (*this)[idx]; };

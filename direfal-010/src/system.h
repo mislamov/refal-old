@@ -58,7 +58,7 @@ inline RefData*   var_s_creator(unistring value){ return new RefVariable_s(value
 inline RefData*   var_t_creator(unistring value){ return new RefVariable_t(value); };
 inline RefData*   var_e_creator(unistring value){ return new RefVariable_e(value); };
 inline RefData*   var_E_creator(unistring value){ return new RefVariable_E(value); };
-inline RefData*   var_END_creator(unistring value){ return new RefVariable_E(value); }; // TODO: убрать или реализовать END
+inline RefData*   var_END_creator(unistring value){ return new RefVariable_END(value); };
 inline RefData*   var_int_creator  (unistring value){ return new RefVarInteger(value); };
 inline RefData*   var_real_creator (unistring value){ return new RefVarReal (value); };
 inline RefData*   var_word_creator (unistring value){ return new RefVarWord (value); };

@@ -25,7 +25,7 @@ TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **
 	IRefSymbol *symb = 0;
 	s->MOVE_TO_next_template(tmp);
 
-	
+
 	if (tmp && (symb=ref_dynamic_cast<IRefSymbol>(*tmp))){ // если следующий элемент шаблона - символ
 #ifdef DEBUG
 		std::cout << "e-symbol optimization\n";
@@ -53,7 +53,7 @@ TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **
     return GO;
 };
 
-  
+
 
 
 TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
@@ -64,7 +64,7 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
         s->MOVE_TO_pred_template(tpl);
         return BACK;
 	}
-	l = (l?l:r); 
+	l = (l?l:r);
 
 
 	RefData **tmp = tpl;
@@ -151,7 +151,10 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
 
 bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd)?true:false; };
 
-
+TResult  RefVariable_END::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+    s->MOVE_TO_pred_template(tpl);
+    return BACK;
+}
 
 TResult  RefVariable_s::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->MOVE_TO_next_term(r);
@@ -177,7 +180,7 @@ bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefV
 
 TResult  RefVariable_t::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->MOVE_TO_next_term(r);
-    if  (r && *r && (void*)r!=(void*)s->current_view_r()) {
+    if  (r) {
         l=r;
         s->saveVar( (RefVariable*)*tpl, l, r);
         s->MOVE_TO_next_template(tpl);
