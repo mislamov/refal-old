@@ -183,7 +183,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       length = is.tellg();
       is.seekg (0, std::ios::beg);
 	  if (length < 0) {
-		  std::cerr << "Can`r open file: " << the_explode(beg, end) << std::flush;
+		  std::cerr << "Can`t open file: " << the_explode(beg, end) << std::flush;
 		  return 0;
 	  }
 
@@ -197,7 +197,11 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       RefChain *result = new RefChain(length);
       for (size_t i=0; i<length; i++){
             if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
-                (*result) += new RefAlpha(buffer[i]);
+				if (buffer[i] < 128){
+					(*result) += RefAlpha128::alphatable+buffer[i];
+				}else{
+					(*result) += new RefAlpha(buffer[i]);
+				}
             }
       }
 
@@ -224,7 +228,11 @@ RefChain* Card (RefData** beg, RefData** end, Session* s){
 
     //for (size_t i=0; i<text.length(); i++){
     for (size_t i=0; i<tlen; i++){
-        *rch += new RefAlpha(text[i]);
+		if (text[i] < 128){
+			*rch += RefAlpha128::alphatable+text[i];
+		}else{
+			*rch += new RefAlpha(text[i]);
+		}
     }
 
     // конец файла

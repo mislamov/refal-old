@@ -113,6 +113,11 @@ public:
     virtual unichar getValue()   { return value; };
 };
 
+class RefAlpha128 : public RefAlphaBase {
+public:
+	static RefAlpha128* alphatable;
+	virtual unichar getValue()   { return (this-alphatable); };
+};
 
 class RefInteger : public RefIntegerBase {
     infint value;

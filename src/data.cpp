@@ -29,7 +29,7 @@
 #include <stack>
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
-PooledStack<RefChain* > allchains;
+PooledTuple2<RefChain*, char*> allchains;
 
 namespace co {
 	size_t objs = 0;
@@ -38,13 +38,19 @@ namespace co {
 	size_t chains = 0;
 }
 
+char* c_str(std::string str){
+	char *ch = new char[str.length()];
+	strcpy(ch, str.c_str());
+	return ch;
+};
+
 
 RefChain::RefChain(RefData* d) {
     sysize = leng = 1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	first[0] = d;
 	co::chains++;
-	allchains.put(this);
+	allchains.put(this, "");
 };
 
 RefChain::RefChain(size_t size) { // size is not lenght
@@ -52,7 +58,7 @@ RefChain::RefChain(size_t size) { // size is not lenght
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
 	co::chains++;
-	allchains.put(this);
+	allchains.put(this, "");
 };
 
 
