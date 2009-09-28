@@ -179,8 +179,11 @@ RefUserModule *mod;
 	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
 	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
 
-	while (! allchains.empty()){
-		std::cout << "\n" << allchains.top()->debug() << std::flush;
+	RefChain *ch;
+	char* st;
+	while (allchains.getLength()){
+		allchains.top(ch, st);
+		std::cout << "\n" << (ch?ch->debug():"$null   :\t"+std::string(st)) << std::flush;
 		allchains.pop();		
 	}
 #endif

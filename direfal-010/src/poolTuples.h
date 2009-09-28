@@ -182,9 +182,9 @@ public:
 
 template <class T1, class T2>
 class PooledTuple2 {
-protected:
+public:
 	struct TUPLE2 {T1 i1; T2 i2; };
-
+protected:
 	TUPLE2* pool;		// нумераци€ с 1
     size_t last_ind;	// индекс последнего в стеке элемента
     size_t poolsize;
@@ -259,6 +259,12 @@ public:
 		#endif
         --last_ind;
 		return true;
+	};
+
+	inline void setnullfor(T1 key){
+		TUPLE2 *tp = this->findTopByFirstKey(key);
+		if (tp) return;
+		tp->i1 = 0;
 	};
 
 	size_t getLength(){ return last_ind; }
