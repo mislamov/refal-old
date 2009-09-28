@@ -21,9 +21,13 @@
 
 #include "stringutils.h"
 
-#ifdef WIN32
-#include <time.h>
-#endif
+#include <ctime>
+
+std::string stringtime(struct tm *timeptr){
+	char result[256];
+	strftime(result, 255, "%H:%M", timeptr);
+	return result;
+}
 
 /*
 int main ( int argv, char **argc ) {
@@ -132,18 +136,22 @@ RefUserModule *mod;
 	program.regModule(mod);
     err = loadModuleFromXmlFile ( mod, &program, xmlFile );
     if (err) return err;
-    #ifdef DEBUG
+    //#ifdef DEBUG
     std::cout << mod->debug() << "\n";
-    #endif
+    //#endif
 
-
-//    time_t starttime, stoptime;
-//    time ( &starttime );
 
 #ifdef TESTCODE
-//    std::cout << "\n" << stringtime(localtime (&starttime)) << "============================================\n" << std::flush;
-//    std::cout << "program-data-size: " << co::datacount << "\n" << std::flush;
-//    std::cout << "program-obj-size : " << co::ocount << "\n============================================\n" << std::flush;
+    time_t starttime, stoptime;
+    time ( &starttime );
+
+    std::cout << "\n" 
+		//<< stringtime(localtime (&starttime)) 
+		<< "============================================\n" << std::flush;
+    std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
+	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
+	std::cout << "program-data-size: " << co::datas << "\n" << std::flush
+		<< "============================================\n" << std::flush;
 #endif
 
     RefChain *polez = new RefChain();
@@ -152,17 +160,22 @@ RefUserModule *mod;
 
 	RefChain *result = program.executeExpression( polez, s );
 
-//    time ( &stoptime );
-    std::cout << "============================================\nTime: " 
-	//<< stringtime(localtime (&stoptime)) << "\n"
-//	<< difftime(stoptime, starttime) << " sec.\n" 
-	<< std::flush;
+    std::cout << "============================================\nTime: " ;
     std::cout << "Result: " << result->debug() << "\n";
-
-    delete result;
 #ifdef TESTCODE
-//    std::cout << "datas in mem: " << co::datacount << "\n";
-//    std::cout << "objts in mem: " << co::ocount << "\n";
+    time ( &stoptime );
+	std::cout 
+//		<< stringtime(localtime (&stoptime)) << "\n"
+	<< difftime(stoptime, starttime) << " sec.\n" 
+	<< std::flush;
+#endif
+
+	delete result;
+
+#ifdef TESTCODE
+    std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
+	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
+	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
 #endif
 
 

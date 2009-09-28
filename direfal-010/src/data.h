@@ -31,12 +31,15 @@ class VarMap;
 
 class RefObject {
 public:
+	RefObject(){ co::objs++; };
 	virtual unistring debug(){ return " $RefObject "; };
-	virtual ~RefObject(){};
+	virtual ~RefObject(){ co::objs--; };
 };
 
 class RefData : public RefObject {
 public:
+	RefData() : RefObject(){ co::datas++; }
+	virtual ~RefData(){ co::datas--; }
 	virtual unistring explode() = 0;
     virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0;
@@ -57,7 +60,8 @@ class RefVariable : public RefData {
 protected:
     unistring name;
 public:
-	inline RefVariable(unistring tname = EmptyUniString){ name=tname; };
+	inline RefVariable(unistring tname = EmptyUniString):RefData(){ name=tname; co::vars++; };
+	virtual ~RefVariable(){ co::vars--; }
     inline unistring getName() {        return name;    };
     inline void setName(unistring s) {        name = s;    };
 };

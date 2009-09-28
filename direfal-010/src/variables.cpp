@@ -152,6 +152,7 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
 bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd)?true:false; };
 
 TResult  RefVariable_END::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
+	s->restoreVar(this, l, r);
     s->MOVE_TO_pred_template(tpl);
     return BACK;
 }

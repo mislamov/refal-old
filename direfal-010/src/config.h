@@ -20,7 +20,7 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
-//#define TESTCODE
+#define TESTCODE
 //#define DEBUG
 //#define UNICODE
 /****************************************************************************************
@@ -30,6 +30,12 @@
 *     бесконечные целые и вещественные
 *     и др.
 *****************************************************************************************/
+
+namespace co {
+	extern size_t objs;
+	extern size_t datas;
+	extern size_t vars;
+}
 
 #include <iostream>
 
