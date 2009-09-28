@@ -30,6 +30,10 @@
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
 
+size_t co::objs = 0;
+size_t co::datas = 0;
+size_t co::vars = 0;
+
 
 RefChain::RefChain(RefData* d) {
     sysize = leng = 1;

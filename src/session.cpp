@@ -26,6 +26,8 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 	if (! varMapStack.getCount()) SYSTEMERRORs(this, "createVarMap() wanted! No varmaps in stack for matching");
 #endif
 
+	//std::cout << thetmplate->debug() << "\n\t\t~  " << chain_to_text(arg_l, arg_r) << "\n" << std::flush;
+
 	//LOG("New MATCHING : tmplateChain=" << thetmplate->debug() << "  isDematching="<<isdemaching);
     RefData **activeTemplate = 0, **l=0, **r=0;
 
@@ -326,13 +328,16 @@ RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 	RefChain *result = new RefChain(chain->leng);
 	RefLinkToVariable *link = 0;
 	RefDataBracket   *brack = 0;
-	RefData **enditem = (*chain)[-1]+1;
-	for(RefData **item = (*chain)[0]; item < enditem; ++item){
+	RefData **enditem = chain->at(-1)+1;
+	for(RefData **item = chain->at(0); item < enditem; ++item){
 		link = ref_dynamic_cast<RefLinkToVariable>(*item);
 		if (link){
 			RefData **endi, **i;
 			VarMap* vm = 0;
-			findVar(link->lnk, i, endi, vm);
+			if (! findVar(link->lnk, i, endi, vm)){
+				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
+				SYSTEMERRORs(this, "Variable not found for link " + link->explode());
+			};
 			if (link->path != EmptyUniString){
 				// заглядывание в пользовательскую переменную
 				if (! vm->folowByWay(link->path, i, endi)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
