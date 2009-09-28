@@ -297,6 +297,9 @@ void RefVarChains::setTemplInstant(RefUserTemplate *ntempli){
 // компиляция цепочки после построения. расстановка ссылок
 // ownchain - левая часть для подстановки this. Тоже компилируется
 void RefChain::compile(RefChain *ownchain, RefProgram *program){
+#ifdef DEBUG
+	std::cout << "compile: " << this->explode() << "\n" << std::flush ;
+#endif
 	if (isEmpty()) return;
 
 	std::map<unistring, RefVariable*> vars;
@@ -311,9 +314,9 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 
 	PooledTuple2<RefData**, RefData**> subchains;
-	subchains.put((*this)[0], (*this)[-1]+1);
+	subchains.put(this->at(0), this->at(-1)+1);
 	if (ownchain && ownchain!=this && !ownchain->isEmpty()){
-		subchains.put((*ownchain)[0], (*ownchain)[-1]+1);
+		subchains.put(ownchain->at(0), ownchain->at(-1)+1);
 	}
 
 	while(subchains.getLength()){
@@ -344,18 +347,20 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				if (uservar->templInstant == 0){
 					// группа
 					subchains.put(point+1, end);
-					subchains.put(uservar->templ->at(0), uservar->templ->at(-1)+1);
+					if(! uservar->templ->isEmpty()) { subchains.put(uservar->templ->at(0), uservar->templ->at(-1)+1); };
 					break;
 				}
 				continue;
 			}
 
-			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // польз переменная или группа
+			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // вырианты
 			if (uservarich){ // запоминаем заготовку для переменной
 				vars[uservarich->getName()] = uservarich;
 				subchains.put(point+1, end);
 				for(int i=uservarich->templs.getCount(); i; --i){
-					subchains.put(uservarich->templs.getByIndex(i-1)->at(0), uservarich->templs.getByIndex(i-1)->at(-1)+1);
+					if (! uservarich->templs.getByIndex(i-1)->isEmpty() ){
+						subchains.put(uservarich->templs.getByIndex(i-1)->at(0), uservarich->templs.getByIndex(i-1)->at(-1)+1);
+					}
 				}
 				break;
 			}
@@ -378,7 +383,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			bracks = ref_dynamic_cast<RefDataBracket>(*point);
 			if (bracks && !bracks->chain->isEmpty()) { // смотрим в скобки
 				subchains.put(point+1, end);
-				subchains.put((*(bracks->chain))[0], (*(bracks->chain))[-1]+1);
+				subchains.put(bracks->chain->at(0), bracks->chain->at(-1)+1);
 				break;
 			}
 
