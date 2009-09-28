@@ -31,10 +31,12 @@
 *     и др.
 *****************************************************************************************/
 
+
 namespace co {
 	extern size_t objs;
 	extern size_t datas;
 	extern size_t vars;
+	extern size_t chains;
 }
 
 #include <iostream>

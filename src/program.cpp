@@ -42,11 +42,12 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 	if (chain->isEmpty()) {
 		return chain; // new RefChain();
 	}
-	//TODO: сохранить состояние ** стека аргументов для условий
 
 	RefChain* result = new RefChain(chain->getLength());
-	for (RefData **iter=(*chain)[0], **iend = (*chain)[-1]+1; iter < iend; ++iter){
+	for (RefData **iter=chain->at(0), **iend = chain->at(-1)+1; iter < iend; ++iter){
+
 		RefDataBracket *databr = ref_dynamic_cast<RefDataBracket>(*iter);
+
 		if (databr){
 			if (ref_dynamic_cast<RefStructBrackets>(databr)){
 				*result += new RefStructBrackets( executeExpression(databr->chain, sess) );
@@ -54,6 +55,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				#ifdef TESTCODE
 				if (! ref_dynamic_cast<RefExecBrackets>(databr)) AchtungERRORs(sess);
 				#endif
+
 				//RefExecBrackets
 				RefChain *arg = executeExpression(databr->chain, sess); // вычисляем внутренние exec-скобки
 				if (arg->isEmpty()) SYSTEMERRORs(sess, "Unexpected empty argument for function call-brackets! " << databr->chain->debug());
@@ -82,8 +84,8 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			*result += *iter;
 		}
 	}
-	//TODO: откатить все аргументы для условий до состояния **
-return result;
+
+	return result;
 };
 
 RefFunctionBase* RefProgram::findFunction(unistring id){

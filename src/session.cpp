@@ -71,7 +71,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 
 					if (var1) {
 						result_sost = var1->success(activeTemplate, this, l, r);
-					}else{
+					} else {
 						RefVariantsChains* var2 = ref_dynamic_cast<RefVariantsChains>(* termChainsJumpPoints.top());
 						if (var2){
 							result_sost = var2->success(activeTemplate, this, l, r);
@@ -302,24 +302,6 @@ unistring VarMap::debug(){
 		return s.str();
 };
 
-/*
-// TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено
-void Session::saveVar   (RefData** activeTemplate, RefData** &l, RefData** &r) { // сохраняет состояние переменной
-        RefVariable* var = ref_dynamic_cast<RefVariable>(*activeTemplate);
-        if (var){
-            saveVar(this, (RefVariable*)var, l, r);
-        }
-//		LOG("save: " << var->getName() << " : " << ((l && *l) ? (*l)->debug() : "null") << " .. " <<  (r&& *r &&(current_view_l()-1-r)?(*r)->debug():"null"));
-};
-
-// TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено
-void Session::restoreVar(RefData** activeTemplate, RefData** &l, RefData** &r){ // восстанавливает состояние переменной
-        RefVariable* var = ref_dynamic_cast<RefVariable>(*activeTemplate);
-        if (!var) SYSTEMERROR("not var restoring!");
-
-        restoreVar(this, var, l, r); // для польз-переменной varMatchState хранит ее подсессию
-};
-*/
 
 // TODO: оптимизировать!
 RefChain*  Session::substituteExpression(RefChainConstructor *chain){
