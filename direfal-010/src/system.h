@@ -80,7 +80,7 @@ VAR_DEFINITIONS
 		DEFINE_MODULE_VARIABLE_CLASS(s,  var_s_creator);
 		DEFINE_MODULE_VARIABLE_CLASS(t,  var_t_creator);
 		DEFINE_MODULE_VARIABLE_CLASS(e,  var_e_creator);
-		DEFINE_MODULE_VARIABLE_CLASS(E,  var_e_creator);
+		DEFINE_MODULE_VARIABLE_CLASS(E,  var_E_creator);
 		DEFINE_MODULE_VARIABLE_CLASS(int,    var_int_creator);
 		DEFINE_MODULE_VARIABLE_CLASS(real,   var_real_creator);
 		DEFINE_MODULE_VARIABLE_CLASS(word,   var_word_creator);
