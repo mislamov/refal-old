@@ -49,6 +49,15 @@ public:
     virtual unistring explode() {        return " E."+getName()+" ";    };
 };
 
+class RefVariable_END : public RefVariable_E {
+public:
+    CLASS_OBJECT_CAST(RefVariable_END);
+    RefVariable_END(unistring name = EmptyUniString) : RefVariable_E(name) {};
+
+    TResult  back(RefData **&tpl, Session *, RefData **&, RefData **&);
+    virtual unistring explode() {        return " END."+getName()+" ";    };
+};
+
 
 class RefVariable_s : public RefVariable {
 public:

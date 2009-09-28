@@ -53,8 +53,9 @@ protected:
 	std::map<unistring, RefFunctionBase*> functions;
 	std::map<unistring, RefTemplateBase*> templates;
 public:
+    virtual ~RefModuleBase(){};
 	//RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
-	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0){ 
+	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0){
 		std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(nm);
 		if (iter != functions.end()) return iter->second;
 		return 0;
@@ -77,14 +78,15 @@ protected:
 	std::map<unistring, RefData*(*)(unistring)> dataConstructors;
 	std::map<unistring, RefData*(*)(unistring)> varConstructors;
 public:
+    virtual ~RefDllModule(){};
 	RefData* constructSymbol(unistring typecode, unistring value);
 	RefData* constructVariable(unistring typecode, unistring value);
-
 };
 
 class RefUserModule : public RefModuleBase {
 	unistring name;
 public:
+    virtual ~RefUserModule(){};
 	RefUserModule(unistring thename){ name=thename; };
 	inline unistring getName(){ return name; };
 	unistring debug();

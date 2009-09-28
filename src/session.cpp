@@ -66,7 +66,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 						std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
 					#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
-					
+
 					if (var1) {
 						result_sost = var1->success(activeTemplate, this, l, r);
 					}else{
@@ -86,8 +86,8 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 			}
             LOGSTEP("GO  ");
             #ifdef TESTCODE
-            if (l && !r) {   
-				SYSTEMERRORs(this, "RefData::init() tring to matching with NULL address!");            
+            if (l && !r) {
+				SYSTEMERRORs(this, "RefData::init() tring to matching with NULL address!");
 			};
             #endif
             l=0;
@@ -101,7 +101,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
 					#ifdef TESTCODE
-						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);						
+						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
 					#endif
 					#ifdef DEBUG
 						std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
@@ -161,17 +161,17 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 	return (result_sost==SUCCESS);
 };
 
-
+#ifdef TESTCODE
 unistring Session::debug(){
 		std::ostringstream s;
 
 		s << "variants_idxs: ";
-		for(int i=0; i<variants_idxs.getCount(); ++i){
+		for(size_t i=0; i<variants_idxs.getCount(); ++i){
 			s << variants_idxs.getByIndex(i) << " ";
 		}
 		s << "\n";
 		s << "variants_idxs_done: ";
-		for(int i=0; i<variants_idxs_done.getCount(); ++i){
+		for(size_t i=0; i<variants_idxs_done.getCount(); ++i){
 			s << variants_idxs_done.getByIndex(i) << " ";
 		}
 		s << "\n";
@@ -182,6 +182,28 @@ unistring Session::debug(){
 		}
 		return s.str();
 };
+#else
+unistring Session::debug(){
+		std::ostringstream s;
+
+		s << "variants_idxs: ";
+		for(size_t i=0; i<variants_idxs.getCount(); ++i){
+			s << variants_idxs.getByIndex(i) << " ";
+		}
+		s << "\n";
+		s << "variants_idxs_done: ";
+		for(size_t i=0; i<variants_idxs_done.getCount(); ++i){
+			s << variants_idxs_done.getByIndex(i) << " ";
+		}
+		s << "\n";
+
+		for (size_t i=varMapStack.getCount(); i>0; --i){
+			s << "--------------------------------------- " << i+2 << "\n";
+			s << varMapStack.pool[i+1]->debug();
+		}
+		return s.str();
+};
+#endif
 
 /*
 unistring MatchState::debug(){
@@ -210,12 +232,25 @@ bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, VarMap *&vm)
 };
 
 // ищет по ссылке на переменную ее облать видимости
+/*
 bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&vm) {
         for (size_t ind = last_ind; ind>=0; --ind) {
             if (pool[ind].i1==var) {
                 l = pool[ind].i2;
                 r = pool[ind].i3;
 				vm = pool[ind].i4;
+                return true;
+            }
+        }
+            return false;
+};
+*/
+bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&vm) {
+        for (size_t ind = last_ind+1; ind>0; --ind) {
+            if (pool[ind-1].i1==var) {
+                l = pool[ind-1].i2;
+                r = pool[ind-1].i3;
+				vm = pool[ind-1].i4;
                 return true;
             }
         }
@@ -228,8 +263,16 @@ bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r){
 		AchtungERRORn;
 	}
     #endif
-	long t_from  = 0;
-    long t_to    = -1;
+	size_t t_from  = 0;
+    size_t t_to    = 0;
+    t_to = t_to-1;
+    #ifdef TESTCODE
+    size_t stmp = 0;
+    stmp = stmp-3;
+    stmp = stmp+3;
+    if (stmp!=0) SYSTEMERRORn("Invalid size_t operation! 0-3+3 != 0 for size_t. Change session.cpp for this platform!");
+    #endif
+
     unistring vname;
 	VarMap *vm = this;
 
@@ -244,7 +287,7 @@ bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r){
 	return true;
 }
 
-	
+
 unistring VarMap::debug(){
 		std::ostringstream s;
 
@@ -266,7 +309,7 @@ void Session::saveVar   (RefData** activeTemplate, RefData** &l, RefData** &r) {
         }
 //		LOG("save: " << var->getName() << " : " << ((l && *l) ? (*l)->debug() : "null") << " .. " <<  (r&& *r &&(current_view_l()-1-r)?(*r)->debug():"null"));
 };
-    
+
 // TODO:а нужна ли промежуточная ф-я? проверить когда все отлажено
 void Session::restoreVar(RefData** activeTemplate, RefData** &l, RefData** &r){ // восстанавливает состояние переменной
         RefVariable* var = ref_dynamic_cast<RefVariable>(*activeTemplate);

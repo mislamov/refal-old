@@ -52,9 +52,9 @@ public:
         os << getValue();
         return os.str();
         };
-    unistring debug(){        
+    unistring debug(){
 		unistring tmp = explode() + " ";
-		return explode() + " ";        
+		return explode() + " ";
 	};
 };
 
@@ -63,11 +63,13 @@ class RefAlphaBase : public RefSymbolBase<RefAlphaBase, unichar> {
 public:
     CLASS_OBJECT_CAST(RefAlphaBase);
     virtual ~RefAlphaBase(){};
-	virtual unistring explode(){ 
+    #ifdef DEBUG
+	virtual unistring explode(){
 		if (getValue() == '\n') return "\\n";
 		if (getValue() == '\t') return "\\t";
-		return RefSymbolBase<RefAlphaBase, unichar>::explode(); 
+		return RefSymbolBase<RefAlphaBase, unichar>::explode();
 	};
+	#endif
 	virtual unistring toString(){ return explode(); };
 	virtual unistring debug(){ return explode(); };
 };
@@ -192,7 +194,7 @@ public:
 template <class T>
 TResult RefVarForSymbol<T>::init(RefData**&tpl, Session* sess, RefData**&l, RefData**&r){
 	sess->MOVE_TO_next_term(r);
-    if (ref_dynamic_cast<T >(*r)){
+    if (r && ref_dynamic_cast<T >(*r)){
         l=r;
 		sess->saveVar(this, l, r);
 		sess->MOVE_TO_next_template(tpl);
