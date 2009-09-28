@@ -1,4 +1,4 @@
-// DiRefal - sentential program language
+// D-Refal - sentential program language
 // Copyright (C) 2008-2009 Islamov Marat Shamilevich
 // islamov.marat@gmail.com
 //
