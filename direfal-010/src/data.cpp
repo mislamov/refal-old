@@ -1,4 +1,4 @@
-// DiRefal - sentential program language
+// D-Refal - sentential program language
 // Copyright (C) 2008-2009 Islamov Marat Shamilevich
 // islamov.marat@gmail.com
 //
@@ -742,5 +742,16 @@ TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, R
 
 
 
+TResult RefMatchingCutter::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ 
+	s->MOVE_TO_next_template(tpl); 
+	return GO;
+};
+TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){ 
+	// если отсекается пользовательская переменная
+	// если отсекается текущая цепочка
+	tpl=0;
+	return BACK;
+	//return FAIL;
+};
 
 

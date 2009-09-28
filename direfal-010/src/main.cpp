@@ -1,4 +1,4 @@
-// DiRefal - sentential program language
+// D-Refal - sentential program language
 // Copyright (C) 2008-2009 Islamov Marat Shamilevich
 // islamov.marat@gmail.com
 //
@@ -16,7 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include "direfal.h"
+#include "DiRefal.h"
 #include "SAXLoader.hpp"
 
 #include "stringutils.h"
@@ -98,8 +98,8 @@ RefUserModule *mod;
 
     int err = 0;
     if (! strstr(pname, ".xml")) {
-        ss0 << ".\\refgo.exe -e "  << "direfal_scaner " << pname << "\n";
-        ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << "direfal_scaner " << pname << "\n";
+        ss0 << ".\\refgo.exe -e "  << "DiRefal_scaner " << pname << "\n";
+        ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << "DiRefal_scaner " << pname << "\n";
         ss2 << pname << ".xml";
     } else {
         ss2 << pname;

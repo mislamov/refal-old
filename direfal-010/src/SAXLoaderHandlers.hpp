@@ -23,7 +23,7 @@
 #include    <xercesc/sax/HandlerBase.hpp>
 #include    <xercesc/framework/MemBufFormatTarget.hpp>
 
-#include "direfal.h"
+#include "DiRefal.h"
 
 #include <stack>
 #include <map>

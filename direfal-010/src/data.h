@@ -1,4 +1,4 @@
-// DiRefal - sentential program language
+// D-Refal - sentential program language
 // Copyright (C) 2008-2009 Islamov Marat Shamilevich
 // islamov.marat@gmail.com
 //
@@ -308,22 +308,6 @@ public:
 		path = varName;
 		lnk=0;
 	};
-
-/*	inline RefLinkToVariable(unistring varName, unistring thepath){
-		RefLinkToVariable::RefLinkToVariable(varName);
-		path += "/" + thepath;
-	};
-
-	inline bool initize(Session *sess, RefChain *chain){
-		size_t i = path.find("/");
-		unistring name = path.substr(0, i);
-		path = ((i==std::string::npos) ? EmptyUniString : path.substr(i, std::string::npos));
-		
-		RefVariable **var = chain->findVariable(name);
-		if (!var) SYSTEMERROR("Variable [" << name << "] not found in " << chain->debug());
-		lnk = *var;
-		return true;		
-	};*/
 };
 
 
@@ -341,9 +325,12 @@ inline unistring chain_to_text(RefData** from, RefData** to, int showleng = 256)
 };
 
 
-//#define MOVE_TO_next_term(p) (++p); - â Session
-//#define MOVE_TO_pred_term(p) (--p); - â Session
-//#define s->MOVE_TO_next_template(p) (++p); - â Session
-//#define MOVE_TO_pred_template(p) (--p); - â Session
+
+class RefMatchingCutter : public RefData {
+public:
+	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+	inline unistring explode(){ return " $cutter$ "; };
+};
 
 #endif

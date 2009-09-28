@@ -331,8 +331,8 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
         *(loader->getCurrChain()) += repeater;
     } else
     if ( theCommand.compare(_L("CUTTER")) == 0 ) {
-		SYSTEMERRORn("cutter not realised!"); 
-		//            *(loader->getCurrChain()) += new RefMatchingCutter();
+		//SYSTEMERRORn("cutter not realised!"); 
+		*(loader->getCurrChain()) += new RefMatchingCutter();
     } else
     if ( theCommand.compare(_L("IF")) == 0 ) {
 		RefUserCondition* cond = loader->currentCondition;
