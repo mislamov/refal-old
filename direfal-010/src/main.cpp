@@ -145,13 +145,14 @@ RefUserModule *mod;
     time_t starttime, stoptime;
     time ( &starttime );
 
-    std::cout << "\n" 
+    std::cout << "\n";
 		//<< stringtime(localtime (&starttime)) 
-		<< "============================================\n" << std::flush;
+	std::cout << "============================================\n" << std::flush;
     std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
 	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
-	std::cout << "program-data-size: " << co::datas << "\n" << std::flush
-		<< "============================================\n" << std::flush;
+	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
+	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
+	std::cout << "============================================\n" << std::flush;
 #endif
 
     RefChain *polez = new RefChain();
@@ -176,6 +177,12 @@ RefUserModule *mod;
     std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
 	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
 	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
+	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
+
+	while (! allchains.empty()){
+		std::cout << "\n" << allchains.top()->debug() << std::flush;
+		allchains.pop();		
+	}
 #endif
 
 

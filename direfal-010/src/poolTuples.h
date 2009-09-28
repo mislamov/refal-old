@@ -85,6 +85,14 @@ public:
 		return pool[index];
 	};
 
+	inline void setnullfor(T key){
+		for (int i=1; i<=idx; ++i){
+			if (pool[idx-i]==key){
+				pool[idx-i]=0;
+				return;
+			}
+		}
+	};
 
 	inline void clear(){
 		idx = 0;

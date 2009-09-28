@@ -61,8 +61,9 @@ class Session {
 	RefProgram *program;
 
 	PooledTuple2 <RefData**, RefData**>  current_view_borders; // крайние view-элементы активного аргумента [для скобок]
+public:
 	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
-
+private:
 	PooledStack<VarMap*>  varMapStack; // карты переменных
 	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
 	PooledStack<RefChain *> currentTemplates;

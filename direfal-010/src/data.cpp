@@ -29,22 +29,30 @@
 #include <stack>
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
+PooledStack<RefChain* > allchains;
 
-size_t co::objs = 0;
-size_t co::datas = 0;
-size_t co::vars = 0;
+namespace co {
+	size_t objs = 0;
+	size_t datas = 0;
+	size_t vars = 0;
+	size_t chains = 0;
+}
 
 
 RefChain::RefChain(RefData* d) {
     sysize = leng = 1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	first[0] = d;
+	co::chains++;
+	allchains.put(this);
 };
 
 RefChain::RefChain(size_t size) { // size is not lenght
 	sysize = size;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
+	co::chains++;
+	allchains.put(this);
 };
 
 

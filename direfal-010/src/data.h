@@ -186,6 +186,9 @@ public:
 };
 
 
+class RefChain;
+extern PooledStack<RefChain* > allchains;
+
 class RefChain : public RefObject {
 	friend bool eq(RefChain *, RefChain *);
 	friend class Session;
@@ -198,9 +201,10 @@ class RefChain : public RefObject {
 	static size_t alloc_portion;
 public:
 
-	RefChain(){sysize=leng=0; first=0;};
+	RefChain(){sysize=leng=0; first=0; co::chains++; allchains.put(this);};
 	RefChain(RefData *);			// цпочка из одного терма
 	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
+	virtual ~RefChain(){ co::chains--; allchains.setnullfor(this); };
 
 	RefChain*  operator+=(RefData  *ch);
 	RefChain*  operator+=(RefChain *ch); // удаляет *ch
@@ -336,5 +340,10 @@ public:
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
 	inline unistring explode(){ return " $cutter$ "; };
 };
+
+
+
+
+
 
 #endif
