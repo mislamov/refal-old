@@ -18,6 +18,10 @@
 
 #include "symbols.h"
 
+
+RefAlpha128* RefAlpha128::alphatable = new RefAlpha128[128];
+
+
 RefChainConstructor *textToChain(unistring str){
 	RefChainConstructor *ch = new RefChainConstructor();
 	size_t len = str.length();

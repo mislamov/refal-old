@@ -136,9 +136,9 @@ RefUserModule *mod;
 	program.regModule(mod);
     err = loadModuleFromXmlFile ( mod, &program, xmlFile );
     if (err) return err;
-    //#ifdef DEBUG
+    #ifdef DEBUG
     std::cout << mod->debug() << "\n";
-    //#endif
+    #endif
 
 
 #ifdef TESTCODE
@@ -181,11 +181,11 @@ RefUserModule *mod;
 
 	RefChain *ch;
 	char* st;
-	while (allchains.getLength()){
+/*	while (allchains.getLength()){
 		allchains.top(ch, st);
 		std::cout << "\n" << (ch?ch->debug():"$null   :\t"+std::string(st)) << std::flush;
 		allchains.pop();		
-	}
+	}*/
 #endif
 
 

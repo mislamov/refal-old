@@ -29,7 +29,8 @@
 #include <stack>
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
-PooledTuple2<RefChain*, char*> allchains;
+
+//PooledTuple2<RefChain*, char*> allchains;
 
 namespace co {
 	size_t objs = 0;
@@ -50,7 +51,7 @@ RefChain::RefChain(RefData* d) {
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	first[0] = d;
 	co::chains++;
-	allchains.put(this, "");
+//	allchains.put(this, "");
 };
 
 RefChain::RefChain(size_t size) { // size is not lenght
@@ -58,7 +59,7 @@ RefChain::RefChain(size_t size) { // size is not lenght
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
 	co::chains++;
-	allchains.put(this, "");
+//	allchains.put(this, "");
 };
 
 
