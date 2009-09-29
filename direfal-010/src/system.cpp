@@ -173,7 +173,7 @@ RefChain*  Compare(RefData** beg, RefData** end, Session* s){
 RefChain* Mount (RefData** beg, RefData** end, Session* s){
 
       size_t length;
-      char * buffer;
+      char *buffer;
 
       std::ifstream is;
       is.open ( the_explode(beg, end).c_str(), std::ios::binary );
@@ -188,7 +188,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
 	  }
 
       // allocate memory:
-      buffer = new char [length];
+      buffer = new char[length];
 
       // read data as a block:
       is.read (buffer,length);
@@ -197,8 +197,8 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       RefChain *result = new RefChain(length);
       for (size_t i=0; i<length; i++){
             if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
-				if (buffer[i] < 128){
-					(*result) += RefAlpha128::alphatable+buffer[i];
+				if ((unsigned char) buffer[i] < 128){
+					(*result) += (RefAlpha128::alphatable+buffer[i]);
 				}else{
 					(*result) += new RefAlpha(buffer[i]);
 				}
@@ -206,7 +206,6 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       }
 
       delete[] buffer;
-
       return result;
 
 
