@@ -7,7 +7,7 @@
 #define LOGSTEP(s) \
 	std::cout <<variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0, 50)) << "\n" << std::flush;
 #define LOGMATCH() \
-	std::cout << "\n\nSTEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r, 50)) << "\n" << std::flush;
+	std::cout << "\n\n"<< co::objs<<" STEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r, 50)) << "\n" << std::flush;
 #else
 #define LOGSTEP(s)
 #define LOGMATCH()
@@ -48,12 +48,13 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
     }
 
 	this->setTmplate(thetmplate);
-	LOGMATCH();
+	//LOGMATCH();
+	//std::cout << "\n\n"<< co::objs<<" STEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r, 50)) << "\n" << std::flush;
+
 	bool ireturn = false;
 
 	while (! ireturn) {
         // сопоставляем текущий шаблон
-
         switch (result_sost) {
 
         case GO: {
@@ -182,6 +183,18 @@ unistring Session::debug(){
 			s << "--------------------------------------- " << i+1 << "\n";
 			s << varMapStack.pool[i]->debug();
 		}
+
+
+	RefChain *ch;
+	char* st;
+
+	for (size_t i=allchains.getLength(); i; --i){
+		PooledTuple2<RefChain*, char*>::TUPLE2* pool_last_ind = allchains.pool + i;
+		ch = pool_last_ind->i1;
+		st = pool_last_ind->i2;
+		s << "\n" << (ch?ch->debug():"$null   :\t"+std::string(st)) << std::flush;
+	}
+
 		return s.str();
 };
 #else

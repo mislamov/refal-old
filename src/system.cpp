@@ -176,7 +176,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       char *buffer;
 
       std::ifstream is;
-      is.open ( the_explode(beg, end).c_str(), std::ios::binary );
+	  is.open ( the_explode(beg, end).c_str(), std::ios::binary );
 
       // get length of file:
       is.seekg (0, std::ios::end);
@@ -197,11 +197,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       RefChain *result = new RefChain(length);
       for (size_t i=0; i<length; i++){
             if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
-				if ((unsigned char) buffer[i] < 128){
-					(*result) += (RefAlpha128::alphatable+buffer[i]);
-				}else{
-					(*result) += new RefAlpha(buffer[i]);
-				}
+				(*result) += new RefAlpha(buffer[i]);
             }
       }
 
@@ -281,6 +277,9 @@ RefChain* Prout (RefData** lft, RefData** rht, Session* s){
             << "\n######################################################################\n"
     #endif
             ;
+	std::cout << s->debug() << "\n" << std::flush;
+	std::cout << "o: " << co::objs << "\n" << std::flush;
+	std::cout << "c: " << co::chains << "\n" << std::flush;
     return new RefChain();
 };
 

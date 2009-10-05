@@ -75,6 +75,8 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					#endif
 					fresult = func->exec(0, 0, sess);
 				}
+
+				arg->killall();
 				delete arg;
 				arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
 				if (arg!=fresult) delete fresult;

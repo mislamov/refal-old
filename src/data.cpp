@@ -30,7 +30,7 @@
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
 
-//PooledTuple2<RefChain*, char*> allchains;
+PooledTuple2<RefChain*, char*> allchains;
 
 namespace co {
 	size_t objs = 0;
@@ -51,7 +51,7 @@ RefChain::RefChain(RefData* d) {
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	first[0] = d;
 	co::chains++;
-//	allchains.put(this, "");
+	allchains.put(this, "");
 };
 
 RefChain::RefChain(size_t size) { // size is not lenght
@@ -59,7 +59,7 @@ RefChain::RefChain(size_t size) { // size is not lenght
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
 	co::chains++;
-//	allchains.put(this, "");
+	allchains.put(this, "");
 };
 
 
@@ -330,6 +330,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	RefVarChains *uservar;
 	RefVariantsChains *uservarich;
 	RefUserCondition *cond;
+	RefRepeaterChain *rept;
 
 
 	PooledTuple2<RefData**, RefData**> subchains;
@@ -383,7 +384,17 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 						subchains.put(uservarich->templs.getByIndex(i-1)->at(0), uservarich->templs.getByIndex(i-1)->at(-1)+1);
 					}
 				}
-				break;
+				continue;
+				//break;
+			}
+
+
+			rept = ref_dynamic_cast<RefRepeaterChain>(*point); // вырианты
+			if (rept){ // запоминаем заготовку для переменной
+				subchains.put(point+1, end);
+				subchains.put(rept->templ->at(0), rept->templ->at(-1)+1);
+				continue;
+				//break;
 			}
 
 
@@ -504,7 +515,7 @@ TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData 
 	if (templInstant && ! dynamic_cast<RefUserTemplate*>(templInstant)) notrealisedERRORs(sess);
 	#endif
 
-	if (templ->isEmpty()){
+	if (!templ || templ->isEmpty()){
 		notrealisedERRORs(sess);
 		//sess->MOVE_TO_next_template(tpl);
 		//return GO;
@@ -776,3 +787,17 @@ TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 };
 
 
+void RefChain::killall(){
+	RefDataBracket *br = 0;
+	for(RefData 
+		**iter = this->first, 
+		**iend=this->first+this->leng;
+		iter<iend;
+		++iter){
+			br = ref_dynamic_cast<RefDataBracket>(*iter);
+			if (br){
+				br->chain->killall();
+				delete br->chain;
+			}
+		}
+};
