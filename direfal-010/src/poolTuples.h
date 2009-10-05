@@ -184,7 +184,7 @@ template <class T1, class T2>
 class PooledTuple2 {
 public:
 	struct TUPLE2 {T1 i1; T2 i2; };
-protected:
+//protected:
 	TUPLE2* pool;		// нумераци€ с 1
     size_t last_ind;	// индекс последнего в стеке элемента
     size_t poolsize;

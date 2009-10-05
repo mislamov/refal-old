@@ -187,7 +187,7 @@ public:
 
 
 class RefChain;
-//extern PooledTuple2<RefChain*, char*>  allchains;
+extern PooledTuple2<RefChain*, char*>  allchains;
 
 char* c_str(std::string str);
 
@@ -203,16 +203,17 @@ class RefChain : public RefObject {
 	static size_t alloc_portion;
 public:
 
-	RefChain(){sysize=leng=0; first=0; co::chains++; /*allchains.put(this, "");*/};
+	RefChain(){sysize=leng=0; first=0; co::chains++; allchains.put(this, "");};
 	RefChain(RefData *);			// цпочка из одного терма
 	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
 	virtual ~RefChain(){ 
 		co::chains--; 
-		/*
+		
 		PooledTuple2<RefChain*, char*>::TUPLE2 *tp = allchains.findTopByFirstKey(this);
-		tp->i1 = 0;
-		tp->i2 = c_str(debug());
-		*/
+		if (tp){
+			tp->i1 = 0;
+			tp->i2 = c_str(debug());
+		}
 	};
 
 	RefChain*  operator+=(RefData  *ch);
@@ -232,6 +233,7 @@ public:
 	unistring explode();
 
 	void compile(RefChain *, RefProgram *);
+	void killall();
 };
 
 
@@ -328,7 +330,7 @@ public:
 };
 
 
-inline unistring chain_to_text(RefData** from, RefData** to, int showleng = 256){
+inline unistring chain_to_text(RefData** from, RefData** to, int showleng = 356){
 	if (!from || !*from) return "[null]";
 	if (!to || (to-from)<0) return "[error string]";
 	unistring res = "";
