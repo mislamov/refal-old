@@ -581,6 +581,7 @@ Scan{
 	'$NOT' e.all = "$not" <Scan e.all>;
 	'$Not' e.all = "$not" <Scan e.all>;
 	'$not' e.all = "$not" <Scan e.all>;
+	'$empty' e.all = <Scan e.all>;
 	'::=' e.all = (':')(':')('=') <Scan e.all>;
 	'::' e.all = ('/') <Scan e.all>;
 	' '  e.all = <Scan e.all>;
