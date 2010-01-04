@@ -155,7 +155,13 @@ class RefDataBracket : public RefData {
 public:
 	RefChain *chain;
 
-	RefDataBracket(RefChain *thechain) : RefData(){		chain = thechain;	};
+	RefDataBracket(RefChain *thechain) : RefData(){		
+		++co::stbracks;
+		chain = thechain;	
+	};
+	~RefDataBracket(){
+		--co::stbracks;
+	};
 	virtual unistring debug() = 0;
 
 };

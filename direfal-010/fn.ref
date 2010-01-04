@@ -1,15 +1,3 @@
 Go {
-	= <F <Mount <Card>>>;
-}
-
-Template dint ::= {'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'};
-
-Template ip ::=  { dint. }[1..3].x '.' { dint. }[1..3].y '.' { dint. }[1..3].z '.' { dint. }[1..3].w ;
-
-FF { e.e = <Prout '<F 'e.e '>'> <FF e.e>; }
-
-F {
-	=;
-	'"' ip.x END.e = <Prout @.x> <F @.e>;
-	s.s END.e = <F @.e>;	
+	= <Prout 'yo'>;
 }

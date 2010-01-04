@@ -37,6 +37,7 @@ namespace co {
 	extern size_t datas;
 	extern size_t vars;
 	extern size_t chains;
+	extern size_t stbracks;
 }
 
 #include <iostream>
