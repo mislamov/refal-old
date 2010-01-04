@@ -37,6 +37,7 @@ namespace co {
 	size_t datas = 0;
 	size_t vars = 0;
 	size_t chains = 0;
+	size_t stbracks = 0;
 }
 
 char* c_str(std::string str){

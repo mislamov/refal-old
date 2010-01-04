@@ -86,7 +86,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			*result += *iter;
 		}
 	}
-
+	///todo: delete all garbage chains
 	return result;
 };
 
