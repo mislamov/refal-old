@@ -119,3 +119,4 @@ TResult RefUserCondition::back(RefData **&tpl, Session* s, RefData **&l, RefData
 	s->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
+
