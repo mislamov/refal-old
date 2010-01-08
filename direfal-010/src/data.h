@@ -220,6 +220,8 @@ public:
 			tp->i1 = 0;
 			tp->i2 = c_str(debug());
 		}
+
+		if (first) free(first);
 	};
 
 	RefChain*  operator+=(RefData  *ch);
@@ -247,46 +249,13 @@ public:
 
 
 
-inline RefChain*  operator+ (RefChain* x, RefChain y){
-	RefChain *res = new RefChain();
-	*res += x;
-	*res += y;
-	return res;
-};
-
-
-inline RefChain*  operator+ (RefData* x, RefData &y){
-	RefChain *res = new RefChain();
-	*res += x;
-	*res += &y;
-	return res;
-};
-
-inline RefChain*  operator+ (RefData &x, RefData &y){
-	RefChain *res = new RefChain();
-	*res += &x;
-	*res += &y;
-	return res;
-};
-
-
-inline RefChain*  operator+ (RefChain* x, RefData &y){
-	RefChain *res = new RefChain();
-	*res += x;
-	*res += &y;
-	return res;
-};
-
-
-
-
 
 // подстановка - цепочка без открытых переменных для генереации результатного объектного выражения
 class RefChainConstructor : public RefChain {
 };
 
 
-
+/*
 inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefChain y){
 	RefChainConstructor *res = new RefChainConstructor();
 	*res += x;
@@ -314,7 +283,7 @@ inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefData &y){
 	*res += &y;
 	return res;
 };
-
+*/
 
 
 
