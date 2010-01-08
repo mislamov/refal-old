@@ -227,6 +227,9 @@ public:
 	RefChain*  operator+=(RefChain  ch); // только копирует *ch
 	RefData**  operator[](signed long idx);
 	inline RefData**  at(signed long idx){ return (*this)[idx]; };
+	inline RefData**  at_first(){ return (*this)[0]; };
+	inline RefData**  at_last(){ return (*this)[-1]; };
+	inline RefData**  at_afterlast(){ return (*this)[-1]+1; };
 
 	//RefVariable** findVariable(unistring vname);
 
