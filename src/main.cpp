@@ -152,6 +152,7 @@ RefUserModule *mod;
 	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
 	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
 	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
+	std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
 	std::cout << "============================================\n" << std::flush;
 #endif
 
@@ -178,6 +179,7 @@ RefUserModule *mod;
 	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
 	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
 	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
+	std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
 #endif
 
 
