@@ -140,6 +140,8 @@ RefUserModule *mod;
     std::cout << mod->debug() << "\n";
     #endif
 
+	std::cout << s->debug();
+
 
 #ifdef TESTCODE
     time_t starttime, stoptime;
@@ -172,6 +174,10 @@ RefUserModule *mod;
 	<< std::flush;
 #endif
 
+	polez->killall();
+	delete polez;
+
+	result->killall();
 	delete result;
 
 #ifdef TESTCODE
@@ -182,6 +188,7 @@ RefUserModule *mod;
 	std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
 #endif
 
+	std::cout << s->debug();
 
     return 0;
 

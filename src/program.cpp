@@ -38,26 +38,39 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 
 
 //TODO: оптимизировать - без рекурсии
-RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку - объектное выражение с функциональными скобками
 	if (chain->isEmpty()) {
 		return chain; // new RefChain();
 	}
 
-	RefChain* result = new RefChain(chain->getLength());
-	for (RefData **iter=chain->at(0), **iend = chain->at(-1)+1; iter < iend; ++iter){
+	//todo: обязательно! если нет изменений, то вернуть ссылку на оригиал (не создавать новую цепочку)
+	bool returnoriginal = true;
+
+	RefChain* result = new RefChain(chain->getLength()); // результат (всегда не короче исходной цепочки)
+	for (RefData **iter=chain->at_first(), **iend = chain->at_afterlast(); iter < iend; ++iter){
 
 		RefDataBracket *databr = ref_dynamic_cast<RefDataBracket>(*iter);
 
 		if (databr){
 			if (ref_dynamic_cast<RefStructBrackets>(databr)){
-				*result += new RefStructBrackets( executeExpression(databr->chain, sess) );
+				// todo: можно оптимизировать запоминая "точку ныряния" в стек путешествия по скобкам. целесообразно только при супероптимизации
+				RefChain *newbracketdata = executeExpression(databr->chain, sess);
+				if (newbracketdata != databr->chain){
+					returnoriginal = false;
+					*result += new RefStructBrackets( newbracketdata );
+				} else {
+					*result += databr;
+				}
 			} else {
+				// если не структурные скобки, то точно функциональные
+				returnoriginal = false;
+
 				#ifdef TESTCODE
 				if (! ref_dynamic_cast<RefExecBrackets>(databr)) AchtungERRORs(sess);
 				#endif
 
 				//RefExecBrackets
-				RefChain *arg = executeExpression(databr->chain, sess); // вычисляем внутренние exec-скобки
+	RefChain *arg = executeExpression(databr->chain, sess); // вычисляем внутренние exec-скобки  // todo: можно оптимизировать запоминая "точку ныряния" в стек путешествия по скобкам. целесообразно только при супероптимизации
 				if (arg->isEmpty()) SYSTEMERRORs(sess, "Unexpected empty argument for function call-brackets! " << databr->chain->debug());
 				RefData **functionid = (*arg)[0];
 				//TODO: сделать привязку функциональных вызовов по именнованым областям
@@ -68,24 +81,39 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				}
 				RefChain *fresult;
 				if (arg->getLength() > 1){
+
 					fresult = func->exec((*arg)[1], (*arg)[-1], sess);
+
 				} else {
 					#ifdef TESTCODE
 					if (arg->getLength() != 1) AchtungERRORs(sess);
 					#endif
+	std::cout << "\n-------------   " << sess->debug();
 					fresult = func->exec(0, 0, sess);
+	std::cout << "\n++++   " << sess->debug();
 				}
-
-				arg->killall();
-				delete arg;
+				if (arg!=databr->chain){
+					// если аргумент - не новая цепочка, то нельзя удалять
+					arg->killall();
+					delete arg;
+				}
 				arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
-				if (arg!=fresult) delete fresult;
+				if (arg!=fresult) {
+					fresult->killall();
+					delete fresult;
+				}
 				*result += arg;  // arg уничтожен оператором +=
 			}
 		} else {
 			*result += *iter;
 		}
 	}
+
+	if (returnoriginal){
+		delete result;
+		return chain;
+	}
+
 	///todo: delete all garbage chains
 	return result;
 };

@@ -59,6 +59,7 @@ RefChain::RefChain(size_t size) { // size is not lenght
 	sysize = size;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
+	*first = 0;
 	co::chains++;
 	allchains.put(this, "");
 };
@@ -155,8 +156,8 @@ unistring RefChain::explode(){
 
 unistring RefStructBrackets::explode(){		return "(" + chain->explode() + ") ";	};
 unistring RefExecBrackets::explode(){	return "<" + chain->explode() + "> ";	};
-unistring RefStructBrackets::debug(){		return "(" + chain->debug() + ") ";	};
-unistring RefExecBrackets::debug(){	return "<" + chain->debug() + "> ";	};
+unistring RefStructBrackets::debug(){		return "(" + (chain?chain->debug():"$null") + ") ";	};
+unistring RefExecBrackets::debug(){	return "<" + (chain?chain->debug():"$null") + "> ";	};
 
 
 TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
@@ -335,9 +336,9 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 
 	PooledTuple2<RefData**, RefData**> subchains;
-	subchains.put(this->at(0), this->at(-1)+1);
+	subchains.put(this->at_first(), this->at_afterlast());
 	if (ownchain && ownchain!=this && !ownchain->isEmpty()){
-		subchains.put(ownchain->at(0), ownchain->at(-1)+1);
+		subchains.put(ownchain->at_first(), ownchain->at_afterlast());
 	}
 
 	while(subchains.getLength()){
@@ -370,7 +371,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				if (uservar->templInstant == 0){
 					// группа
 					subchains.put(point+1, end);
-					if(! uservar->templ->isEmpty()) { subchains.put(uservar->templ->at(0), uservar->templ->at(-1)+1); };
+					if(! uservar->templ->isEmpty()) { subchains.put(uservar->templ->at_first(), uservar->templ->at_afterlast()); };
 					break;
 				}
 				continue;
@@ -382,7 +383,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				subchains.put(point+1, end);
 				for(int i=uservarich->templs.getCount(); i; --i){
 					if (! uservarich->templs.getByIndex(i-1)->isEmpty() ){
-						subchains.put(uservarich->templs.getByIndex(i-1)->at(0), uservarich->templs.getByIndex(i-1)->at(-1)+1);
+						subchains.put(uservarich->templs.getByIndex(i-1)->at_first(), uservarich->templs.getByIndex(i-1)->at_afterlast());
 					}
 				}
 				continue;
@@ -393,7 +394,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			rept = ref_dynamic_cast<RefRepeaterChain>(*point); // вырианты
 			if (rept){ // запоминаем заготовку для переменной
 				subchains.put(point+1, end);
-				subchains.put(rept->templ->at(0), rept->templ->at(-1)+1);
+				subchains.put(rept->templ->at_first(), rept->templ->at_afterlast());
 				continue;
 				//break;
 			}
@@ -416,7 +417,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			bracks = ref_dynamic_cast<RefDataBracket>(*point);
 			if (bracks && !bracks->chain->isEmpty()) { // смотрим в скобки
 				subchains.put(point+1, end);
-				subchains.put(bracks->chain->at(0), bracks->chain->at(-1)+1);
+				subchains.put(bracks->chain->at_first(), bracks->chain->at_afterlast());
 				break;
 			}
 
@@ -525,7 +526,7 @@ TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData 
 	sess->createVarMap(this);
 	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ);
-	tpl = templ->at(0);
+	tpl = templ->at_first();
 	return GO;
 };
 
@@ -545,7 +546,7 @@ TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData 
 	sess->saveVar(this, l?0:l, l?l-1:r, 0);
 	sess->putVarMap( vm );
 
-	tpl = templ->at(-1);
+	tpl = templ->at_last();
 	return BACK;
 };
 
@@ -573,7 +574,7 @@ TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 	RefChain *templ;
 	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ = templs.getByIndex(0));
-	tpl = templ->at(0);
+	tpl = templ->at_first();
 
 	sess->variants_idxs.push(0); // добавляем индекс для варианта
 	return GO;
@@ -645,7 +646,7 @@ TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, 
 	RefChain *templ;
 	sess->popTmplate();
 	sess->setTmplate(templ = templs.getByIndex(idx));
-	tpl = templ->at(0);
+	tpl = templ->at_first();
 
 	r = sess->preCurrentMapStack()->top3();
 	return GO;
@@ -675,7 +676,7 @@ TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 	sess->saveVar(this, l?0:l, l?l-1:r, 0);
 	sess->putVarMap( vm );
 
-	tpl = templ->at(-1);
+	tpl = templ->at_last();
 	return BACK;
 };
 
@@ -709,7 +710,7 @@ TResult RefRepeaterChain::init   (RefData **&tpl, Session* sess, RefData **&l, R
     sess->repeats_idxs.push(0);
 	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ);
-	tpl = templ->at(0);
+	tpl = templ->at_first();
     return GO;
 };
 
@@ -721,14 +722,14 @@ TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, R
         sess->repeats_idxs.push( currentStep );
 		sess->termChainsJumpPoints.put(tpl);
 		sess->setTmplate(templ);
-		tpl = templ->at(0); // внутри
+		tpl = templ->at_first(); // внутри
         return GO;
     }
     --currentStep;
     sess->repeats_idxs.push( currentStep );
 		sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ);
-	tpl = templ->at(-1);
+	tpl = templ->at_last();
     return BACK;
 };
 
@@ -742,7 +743,7 @@ TResult RefRepeaterChain::success(RefData **&tpl, Session* sess, RefData **&l, R
 
     if (currentStep < getMin()) {
         sess->repeats_idxs.push(currentStep);  ///todo: рптимизировать ++(...top()) ?
-		tpl=templ->at(0); // остаемся внутри варианта
+		tpl=templ->at_first(); // остаемся внутри варианта
         return GO;
     }
 	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем
@@ -761,7 +762,7 @@ TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, R
     infint currentStep = sess->repeats_idxs.top();
     if (currentStep) {
         sess->repeats_idxs.settop(--currentStep);
-		tpl=templ->at(-1); // внутри
+		tpl=templ->at_last(); // внутри
         return BACK;
     }
 	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем
@@ -789,6 +790,7 @@ TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 
 
 void RefChain::killall(){
+
 	RefDataBracket *br = 0;
 	for(RefData 
 		**iter = this->first, 
@@ -799,6 +801,9 @@ void RefChain::killall(){
 			if (br){
 				br->chain->killall();
 				delete br->chain;
+				br->chain = 0;
+				delete br;
+				*iter = 0;
 			}
 		}
 };

@@ -58,7 +58,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
         switch (result_sost) {
 
         case GO: {
-			if (!activeTemplate || activeTemplate == tmplate()->at(-1)+1){ // достигнут правый край сопоставления! DataDOT
+			if (!activeTemplate || activeTemplate == tmplate()->at_afterlast()){ // достигнут правый край сопоставления! DataDOT
 				activeTemplate = 0;
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
@@ -83,7 +83,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 					}
 					break;
 				}
-				activeTemplate = activeTemplate ? GET_pred_template(activeTemplate) : tmplate()->at(-1);  // когда шаблон исчерпан, а аргумент еще нет - ошибка
+				activeTemplate = activeTemplate ? GET_pred_template(activeTemplate) : tmplate()->at_last();  // когда шаблон исчерпан, а аргумент еще нет - ошибка
 				result_sost = (r==arg_r) ? SUCCESS : BACK;  // не двигали r вперед => сравниваем с (*arg)[-1]
 				break;
 			}
@@ -98,8 +98,8 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
             break;
         }
         case BACK: {
-			//if (activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
-			if (!activeTemplate || activeTemplate== this->tmplate()->at(0)-1){ // достигнут левый край сопоставления! DataDOT
+			//if (activeTemplate== this->tmplate()->at_first()-1){ // достигнут левый край сопоставления! DataDOT
+			if (!activeTemplate || activeTemplate== this->tmplate()->at_first()-1){ // достигнут левый край сопоставления! DataDOT
 				activeTemplate = 0;
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
@@ -123,7 +123,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 					}
 					break;
 				}
-				//activeTemplate = activeTemplate ? GET_next_template(activeTemplate) : tmplate()->at(0);  // когда шаблон исчерпан, а аргумент еще нет - ошибка
+				//activeTemplate = activeTemplate ? GET_next_template(activeTemplate) : tmplate()->at_first();  // когда шаблон исчерпан, а аргумент еще нет - ошибка
 				result_sost = FAIL;
 				break;
 			}
@@ -192,7 +192,11 @@ unistring Session::debug(){
 		PooledTuple2<RefChain*, char*>::TUPLE2* pool_last_ind = allchains.pool + i;
 		ch = pool_last_ind->i1;
 		st = pool_last_ind->i2;
-		s << "\n" << (ch?ch->debug():"$null   :\t"+std::string(st)) << std::flush;
+		if (ch){
+			s << "\n" << "$"<<ch<<":\t" << ch->debug() << std::flush;
+		}else{
+			s << "\n" << "$deleted:\t" << std::string(st) << std::flush;
+		}
 	}
 
 		return s.str();
@@ -318,13 +322,15 @@ unistring VarMap::debug(){
 
 // TODO: оптимизировать!
 RefChain*  Session::substituteExpression(RefChainConstructor *chain){
-	if (! chain->leng) return new RefChain();
-
+	if (! chain->leng) {
+		return new RefChain();
+		//return chain; // в зависимости от того как сделана будет сборка мусора - раскомментировать строку выше
+	}
 	RefChain *result = new RefChain(chain->leng);
 	RefLinkToVariable *link = 0;
 	RefDataBracket   *brack = 0;
-	RefData **enditem = chain->at(-1)+1;
-	for(RefData **item = chain->at(0); item < enditem; ++item){
+	RefData **enditem = chain->at_afterlast();
+	for(RefData **item = chain->at_first(); item < enditem; ++item){
 		link = ref_dynamic_cast<RefLinkToVariable>(*item);
 		if (link){
 			RefData **endi, **i;

@@ -129,7 +129,7 @@ try {
     } else
     if ( theCommand.compare(_L("THE-VARIANT")) == 0) { //       | => x
 		RefChain* varch = loader->extractCurrChainFromStack();
-		RefVariantsChains *uv = reinterpret_cast<RefVariantsChains*>(* loader->getCurrChain()->at(-1));
+		RefVariantsChains *uv = reinterpret_cast<RefVariantsChains*>(* loader->getCurrChain()->at_last());
         #ifdef TESTCODE
 		if (! varch) AchtungERRORn;
 		if (! dynamic_cast<RefVariantsChains *>(uv)) AchtungERRORn;
@@ -300,7 +300,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
 		RefChain* tmp = loader->extractCurrChainFromStack();
-		RefVarChains **uv = reinterpret_cast<RefVarChains**>(loader->getCurrChain()->at(-1));
+		RefVarChains **uv = reinterpret_cast<RefVarChains**>(loader->getCurrChain()->at_last());
         #ifdef TESTCODE
 		if (! tmp) AchtungERRORn;
 		if (! dynamic_cast<RefVarChains *>(*uv)) AchtungERRORn;
@@ -309,7 +309,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     } else
     if ( theCommand.compare(_L("VARIANTS")) == 0) {  //   | => x ?
 		RefChain* varch = loader->extractCurrChainFromStack();
-		RefVariantsChains *uv = reinterpret_cast<RefVariantsChains*>(* loader->getCurrChain()->at(-1));
+		RefVariantsChains *uv = reinterpret_cast<RefVariantsChains*>(* loader->getCurrChain()->at_last());
         #ifdef TESTCODE
 		if (! varch) AchtungERRORn;
 		if (! dynamic_cast<RefVariantsChains *>(uv)) AchtungERRORn;

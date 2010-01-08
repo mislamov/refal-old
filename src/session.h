@@ -257,13 +257,13 @@ inline RefData** Session::GET_pred_term(RefData** p){
 };
 
 inline RefData** Session::GET_next_template(RefData** p){
-	if (tmplate()->at(-1) == p) {
+	if (tmplate()->at_last() == p) {
 		return 0;
 	}
 	return p+1;
 };
 inline RefData** Session::GET_pred_template(RefData** p){
-	if (tmplate()->at(0) == p) {
+	if (tmplate()->at_first() == p) {
 		return 0;
 	}
 	return p-1;
