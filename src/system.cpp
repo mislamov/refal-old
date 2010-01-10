@@ -26,7 +26,7 @@
 
 RefChain *StrToChain(Session *s, unistring text){
 	size_t leng = text.length();
-	RefChain *res = new RefChain(leng);
+	RefChain *res = new RefChain(s, leng);
 
 	for(size_t i=0; i<leng; i++){
 		*res += new RefAlpha(s, text[i]);
@@ -68,7 +68,7 @@ RefChain* Dec (RefData** beg, RefData** end, Session* s){
         return 0;
     };
     a = new RefInteger(s, a->getValue() - b->getValue());
-	return new RefChain(a);
+	return new RefChain(s, a);
 };
 
 
@@ -84,7 +84,7 @@ RefChain* Div (RefData** beg, RefData** end, Session* s){
     //std::cout << "\n\nDiv: " << a->getValue() << " / " << b->getValue() ;
     RefReal* c = new RefReal(s, (float)a->getValue() / b->getValue());
     //std::cout << " = " << c->getValue();
-    return new RefChain(c);
+    return new RefChain(s, c);
 };
 
 
@@ -105,7 +105,7 @@ RefChain* Sum (RefData** beg, RefData** end, Session* s){
 
     //std::cout << a->getValue() << " = " << thesum ;
     a = new RefInteger(s, thesum);
-    return new RefChain(a);
+    return new RefChain(s, a);
 };
 
 
@@ -124,7 +124,7 @@ RefChain* Mul (RefData** beg, RefData** end, Session* s){
         s->MOVE_TO_next_term(beg);
     }
     a = new RefInteger(s, thesum);
-    return new RefChain(a);
+    return new RefChain(s, a);
 };
 
 
@@ -140,7 +140,7 @@ RefChain* Lenw (RefData** beg, RefData** end, Session* s){
     }
 
     a = new RefInteger(s, thecount);
-    return new RefChain(a);
+    return new RefChain(s, a);
 };
 
 
@@ -149,7 +149,7 @@ RefChain* Numb (RefData** beg, RefData** end, Session* s){
     /// todo: сделать не только integer и поверять ошибки
     long l = strtol(the_explode(beg, end).c_str(), NULL, 10);
     RefInteger *a = new RefInteger(s, l);
-    return new RefChain(a);
+    return new RefChain(s, a);
 };
 
 
@@ -167,7 +167,7 @@ RefChain*  Compare(RefData** beg, RefData** end, Session* s){
     } else {
         a = new RefAlpha(s, '-');
     }
-    return new RefChain(a);
+    return new RefChain(s, a);
 };
 
 
@@ -195,7 +195,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       is.read (buffer,length);
       is.close();
 
-      RefChain *result = new RefChain(length);
+      RefChain *result = new RefChain(s, length);
       for (size_t i=0; i<length; i++){
             if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
 				(*result) += new RefAlpha(s, buffer[i]);
@@ -220,7 +220,7 @@ RefChain* Card (RefData** beg, RefData** end, Session* s){
     std::getline(std::cin, text);
 
 	size_t tlen = text.length();
-    RefChain *rch = new RefChain(tlen);
+    RefChain *rch = new RefChain(s, tlen);
 
     //for (size_t i=0; i<text.length(); i++){
     for (size_t i=0; i<tlen; i++){
@@ -242,7 +242,7 @@ RefChain* Card (RefData** beg, RefData** end, Session* s){
 
 
 RefChain* Implode (RefData** beg, RefData** end, Session* s){
-	return new RefChain(new RefWord(s, the_explode(beg, end)));
+	return new RefChain(s, new RefWord(s, the_explode(beg, end)));
 };
 
 RefChain* Explode (RefData** lft, RefData** rht, Session* s){
@@ -252,7 +252,7 @@ RefChain* Explode (RefData** lft, RefData** rht, Session* s){
 
     long i = 0;
     unistring str = ww->getValue();
-    RefChain *result = new RefChain(str.length());
+    RefChain *result = new RefChain(s, str.length());
     while(str[i]){
         *result += new RefAlpha(s, str[i++]);
     }
@@ -281,7 +281,7 @@ RefChain* Prout (RefData** lft, RefData** rht, Session* s){
 	//std::cout << s->debug() << "\n" << std::flush;
 	//std::cout << "o: " << co::objs << "\n" << std::flush;
 	//std::cout << "c: " << co::chains << "\n" << std::flush;
-    return new RefChain();
+    return new RefChain(s);
 };
 
 

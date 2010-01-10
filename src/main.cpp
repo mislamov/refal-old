@@ -118,9 +118,9 @@ RefUserModule *mod;
 	std::cout << "============================================\n" << std::flush;
 #endif
 
-    RefChain *polez = new RefChain();
+    RefChain *polez = new RefChain(s);
 
-	*polez += new RefExecBrackets(s, new RefChain(new RefWord (s, "Go" )));
+	*polez += new RefExecBrackets(s, new RefChain(s, new RefWord (s, "Go" )));
 
 	RefChain *result = program->executeExpression( polez, s );
 
@@ -137,8 +137,8 @@ RefUserModule *mod;
 	s->gc_prepare();
 	s->gc_clean();
 
-	delete polez;
-	delete result;
+	//delete polez;
+	//delete result;
 
 	delete program;
 	delete[] RefAlpha128::alphatable;

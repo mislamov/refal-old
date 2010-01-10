@@ -77,6 +77,7 @@ class RefUserTemplate : public RefTemplateBase {
 	RefChain *leftPart;
 public:
 	inline RefUserTemplate(unistring tname){ name = tname; }
+	virtual ~RefUserTemplate(){ leftPart->killalldata(); leftPart->gc_delete(); }
 	unistring getName() { return name; };
 	inline void setLeftPart (RefChain *lp){ leftPart  = lp; };
 	inline RefChain* getLeftPart(){ return leftPart; };
@@ -97,8 +98,10 @@ public:
 	virtual ~RefSentence(){
 		leftPart->killalldata();
 		rightPart->killalldata();
-		delete leftPart;
-		delete rightPart;
+		//delete leftPart;
+		//delete rightPart;
+		leftPart->gc_delete();
+		rightPart->gc_delete();
 
 	}
 };
@@ -114,6 +117,7 @@ class RefUserCondition : public RefConditionBase {
 	RefChain *rightPart;
 public:
 	RefObject *own;
+	virtual ~RefUserCondition(){ leftPart->killalldata(); rightPart->killalldata(); leftPart->gc_delete(); rightPart->gc_delete(); }
 
 	inline RefUserCondition(bool withNOT){ withnot = withNOT; };
 	inline void setLeftPart(RefChain *ch){ leftPart = ch; };

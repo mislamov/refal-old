@@ -82,7 +82,6 @@ public:
 	inline bool is_collected() { return (gc_label&4) != 0; } //   xxxxx0xx  -  НЕ коллекционируемый
 	inline void set_collected(){ gc_label &= 4; } //   xxxxx1xx  -  коллекционируемый
 
-
 	inline void gc_delete()  {
 		if (!is_collected()){
 			delete this;
@@ -132,7 +131,9 @@ public:
 
 	RefVarChains(){ templ=0; templInstant=0; };
 	RefVarChains(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; templInstant=0; };
-    CLASS_OBJECT_CAST(RefVarChainsNotInit);
+	virtual ~RefVarChains();
+	
+	CLASS_OBJECT_CAST(RefVarChainsNotInit);
 
 	//void setTempl(RefChain *ntm){ templ = ntm; };
 	void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
@@ -160,7 +161,7 @@ class RefVariantsChains : public RefVariable {
 	PooledStack<RefChain *> templs;
 public:
 	RefVariantsChains(unistring tname = EmptyUniString){ name = tname; };
-
+	virtual ~RefVariantsChains();
 	void addTempl(RefChain *ntm){ templs.put(ntm); };
 
 	unistring explode();
@@ -183,6 +184,7 @@ class RefRepeaterChain : public RefData {
     infint max;
 public:
 	RefRepeaterChain(infint a, infint b){ min=a; max=b; };
+	virtual ~RefRepeaterChain();
 
 	inline infint getMin(){ return min; };
 	inline infint getMax(){ return max; };
@@ -245,7 +247,7 @@ public:
 
 char* c_str(std::string str);
 
-class RefChain : public RefObject {
+class RefChain : public RefData {
 	friend bool eq(RefChain *, RefChain *);
 	friend class Session;
 
@@ -257,20 +259,10 @@ class RefChain : public RefObject {
 	static size_t alloc_portion;
 public:
 
-	RefChain() : RefObject() {sysize=leng=0; first=0; co::chains++; allchains.put(this, "");};
-	RefChain(RefData *);			// цпочка из одного терма
-	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
-	virtual ~RefChain(){ 
-		co::chains--; 
-		
-		PooledTuple2<RefChain*, char*>::TUPLE2 *tp = allchains.findTopByFirstKey(this);
-		if (tp){
-			tp->i1 = 0;
-//			tp->i2 = c_str(debug());
-		}
-
-		if (first) free(first);
-	};
+	RefChain(Session *s) : RefData(s) {sysize=leng=0; first=0; co::chains++; allchains.put(this, "");};
+	RefChain(Session *s, RefData *);			// цпочка из одного терма
+	RefChain(Session *s, size_t systemsize);	// пустая цепочка для systemsize элементов
+	virtual ~RefChain();
 
 	RefChain*  operator+=(RefData  *ch);
 	RefChain*  operator+=(RefChain *ch); // удаляет *ch
@@ -290,6 +282,9 @@ public:
 	void compile(RefChain *, RefProgram *);
 	//void killall();     // удаление всех RefChain
 	void killalldata(); // удаление всех RefChain и RefData
+
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){ return ERROR; };
+	TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){ return ERROR; };
 };
 
 

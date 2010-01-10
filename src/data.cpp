@@ -66,7 +66,7 @@ TResult RefDataNull::init(RefData **&activeTemplate, Session* s, RefData **&curr
 TResult RefDataNull::back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };	
 
 
-RefChain::RefChain(RefData* d) {
+RefChain::RefChain(Session *s, RefData* d) : RefData(s){
     sysize = leng = 1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	first[0] = d;
@@ -74,7 +74,7 @@ RefChain::RefChain(RefData* d) {
 	allchains.put(this, "");
 };
 
-RefChain::RefChain(size_t size) { // size is not lenght
+RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
 	sysize = size;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
@@ -83,6 +83,18 @@ RefChain::RefChain(size_t size) { // size is not lenght
 	allchains.put(this, "");
 };
 
+RefChain::~RefChain(){ 
+		co::chains--; 
+		//std::cout << "\n-"<< this <<"\n" << std::flush;
+
+		PooledTuple2<RefChain*, char*>::TUPLE2 *tp = allchains.findTopByFirstKey(this);
+		if (tp){
+			tp->i1 = 0;
+//			tp->i2 = c_str(debug());
+		}
+
+		if (first) free(first);
+};
 
 RefChain* RefChain::operator+=(RefData *ch) {
 
@@ -110,7 +122,7 @@ RefChain* RefChain::operator+=(RefChain *ch) {
 	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch->first, sizeof(RefData*)*(ch->leng));
 	leng += ch->leng;
-	delete ch;
+	//delete ch;
 	ch = 0;
 	return this;
 };
@@ -843,7 +855,8 @@ void RefChain::killalldata(){
 			br = ref_dynamic_cast<RefDataBracket>(*iter);
 			if (br){
 				br->chain->killalldata();
-				delete br->chain;
+				//delete br->chain;
+				br->chain->gc_delete();
 				br->chain = 0;
 				//br->gc_delete();
 				//*iter = 0;
@@ -857,3 +870,18 @@ RefDataBracket::~RefDataBracket(){
 		--co::stbracks;
 		//if (chain) delete chain; - нельзя удалять, так как две скобки могут смотреть на одну цепочку
 };
+
+
+RefVarChains::~RefVarChains(){ templ->killalldata(); templ->gc_delete(); };
+
+RefVariantsChains::~RefVariantsChains(){
+		RefChain *tmp = 0;
+		while(! templs.empty()){
+			tmp = templs.top_pop();
+			tmp->killalldata();
+			tmp->gc_delete();
+		}
+		
+	};
+
+RefRepeaterChain::~RefRepeaterChain(){ templ->killalldata(); templ->gc_delete(); };

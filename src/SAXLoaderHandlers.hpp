@@ -179,14 +179,14 @@ class LoaderHeap {
             return value;
         }
         void createChainToStack(){
-            stckChains.push(new RefChain());
+            stckChains.push(new RefChain(0));
         }
 		void createSubstitutionToStack(){
 			//stckChains.push(new RefChainConstructor());
-			stckChains.push(new RefChain());
+			stckChains.push(new RefChain(0));
         }
 		void createPatternToStack(){
-			stckChains.push(new RefChain());
+			stckChains.push(new RefChain(0));
         }
 		
         RefChain* extractCurrChainFromStack(){

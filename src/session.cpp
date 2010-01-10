@@ -295,11 +295,16 @@ void Session::gc_prepare(RefData *save_point){
 	};
 
 void Session::gc_exclude(RefChain *chain){
-		if (!chain || chain->isEmpty()) return;
+		if (!chain) return;
+		chain->set_gc_mark();
+		if (chain->isEmpty()) return;
 		for(RefData  **iter=chain->at_first(), **iend=chain->at_afterlast();
 			iter<iend;
 			++iter){
 			(*iter)->set_gc_mark();
+			if (ref_dynamic_cast<RefDataBracket>(*iter)){
+				gc_exclude( ((RefDataBracket*)(*iter))->chain );
+			}
 		}
 	};
 
@@ -404,10 +409,10 @@ unistring VarMap::debug(){
 //RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 RefChain*  Session::substituteExpression(RefChain *chain){
 	if (! chain->leng) {
-		return new RefChain();
+		return new RefChain(this);
 		//return chain; // в зависимости от того как сделана будет сборка мусора - раскомментировать строку выше
 	}
-	RefChain *result = new RefChain(chain->leng);
+	RefChain *result = new RefChain(this, chain->leng);
 	RefLinkToVariable *link = 0;
 	RefDataBracket   *brack = 0;
 	RefData **enditem = chain->at_afterlast();

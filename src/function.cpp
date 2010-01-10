@@ -95,7 +95,7 @@ TResult RefUserCondition::init(RefData **&tpl, Session* s, RefData **&l, RefData
 
 	RefChain *rp, *rpp = s->substituteExpression(this->rightPart);
 	rp = s->getProgram()->executeExpression(rpp, s);
-	if (rp!=rpp) delete rpp;
+	//if (rp!=rpp) delete rpp;
 
 	// сохраняем состояние
 	SessionStatePoint *sess_state = s->getState();
@@ -125,7 +125,7 @@ TResult RefUserCondition::back(RefData **&tpl, Session* s, RefData **&l, RefData
 		s->MOVE_TO_next_template(tpl);
 		return GO;
 	}
-	delete rp; // аргумент условия для отката больше не нужен
+	//delete rp; // аргумент условия для отката больше не нужен
 	s->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
