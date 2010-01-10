@@ -1,28 +1,33 @@
-$ENTRY Go { = <Prout 'Translator! Known words: gatto, cavalli, rana, porco...   CTRL+Z - exit'><Job 'I love gatto to eat porco'>  }
+$ENTRY  Go {
+	= <Prout <Do <Pair '(firstbr)outofbr(next first br(second br))'>>>;
+}
+
+
+Do {
+	(e.1) = "error 1";
+	(e.1)(e.2) = "error 2";
+	e.00(e.01(e.2)) = "success:" "second br=" e.2;
+	e.00 = "error 3";
+};
+
+Pair{
+   e.X  =  <Pair1 (( ))( e.X)>
+   };
+
+Pair1 {
+   (e.L( e.1 ))( '('e.2 )e.R  =  <Pair1 (e.L( e.1)( ))( e.2 )e.R>;
+   (e.L( e.1)(e.2 ))( ')'e.3 )e.R  =  <Pair1 (e.L( e.1(e.2) ))( e.3 )e.R>;
+   (( e.1 ))( ')'e.3 )e.R  =  <Prout '*** ERROR: Unbalanced ")"'
+        'found by Pair:'>  <Prout '*** 'e.1')'>;
+   (e.L( e.1 ))( s.2 e.3 )e.R  =  <Pair1 (e.L( e.1 s.2 ))( e.3 )e.R>;
+   (( e.1 ))( )  =  e.1;
+   (e.L( e.1 ))( )  =  <Prout '*** ERROR: Unbalanced "(" '
+        'found by Pair:'> <Prlmb e.L>;
+   };
+
+/*  PRint Left MultiBracket */
+Prlmb {
+   (e.1)e.2  =  <Prout '*** 'e.1'('> <Prlmb e.2>;
+     =
+   }
    
-
-Job {
-     0 = ;                  /* end of file */
-     e.X = <Prout <Trans-line e.X>>; }
-   
-
-Trans-line {
-     ' 'e.X = <Trans-line e.X>;
-     e.Word' 'e.Rest =
-                 <Trans (e.Word) <Table>>' '
-                 <Trans-line e.Rest>;
-      = ;
-     e.Word = <Trans (e.Word) <Table>>' '; }
-
-
-Table { = (('cane') 'dog')
-            (('gatto') 'cat')
-            (('cavallo') 'horse')
-            (('rana') 'frog')
-            (('porco') 'pig')
-         }
-
-Trans {
-     (e.It)e.1((e.It)e.Eng)e.2 = e.Eng;
-     (e.It)e.1 = '***'; /* word not in table */
-        }

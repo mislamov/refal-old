@@ -252,7 +252,9 @@ void Session::gc_clean(RefData* save_point){
 				if (! pre->gc_next->is_gc_mark()){
 					tmp = pre->gc_next;
 					pre->gc_next = pre->gc_next->gc_next;
-					//std::cout << "\n~~~~ " << tmp->debug();
+					//std::cout << "\n~~~~ " << tmp /*->debug()*/ << std::flush;
+					//if (ref_dynamic_cast<RefDataBracket>(tmp)) std::cout << "\n    (): " << ((RefDataBracket*)tmp)->chain << std::flush;
+
 					delete tmp;
 
 					#ifdef DEBUG

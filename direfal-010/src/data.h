@@ -210,10 +210,7 @@ public:
 		++co::stbracks;
 		chain = thechain;	
 	};
-	virtual ~RefDataBracket(){
-		--co::stbracks;
-		if (chain) delete chain; //??
-	};
+	virtual ~RefDataBracket();
 	virtual unistring debug() = 0;
 };
 
@@ -291,7 +288,7 @@ public:
 	unistring explode();
 
 	void compile(RefChain *, RefProgram *);
-	void killall();     // удаление всех RefChain
+	//void killall();     // удаление всех RefChain
 	void killalldata(); // удаление всех RefChain и RefData
 };
 
