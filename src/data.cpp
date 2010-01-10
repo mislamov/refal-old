@@ -59,6 +59,7 @@ RefData::RefData(Session *s) : RefObject(){
 	}
 	//gc_label = s->gc_currentlabel;
 	co::datas++;
+	this->gc_next = 0;
 };
 
 TResult RefDataNull::init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };
@@ -809,7 +810,7 @@ TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 	//return FAIL;
 };
 
-
+/*
 void RefChain::killall(){
 
 	//std::cout << "\nkillall: " << debug() << "\n";
@@ -830,7 +831,7 @@ void RefChain::killall(){
 			}
 		}
 };
-
+*/
 void RefChain::killalldata(){
 
 	RefDataBracket *br = 0;
@@ -850,4 +851,9 @@ void RefChain::killalldata(){
 			(*iter)->gc_delete();
 			*iter = 0;
 		}
+};
+
+RefDataBracket::~RefDataBracket(){
+		--co::stbracks;
+		//if (chain) delete chain; - нельзя удалять, так как две скобки могут смотреть на одну цепочку
 };

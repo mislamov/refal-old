@@ -134,17 +134,14 @@ RefUserModule *mod;
 	<< std::flush;
 #endif
 
-	polez->killall();
-	delete polez;
+	s->gc_prepare();
+	s->gc_clean();
 
-	result->killall();
+	delete polez;
 	delete result;
 
 	delete program;
 	delete[] RefAlpha128::alphatable;
-
-	s->gc_prepare();
-	s->gc_clean();
 
 #ifdef TESTCODE
     std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
