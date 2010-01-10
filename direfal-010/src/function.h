@@ -31,6 +31,8 @@ class RefFunctionBase : public RefObject {
 protected:
 	virtual RefChain* eval(RefData**, RefData**, Session*) = 0;
 public:
+	virtual ~RefFunctionBase(){
+	};
 	virtual unistring getName() = 0;
 	virtual void initilizeAll(RefProgram* program){};
 	virtual unistring debug() = 0;
@@ -46,6 +48,7 @@ public:
 class RefUserFunction : public RefFunctionBase {
 	unistring name;
 public:
+	virtual ~RefUserFunction();
     std::list<RefSentence *> body; // предложения
 
 	inline RefUserFunction(unistring tname){		name = tname;	}
@@ -61,6 +64,7 @@ public:
 // локальное условие (ограничение на переменную)
 class RefTemplateBase : public RefObject {
 public:
+	virtual ~RefTemplateBase(){};
 	virtual void initilizeAll(RefProgram *) = 0;
 	virtual unistring debug() =0;
 	virtual unistring getName() =0;
@@ -87,7 +91,16 @@ public:
 class RefSentence : public RefObject {
 public:
 	RefChain *leftPart;
-	RefChainConstructor *rightPart;
+//	RefChainConstructor *rightPart;
+	RefChain *rightPart;
+
+	virtual ~RefSentence(){
+		leftPart->killalldata();
+		rightPart->killalldata();
+		delete leftPart;
+		delete rightPart;
+
+	}
 };
 
 // глобальное условие для сопоставления
@@ -97,7 +110,8 @@ class RefConditionBase : public RefData {
 class RefUserCondition : public RefConditionBase {
 	bool withnot;
 	RefChain *leftPart;
-	RefChainConstructor *rightPart;
+	//RefChainConstructor *rightPart;
+	RefChain *rightPart;
 public:
 	RefObject *own;
 
@@ -105,12 +119,15 @@ public:
 	inline void setLeftPart(RefChain *ch){ leftPart = ch; };
 	inline void setRightPart(RefChain *ch){ 
 		#ifdef TESTCODE
-		if (! dynamic_cast<RefChainConstructor*>(ch)) SYSTEMERRORn("RefChainConstructor expected!");
+		//if (! dynamic_cast<RefChainConstructor*>(ch)) SYSTEMERRORn("RefChainConstructor expected!");
+		if (! dynamic_cast<RefChain*>(ch)) SYSTEMERRORn("RefChainConstructor expected!");
 		#endif
-		rightPart = (RefChainConstructor*)ch; 
+		//rightPart = (RefChainConstructor*)ch; 
+		rightPart = (RefChain*)ch; 
 	};
 	inline RefChain *getLeftPart(){ return leftPart; };
-	inline RefChainConstructor *getRightPart(){ return rightPart; };
+	//inline RefChainConstructor *getRightPart(){ return rightPart; };
+	inline RefChain *getRightPart(){ return rightPart; };
 
 	unistring explode(){ return " , $UserCondition[ " + rightPart->explode() + " ::: " + leftPart->explode() + " ]"; };
 	TResult init(RefData **&, Session*, RefData **&, RefData **&);

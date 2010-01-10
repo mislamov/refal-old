@@ -29,15 +29,18 @@ class RefAlphaBase;
 
 unistring the_explode(RefData **a, RefData **b);
 unistring the_text(RefData **a, RefData **b);
-RefChainConstructor *textToChain(unistring str);
+//RefChainConstructor *textToChain(unistring str);
 
 
-class IRefSymbol : public RefData {};
+class IRefSymbol : public RefData {
+protected:
+	IRefSymbol(Session *s) : RefData(s){};
+};
 
 template <class T, class t>
 class RefSymbolBase : public IRefSymbol {
 public:
-    RefSymbolBase(){};
+	RefSymbolBase(Session *s) : IRefSymbol(s){};
     virtual ~RefSymbolBase(){};
     virtual t getValue() = 0;
     bool operator ==(RefData &rd) {
@@ -61,6 +64,8 @@ public:
 
 class RefAlphaBase : public RefSymbolBase<RefAlphaBase, unichar> {
 public:
+	RefAlphaBase(Session *s) : RefSymbolBase(s) {};
+
     CLASS_OBJECT_CAST(RefAlphaBase);
     virtual ~RefAlphaBase(){};
     #ifdef TESTCODE
@@ -77,6 +82,7 @@ public:
 class RefIntegerBase : public RefSymbolBase<RefIntegerBase, infint> {
 public:
     CLASS_OBJECT_CAST(RefIntegerBase);
+	RefIntegerBase(Session *s) : RefSymbolBase(s) {};
     virtual ~RefIntegerBase(){};
 };
 
@@ -84,6 +90,7 @@ public:
 class RefRealBase : public RefSymbolBase<RefRealBase, infreal> {
 public:
     CLASS_OBJECT_CAST(RefRealBase);
+	RefRealBase(Session *s) : RefSymbolBase(s) {};
     virtual ~RefRealBase(){};
 };
 
@@ -92,6 +99,7 @@ public:
 class RefWordBase : public RefSymbolBase<RefWordBase, unistring> {
 public:
     CLASS_OBJECT_CAST(RefWordBase);
+	RefWordBase(Session *s) : RefSymbolBase(s) {};
     virtual ~RefWordBase(){};
 };
 
@@ -99,6 +107,7 @@ public:
 class RefByteBase : public RefSymbolBase<RefByteBase, char> {
 public:
     CLASS_OBJECT_CAST(RefByteBase);
+	RefByteBase(Session *s) : RefSymbolBase(s) {};
     virtual ~RefByteBase(){};
 };
 
@@ -108,13 +117,14 @@ public:
 class RefAlpha : public RefAlphaBase {
     unichar value;
 public:
-    RefAlpha(unichar val){ value = val; };
+	RefAlpha(Session *s, unichar val) : RefAlphaBase(s) { value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
 };
 
 class RefAlpha128 : public RefAlphaBase {
 public:
+	RefAlpha128() : RefAlphaBase(0) {};
 	static RefAlpha128* alphatable;
 	virtual unichar getValue()   { return (this-alphatable); };
 };
@@ -122,7 +132,7 @@ public:
 class RefInteger : public RefIntegerBase {
     infint value;
 public:
-    RefInteger(infint val){ value = val; };
+	RefInteger(Session *s, infint val) : RefIntegerBase(s) { value = val; };
     virtual ~RefInteger(){};
     virtual infint getValue() {return value;};
 };
@@ -131,7 +141,7 @@ public:
 class RefReal : public RefRealBase {
 	infreal value;
 public:
-    RefReal(infreal val){ value = val; };
+	RefReal(Session *s, infreal val) : RefRealBase(s){ value = val; };
     virtual ~RefReal(){};
     virtual infreal getValue() {return value;};
 };
@@ -140,7 +150,7 @@ public:
 class RefWord : public RefWordBase {
     unistring value;
 public:
-	RefWord(unistring val){ value = val; };
+	RefWord(Session *s, unistring val) : RefWordBase(s){ value = val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
     unistring debug() ;
@@ -150,7 +160,7 @@ public:
 class RefByte : public RefByteBase {
     char value;
 public:
-	RefByte(char val){ value = val; };
+	RefByte(Session *s, char val) : RefByteBase(s) { value = val; };
     virtual ~RefByte(){};
     virtual char getValue() {return value;};
 };

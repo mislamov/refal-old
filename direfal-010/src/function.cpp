@@ -58,6 +58,16 @@ void RefUserTemplate::initilizeAll(RefProgram *program){
 	leftPart->compile(leftPart, program);
 };
 
+RefUserFunction::~RefUserFunction(){
+	//std::cout << "~~~ " << getName() << "\n";
+
+	std::list<RefSentence *>::iterator  body_it = body.begin();
+	while(body_it != body.end()){
+		delete (*body_it);
+		++body_it;
+	}
+};
+
 unistring RefUserFunction::debug(){
 	unistring result = "Function " + getName() + " {\n";
 
@@ -119,4 +129,3 @@ TResult RefUserCondition::back(RefData **&tpl, Session* s, RefData **&l, RefData
 	s->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
-

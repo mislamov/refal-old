@@ -21,16 +21,16 @@
 
 RefAlpha128* RefAlpha128::alphatable = new RefAlpha128[128];
 
-
-RefChainConstructor *textToChain(unistring str){
+/*
+RefChainConstructor *textToChain(Session *s, unistring str){
 	RefChainConstructor *ch = new RefChainConstructor();
 	size_t len = str.length();
 	for (size_t i=0; i<len; ++i){
-		*ch += new RefAlpha(str[i]);
+		*ch += new RefAlpha(s, str[i]);
 	}
 	return ch;
 };
-
+*/
 
 unistring the_explode(RefData **a, RefData **b){
 	if (!a) {

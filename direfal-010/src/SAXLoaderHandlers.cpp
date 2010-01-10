@@ -240,9 +240,11 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
             RefSentence     *s =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
 			RefChain *rch = loader->extractCurrChainFromStack();
 #ifdef TESTCODE
-			if (! dynamic_cast<RefChainConstructor*>(rch)) SYSTEMERRORn("alarm xml construct");
+			//if (! dynamic_cast<RefChainConstructor*>(rch)) SYSTEMERRORn("alarm xml construct");
+			if (! dynamic_cast<RefChain*>(rch)) SYSTEMERRORn("alarm xml construct");
 #endif
-			s->rightPart = (RefChainConstructor*)rch;
+			//s->rightPart = (RefChainConstructor*)rch;
+			s->rightPart = (RefChain*)rch;
             s->leftPart  = loader->extractCurrChainFromStack();
             RefUserFunction *f =  (RefUserFunction*)loader->getValueFromStack("FUNCTION");
             (f->body).push_back(s);
@@ -274,7 +276,7 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     if ( theCommand.compare(_L("EXEC")) == 0) {  //     <
 
 		RefChain* tmp = loader->extractCurrChainFromStack();
-		*(loader->getCurrChain()) += new RefExecBrackets(tmp);
+		*(loader->getCurrChain()) += new RefExecBrackets(0, tmp);
     } else
     if ( theCommand.compare(_L("VAR")) == 0) {  //
         // берем по текущему тексту и получаем ссылку на переменную
@@ -291,12 +293,12 @@ void SAXPrintHandlers::endElement(const XMLCh* const name)
     if ( theCommand.compare(_L("TEXT")) == 0) {  //
         unistring text = loader->currentchars;
         for (size_t i=0; i<text.length(); i++){
-            *(loader->getCurrChain()) += new RefAlpha(text[i]);
+            *(loader->getCurrChain()) += new RefAlpha(0, text[i]);
         }
     } else
     if ( theCommand.compare(_L("BRACKET")) == 0 ) {
 		RefChain* tmp = loader->extractCurrChainFromStack();
-		*(loader->getCurrChain()) += new RefStructBrackets(tmp);
+		*(loader->getCurrChain()) += new RefStructBrackets(0, tmp);
     } else
     if ( theCommand.compare(_L("GROUP")) == 0) {
 		RefChain* tmp = loader->extractCurrChainFromStack();

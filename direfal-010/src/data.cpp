@@ -27,10 +27,12 @@
 #include <sstream>
 #include <map>
 #include <stack>
+#include <set>
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
 
 PooledTuple2<RefChain*, char*> allchains;
+std::set<RefObject*> allobjects;
 
 namespace co {
 	size_t objs = 0;
@@ -41,10 +43,26 @@ namespace co {
 }
 
 char* c_str(std::string str){
-	char *ch = new char[str.length()];
-	strcpy(ch, str.c_str());
+	size_t l = str.length();
+	char *ch = new char[l];
+	strncpy(ch, str.c_str(), l);
 	return ch;
 };
+
+RefData::RefData(Session *s) : RefObject(){
+	if (s){
+		s->gc_last->gc_next = this;
+		s->gc_last = this;
+		set_collected();  //  00001000 - коллекционируемый
+	}  else {
+		gc_label = 0;  //  00000000 - НЕ коллекционируемый
+	}
+	//gc_label = s->gc_currentlabel;
+	co::datas++;
+};
+
+TResult RefDataNull::init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };
+TResult RefDataNull::back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };	
 
 
 RefChain::RefChain(RefData* d) {
@@ -113,6 +131,7 @@ RefData** RefChain::operator[](signed long idx) {
 	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng))
 		AchtungERRORn;
 #endif*/
+	//assert(this!=0);
 	return	leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
 };
 
@@ -161,7 +180,9 @@ unistring RefExecBrackets::debug(){	return "<" + (chain?chain->debug():"$null") 
 
 
 TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-    s->MOVE_TO_next_term(r);
+	assert(chain!=0);
+	
+	s->MOVE_TO_next_term(r);
 	RefStructBrackets *br;
 
 	if (r
@@ -791,6 +812,27 @@ TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefDat
 
 void RefChain::killall(){
 
+	//std::cout << "\nkillall: " << debug() << "\n";
+
+	RefDataBracket *br = 0;
+	for(RefData 
+		**iter = this->first, 
+		**iend=this->first+this->leng;
+		iter<iend;
+		++iter){
+			br = ref_dynamic_cast<RefDataBracket>(*iter);
+			if (br && br->chain){
+				br->chain->killall();
+				delete br->chain;
+				br->chain = 0;
+				//br->gc_delete();
+				*iter = 0;
+			}
+		}
+};
+
+void RefChain::killalldata(){
+
 	RefDataBracket *br = 0;
 	for(RefData 
 		**iter = this->first, 
@@ -799,11 +841,13 @@ void RefChain::killall(){
 		++iter){
 			br = ref_dynamic_cast<RefDataBracket>(*iter);
 			if (br){
-				br->chain->killall();
+				br->chain->killalldata();
 				delete br->chain;
 				br->chain = 0;
-				delete br;
-				*iter = 0;
+				//br->gc_delete();
+				//*iter = 0;
 			}
+			(*iter)->gc_delete();
+			*iter = 0;
 		}
 };
