@@ -20,7 +20,7 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
-#define TESTCODE
+//#define TESTCODE
 //#define DEBUG
 //#define UNICODE
 /****************************************************************************************
@@ -346,13 +346,13 @@ inline std::string replace(std::string text, std::string s, std::string d)
 
 
 #ifdef TESTCODE
-#define assert(Expression) { \
+#define ref_assert(Expression) { \
 	if (!(Expression)){ \
 	SYSTEMERRORn("Assert fail: "#Expression); \
 	}; \
 	};
 #else
-#define assert(_Expression){};
+#define ref_assert(_Expression){};
 #endif
 
 #endif // REF_CORE_H_INCLUDED

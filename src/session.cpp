@@ -188,25 +188,8 @@ unistring Session::debug(){
 	RefChain *ch;
 	char* st;
 
-	size_t t = 0;
-	for (size_t i=allchains.getLength(); i; --i){
-		++t;
-		PooledTuple2<RefChain*, char*>::TUPLE2* pool_last_ind = allchains.pool + i;
-		ch = pool_last_ind->i1;
-		st = pool_last_ind->i2;
-		if (ch){
-			s << "\n" << t << "] " << "$"<<ch<<":\t" << ch->debug() << std::flush;
-		}else{
-			//s << "\n" << t << "] $deleted:\t" /*<< std::string(st)*/ << std::flush;
-		}
-	}
-	s << "\nOBJ ------------------------\n";
-	t = 0;
-	for (std::set<RefObject*>::iterator it=allobjects.begin();it!=allobjects.end();it++)
-		s << t++ << ")\t" << (*it)->debug() << "\t" << *it << "\n";
 
-
-		return s.str();
+	return s.str();
 };
 #else
 unistring Session::debug(){
@@ -233,7 +216,7 @@ unistring Session::debug(){
 
 
 void Session::gc_clean(RefData* save_point){
-		if (!save_point) save_point = this->gc_first; 
+		if (!save_point) save_point = this->gc_first;
 		if (save_point==this->gc_last) return; // когда нечего чистить
 
 		RefData *tmp=0, *pre=0, *iend=0;
@@ -245,7 +228,7 @@ void Session::gc_clean(RefData* save_point){
 			"\ngc_last:   " << gc_last << " " << (int)gc_last->gc_label <<
 			"\ngc_last->next: " << gc_last->gc_next;*/
 		#endif
-		for(pre= save_point, 
+		for(pre= save_point,
 			iend=this->gc_last->gc_next; // null
 			pre->gc_next!=iend;
 			){
@@ -261,7 +244,7 @@ void Session::gc_clean(RefData* save_point){
 					++tmpdbg;
 					#endif
 
-				} else {			
+				} else {
 					pre = pre->gc_next;
 				}
 		}
@@ -273,6 +256,7 @@ void Session::gc_clean(RefData* save_point){
 		#endif
 };
 
+
 void Session::gc_prepare(RefData *save_point){
 		#ifdef DEBUG
 				size_t tmpdbg = 0;
@@ -280,8 +264,8 @@ void Session::gc_prepare(RefData *save_point){
 		for(
 			RefData
 			  *iter = (save_point ? save_point : this->gc_first),
-			  *iend = this->gc_last->gc_next; 
-			iter!=iend; 
+			  *iend = this->gc_last->gc_next;
+			iter!=iend;
 			iter=iter->gc_next){
 			iter->flush_gc_mark();
 		#ifdef DEBUG

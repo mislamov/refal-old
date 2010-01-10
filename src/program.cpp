@@ -106,7 +106,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 	sess->gc_prepare(gc_save_point);
 	sess->gc_exclude(result);
-	//sess->gc_clean(gc_save_point);
+	sess->gc_clean(gc_save_point);
 
 	return result;
 };

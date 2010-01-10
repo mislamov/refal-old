@@ -29,19 +29,15 @@ class RefChain;
 class RefProgram;
 class VarMap;
 
-extern PooledTuple2<RefChain*, char*>  allchains;
-extern std::set<RefObject*> allobjects;
 
 
 class RefObject {
 public:
 	RefObject(){
-		allobjects.insert(this);
 		co::objs++; 
 	};
 	virtual unistring debug(){ return " $RefObject "; };
 	virtual ~RefObject(){ 
-		allobjects.erase(this);
 		co::objs--; 
 	};
 };
@@ -259,7 +255,7 @@ class RefChain : public RefData {
 	static size_t alloc_portion;
 public:
 
-	RefChain(Session *s) : RefData(s) {sysize=leng=0; first=0; co::chains++; allchains.put(this, "");};
+	RefChain(Session *s) : RefData(s) {sysize=leng=0; first=0; co::chains++; };
 	RefChain(Session *s, RefData *);			// цпочка из одного терма
 	RefChain(Session *s, size_t systemsize);	// пустая цепочка для systemsize элементов
 	virtual ~RefChain();

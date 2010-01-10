@@ -31,8 +31,6 @@
 
 size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
 
-PooledTuple2<RefChain*, char*> allchains;
-std::set<RefObject*> allobjects;
 
 namespace co {
 	size_t objs = 0;
@@ -63,7 +61,7 @@ RefData::RefData(Session *s) : RefObject(){
 };
 
 TResult RefDataNull::init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };
-TResult RefDataNull::back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };	
+TResult RefDataNull::back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };
 
 
 RefChain::RefChain(Session *s, RefData* d) : RefData(s){
@@ -71,7 +69,6 @@ RefChain::RefChain(Session *s, RefData* d) : RefData(s){
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	first[0] = d;
 	co::chains++;
-	allchains.put(this, "");
 };
 
 RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
@@ -80,19 +77,10 @@ RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
 	leng = 0;
 	*first = 0;
 	co::chains++;
-	allchains.put(this, "");
 };
 
-RefChain::~RefChain(){ 
-		co::chains--; 
-		//std::cout << "\n-"<< this <<"\n" << std::flush;
-
-		PooledTuple2<RefChain*, char*>::TUPLE2 *tp = allchains.findTopByFirstKey(this);
-		if (tp){
-			tp->i1 = 0;
-//			tp->i2 = c_str(debug());
-		}
-
+RefChain::~RefChain(){
+		co::chains--;
 		if (first) free(first);
 };
 
@@ -144,7 +132,7 @@ RefData** RefChain::operator[](signed long idx) {
 	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng))
 		AchtungERRORn;
 #endif*/
-	//assert(this!=0);
+	//ref_assert(this!=0);
 	return	leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
 };
 
@@ -193,8 +181,8 @@ unistring RefExecBrackets::debug(){	return "<" + (chain?chain->debug():"$null") 
 
 
 TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-	assert(chain!=0);
-	
+	ref_assert(chain!=0);
+
 	s->MOVE_TO_next_term(r);
 	RefStructBrackets *br;
 
@@ -828,8 +816,8 @@ void RefChain::killall(){
 	//std::cout << "\nkillall: " << debug() << "\n";
 
 	RefDataBracket *br = 0;
-	for(RefData 
-		**iter = this->first, 
+	for(RefData
+		**iter = this->first,
 		**iend=this->first+this->leng;
 		iter<iend;
 		++iter){
@@ -847,8 +835,8 @@ void RefChain::killall(){
 void RefChain::killalldata(){
 
 	RefDataBracket *br = 0;
-	for(RefData 
-		**iter = this->first, 
+	for(RefData
+		**iter = this->first,
 		**iend=this->first+this->leng;
 		iter<iend;
 		++iter){
@@ -881,7 +869,7 @@ RefVariantsChains::~RefVariantsChains(){
 			tmp->killalldata();
 			tmp->gc_delete();
 		}
-		
+
 	};
 
 RefRepeaterChain::~RefRepeaterChain(){ templ->killalldata(); templ->gc_delete(); };
