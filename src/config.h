@@ -21,7 +21,7 @@
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 #define TESTCODE
-#define DEBUG
+//#define DEBUG
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины
@@ -339,13 +339,21 @@ inline std::string replace(std::string text, std::string s, std::string d)
 
 #define COMPILETIMEERRORs(sess, msg) { \
 	sess->printExecTrace(); \
-		std::cout << sess->debug(); \
+	std::cout << sess->debug(); \
     std::cout << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
     exit(-1); \
     };
 
 
-
+#ifdef TESTCODE
+#define assert(Expression) { \
+	if (!(Expression)){ \
+	SYSTEMERRORn("Assert fail: "#Expression); \
+	}; \
+	};
+#else
+#define assert(_Expression){};
+#endif
 
 #endif // REF_CORE_H_INCLUDED
 

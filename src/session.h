@@ -60,23 +60,31 @@ class Session {
     TResult  result_sost;
 	RefProgram *program;
 
-	PooledTuple2 <RefData**, RefData**>  current_view_borders; // крайние view-элементы активного аргумента [для скобок]
-public:
-	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
-private:
 	PooledStack<VarMap*>  varMapStack; // карты переменных
 	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
 	PooledStack<RefChain *> currentTemplates;
-private:
-	inline Session(){};
+	inline Session(){
+		gc_first = gc_last = new RefDataNull();
+	};
+
+
+	PooledTuple2 <RefData**, RefData**>  current_view_borders; // крайние view-элементы активного аргумента [для скобок]
 public:
+	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
+	RefData *gc_last,  // ссылка на последний созданный дата-элемент. служит для построения пути для сборщика мусора
+			*gc_first; // ссылка на первый созданный элемент
+
+public:
+	inline Session(RefProgram *p){ 
+				gc_first = gc_last = new RefDataNull();
+				program = p; 
+	}; 
 	PooledStack<RefData**> termChainsJumpPoints;
 	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
 	PooledStack<long> variants_idxs;
 	PooledStack<long> variants_idxs_done;
 	PooledStack<infint> repeats_idxs;
 	PooledStack<infint> repeats_idxs_done;
-	inline Session(RefProgram *p){ program = p; }; 
 	inline RefProgram *getProgram(){ return program; };
 	inline void createVarMap(RefObject *creator){ varMapStack.put(new VarMap(creator)); };
 	inline VarMap* currentMapStack(){ return varMapStack.top(); };
@@ -152,7 +160,8 @@ public:
     bool  matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, bool isdemaching);
 
 	// готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
-    RefChain*  substituteExpression(RefChainConstructor *);
+    //RefChain*  substituteExpression(RefChainConstructor *);
+    RefChain*  substituteExpression(RefChain *);
 
 	//void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r); // сохраняет состояние переменной
 	//void RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r); // восстанавливает состояние переменной
@@ -191,8 +200,12 @@ public:
 
 	//inline void setNewView(); - должно передаваться в аргументе matching'а
 	//inline void setNewTempl(RefChain* ch);
-};
 
+	void gc_prepare(RefData *save_point=0); // подготовка к сборке мусора
+	inline void gc_exclude(RefData *data);         // исключение точки из удаления
+	void gc_exclude(RefChain *chain);              // исключение цепочки из удаления
+	void gc_clean(RefData* save_point=0);          // сборка мусора
+};
 
 inline void Session::saveVar(RefVariable *var, RefData **l, RefData **r, VarMap* vm) {
 //std::cout << "Session::saveVar(for " << var->toString() << ")\n";
@@ -269,6 +282,13 @@ inline RefData** Session::GET_pred_template(RefData** p){
 	return p-1;
 };
 
+inline void Session::gc_exclude(RefData *data){ 
+		data->set_gc_mark();
+		if (ref_dynamic_cast<RefDataBracket>(data)){
+			RefDataBracket *br = (RefDataBracket*)data;
+			gc_exclude( br->chain );
+		}
+};
 
 
 #endif

@@ -20,6 +20,7 @@
 #define REF_DATA_H_INCLUDED
 
 #include <string>
+#include <set>
 
 #include "config.h"
 #include "poolTuples.h"
@@ -28,18 +29,46 @@ class RefChain;
 class RefProgram;
 class VarMap;
 
+extern PooledTuple2<RefChain*, char*>  allchains;
+extern std::set<RefObject*> allobjects;
+
 
 class RefObject {
 public:
-	RefObject(){ co::objs++; };
+	RefObject(){
+		allobjects.insert(this);
+		co::objs++; 
+	};
 	virtual unistring debug(){ return " $RefObject "; };
-	virtual ~RefObject(){ co::objs--; };
+	virtual ~RefObject(){ 
+		allobjects.erase(this);
+		co::objs--; 
+	};
 };
 
+
+/*
+	Элементы объектного выражения.
+
+	Если конструктору не передается сессия, то сборщик мусора будет игнорировать 
+	  данный экземпляр. Такие элементы будем называть НЕколлекционируемыми.
+	Деструктор элемента должен удалять все свои элементы, кроме коллекционируемых RefData.
+	ЗАПРЕЩЕНО удалять коллекционируемые элементы не сборщиком мусора!
+	*/
 class RefData : public RefObject {
+	friend class Session;
+private:
+	char gc_label;//todo:bitmap
+protected:
+	RefData *gc_next;
+	RefData() : RefObject(){ gc_next = 0; gc_label=0; co::datas++; }
+	virtual ~RefData(){ 
+		//std::cout << "\n~~~~DEL: " << co::datas << " " << this;
+		co::datas--; 
+	}
+
 public:
-	RefData() : RefObject(){ co::datas++; }
-	virtual ~RefData(){ co::datas--; }
+	RefData(Session *);
 	virtual unistring explode() = 0;
     virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0;
@@ -49,9 +78,31 @@ public:
 
 	virtual unistring debug(){ return explode()+" "; };
 	virtual unistring toString(){ return explode()+" "; };
+
+	inline bool is_collected() { return (gc_label&4) != 0; } //   xxxxx0xx  -  НЕ коллекционируемый
+	inline void set_collected(){ gc_label &= 4; } //   xxxxx1xx  -  коллекционируемый
+
+
+	inline void gc_delete()  {
+		if (!is_collected()){
+			delete this;
+			return;
+		}
+		gc_label |= 2; // xxxxxx1x   -  для удаления (ручная отметка)
+	};   
+	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для удаления (gc отметка)
+	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11
+	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0  
 };
 
+class RefDataNull : public RefData {
+	virtual unistring explode() { return "[RefDataNull]"; };
+	virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);
+    virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);	
+public:
+	//RefDataNull();
 
+};
 
 
 
@@ -155,15 +206,15 @@ class RefDataBracket : public RefData {
 public:
 	RefChain *chain;
 
-	RefDataBracket(RefChain *thechain) : RefData(){		
+	RefDataBracket(Session *s, RefChain *thechain) : RefData(s){		
 		++co::stbracks;
 		chain = thechain;	
 	};
-	~RefDataBracket(){
+	virtual ~RefDataBracket(){
 		--co::stbracks;
+		if (chain) delete chain; //??
 	};
 	virtual unistring debug() = 0;
-
 };
 
 
@@ -173,7 +224,8 @@ class RefTemplBracket : public RefData {
 
 class RefStructBrackets : public RefDataBracket {
 public:
-	inline RefStructBrackets(RefChain* thechain) : RefDataBracket(thechain){};
+	inline RefStructBrackets(Session* s, RefChain* thechain) : RefDataBracket(s, thechain){};
+	virtual ~RefStructBrackets(){};
 	unistring explode();
 	unistring debug();
 
@@ -183,7 +235,8 @@ public:
 
 class RefExecBrackets : public RefDataBracket {
 public:
-	inline RefExecBrackets(RefChain* thechain) : RefDataBracket(thechain){};
+	inline RefExecBrackets(Session *s, RefChain* thechain) : RefDataBracket(s, thechain){};
+	virtual ~RefExecBrackets(){};
 	unistring explode();
 	unistring debug();
 
@@ -192,8 +245,6 @@ public:
 };
 
 
-class RefChain;
-extern PooledTuple2<RefChain*, char*>  allchains;
 
 char* c_str(std::string str);
 
@@ -209,7 +260,7 @@ class RefChain : public RefObject {
 	static size_t alloc_portion;
 public:
 
-	RefChain(){sysize=leng=0; first=0; co::chains++; allchains.put(this, "");};
+	RefChain() : RefObject() {sysize=leng=0; first=0; co::chains++; allchains.put(this, "");};
 	RefChain(RefData *);			// цпочка из одного терма
 	RefChain(size_t systemsize);	// пустая цепочка для systemsize элементов
 	virtual ~RefChain(){ 
@@ -218,7 +269,7 @@ public:
 		PooledTuple2<RefChain*, char*>::TUPLE2 *tp = allchains.findTopByFirstKey(this);
 		if (tp){
 			tp->i1 = 0;
-			tp->i2 = c_str(debug());
+//			tp->i2 = c_str(debug());
 		}
 
 		if (first) free(first);
@@ -233,10 +284,6 @@ public:
 	inline RefData**  at_last(){ return (*this)[-1]; };
 	inline RefData**  at_afterlast(){ return (*this)[-1]+1; };
 
-	//RefVariable** findVariable(unistring vname);
-
-	static RefStructBrackets* makeStructTerm(RefChain *ch){ return new RefStructBrackets(ch); }
-
 	inline bool isEmpty(){ return (leng==0); }
 	inline size_t getLength(){ return leng; }
 
@@ -244,15 +291,16 @@ public:
 	unistring explode();
 
 	void compile(RefChain *, RefProgram *);
-	void killall();
+	void killall();     // удаление всех RefChain
+	void killalldata(); // удаление всех RefChain и RefData
 };
 
 
 
 
 // подстановка - цепочка без открытых переменных для генереации результатного объектного выражения
-class RefChainConstructor : public RefChain {
-};
+//class RefChainConstructor : public RefChain {
+//};
 
 
 /*
@@ -290,12 +338,11 @@ inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefData &y){
 
 class RefLinkToVariable : public RefData {
 	friend class RefChain;
-
 	friend class Session;
 	RefVariable *lnk;
 	unistring path;
 public:
-
+	RefLinkToVariable() : RefData(){};
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
 	inline unistring explode(){ return " @."+(lnk?lnk->getName():"$notinit$"+path)+" "; };
@@ -325,6 +372,7 @@ inline unistring chain_to_text(RefData** from, RefData** to, int showleng = 356)
 
 class RefMatchingCutter : public RefData {
 public:
+	RefMatchingCutter() : RefData(){};
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
 	inline unistring explode(){ return " $cutter$ "; };

@@ -188,16 +188,23 @@ unistring Session::debug(){
 	RefChain *ch;
 	char* st;
 
+	size_t t = 0;
 	for (size_t i=allchains.getLength(); i; --i){
+		++t;
 		PooledTuple2<RefChain*, char*>::TUPLE2* pool_last_ind = allchains.pool + i;
 		ch = pool_last_ind->i1;
 		st = pool_last_ind->i2;
 		if (ch){
-			s << "\n" << "$"<<ch<<":\t" << ch->debug() << std::flush;
+			s << "\n" << t << "] " << "$"<<ch<<":\t" << ch->debug() << std::flush;
 		}else{
-			s << "\n" << "$deleted:\t" << std::string(st) << std::flush;
+			//s << "\n" << t << "] $deleted:\t" /*<< std::string(st)*/ << std::flush;
 		}
 	}
+	s << "\nOBJ ------------------------\n";
+	t = 0;
+	for (std::set<RefObject*>::iterator it=allobjects.begin();it!=allobjects.end();it++)
+		s << t++ << ")\t" << (*it)->debug() << "\t" << *it << "\n";
+
 
 		return s.str();
 };
@@ -223,6 +230,77 @@ unistring Session::debug(){
 		return s.str();
 };
 #endif
+
+
+void Session::gc_clean(RefData* save_point){
+		if (!save_point) save_point = this->gc_first; 
+		if (save_point==this->gc_last) return; // когда нечего чистить
+
+		RefData *tmp=0, *pre=0, *iend=0;
+
+		#ifdef DEBUG
+		size_t tmpdbg = 0;
+		/*std::cout << "\nsave_point: " << save_point <<
+			"\ns_p->next: " << save_point->gc_next <<
+			"\ngc_last:   " << gc_last << " " << (int)gc_last->gc_label <<
+			"\ngc_last->next: " << gc_last->gc_next;*/
+		#endif
+		for(pre= save_point, 
+			iend=this->gc_last->gc_next; // null
+			pre->gc_next!=iend;
+			){
+				if (! pre->gc_next->is_gc_mark()){
+					tmp = pre->gc_next;
+					pre->gc_next = pre->gc_next->gc_next;
+					//std::cout << "\n~~~~ " << tmp->debug();
+					delete tmp;
+
+					#ifdef DEBUG
+					++tmpdbg;
+					#endif
+
+				} else {			
+					pre = pre->gc_next;
+				}
+		}
+		this->gc_last = pre;
+		this->gc_last->gc_next = 0;
+
+		#ifdef DEBUG
+				std::cout << "############ GARBAGE: " << tmpdbg << " was deleted !\n" << std::flush;
+		#endif
+};
+
+void Session::gc_prepare(RefData *save_point){
+		#ifdef DEBUG
+				size_t tmpdbg = 0;
+		#endif
+		for(
+			RefData
+			  *iter = (save_point ? save_point : this->gc_first),
+			  *iend = this->gc_last->gc_next; 
+			iter!=iend; 
+			iter=iter->gc_next){
+			iter->flush_gc_mark();
+		#ifdef DEBUG
+			++tmpdbg;
+		#endif
+		}
+
+		#ifdef DEBUG
+				std::cout << "############ GARBAGE: " << tmpdbg << " was prepared !\n" << std::flush;
+		#endif
+	};
+
+void Session::gc_exclude(RefChain *chain){
+		if (!chain || chain->isEmpty()) return;
+		for(RefData  **iter=chain->at_first(), **iend=chain->at_afterlast();
+			iter<iend;
+			++iter){
+			(*iter)->set_gc_mark();
+		}
+	};
+
 
 /*
 unistring MatchState::debug(){
@@ -321,7 +399,8 @@ unistring VarMap::debug(){
 
 
 // TODO: оптимизировать!
-RefChain*  Session::substituteExpression(RefChainConstructor *chain){
+//RefChain*  Session::substituteExpression(RefChainConstructor *chain){
+RefChain*  Session::substituteExpression(RefChain *chain){
 	if (! chain->leng) {
 		return new RefChain();
 		//return chain; // в зависимости от того как сделана будет сборка мусора - раскомментировать строку выше
@@ -355,10 +434,12 @@ RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 		brack = ref_dynamic_cast<RefDataBracket>(*item);
 		if (brack){
 			if (ref_dynamic_cast<RefStructBrackets>(brack)){
-				*result +=  new RefStructBrackets( substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
+				//*result +=  new RefStructBrackets(this, substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
+				*result +=  new RefStructBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 			} else {
 				// RefExecBracket
-				*result +=  new RefExecBrackets( substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
+				//*result +=  new RefExecBrackets(this, substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
+				*result +=  new RefExecBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 			}
 
 			continue;

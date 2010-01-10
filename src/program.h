@@ -36,6 +36,7 @@ public:
 	long long step;
 
 	RefProgram();
+	~RefProgram();
 	void regModule(RefModuleBase *); // регистрация модуля в программе (перед загрузкой)
     RefChain*  executeExpression (RefChain*, Session*); // вычисляет цепочку
 	RefFunctionBase *findFunction(unistring  ); // ищет функцию в модулях по id
@@ -53,22 +54,12 @@ protected:
 	std::map<unistring, RefFunctionBase*> functions;
 	std::map<unistring, RefTemplateBase*> templates;
 public:
-    virtual ~RefModuleBase(){};
-	//RefObject* getObjectByName(unistring nm, Session *s=0){return objects[nm];};
-	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0){
-		std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(nm);
-		if (iter != functions.end()) return iter->second;
-		return 0;
-	};
-	RefTemplateBase* getTemplateByName(unistring nm, Session *s=0){
-		std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(nm);
-		if (iter != templates.end()) return iter->second;
-		return 0;
+    virtual ~RefModuleBase();
 
-	};
+	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0);
+	RefTemplateBase* getTemplateByName(unistring nm, Session *s=0);
 
-    //void setObjectByName(unistring name, RefObject* o){objects[name] = o; };
-    void setFunctionByName(unistring name, RefFunctionBase* o);
+	void setFunctionByName(unistring name, RefFunctionBase* o);
     void setTemplateByName(unistring name, RefTemplateBase* o);
     virtual unistring getName() =0;
 };

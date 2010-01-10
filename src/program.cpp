@@ -28,6 +28,21 @@ RefProgram::RefProgram(){
 }
 
 
+RefProgram::~RefProgram(){
+	std::map<unistring, RefModuleBase*>::iterator 
+		iter = modules.begin(),
+		iend = modules.end();
+	while(iter != iend){
+		//std::cout << "\n~~~ " << iter->first;
+
+		delete iter->second;
+		iter->second = 0;
+		++iter;
+	}
+
+}
+
+
 void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в программе (перед загрузкой)
 		if (module->getName() == EmptyUniString)
 			SYSTEMERRORn("Empty module name");
@@ -38,39 +53,28 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 
 
 //TODO: оптимизировать - без рекурсии
-RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку - объектное выражение с функциональными скобками
+RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (chain->isEmpty()) {
 		return chain; // new RefChain();
 	}
 
-	//todo: обязательно! если нет изменений, то вернуть ссылку на оригиал (не создавать новую цепочку)
-	bool returnoriginal = true;
+	RefData* gc_save_point = sess->gc_last;
 
-	RefChain* result = new RefChain(chain->getLength()); // результат (всегда не короче исходной цепочки)
-	for (RefData **iter=chain->at_first(), **iend = chain->at_afterlast(); iter < iend; ++iter){
+	RefChain* result = new RefChain(chain->getLength());
+	for (RefData **iter=chain->at(0), **iend = chain->at(-1)+1; iter < iend; ++iter){
 
 		RefDataBracket *databr = ref_dynamic_cast<RefDataBracket>(*iter);
 
 		if (databr){
 			if (ref_dynamic_cast<RefStructBrackets>(databr)){
-				// todo: можно оптимизировать запоминая "точку ныряния" в стек путешествия по скобкам. целесообразно только при супероптимизации
-				RefChain *newbracketdata = executeExpression(databr->chain, sess);
-				if (newbracketdata != databr->chain){
-					returnoriginal = false;
-					*result += new RefStructBrackets( newbracketdata );
-				} else {
-					*result += databr;
-				}
+				*result += new RefStructBrackets( sess, executeExpression(databr->chain, sess) );
 			} else {
-				// если не структурные скобки, то точно функциональные
-				returnoriginal = false;
-
 				#ifdef TESTCODE
 				if (! ref_dynamic_cast<RefExecBrackets>(databr)) AchtungERRORs(sess);
 				#endif
 
 				//RefExecBrackets
-	RefChain *arg = executeExpression(databr->chain, sess); // вычисляем внутренние exec-скобки  // todo: можно оптимизировать запоминая "точку ныряния" в стек путешествия по скобкам. целесообразно только при супероптимизации
+				RefChain *arg = executeExpression(databr->chain, sess); // вычисляем внутренние exec-скобки
 				if (arg->isEmpty()) SYSTEMERRORs(sess, "Unexpected empty argument for function call-brackets! " << databr->chain->debug());
 				RefData **functionid = (*arg)[0];
 				//TODO: сделать привязку функциональных вызовов по именнованым областям
@@ -81,27 +85,18 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				}
 				RefChain *fresult;
 				if (arg->getLength() > 1){
-
 					fresult = func->exec((*arg)[1], (*arg)[-1], sess);
-
 				} else {
 					#ifdef TESTCODE
 					if (arg->getLength() != 1) AchtungERRORs(sess);
 					#endif
-	std::cout << "\n-------------   " << sess->debug();
 					fresult = func->exec(0, 0, sess);
-	std::cout << "\n++++   " << sess->debug();
 				}
-				if (arg!=databr->chain){
-					// если аргумент - не новая цепочка, то нельзя удалять
-					arg->killall();
-					delete arg;
-				}
+
+				//arg->killall();
+				delete arg;
 				arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
-				if (arg!=fresult) {
-					fresult->killall();
-					delete fresult;
-				}
+				if (arg!=fresult) delete fresult;
 				*result += arg;  // arg уничтожен оператором +=
 			}
 		} else {
@@ -109,12 +104,10 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 		}
 	}
 
-	if (returnoriginal){
-		delete result;
-		return chain;
-	}
+	sess->gc_prepare(gc_save_point);
+	sess->gc_exclude(result);
+	//sess->gc_clean(gc_save_point);
 
-	///todo: delete all garbage chains
 	return result;
 };
 
@@ -273,3 +266,44 @@ RefData* RefDllModule::constructVariable(unistring typecode, unistring value){
 		return (*iter->second)(value);
 };
 
+
+
+
+RefModuleBase::~RefModuleBase(){
+		std::set<void*> deleted;
+
+		std::map<unistring, RefFunctionBase*>::iterator it = functions.begin();
+		while(it != functions.end()){
+			//std::cout << "\n~ " << it->first;
+			if (deleted.find(it->second)==deleted.end()) {
+				deleted.insert(it->second);
+				delete it->second;
+			}
+			it->second = 0;
+			++it;
+		}
+
+		deleted.clear();
+
+		std::map<unistring, RefTemplateBase*>::iterator itt = templates.begin();
+		while(itt != templates.end()){
+			//std::cout << "\n~ " << itt->first;
+			if (deleted.find(itt->second)==deleted.end()) {
+				deleted.insert(itt->second);
+				delete itt->second;
+			}
+			itt->second = 0;
+			++itt;
+		}
+	};
+RefFunctionBase* RefModuleBase::getFunctionByName(unistring nm, Session *s){
+		std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(nm);
+		if (iter != functions.end()) return iter->second;
+		return 0;
+	};
+RefTemplateBase* RefModuleBase::getTemplateByName(unistring nm, Session *s){
+		std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(nm);
+		if (iter != templates.end()) return iter->second;
+		return 0;
+
+	};

@@ -29,52 +29,12 @@ std::string stringtime(struct tm *timeptr){
 	return result;
 }
 
-/*
-int main ( int argv, char **argc ) {
-	RefChain *chain1 = new RefChain();
-	RefChain *chain2 = new RefChain();
-
-	chain1 = textToChain("abcDEFghiDEFJKLmno");
-	chain2 = 
-			textToChain("abc")+
-			*(new RefVariable_s("D"))+
-			*(new RefVariable_s("E"))+
-			*(new RefVariable_s("F"))+
-			*textToChain("ghi");
-	*chain2 +=
-		*(new RefLinkToVariable("D", chain2))+
-			*(new RefLinkToVariable("E", chain2))+
-			*(new RefLinkToVariable("F", chain2))+
-				*textToChain("JKLmno");
-
-	std::cout << chain1->debug()<< "\n" ;
-	std::cout << chain2->debug()<< "\n" ;
-
-	Session *sess = new Session();
-	sess->createVarMap();
-	if (sess->matching(0, chain2, chain1, false)){
-		std::cout << "true\n";
-	} else {
-		std::cout << "false\n";
-	}
-	std::cout << sess->debug() << "\n\n";
-
-	RefChainConstructor *chain3 = 
-		textToChain("begnin ")+
-		*(new RefLinkToVariable("E", chain2))+
-		*textToChain(" end");
-
-	std::cout << chain3->debug() << "\n" << 
-	sess->substituteExpression(chain3)->debug() << "\n";
-}
-*/
-
 
 int main ( int argv, char **argc ) {
 char *xmlFile;
 RefUserModule *mod; 
 
-	RefProgram program;
+	RefProgram *program = new RefProgram();
 
     std::cout << REFVERSION << "\n" << std::flush;
     if (argv == 1) {
@@ -130,17 +90,17 @@ RefUserModule *mod;
     xmlFile = new char[256];
     strncpy(xmlFile, ss2.str().c_str(), 255);
 
-	Session *s = new Session(&program);
+	Session *s = new Session(program);
 
     mod = new RefUserModule(getModuleNameFromFileName(xmlFile));
-	program.regModule(mod);
-    err = loadModuleFromXmlFile ( mod, &program, xmlFile );
+	program->regModule(mod);
+    err = loadModuleFromXmlFile ( mod, program, xmlFile );
     if (err) return err;
     #ifdef DEBUG
     std::cout << mod->debug() << "\n";
     #endif
 
-	std::cout << s->debug();
+	//std::cout << s->debug();
 
 
 #ifdef TESTCODE
@@ -160,9 +120,9 @@ RefUserModule *mod;
 
     RefChain *polez = new RefChain();
 
-	*polez += new RefExecBrackets(new RefChain(new RefWord ( "Go" )));
+	*polez += new RefExecBrackets(s, new RefChain(new RefWord (s, "Go" )));
 
-	RefChain *result = program.executeExpression( polez, s );
+	RefChain *result = program->executeExpression( polez, s );
 
     std::cout << "============================================\nTime: " ;
     std::cout << "Result: " << result->debug() << "\n";
@@ -180,6 +140,12 @@ RefUserModule *mod;
 	result->killall();
 	delete result;
 
+	delete program;
+	delete[] RefAlpha128::alphatable;
+
+	s->gc_prepare();
+	s->gc_clean();
+
 #ifdef TESTCODE
     std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
 	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
@@ -188,7 +154,7 @@ RefUserModule *mod;
 	std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
 #endif
 
-	std::cout << s->debug();
+	//std::cout << s->debug();
 
     return 0;
 
