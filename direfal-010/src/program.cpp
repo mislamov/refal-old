@@ -60,7 +60,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 	RefData* gc_save_point = sess->gc_last;
 
-	RefChain* result = new RefChain(chain->getLength());
+	RefChain* result = new RefChain(sess, chain->getLength());
 	for (RefData **iter=chain->at(0), **iend = chain->at(-1)+1; iter < iend; ++iter){
 
 		RefDataBracket *databr = ref_dynamic_cast<RefDataBracket>(*iter);
@@ -94,9 +94,9 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				}
 
 				//arg->killall();
-				delete arg;
+				//delete arg;
 				arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
-				if (arg!=fresult) delete fresult;
+				//if (arg!=fresult) delete fresult;
 				*result += arg;  // arg уничтожен оператором +=
 			}
 		} else {
