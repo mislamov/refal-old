@@ -195,7 +195,7 @@ unistring Session::debug(){
 unistring Session::debug(){
 		std::ostringstream s;
 
-		s << "variants_idxs: ";
+		s << "vvvvariants_idxs: ";
 		for(size_t i=0; i<variants_idxs.getCount(); ++i){
 			s << variants_idxs.getByIndex(i) << " ";
 		}
