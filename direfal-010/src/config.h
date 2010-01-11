@@ -326,8 +326,8 @@ inline std::string replace(std::string text, std::string s, std::string d)
 	};
 
 #define RUNTIMEERRORs(sess, msg) { \
-	sess->printExecTrace(); \
 	std::cout << "\n######## RUNTIMEERROR: " << msg << "\n" << std::flush; \
+	sess->printExecTrace(); \
     exit(-1); \
     };
 

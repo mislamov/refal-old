@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\drefal\direfal-010\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\drefal\direfal-010\include&quot;;&quot;D:\d-refal\direfal-010\include&quot;"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -60,7 +60,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="libexpat.lib"
-				AdditionalLibraryDirectories="&quot;D:\drefal\direfal-010\lib&quot;"
+				AdditionalLibraryDirectories="&quot;D:\d-refal\direfal-010\lib&quot;;&quot;D:\drefal\direfal-010\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
