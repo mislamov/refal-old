@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="direfal-010" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\direfal-010" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-pg" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\direfal-010" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-O3" />
+			<Add option="-Wall" />
+			<Add directory="include" />
+		</Compiler>
+		<Linker>
+			<Add option="-lexpat" />
+			<Add directory="lib" />
+		</Linker>
+		<Unit filename="src\SAXLoaderHeap.cpp" />
+		<Unit filename="src\SAXLoaderHeap.h" />
+		<Unit filename="src\SAXLoader_expat.cpp" />
+		<Unit filename="src\SAXLoader_expat.h" />
+		<Unit filename="src\config.h" />
+		<Unit filename="src\data.cpp" />
+		<Unit filename="src\data.h" />
+		<Unit filename="src\direfal.h" />
+		<Unit filename="src\function.cpp" />
+		<Unit filename="src\function.h" />
+		<Unit filename="src\main.cpp" />
+		<Unit filename="src\module_sdk.h" />
+		<Unit filename="src\poolTuples.h" />
+		<Unit filename="src\program.cpp" />
+		<Unit filename="src\program.h" />
+		<Unit filename="src\session.cpp" />
+		<Unit filename="src\session.h" />
+		<Unit filename="src\stringutils.h" />
+		<Unit filename="src\symbols.cpp" />
+		<Unit filename="src\symbols.h" />
+		<Unit filename="src\system.cpp" />
+		<Unit filename="src\system.h" />
+		<Unit filename="src\variables.cpp" />
+		<Unit filename="src\variables.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
