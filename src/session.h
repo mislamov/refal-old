@@ -160,7 +160,6 @@ public:
     bool  matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, bool isdemaching);
 
 	// готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
-    //RefChain*  substituteExpression(RefChainConstructor *);
     RefChain*  substituteExpression(RefChain *);
 
 	//void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r); // сохраняет состояние переменной

@@ -171,9 +171,6 @@ void XMLCALL  endElement(void *data, const char *name) {
     unistring theCommand = toWstring(name);
     RefData* tmpvdata = 0;
 
-    #ifdef TESTCODE
-    try {
-        #endif
         if (! theCommand.compare(_L("ERROR"))) {
             SYSTEMERRORn(loader->currentchars);
         } else
@@ -207,10 +204,8 @@ void XMLCALL  endElement(void *data, const char *name) {
                             RefSentence     *s =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
                             RefChain *rch = loader->extractCurrChainFromStack();
                             #ifdef TESTCODE
-                            //if (! dynamic_cast<RefChainConstructor*>(rch)) SYSTEMERRORn("alarm xml construct");
                             if (! dynamic_cast<RefChain*>(rch)) SYSTEMERRORn("alarm xml construct");
                             #endif
-                            //s->rightPart = (RefChainConstructor*)rch;
                             s->rightPart = (RefChain*)rch;
                             s->leftPart  = loader->extractCurrChainFromStack();
                             RefUserFunction *f =  (RefUserFunction*)loader->getValueFromStack("FUNCTION");
@@ -318,20 +313,12 @@ void XMLCALL  endElement(void *data, const char *name) {
                                                                                         *(loader->getCurrChain()) += tmpvdata;
                                                                                     } else
                                                                                         SYSTEMERRORn("unknown tag name: " << theCommand);
-        #ifdef TESTCODE
-    } catch (int i) {
-        SYSTEMERRORn("excepion!");
-    }
-    #endif
-
-
     loader->activeTag.pop();
-    // No escapes are legal here
-    //fFormatter << XMLFormatter::NoEscapes << gEndElement << name << chCloseAngle;
 }
 
 
 
+char Bufff[BUFFSIZE];
 
 
 int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, char* xmlFile) {
@@ -357,14 +344,14 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, char* xmlFile) {
         int done;
         int len;
 
-        len = (int)fread(Buff, 1, BUFFSIZE, ifile);
+        len = (int)fread(Bufff, 1, BUFFSIZE, ifile);
         if (ferror(ifile)) {
             fprintf(stderr, "Read error\n");
             return 2;
         }
         done = feof(ifile);
 
-        if (XML_Parse(p, Buff, len, done) == XML_STATUS_ERROR) {
+        if (XML_Parse(p, Bufff, len, done) == XML_STATUS_ERROR) {
             fprintf(stderr, "Parse error at line %" XML_FMT_INT_MOD "u:\n%s\n",
                     XML_GetCurrentLineNumber(p),
                     XML_ErrorString(XML_GetErrorCode(p)));

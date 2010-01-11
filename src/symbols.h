@@ -29,7 +29,6 @@ class RefAlphaBase;
 
 unistring the_explode(RefData **a, RefData **b);
 unistring the_text(RefData **a, RefData **b);
-//RefChainConstructor *textToChain(unistring str);
 
 
 class IRefSymbol : public RefData {

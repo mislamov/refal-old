@@ -20,7 +20,7 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
-//#define TESTCODE
+#define TESTCODE
 //#define DEBUG
 //#define UNICODE
 /****************************************************************************************
@@ -321,14 +321,13 @@ inline std::string replace(std::string text, std::string s, std::string d)
 #endif
 
 #define RUNTIMEERRORn(msg) { \
-    std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
+	std::cout << "\n######## RUNTIMEERROR: " << msg << "\n" << std::flush; \
     exit(-1); \
 	};
 
 #define RUNTIMEERRORs(sess, msg) { \
 	sess->printExecTrace(); \
-		std::cout << sess->debug(); \
-    std::cout << "\n####:#### RUNTIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
+	std::cout << "\n######## RUNTIMEERROR: " << msg << "\n" << std::flush; \
     exit(-1); \
     };
 
@@ -354,6 +353,7 @@ inline std::string replace(std::string text, std::string s, std::string d)
 #else
 #define ref_assert(_Expression){};
 #endif
+
 
 #endif // REF_CORE_H_INCLUDED
 
