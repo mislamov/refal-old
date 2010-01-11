@@ -33,12 +33,12 @@ class VarMap;
 
 class RefObject {
 public:
-	RefObject(){
-		co::objs++; 
+	inline RefObject(){
+		co::objs++;
 	};
 	virtual unistring debug(){ return " $RefObject "; };
-	virtual ~RefObject(){ 
-		co::objs--; 
+	virtual ~RefObject(){
+		co::objs--;
 	};
 };
 
@@ -46,7 +46,7 @@ public:
 /*
 	Элементы объектного выражения.
 
-	Если конструктору не передается сессия, то сборщик мусора будет игнорировать 
+	Если конструктору не передается сессия, то сборщик мусора будет игнорировать
 	  данный экземпляр. Такие элементы будем называть НЕколлекционируемыми.
 	Деструктор элемента должен удалять все свои элементы, кроме коллекционируемых RefData.
 	ЗАПРЕЩЕНО удалять коллекционируемые элементы не сборщиком мусора!
@@ -58,9 +58,9 @@ private:
 protected:
 	RefData *gc_next;
 	RefData() : RefObject(){ gc_next = 0; gc_label=0; co::datas++; }
-	virtual ~RefData(){ 
+	virtual ~RefData(){
 		//std::cout << "\n~~~~DEL: " << co::datas << " " << this;
-		co::datas--; 
+		co::datas--;
 	}
 
 public:
@@ -84,16 +84,16 @@ public:
 			return;
 		}
 		gc_label |= 2; // xxxxxx1x   -  для удаления (ручная отметка)
-	};   
+	};
 	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для удаления (gc отметка)
 	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11
-	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0  
+	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0
 };
 
 class RefDataNull : public RefData {
 	virtual unistring explode() { return "[RefDataNull]"; };
 	virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);
-    virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);	
+    virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);
 public:
 	//RefDataNull();
 
@@ -128,7 +128,7 @@ public:
 	RefVarChains() : RefVariable() { templ=0; templInstant=0; };
 	RefVarChains(unistring ntype, unistring nname) : RefVariable(nname) { type=ntype; templ=0; templInstant=0; };
 	virtual ~RefVarChains();
-	
+
 	CLASS_OBJECT_CAST(RefVarChainsNotInit);
 
 	void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
@@ -202,9 +202,9 @@ class RefDataBracket : public RefData {
 public:
 	RefChain *chain;
 
-	RefDataBracket(Session *s, RefChain *thechain) : RefData(s){		
+	RefDataBracket(Session *s, RefChain *thechain) : RefData(s){
 		++co::stbracks;
-		chain = thechain;	
+		chain = thechain;
 	};
 	virtual ~RefDataBracket();
 	virtual unistring debug() = 0;
