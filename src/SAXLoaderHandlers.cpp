@@ -68,7 +68,6 @@ void SAXPrintHandlers::startDocument(){
 
 void SAXPrintHandlers::startElement(const   XMLCh* const  name,  AttributeList&  attributes){
     unistring theCommand = toWstring(name);
-    //LOG( _L("SAXPrintHandlers::startElement::[") << theCommand << "] (attr: "<< attributes.getLength() << " )" );
     loader->activeTag.push(theCommand);
 
 #ifdef TESTCODE
@@ -529,35 +528,3 @@ void SAXPrintHandlers::processingInstruction(const  XMLCh* const target
 
 
 
-
-// возвращает переменную
-RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn){
-	RefData* res = currentProgram->createVariableByTypename(nametype, vn);
-
-    if (res) {
-		#ifdef TESTCODE
-		if (! dynamic_cast<RefVariable*>(res)) AchtungERRORn;
-		#endif
-		return (RefVariable*)res;
-    }
-
-    // создаем пользовательскую переменную
-    RefVarChains *v = new RefVarChains();
-    v->setName(vn);
-    v->setType(nametype);
-    return v;
-};
-
-/*
-// возвращает рефал-символ
-RefData* LoaderHeap::getNewEmptyRefSymbolByTypeName(unistring nametype){
-    // поиск среди встроенных типов символов
-    RefData* result = createNewEmptyRefSymbolByTypeName(nametype);
-    if (result) {
-        return result;
-    }
-
-    SYSTEMERRORn("Unknown Refal-symbol: " << nametype );
-    //return new RefVarChains(nametype);
-}
-*/
