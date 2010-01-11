@@ -77,7 +77,11 @@ class RefUserTemplate : public RefTemplateBase {
 	RefChain *leftPart;
 public:
 	inline RefUserTemplate(unistring tname){ name = tname; }
-	virtual ~RefUserTemplate(){ leftPart->killalldata(); leftPart->gc_delete(); }
+	virtual ~RefUserTemplate(){ 
+		//std::cout << "~template " << name << "  lp: " << leftPart << "\n";
+		leftPart->killalldata();
+		leftPart->gc_delete(); 
+	}
 	unistring getName() { return name; };
 	inline void setLeftPart (RefChain *lp){ leftPart  = lp; };
 	inline RefChain* getLeftPart(){ return leftPart; };
@@ -92,7 +96,6 @@ public:
 class RefSentence : public RefObject {
 public:
 	RefChain *leftPart;
-//	RefChainConstructor *rightPart;
 	RefChain *rightPart;
 
 	virtual ~RefSentence(){
@@ -113,24 +116,25 @@ class RefConditionBase : public RefData {
 class RefUserCondition : public RefConditionBase {
 	bool withnot;
 	RefChain *leftPart;
-	//RefChainConstructor *rightPart;
 	RefChain *rightPart;
 public:
 	RefObject *own;
-	virtual ~RefUserCondition(){ leftPart->killalldata(); rightPart->killalldata(); leftPart->gc_delete(); rightPart->gc_delete(); }
+	virtual ~RefUserCondition(){ 
+		leftPart->killalldata(); 
+		rightPart->killalldata(); 
+		leftPart->gc_delete(); 
+		rightPart->gc_delete(); 
+	}
 
 	inline RefUserCondition(bool withNOT){ withnot = withNOT; };
 	inline void setLeftPart(RefChain *ch){ leftPart = ch; };
 	inline void setRightPart(RefChain *ch){ 
 		#ifdef TESTCODE
-		//if (! dynamic_cast<RefChainConstructor*>(ch)) SYSTEMERRORn("RefChainConstructor expected!");
-		if (! dynamic_cast<RefChain*>(ch)) SYSTEMERRORn("RefChainConstructor expected!");
+		if (! dynamic_cast<RefChain*>(ch)) SYSTEMERRORn("RefChain expected!");
 		#endif
-		//rightPart = (RefChainConstructor*)ch; 
 		rightPart = (RefChain*)ch; 
 	};
 	inline RefChain *getLeftPart(){ return leftPart; };
-	//inline RefChainConstructor *getRightPart(){ return rightPart; };
 	inline RefChain *getRightPart(){ return rightPart; };
 
 	unistring explode(){ return " , $UserCondition[ " + rightPart->explode() + " ::: " + leftPart->explode() + " ]"; };

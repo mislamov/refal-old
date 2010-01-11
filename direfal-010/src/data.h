@@ -78,7 +78,7 @@ public:
 	inline bool is_collected() { return (gc_label&4) != 0; } //   xxxxx0xx  -  НЕ коллекционируемый
 	inline void set_collected(){ gc_label &= 4; } //   xxxxx1xx  -  коллекционируемый
 
-	inline void gc_delete()  {
+	/*inline*/ void gc_delete()  {
 		if (!is_collected()){
 			delete this;
 			return;
@@ -106,7 +106,7 @@ class RefVariable : public RefData {
 protected:
     unistring name;
 public:
-	inline RefVariable(unistring tname = EmptyUniString):RefData(){ name=tname; co::vars++; };
+	inline RefVariable(unistring tname = EmptyUniString) : RefData(){ name=tname; co::vars++; };
 	virtual ~RefVariable(){ co::vars--; }
     inline unistring getName() {        return name;    };
     inline void setName(unistring s) {        name = s;    };
@@ -125,15 +125,13 @@ class RefVarChains : public RefVariable {
 public:
 
 
-	RefVarChains(){ templ=0; templInstant=0; };
-	RefVarChains(unistring ntype, unistring nname){ type=ntype; name=nname; templ=0; templInstant=0; };
+	RefVarChains() : RefVariable() { templ=0; templInstant=0; };
+	RefVarChains(unistring ntype, unistring nname) : RefVariable(nname) { type=ntype; templ=0; templInstant=0; };
 	virtual ~RefVarChains();
 	
 	CLASS_OBJECT_CAST(RefVarChainsNotInit);
 
-	//void setTempl(RefChain *ntm){ templ = ntm; };
 	void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
-	//void setTemplInstant(RefTemplateBase *ntempli){ templInstant = ntempli; templ= ntempli->};
 	void setTemplInstant(RefUserTemplate *ntempli);
     unistring getType() {        return type;    };
 	void setType(unistring ntype) {      type = ntype;    };
@@ -156,7 +154,7 @@ class RefVariantsChains : public RefVariable {
 
 	PooledStack<RefChain *> templs;
 public:
-	RefVariantsChains(unistring tname = EmptyUniString){ name = tname; };
+	RefVariantsChains(unistring tname = EmptyUniString) : RefVariable(tname) {};
 	virtual ~RefVariantsChains();
 	void addTempl(RefChain *ntm){ templs.put(ntm); };
 
@@ -179,7 +177,7 @@ class RefRepeaterChain : public RefData {
 	infint min;
     infint max;
 public:
-	RefRepeaterChain(infint a, infint b){ min=a; max=b; };
+	RefRepeaterChain(infint a, infint b) : RefData() { min=a; max=b; };
 	virtual ~RefRepeaterChain();
 
 	inline infint getMin(){ return min; };
@@ -213,10 +211,6 @@ public:
 };
 
 
-class RefTemplBracket : public RefData {
-};
-
-
 class RefStructBrackets : public RefDataBracket {
 public:
 	inline RefStructBrackets(Session* s, RefChain* thechain) : RefDataBracket(s, thechain){};
@@ -243,6 +237,9 @@ public:
 
 char* c_str(std::string str);
 
+//class RefChain;
+//static std::set<RefChain *> allchains;
+
 class RefChain : public RefData {
 	friend bool eq(RefChain *, RefChain *);
 	friend class Session;
@@ -255,7 +252,7 @@ class RefChain : public RefData {
 	static size_t alloc_portion;
 public:
 
-	RefChain(Session *s) : RefData(s) {sysize=leng=0; first=0; co::chains++; };
+	RefChain(Session *s) : RefData(s) { sysize=leng=0; first=0; co::chains++; };
 	RefChain(Session *s, RefData *);			// цпочка из одного терма
 	RefChain(Session *s, size_t systemsize);	// пустая цепочка для systemsize элементов
 	virtual ~RefChain();
@@ -285,41 +282,6 @@ public:
 
 
 
-
-// подстановка - цепочка без открытых переменных для генереации результатного объектного выражения
-//class RefChainConstructor : public RefChain {
-//};
-
-
-/*
-inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefChain y){
-	RefChainConstructor *res = new RefChainConstructor();
-	*res += x;
-	*res += y;
-	return res;
-};
-
-inline RefChainConstructor*  operator+ (RefChain* x, RefChainConstructor y){
-	RefChainConstructor *res = new RefChainConstructor();
-	*res += x;
-	*res += y;
-	return res;
-};
-
-inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefChainConstructor y){
-	RefChainConstructor *res = new RefChainConstructor();
-	*res += x;
-	*res += y;
-	return res;
-};
-
-inline RefChainConstructor*  operator+ (RefChainConstructor* x, RefData &y){
-	RefChainConstructor *res = new RefChainConstructor();
-	*res += x;
-	*res += &y;
-	return res;
-};
-*/
 
 
 

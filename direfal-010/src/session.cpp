@@ -184,11 +184,6 @@ unistring Session::debug(){
 			s << varMapStack.pool[i]->debug();
 		}
 
-
-	RefChain *ch;
-	char* st;
-
-
 	return s.str();
 };
 #else
@@ -220,6 +215,8 @@ void Session::gc_clean(RefData* save_point){
 		if (save_point==this->gc_last) return; // когда нечего чистить
 
 		RefData *tmp=0, *pre=0, *iend=0;
+
+//std::cout << "GC START!\n";
 
 		#ifdef DEBUG
 		size_t tmpdbg = 0;
@@ -254,6 +251,9 @@ void Session::gc_clean(RefData* save_point){
 		#ifdef DEBUG
 				std::cout << "############ GARBAGE: " << tmpdbg << " was deleted !\n" << std::flush;
 		#endif
+
+//std::cout << "GC FINISH!\n";
+
 };
 
 
@@ -390,7 +390,6 @@ unistring VarMap::debug(){
 
 
 // TODO: оптимизировать!
-//RefChain*  Session::substituteExpression(RefChainConstructor *chain){
 RefChain*  Session::substituteExpression(RefChain *chain){
 	if (! chain->leng) {
 		return new RefChain(this);
@@ -425,11 +424,9 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 		brack = ref_dynamic_cast<RefDataBracket>(*item);
 		if (brack){
 			if (ref_dynamic_cast<RefStructBrackets>(brack)){
-				//*result +=  new RefStructBrackets(this, substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 				*result +=  new RefStructBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 			} else {
 				// RefExecBracket
-				//*result +=  new RefExecBrackets(this, substituteExpression((RefChainConstructor*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 				*result +=  new RefExecBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 			}
 

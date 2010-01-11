@@ -40,7 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;D:\D-refal\direfal-010\include&quot;"
+				AdditionalIncludeDirectories="&quot;D:\drefal\direfal-010\include&quot;"
+				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,8 +59,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="xerces-c_3.lib"
-				AdditionalLibraryDirectories="&quot;D:\D-refal\direfal-010\lib&quot;"
+				AdditionalDependencies="libexpat.lib"
+				AdditionalLibraryDirectories="&quot;D:\drefal\direfal-010\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -169,10 +170,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\direfal.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\function.cpp"
 				>
 			</File>
@@ -185,11 +182,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SAXLoader.cpp"
+				RelativePath=".\SAXLoader_expat.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\SAXLoaderHandlers.cpp"
+				RelativePath=".\SAXLoaderHeap.cpp"
 				>
 			</File>
 			<File
@@ -247,11 +244,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SAXLoader.hpp"
+				RelativePath=".\SAXLoader_expat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\SAXLoaderHandlers.hpp"
+				RelativePath=".\SAXLoaderHeap.h"
 				>
 			</File>
 			<File
@@ -265,6 +262,10 @@
 			<Filter
 				Name="system"
 				>
+				<File
+					RelativePath=".\optimize.h"
+					>
+				</File>
 				<File
 					RelativePath=".\symbols.h"
 					>

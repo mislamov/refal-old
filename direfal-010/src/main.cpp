@@ -17,7 +17,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "DiRefal.h"
-#include "SAXLoader.hpp"
+#include "SAXLoader_expat.h"
 
 #include "stringutils.h"
 
@@ -149,6 +149,7 @@ int main ( int argv, char **argc ) {
     std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
     std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
     std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
+
     #endif
 
     //std::cout << s->debug();

@@ -65,6 +65,7 @@ TResult RefDataNull::back(RefData **&activeTemplate, Session* s, RefData **&curr
 
 
 RefChain::RefChain(Session *s, RefData* d) : RefData(s){
+
     sysize = leng = 1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	first[0] = d;
@@ -72,6 +73,7 @@ RefChain::RefChain(Session *s, RefData* d) : RefData(s){
 };
 
 RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
+
 	sysize = size;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	leng = 0;
@@ -80,8 +82,8 @@ RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
 };
 
 RefChain::~RefChain(){
-		co::chains--;
-		if (first) free(first);
+	co::chains--;
+	if (first) free(first);
 };
 
 RefChain* RefChain::operator+=(RefData *ch) {
@@ -860,7 +862,13 @@ RefDataBracket::~RefDataBracket(){
 };
 
 
-RefVarChains::~RefVarChains(){ templ->killalldata(); templ->gc_delete(); };
+RefVarChains::~RefVarChains(){ 
+	//templ - удалять нельзя, если пренадлежит RefUserTemplate!
+	if (!templInstant){
+		templ->killalldata();
+		templ->gc_delete();
+	}
+};
 
 RefVariantsChains::~RefVariantsChains(){
 		RefChain *tmp = 0;
@@ -872,4 +880,7 @@ RefVariantsChains::~RefVariantsChains(){
 
 	};
 
-RefRepeaterChain::~RefRepeaterChain(){ templ->killalldata(); templ->gc_delete(); };
+RefRepeaterChain::~RefRepeaterChain(){ 
+	templ->killalldata(); 
+	templ->gc_delete(); 
+};

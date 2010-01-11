@@ -45,7 +45,6 @@ class LoaderHeap {
             stckChains.push(new RefChain(0));
         }
 		void createSubstitutionToStack(){
-			//stckChains.push(new RefChainConstructor());
 			stckChains.push(new RefChain(0));
         }
 		void createPatternToStack(){
@@ -63,22 +62,8 @@ class LoaderHeap {
         RefChain* getCurrChain(){
             return stckChains.top();
         }
-        RefChain* getCurrChainNotConstructor(){
-            if (stckChains.empty()) SYSTEMERRORn("tring extract from empty stckChains");
-            RefChain *r = stckChains.top();
-			//if (dynamic_cast<RefChainConstructor*>(r)){
-			if (dynamic_cast<RefChain*>(r)){
-				RefChain *rr = r;
-				stckChains.pop();
-				if (stckChains.empty()) SYSTEMERRORn("tring extract from empty stckChains");
-				r = stckChains.top();
-				//if (dynamic_cast<RefChainConstructor*>(r)) SYSTEMERRORn("two RefChainConstructors in stack!");
-				if (dynamic_cast<RefChain*>(r)) SYSTEMERRORn("two RefChainConstructors in stack!");
-				stckChains.push(rr);
-			}
-			return r;
-        }
-        RefObject* putValueToStack(unistring name, RefObject* o){
+
+		RefObject* putValueToStack(unistring name, RefObject* o){
             /** /
             std::cout<<"\n++putValueToStack(";
             std::cout<<name;

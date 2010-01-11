@@ -177,19 +177,24 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       char *buffer;
 
       std::ifstream is;
-	  is.open ( the_explode(beg, end).c_str(), std::ios::binary );
+	  unistring filename = the_explode(beg, end);		  
+	  is.open ( filename.c_str(), std::ios::binary );
+
+	  if(! is.is_open()){
+		  RUNTIMEERRORs(s, "Can`t open file: " << filename);
+	  }
 
       // get length of file:
       is.seekg (0, std::ios::end);
       length = is.tellg();
       is.seekg (0, std::ios::beg);
 	  if (length < 0) {
-		  std::cerr << "Can`t open file: " << the_explode(beg, end) << std::flush;
+		  std::cerr << "Can`t open file: " << filename << std::flush;
 		  return 0;
 	  }
 
       // allocate memory:
-      buffer = new char[length];
+      buffer = new char[length+1];
 
       // read data as a block:
       is.read (buffer,length);

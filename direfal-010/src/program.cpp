@@ -54,7 +54,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 
 //TODO: оптимизировать - без рекурсии
 RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
-	if (chain->isEmpty()) {
+	if (!chain || chain->isEmpty()) {
 		return chain; // new RefChain();
 	}
 
