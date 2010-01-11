@@ -23,18 +23,18 @@
 
 #include <ctime>
 
-std::string stringtime(struct tm *timeptr){
-	char result[256];
-	strftime(result, 255, "%H:%M", timeptr);
-	return result;
+std::string stringtime(struct tm *timeptr) {
+    char result[256];
+    strftime(result, 255, "%H:%M", timeptr);
+    return result;
 }
 
 
 int main ( int argv, char **argc ) {
-char *xmlFile;
-RefUserModule *mod; 
+    char *xmlFile;
+    RefUserModule *mod;
 
-	RefProgram *program = new RefProgram();
+    RefProgram *program = new RefProgram();
 
     std::cout << REFVERSION << "\n" << std::flush;
     if (argv == 1) {
@@ -77,81 +77,81 @@ RefUserModule *mod;
             std::cout << ss1.str().c_str() << "\n" << std::flush;
             return err;
         }
-#ifdef DEBUG
-		LOG("program: " << ss0.str());
-#endif
+        #ifdef DEBUG
+        LOG("program: " << ss0.str());
+        #endif
 
-	} else {
-#ifdef DEBUG
-		LOG("program: " << ss1.str());
-#endif
-	}
+    } else {
+        #ifdef DEBUG
+        LOG("program: " << ss1.str());
+        #endif
+    }
 
     xmlFile = new char[256];
     strncpy(xmlFile, ss2.str().c_str(), 255);
 
-	Session *s = new Session(program);
+    Session *s = new Session(program);
 
     mod = new RefUserModule(getModuleNameFromFileName(xmlFile));
-	program->regModule(mod);
+    program->regModule(mod);
     err = loadModuleFromXmlFile ( mod, program, xmlFile );
     if (err) return err;
     #ifdef DEBUG
     std::cout << mod->debug() << "\n";
     #endif
 
-	//std::cout << s->debug();
+    //std::cout << s->debug();
 
 
-#ifdef TESTCODE
+    #ifdef TESTCODE
     time_t starttime, stoptime;
     time ( &starttime );
 
     std::cout << "\n";
-		//<< stringtime(localtime (&starttime)) 
-	std::cout << "============================================\n" << std::flush;
+    //<< stringtime(localtime (&starttime))
+    std::cout << "============================================\n" << std::flush;
     std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
-	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
-	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
-	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
-	std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
-	std::cout << "============================================\n" << std::flush;
-#endif
+    //std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
+    std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
+    std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
+    std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
+    std::cout << "============================================\n" << std::flush;
+    #endif
 
     RefChain *polez = new RefChain(s);
 
-	*polez += new RefExecBrackets(s, new RefChain(s, new RefWord (s, "Go" )));
+    *polez += new RefExecBrackets(s, new RefChain(s, new RefWord (s, "Go" )));
 
-	RefChain *result = program->executeExpression( polez, s );
+    RefChain *result = program->executeExpression( polez, s );
 
     std::cout << "============================================\nTime: " ;
     std::cout << "Result: " << result->debug() << "\n";
-#ifdef TESTCODE
+    #ifdef TESTCODE
     time ( &stoptime );
-	std::cout 
+    std::cout
 //		<< stringtime(localtime (&stoptime)) << "\n"
-	<< difftime(stoptime, starttime) << " sec.\n" 
-	<< std::flush;
-#endif
+    << difftime(stoptime, starttime) << " sec.\n"
+    << std::flush;
+    #endif
 
-	s->gc_prepare();
-	s->gc_clean();
+    s->gc_prepare();
+    s->gc_clean();
 
-	//delete polez;
-	//delete result;
+    //delete polez;
+    //delete result;
 
-	delete program;
-	delete[] RefAlpha128::alphatable;
+    delete program;
+    delete[] RefAlpha128::alphatable;
 
-#ifdef TESTCODE
+    #ifdef TESTCODE
     std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
-	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
-	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
-	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
-	std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
-#endif
+    //std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
+    std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
+    std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
+    std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
+    #endif
 
-	//std::cout << s->debug();
+    //std::cout << s->debug();
 
     return 0;
 
