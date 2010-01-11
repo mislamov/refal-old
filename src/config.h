@@ -20,7 +20,7 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
-#define TESTCODE
+//#define TESTCODE
 //#define DEBUG
 //#define UNICODE
 /****************************************************************************************
@@ -52,11 +52,11 @@ namespace co {
 #endif
 
 #ifndef POOLSIZE_DEFAULT
-    #define POOLSIZE_DEFAULT 1
+    #define POOLSIZE_DEFAULT 8
 #endif
 
 #ifndef CHAIN_SYSTEM_PORTION_SIZE_INIT
-    #define CHAIN_SYSTEM_PORTION_SIZE_INIT 8
+    #define CHAIN_SYSTEM_PORTION_SIZE_INIT 128
 #endif
 
 
