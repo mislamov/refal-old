@@ -1,8 +1,0 @@
-$ENTRY Go { = <Prout <Chpm <Card>>>; }
-
-
-Chpm {
-     '+' e.1 = '-' <Chpm e.1>;
-     s.2 e.1 = s.2 <Chpm e.1>;
-      =  ; 
-}
