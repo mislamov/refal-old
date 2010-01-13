@@ -7,11 +7,14 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\direfal-010" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Debug\" />
+				<Option output="bin\direfal-010" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-O3" />
+					<Add option="-Wall" />
 					<Add option="-pg" />
 					<Add option="-g" />
 				</Compiler>
@@ -20,12 +23,12 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="bin\Release\direfal-010" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\Release\" />
+				<Option output="bin\direfal-010" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -33,12 +36,16 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-O3" />
 			<Add option="-Wall" />
+			<Add directory="C:\MinGW\include" />
+			<Add directory="C:\msys\1.0\include" />
 			<Add directory="include" />
 		</Compiler>
 		<Linker>
 			<Add option="-lexpat" />
+			<Add directory="C:\MinGW\lib" />
+			<Add directory="C:\MinGW\mingw32\lib" />
+			<Add directory="C:\msys\1.0\lib" />
 			<Add directory="lib" />
 		</Linker>
 		<Unit filename="src\SAXLoaderHeap.cpp" />
@@ -53,6 +60,7 @@
 		<Unit filename="src\function.h" />
 		<Unit filename="src\main.cpp" />
 		<Unit filename="src\module_sdk.h" />
+		<Unit filename="src\optimize.h" />
 		<Unit filename="src\poolTuples.h" />
 		<Unit filename="src\program.cpp" />
 		<Unit filename="src\program.h" />

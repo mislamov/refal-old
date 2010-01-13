@@ -6,7 +6,7 @@ $ENTRY  Go {
 Do {
 	(e.1) = "error 1";
 	(e.1)(e.2) = "error 2";
-	(e.1)e.00(e.01(e.2)) = "success:" "second br=" e.2;
+	e.00(e.01(e.2)) = "success:" "second br=" e.2;
 	e.00 = "error 3";
 };
 
