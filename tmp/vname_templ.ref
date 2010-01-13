@@ -1,0 +1,15 @@
+Template FunctionName ::= (word word.fname) ; ///todo
+
+$ENTRY Go{
+	= <Runnn (word "ff") >;
+}
+
+Runnn {
+	// функция
+	  FunctionName.fname
+	   =	<Prout '[(word "ff")] == [' @.fname ']'>;
+
+	
+	e.e = <Prout 'error: 'e.e>;
+}
+
