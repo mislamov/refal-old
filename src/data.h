@@ -26,6 +26,7 @@
 #include "poolTuples.h"
 
 class RefChain;
+class RefDataBracket;
 class RefProgram;
 class VarMap;
 
@@ -88,7 +89,12 @@ public:
 	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для удаления (gc отметка)
 	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11
 	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0
+
+	virtual RefDataBracket* isDataBracket(){ return 0; };
 };
+
+
+
 
 class RefDataNull : public RefData {
 	virtual unistring explode() { return "[RefDataNull]"; };
@@ -129,7 +135,7 @@ public:
 	RefVarChains(unistring ntype, unistring nname) : RefVariable(nname) { type=ntype; templ=0; templInstant=0; };
 	virtual ~RefVarChains();
 
-	CLASS_OBJECT_CAST(RefVarChainsNotInit);
+	//////CLASS_OBJECT_CAST(RefVarChainsNotInit);
 
 	void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
 	void setTemplInstant(RefUserTemplate *ntempli);
@@ -208,6 +214,8 @@ public:
 	};
 	virtual ~RefDataBracket();
 	virtual unistring debug() = 0;
+
+	virtual RefDataBracket* isDataBracket(){ return this; };
 };
 
 
@@ -244,6 +252,11 @@ class RefChain : public RefData {
 	friend bool eq(RefChain *, RefChain *);
 	friend class Session;
 
+#ifdef TESTCODE
+public:
+#else
+private:
+#endif
 
 	RefData** first;
 	size_t leng;
@@ -253,8 +266,10 @@ class RefChain : public RefData {
 public:
 
 	RefChain(Session *s) : RefData(s) { sysize=leng=0; first=0; co::chains++; };
-	RefChain(Session *s, RefData *);			// цпочка из одного терма
-	RefChain(Session *s, size_t systemsize);	// пустая цепочка для systemsize элементов
+	RefChain(Session *, RefData *);			// цпочка из одного терма
+	RefChain(Session *, size_t systemsize);	// пустая цепочка для systemsize элементов
+    RefChain(Session *, RefChain *ownchain, RefData **from, RefData **to); // цепочка из подцепочки
+
 	virtual ~RefChain();
 
 	RefChain*  operator+=(RefData  *ch);

@@ -29,7 +29,7 @@ RefProgram::RefProgram(){
 
 
 RefProgram::~RefProgram(){
-	std::map<unistring, RefModuleBase*>::iterator 
+	std::map<unistring, RefModuleBase*>::iterator
 		iter = modules.begin(),
 		iend = modules.end();
 	while(iter != iend){
@@ -58,12 +58,21 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 		return chain; // new RefChain();
 	}
 
+#ifdef DEBUG
+	std::cout << "executeExpression: " << chain->debug() << "\n";
+#endif
+
 	RefData* gc_save_point = sess->gc_last;
 
 	RefChain* result = new RefChain(sess, chain->getLength());
-	for (RefData **iter=chain->at(0), **iend = chain->at(-1)+1; iter < iend; ++iter){
 
-		RefDataBracket *databr = ref_dynamic_cast<RefDataBracket>(*iter);
+	RefData
+        **iter=chain->at_first(),       // поле зрени€
+        **iend = chain->at_afterlast(); // конец активной части пол€ зрени€
+
+	for (; iter < iend; ++iter){
+
+		RefDataBracket *databr = (*iter)->isDataBracket();
 
 		if (databr){
 			if (ref_dynamic_cast<RefStructBrackets>(databr)){
@@ -95,9 +104,31 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 				//arg->killall();
 				//delete arg;
-				arg = executeExpression(fresult, sess); // опасна€ рекурси€! «аменить
+				//arg = executeExpression(fresult, sess); // опасна€ рекурси€! «аменить
 				//if (arg!=fresult) delete fresult;
-				*result += arg;  // arg уничтожен оператором +=
+				//*result += arg;  // arg уничтожен оператором +=
+
+                if (! fresult->isEmpty()){
+                    size_t idx = result->leng;  // сохран€ем индекс элемента, который будет перед результатом
+                                                // функции в поле зрени€. »ндекс вместо ссылки, так как realloc
+					if (!idx) {
+error:		--idx; // если цепочка была пуста, то в качестве ссылки запоминаем -1 (перед началом)
+					}
+
+                    *result += fresult;
+                    ref_assert(idx+1!=0 && result->at_last() != (result->first + idx) )
+
+                    if (++iter < iend){ // если еще есть необработанный хвост
+                        *result += new RefChain(sess, chain, iter, iend);  // сохран€ем хвост
+                    }
+                    iter = result->first + idx;
+                    iend = result->at_afterlast();
+				} else {
+				    // если результат был пуст, то двигаемс€ дальше
+				}
+
+				std::cout << "\n" << result->debug() << "\n";
+
 			}
 		} else {
 			*result += *iter;

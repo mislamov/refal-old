@@ -25,7 +25,7 @@
 
 class RefVariable_e : public RefVariable {
 public:
-    CLASS_OBJECT_CAST(RefVariable_e);
+    ////CLASS_OBJECT_CAST(RefVariable_e);
 
     RefVariable_e(unistring name = EmptyUniString) : RefVariable(name) {};
 
@@ -39,7 +39,7 @@ public:
 
 class RefVariable_E : public RefVariable {
 public:
-    CLASS_OBJECT_CAST(RefVariable_E);
+    ////CLASS_OBJECT_CAST(RefVariable_E);
 
     RefVariable_E(unistring name = EmptyUniString) : RefVariable(name) {};
 
@@ -51,7 +51,7 @@ public:
 
 class RefVariable_END : public RefVariable_E {
 public:
-    CLASS_OBJECT_CAST(RefVariable_END);
+    ////CLASS_OBJECT_CAST(RefVariable_END);
     RefVariable_END(unistring name = EmptyUniString) : RefVariable_E(name) {};
 
     TResult  back(RefData **&tpl, Session *, RefData **&, RefData **&);
@@ -61,7 +61,7 @@ public:
 
 class RefVariable_s : public RefVariable {
 public:
-    CLASS_OBJECT_CAST(RefVariable_s);
+    ////CLASS_OBJECT_CAST(RefVariable_s);
 
     RefVariable_s(unistring name = EmptyUniString) : RefVariable(name) {};
 
@@ -74,7 +74,7 @@ public:
 
 class RefVariable_t : public RefVariable {
 public:
-    CLASS_OBJECT_CAST(RefVariable_t);
+    ////CLASS_OBJECT_CAST(RefVariable_t);
 
     RefVariable_t(unistring name = EmptyUniString) : RefVariable(name) {};
 

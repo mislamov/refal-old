@@ -65,7 +65,7 @@ class RefAlphaBase : public RefSymbolBase<RefAlphaBase, unichar> {
 public:
 	RefAlphaBase(Session *s) : RefSymbolBase<RefAlphaBase, unichar>(s) {};
 
-    CLASS_OBJECT_CAST(RefAlphaBase);
+    ////CLASS_OBJECT_CAST(RefAlphaBase);
     virtual ~RefAlphaBase(){};
     #ifdef TESTCODE
 	virtual unistring explode(){
@@ -80,7 +80,7 @@ public:
 
 class RefIntegerBase : public RefSymbolBase<RefIntegerBase, infint> {
 public:
-    CLASS_OBJECT_CAST(RefIntegerBase);
+    ////CLASS_OBJECT_CAST(RefIntegerBase);
 	RefIntegerBase(Session *s) : RefSymbolBase<RefIntegerBase, infint>(s) {};
     virtual ~RefIntegerBase(){};
 };
@@ -88,7 +88,7 @@ public:
 
 class RefRealBase : public RefSymbolBase<RefRealBase, infreal> {
 public:
-    CLASS_OBJECT_CAST(RefRealBase);
+    ////CLASS_OBJECT_CAST(RefRealBase);
 	RefRealBase(Session *s) : RefSymbolBase<RefRealBase, infreal>(s) {};
     virtual ~RefRealBase(){};
 };
@@ -97,7 +97,7 @@ public:
 
 class RefWordBase : public RefSymbolBase<RefWordBase, unistring> {
 public:
-    CLASS_OBJECT_CAST(RefWordBase);
+    ////CLASS_OBJECT_CAST(RefWordBase);
 	RefWordBase(Session *s) : RefSymbolBase<RefWordBase, unistring>(s) {};
     virtual ~RefWordBase(){};
 };
@@ -105,7 +105,7 @@ public:
 
 class RefByteBase : public RefSymbolBase<RefByteBase, char> {
 public:
-    CLASS_OBJECT_CAST(RefByteBase);
+    ////CLASS_OBJECT_CAST(RefByteBase);
 	RefByteBase(Session *s) : RefSymbolBase<RefByteBase, char>(s) {};
     virtual ~RefByteBase(){};
 };

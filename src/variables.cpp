@@ -159,7 +159,7 @@ TResult  RefVariable_END::back(RefData**&tpl, Session *s, RefData **&l, RefData 
 
 TResult  RefVariable_s::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->MOVE_TO_next_term(r);
-	if (r && *r && !ref_dynamic_cast<RefDataBracket>(*r) ) {
+	if (r && *r && !(*r)->isDataBracket() ) {
         l=r;
         s->saveVar((RefVariable*)*tpl, l, r);
         s->MOVE_TO_next_template(tpl);

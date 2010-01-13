@@ -75,10 +75,10 @@ public:
 			*gc_first; // ссылка на первый созданный элемент
 
 public:
-	inline Session(RefProgram *p){ 
+	inline Session(RefProgram *p){
 				gc_first = gc_last = new RefDataNull();
-				program = p; 
-	}; 
+				program = p;
+	};
 	PooledStack<RefData**> termChainsJumpPoints;
 	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
 	PooledStack<long> variants_idxs;
@@ -102,21 +102,21 @@ public:
 	//inline RefData** current_templ_l(){ return current_templ_borders.top1(); };
 	//inline RefData** current_templ_r(){ return current_templ_borders.top2(); };
 	inline void saveConditionArg(RefConditionBase* cnd, RefChain *arg){ conditionsArgs.put(cnd,	arg); };
-	inline RefChain* restoreConditionArg(RefConditionBase* cnd){ 
-		RefConditionBase* cnd0; 
-		RefChain *res; 
-		conditionsArgs.top_pop(cnd0, res); 
+	inline RefChain* restoreConditionArg(RefConditionBase* cnd){
+		RefConditionBase* cnd0;
+		RefChain *res;
+		conditionsArgs.top_pop(cnd0, res);
 		#ifdef TESTCODE
 		if (cnd!=cnd0) AchtungERRORs(this);
 		#endif
 		return res;
 	};
 
-	SessionStatePoint* getState(){ 
-		SessionStatePoint *ss = new SessionStatePoint(); 
-		ss->conditionsArgsCount = conditionsArgs.getLength(); 
+	SessionStatePoint* getState(){
+		SessionStatePoint *ss = new SessionStatePoint();
+		ss->conditionsArgsCount = conditionsArgs.getLength();
 		ss->topVarMap = currentMapStack();
-		ss->topVarMap_leng = ss->topVarMap->getLength(); 
+		ss->topVarMap_leng = ss->topVarMap->getLength();
 		ss->count_variants_idxs_done = variants_idxs_done.getLength();
 		ss->count_repeats_idxs_done  = repeats_idxs_done.getLength();
 
@@ -126,7 +126,7 @@ public:
 		ss->count_variants_idxs		= variants_idxs.getLength();			// не должен измениться после матчинга
 		ss->count_repeats_idxs		= repeats_idxs.getLength();			// не должен измениться после матчинга
 		#endif
-		return ss; 
+		return ss;
 	};
 
 	void backToState(SessionStatePoint* ss){
@@ -134,7 +134,7 @@ public:
 		if (ss->conditionsArgsCount > conditionsArgs.getLength()) AchtungERRORs(this);
 		#endif
 
-		conditionsArgs.setLength(ss->conditionsArgsCount); 
+		conditionsArgs.setLength(ss->conditionsArgsCount);
 		while(ss->topVarMap != varMapStack.top()){
 			delete varMapStack.top_pop();
 			#ifdef TESTCODE
@@ -179,7 +179,7 @@ public:
 		RefStructBrackets* tpl2 = 0;
 		bracks.top_pop(tpl2, br);
 		#ifdef TESTCODE
-		if (tpl2 != tpl) 
+		if (tpl2 != tpl)
 			AchtungERRORs(this);
 		#endif
 		return br;
@@ -217,7 +217,7 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Va
 	varMapStack.top()->top_pop(varNew, l, r, vm);
 	#ifdef TESTCODE
 	if (var != varNew){
-		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!"); 
+		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!");
 		//AchtungERRORs(this);
 	}
 	#endif
@@ -228,8 +228,8 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
 	VarMap* vm = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
 	#ifdef TESTCODE
-	if (var != varNew){		
-		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!"); 
+	if (var != varNew){
+		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!");
 	}
 	if (vm) {
 		unexpectedERRORs(this);
@@ -241,7 +241,7 @@ inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, VarMa
 	return varMapStack.top()->findByLink(var, l, r, vm);
 };
 inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r) {
-	VarMap* vm = 0;	
+	VarMap* vm = 0;
 	#ifdef TESTCODE
 		bool res = varMapStack.top()->findByLink(var, l, r, vm);
 		if (vm) {
@@ -281,9 +281,9 @@ inline RefData** Session::GET_pred_template(RefData** p){
 	return p-1;
 };
 
-inline void Session::gc_exclude(RefData *data){ 
+inline void Session::gc_exclude(RefData *data){
 		data->set_gc_mark();
-		if (ref_dynamic_cast<RefDataBracket>(data)){
+		if ((data)->isDataBracket()){
 			RefDataBracket *br = (RefDataBracket*)data;
 			gc_exclude( br->chain );
 		}

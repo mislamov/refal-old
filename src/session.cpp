@@ -233,7 +233,7 @@ void Session::gc_clean(RefData* save_point){
 					tmp = pre->gc_next;
 					pre->gc_next = pre->gc_next->gc_next;
 					//std::cout << "\n~~~~ " << tmp /*->debug()*/ << std::flush;
-					//if (ref_dynamic_cast<RefDataBracket>(tmp)) std::cout << "\n    (): " << ((RefDataBracket*)tmp)->chain << std::flush;
+					//if ((tmp)->isDataBracket()) std::cout << "\n    (): " << ((RefDataBracket*)tmp)->chain << std::flush;
 
 					delete tmp;
 
@@ -286,7 +286,7 @@ void Session::gc_exclude(RefChain *chain){
 			iter<iend;
 			++iter){
 			(*iter)->set_gc_mark();
-			if (ref_dynamic_cast<RefDataBracket>(*iter)){
+			if ((*iter)->isDataBracket()){
 				gc_exclude( ((RefDataBracket*)(*iter))->chain );
 			}
 		}
@@ -421,7 +421,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 
 			continue;
 		}
-		brack = ref_dynamic_cast<RefDataBracket>(*item);
+		brack = (*item)->isDataBracket();
 		if (brack){
 			if (ref_dynamic_cast<RefStructBrackets>(brack)){
 				*result +=  new RefStructBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain

@@ -20,8 +20,8 @@
 #define REF_CORE_H_INCLUDED
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
-//#define TESTCODE
-//#define DEBUG
+#define TESTCODE
+#define DEBUG
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины
@@ -154,46 +154,47 @@ enum RefDataTypesForCast {
     castUseRTTI       = B32(01000000, 00000000, 00000000, 00000000), // для объектов требуется сисемный dynamic_cast
 
     /*рефал-символы*/
-    castRefSymbolBase	  = B32(00000000, 00000001, 00000000, 00000000), // рефал-символ
-    castRefIntegerBase    = B32(00000000, 00000000, 00000000, 00000001) | castRefSymbolBase,
-    castRefRealBase       = B32(00000000, 00000000, 00000000, 00000010) | castRefSymbolBase,
-    castRefAlphaBase      = B32(00000000, 00000000, 00000000, 00000100) | castRefSymbolBase,
-    castRefByteBase       = B32(00000000, 00000000, 00000000, 00001000) | castRefSymbolBase,
-    castRefWordBase       = B32(00000000, 00000000, 00000000, 00010000) | castRefSymbolBase,
 
-    castRefBracketBase   =    B32(00000000, 00000010, 00000000, 00000000), // базовая скобка
-    castRefStructBracket =    B32(00000000, 00000000, 00000000, 00000001) | castRefBracketBase,
-    castRefExecBracket   =    B32(00000000, 00000000, 00000000, 00000010) | castRefBracketBase,
-    castRefData_DOT      =    B32(00000000, 00000000, 00000000, 00000100) | castRefBracketBase,
-    castRefTemplateBridgeVar= B32(00000000, 00000000, 00000000, 00001000) | castRefBracketBase,
-    castRefTemplateBridgeTmpl=B32(00000000, 00000000, 00000000, 00010000) | castRefBracketBase,
-    castRefGroupBracket  =    B32(00000000, 00000000, 00000000, 00100000) | castRefBracketBase,
-    castref_repeater     =    B32(00000000, 00000000, 00000000, 01000000) | castRefBracketBase,
+    //castRefSymbolBase	  = B32(00000000, 00000001, 00000000, 00000000), // рефал-символ
+    //castRefIntegerBase    = B32(00000000, 00000000, 00000000, 00000001) | castRefSymbolBase,
+    //castRefRealBase       = B32(00000000, 00000000, 00000000, 00000010) | castRefSymbolBase,
+    //castRefAlphaBase      = B32(00000000, 00000000, 00000000, 00000100) | castRefSymbolBase,
+    //castRefByteBase       = B32(00000000, 00000000, 00000000, 00001000) | castRefSymbolBase,
+    //castRefWordBase       = B32(00000000, 00000000, 00000000, 00010000) | castRefSymbolBase,
 
-    castRefVariableBase  =  B32(00000000, 00000100, 00000000, 00000000), // базовая открытая переменная
-    castRefVariable      =  castRefVariableBase, // переменная
-    castRefVariable_E    =  B32(00000000, 00000000, 00000000, 00000001) | castRefVariable,
-    castRefVariable_e    =  B32(00000000, 00000000, 00000000, 00000010) | castRefVariable,
-    castRefVariable_s    =  B32(00000000, 00000000, 00000000, 00000100) | castRefVariable,
-    castRefVariable_t    =  B32(00000000, 00000000, 00000000, 00001000) | castRefVariable,
-    castRefVariable_END  =  B32(00000000, 00000000, 00000000, 00010000) | castRefVariable,
-    castRefVarChainsNotInit=  B32(00000000, 00000000, 00000000, 00100000) | castRefVariable,
-    castRefVarAlpha      =  B32(00000000, 00000000, 00000000, 01000000) | castRefVariable,
-    castRefVarByte       =  B32(00000000, 00000000, 00000000, 10000000) | castRefVariable,
-    castRefVarInteger    =  B32(00000000, 00000000, 00000001, 00000000) | castRefVariable,
-    castRefVarReal       =  B32(00000000, 00000000, 00000010, 00000000) | castRefVariable,
-    castRefVarWord       =  B32(00000000, 00000000, 00000100, 00000000) | castRefVariable,
+    //castRefBracketBase   =    B32(00000000, 00000010, 00000000, 00000000), // базовая скобка
+    //castRefStructBracket =    B32(00000000, 00000000, 00000000, 00000001) | castRefBracketBase,
+    //castRefExecBracket   =    B32(00000000, 00000000, 00000000, 00000010) | castRefBracketBase,
+    //castRefData_DOT      =    B32(00000000, 00000000, 00000000, 00000100) | castRefBracketBase,
+    //castRefTemplateBridgeVar= B32(00000000, 00000000, 00000000, 00001000) | castRefBracketBase,
+    //castRefTemplateBridgeTmpl=B32(00000000, 00000000, 00000000, 00010000) | castRefBracketBase,
+    //castRefGroupBracket  =    B32(00000000, 00000000, 00000000, 00100000) | castRefBracketBase,
+    //castRef_repeater     =    B32(00000000, 00000000, 00000000, 01000000) | castRefBracketBase,
 
-    castRefLinkToVariable       =   B32(00000000, 00001000, 00000000, 00000000), // закрытая переменная
-    castRefLinkToPartOfVariable =   B32(00000000, 00000000, 00000000, 00000001) | castRefLinkToVariable,
+    //castRefVariableBase  =  B32(00000000, 00000100, 00000000, 00000000), // базовая открытая переменная
+    //castRefVariable      =  castRefVariableBase, // переменная
+    //castRefVariable_E    =  B32(00000000, 00000000, 00000000, 00000001) | castRefVariable,
+    //castRefVariable_e    =  B32(00000000, 00000000, 00000000, 00000010) | castRefVariable,
+    //castRefVariable_s    =  B32(00000000, 00000000, 00000000, 00000100) | castRefVariable,
+    //castRefVariable_t    =  B32(00000000, 00000000, 00000000, 00001000) | castRefVariable,
+    //castRefVariable_END  =  B32(00000000, 00000000, 00000000, 00010000) | castRefVariable,
+    //castRefVarChainsNotInit=  B32(00000000, 00000000, 00000000, 00100000) | castRefVariable,
+    //castRefVarAlpha      =  B32(00000000, 00000000, 00000000, 01000000) | castRefVariable,
+    //castRefVarByte       =  B32(00000000, 00000000, 00000000, 10000000) | castRefVariable,
+    //castRefVarInteger    =  B32(00000000, 00000000, 00000001, 00000000) | castRefVariable,
+    //castRefVarReal       =  B32(00000000, 00000000, 00000010, 00000000) | castRefVariable,
+    //castRefVarWord       =  B32(00000000, 00000000, 00000100, 00000000) | castRefVariable,
 
-    castRefTemplateBase  =  B32(00000000, 00010000, 00000000, 00000000),
-    castRefUserTemplate  =  B32(00000000, 00000000, 00000000, 00000001) | castRefTemplateBase,
+    //castRefLinkToVariable       =   B32(00000000, 00001000, 00000000, 00000000), // закрытая переменная
+    //castRefLinkToPartOfVariable =   B32(00000000, 00000000, 00000000, 00000001) | castRefLinkToVariable,
 
-    castRefMatchingCutter=  B32(00000000, 00100000, 00000000, 00000000),
+    //castRefTemplateBase  =  B32(00000000, 00010000, 00000000, 00000000),
+    //castRefUserTemplate  =  B32(00000000, 00000000, 00000000, 00000001) | castRefTemplateBase,
 
-    castRefConditionBase =  B32(00000000, 01000000, 00000000, 00000000),
-    castRefCondition     =  B32(00000000, 00000000, 00000000, 00000001) | castRefConditionBase
+    //castRefMatchingCutter=  B32(00000000, 00100000, 00000000, 00000000),
+
+    //castRefConditionBase =  B32(00000000, 01000000, 00000000, 00000000),
+    //castRefCondition     =  B32(00000000, 00000000, 00000000, 00000001) | castRefConditionBase
 };
 
 
@@ -214,16 +215,20 @@ virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
 
 class RefObject;
 
+//*
 template <class T>
 T* ref_dynamic_cast(RefObject* d) {
 	return dynamic_cast<T*>(d);
-}
+}//*/
 
 const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
 
+
+
 /*
 template <class T>
-T* ref_dynamic_cast(RefObject* d) {
+T* ref_dynamic_cast_(RefObject* d) {
+
     #ifdef TESTCODE
     if (!d){
 		return 0;
@@ -251,10 +256,8 @@ T* ref_dynamic_cast(RefObject* d) {
     return testres2;
     #endif
 
-    #define POINTER_INT_TYPE unsigned long
-
+    //#define POINTER_INT_TYPE unsigned long
     RefDataTypesForCast objectCast = d->object_cast();
-
     if ((T::getClassTypeCast & castUseRTTI)) {
         return dynamic_cast<T*>(d);
     }
@@ -263,9 +266,10 @@ T* ref_dynamic_cast(RefObject* d) {
             return (T*)(d);
         }
     }
+
     return 0;
 };
-*/
+//*/
 
 
 inline std::string replace(std::string text, std::string s, std::string d)

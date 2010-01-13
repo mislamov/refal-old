@@ -81,13 +81,30 @@ RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
 	co::chains++;
 };
 
+
+RefChain::RefChain(Session *s, RefChain *ownchain, RefData **from, RefData **to) : RefData(s) { // size is not lenght
+	first = 0;
+	leng = sysize = 0;
+	if (ownchain->isEmpty()) return;
+
+    ref_assert(from <= to);
+    ref_assert(ownchain->at_first() <= from);
+    ref_assert(ownchain->at_last()  >= to);
+
+	sysize = leng = to-from+1;
+	first = (RefData**)malloc(sizeof(RefData*) * sysize);
+	memcpy(first, from, sizeof(RefData*)*leng);
+	co::chains++;
+};
+
+
+
 RefChain::~RefChain(){
 	co::chains--;
 	if (first) free(first);
 };
 
 RefChain* RefChain::operator+=(RefData *ch) {
-
 	#ifdef TESTCODE
 	if (leng>sysize) SYSTEMERRORn("Achtung!")
 	#endif
@@ -237,7 +254,7 @@ RefVariable** RefChain::findVariable(unistring vname){
 	for (size_t i=0; i<leng; i++){
 		var = ref_dynamic_cast<RefVariable>( *((*this)[i]) );
 		if (var && var->getName()==vname) return (RefVariable**)(*this)[i];
-		br = ref_dynamic_cast<RefDataBracket>( *((*this)[i]) );
+		br = ( *((*this)[i]) )->isDataBracket();
 		if (br && (tvar = br->chain->findVariable(vname)) && tvar) {
 			return tvar;
 		}
@@ -250,9 +267,9 @@ RefVariable** RefChain::findVariable(unistring vname){
 inline bool eq_not_empty(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br){
 	RefDataBracket *brA, *brB;
 	while(Al<=Ar){
-		brA = ref_dynamic_cast<RefDataBracket>(*Al);
+		brA = (*Al)->isDataBracket();
 		if (brA){
-			brB = ref_dynamic_cast<RefDataBracket>(*Bl);
+			brB = (*Bl)->isDataBracket();
 			if (!brB || !eq(brA->chain, brB->chain)) return false;
 		} else {
 			if ((*Al != *Bl) && !(**Al == **Bl)) return false;
@@ -304,9 +321,9 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 				return BACK;
 		}
 
-		brA = ref_dynamic_cast<RefDataBracket>(*ldata);
+		brA = (*ldata)->isDataBracket();
 		if (brA){
-			brB = ref_dynamic_cast<RefDataBracket>(*r);
+			brB = (*r)->isDataBracket();
 			if (!brB || !eq(brA->chain, brB->chain)) {
 				s->MOVE_TO_pred_template(tpl);
 				return BACK;
@@ -438,7 +455,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				continue;
 			}
 
-			bracks = ref_dynamic_cast<RefDataBracket>(*point);
+			bracks = (*point)->isDataBracket();
 			if (bracks && !bracks->chain->isEmpty()) { // смотрим в скобки
 				subchains.put(point+1, end);
 				subchains.put(bracks->chain->at_first(), bracks->chain->at_afterlast());
@@ -576,6 +593,9 @@ TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData 
 
 
 unistring RefVarChains::explode() {
+#ifdef DEBUG
+	if (templInstant == 0 && templ == 0) return " [null] ";
+#endif
 	return " " + (templInstant?templInstant->getName():("{ "+templ->explode()+" }")) + "." + getName();
 };
 
@@ -823,7 +843,7 @@ void RefChain::killall(){
 		**iend=this->first+this->leng;
 		iter<iend;
 		++iter){
-			br = ref_dynamic_cast<RefDataBracket>(*iter);
+			br = (*iter)->isDataBracket();
 			if (br && br->chain){
 				br->chain->killall();
 				delete br->chain;
@@ -842,7 +862,7 @@ void RefChain::killalldata(){
 		**iend=this->first+this->leng;
 		iter<iend;
 		++iter){
-			br = ref_dynamic_cast<RefDataBracket>(*iter);
+			br = (*iter)->isDataBracket();
 			if (br){
 				br->chain->killalldata();
 				//delete br->chain;
@@ -862,7 +882,7 @@ RefDataBracket::~RefDataBracket(){
 };
 
 
-RefVarChains::~RefVarChains(){ 
+RefVarChains::~RefVarChains(){
 	//templ - удал€ть нельз€, если пренадлежит RefUserTemplate!
 	if (!templInstant){
 		templ->killalldata();
@@ -880,7 +900,7 @@ RefVariantsChains::~RefVariantsChains(){
 
 	};
 
-RefRepeaterChain::~RefRepeaterChain(){ 
-	templ->killalldata(); 
-	templ->gc_delete(); 
+RefRepeaterChain::~RefRepeaterChain(){
+	templ->killalldata();
+	templ->gc_delete();
 };
