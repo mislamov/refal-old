@@ -60,8 +60,8 @@ RefData*   byte_creator(unistring value){
 
 
 RefChain* Dec (RefData** beg, RefData** end, Session* s){
-    RefInteger *a = ref_dynamic_cast<RefInteger >(*beg);
-    RefInteger *b = ref_dynamic_cast<RefInteger >(*end);
+	RefIntegerBase *a = ref_dynamic_cast<RefIntegerBase >(*beg);
+	RefIntegerBase *b = ref_dynamic_cast<RefIntegerBase >(*end);
 
 	if (!a || !b || (beg+1 != end)){
         RUNTIMEERRORs(s, "error arguments");
@@ -75,8 +75,8 @@ RefChain* Dec (RefData** beg, RefData** end, Session* s){
 
 
 RefChain* Div (RefData** beg, RefData** end, Session* s){
-    RefInteger *a = ref_dynamic_cast<RefInteger >(*beg);
-    RefInteger *b = ref_dynamic_cast<RefInteger >(*end);
+	RefIntegerBase *a = ref_dynamic_cast<RefIntegerBase >(*beg);
+	RefIntegerBase *b = ref_dynamic_cast<RefIntegerBase >(*end);
     if (!a || !b || (beg+1 != end)){
         RUNTIMEERRORs(s, "error arguments");
         return 0;
@@ -90,10 +90,10 @@ RefChain* Div (RefData** beg, RefData** end, Session* s){
 
 RefChain* Sum (RefData** beg, RefData** end, Session* s){
     infint thesum = 0;
-    RefInteger *a;
+    RefIntegerBase *a;
     //std::cout << "\n\nSum: ";
     while(beg != end+1){
-        a = ref_dynamic_cast<RefInteger >(*beg);
+		a = ref_dynamic_cast<RefIntegerBase >(*beg);
 
         if (! a){
             RUNTIMEERRORs(s, "error arguments");
@@ -111,10 +111,10 @@ RefChain* Sum (RefData** beg, RefData** end, Session* s){
 
 RefChain* Mul (RefData** beg, RefData** end, Session* s){
     infint thesum = 1;
-    RefInteger *a;
+    RefIntegerBase *a;
     //std::cout << "\n\nMul: ";
     while(beg != end+1){
-        a = ref_dynamic_cast<RefInteger >(*beg);
+		a = ref_dynamic_cast<RefIntegerBase >(*beg);
 
         if (! a){
             RUNTIMEERRORs(s, "error arguments");
@@ -252,7 +252,7 @@ RefChain* Implode (RefData** beg, RefData** end, Session* s){
 
 RefChain* Explode (RefData** lft, RefData** rht, Session* s){
     if (lft != rht) RUNTIMEERRORs(s, "must be one argument");
-    RefWord* ww = ref_dynamic_cast<RefWord>(*lft);
+	RefWordBase* ww = ref_dynamic_cast<RefWordBase >(*lft);
     if (! ww) RUNTIMEERRORs(s, "must be compund-symbol argument");
 
     long i = 0;

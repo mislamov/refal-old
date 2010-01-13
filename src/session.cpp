@@ -413,10 +413,13 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 				if (! vm->folowByWay(link->path, i, endi)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
 			}
 			if (i){
+				*result += new RefChain(this, 0, i, endi);
+				/*
 				++endi;
 				for( ; i < endi; ++i){
 					*result += *i;
 				}
+				*/
 			}
 
 			continue;

@@ -21,7 +21,7 @@
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2009 Marat Islamov"
 #define TESTCODE
-#define DEBUG
+//#define DEBUG
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины
@@ -160,19 +160,24 @@ enum RefDataTypesForCast {
     //castRefRealBase       = B32(00000000, 00000000, 00000000, 00000010) | castRefSymbolBase,
     //castRefAlphaBase      = B32(00000000, 00000000, 00000000, 00000100) | castRefSymbolBase,
     //castRefByteBase       = B32(00000000, 00000000, 00000000, 00001000) | castRefSymbolBase,
-    //castRefWordBase       = B32(00000000, 00000000, 00000000, 00010000) | castRefSymbolBase,
+//-castRefWordBase       = B32(00000000, 00000000, 00000000, 00010000) | castRefSymbolBase,
 
     //castRefBracketBase   =    B32(00000000, 00000010, 00000000, 00000000), // базовая скобка
-    //castRefStructBracket =    B32(00000000, 00000000, 00000000, 00000001) | castRefBracketBase,
-    //castRefExecBracket   =    B32(00000000, 00000000, 00000000, 00000010) | castRefBracketBase,
+//-castRefStructBracket =    B32(00000000, 00000000, 00000000, 00000001) | castRefBracketBase,
+//-castRefExecBracket   =    B32(00000000, 00000000, 00000000, 00000010) | castRefBracketBase,
     //castRefData_DOT      =    B32(00000000, 00000000, 00000000, 00000100) | castRefBracketBase,
     //castRefTemplateBridgeVar= B32(00000000, 00000000, 00000000, 00001000) | castRefBracketBase,
     //castRefTemplateBridgeTmpl=B32(00000000, 00000000, 00000000, 00010000) | castRefBracketBase,
     //castRefGroupBracket  =    B32(00000000, 00000000, 00000000, 00100000) | castRefBracketBase,
     //castRef_repeater     =    B32(00000000, 00000000, 00000000, 01000000) | castRefBracketBase,
 
+	castRefVarChains = castUseRTTI,
+	castRefVariantsChains = castUseRTTI,
+	castRefRepeaterChain = castUseRTTI,
+
+
     //castRefVariableBase  =  B32(00000000, 00000100, 00000000, 00000000), // базовая открытая переменная
-    //castRefVariable      =  castRefVariableBase, // переменная
+//-castRefVariable      =  castRefVariableBase, // переменная
     //castRefVariable_E    =  B32(00000000, 00000000, 00000000, 00000001) | castRefVariable,
     //castRefVariable_e    =  B32(00000000, 00000000, 00000000, 00000010) | castRefVariable,
     //castRefVariable_s    =  B32(00000000, 00000000, 00000000, 00000100) | castRefVariable,
@@ -185,18 +190,27 @@ enum RefDataTypesForCast {
     //castRefVarReal       =  B32(00000000, 00000000, 00000010, 00000000) | castRefVariable,
     //castRefVarWord       =  B32(00000000, 00000000, 00000100, 00000000) | castRefVariable,
 
-    //castRefLinkToVariable       =   B32(00000000, 00001000, 00000000, 00000000), // закрытая переменная
+//-castRefLinkToVariable       =   B32(00000000, 00001000, 00000000, 00000000), // закрытая переменная
     //castRefLinkToPartOfVariable =   B32(00000000, 00000000, 00000000, 00000001) | castRefLinkToVariable,
 
-    //castRefTemplateBase  =  B32(00000000, 00010000, 00000000, 00000000),
-    //castRefUserTemplate  =  B32(00000000, 00000000, 00000000, 00000001) | castRefTemplateBase,
+//-castRefTemplateBase  =  B32(00000000, 00010000, 00000000, 00000000),
+//-castRefUserTemplate  =  B32(00000000, 00000000, 00000000, 00000001) | castRefTemplateBase,
 
     //castRefMatchingCutter=  B32(00000000, 00100000, 00000000, 00000000),
 
     //castRefConditionBase =  B32(00000000, 01000000, 00000000, 00000000),
-    //castRefCondition     =  B32(00000000, 00000000, 00000000, 00000001) | castRefConditionBase
+//-castRefUserCondition     =  B32(00000000, 00000000, 00000000, 00000001) | castRefConditionBase
+castX
 };
 
+enum RefSymbolBitType {
+	bitNotSymbol         = B8(0),
+    bitRefAlphaBase      = B8(00000001),
+	bitRefWordBase       = B8(00000010),
+    bitRefIntegerBase    = B8(00000100),
+    bitRefRealBase       = B8(00001000),
+    bitRefByteBase       = B8(00010000)
+};
 
 #define BASE_CLASS_CAST(ClassName) \
 const static  RefDataTypesForCast getClassTypeCast = cast##ClassName; \
@@ -212,14 +226,26 @@ virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
 const static  RefDataTypesForCast getClassTypeCast = cast##ClassName; \
 virtual RefDataTypesForCast object_cast(){ return cast##ClassName; }
 
+#define CLASS_SYMBOL_CAST(ClassName) \
+const static  RefSymbolBitType bitRefSymbolBitType = bit##ClassName; \
+virtual RefSymbolBitType isRefSymbol(){ return bit##ClassName; }
+
 
 class RefObject;
+class RefData;
 
-//*
+/*
+template <class T>
+T* ref_dynamic_cast(RefData* d) {
+	if (d->isRefSymbol()) 
+		return (d->isRefSymbol() & T::bitRefSymbolBitType ? (T*)d : 0);
+	return dynamic_cast<T*>(d);
+}*/
+
 template <class T>
 T* ref_dynamic_cast(RefObject* d) {
 	return dynamic_cast<T*>(d);
-}//*/
+}
 
 const char varPathSeparator = '/';  // разделитель в пути к подпеременной. Внутреннее представление от парсера
 

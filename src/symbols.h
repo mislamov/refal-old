@@ -31,17 +31,15 @@ unistring the_explode(RefData **a, RefData **b);
 unistring the_text(RefData **a, RefData **b);
 
 
-class IRefSymbol : public RefData {
-protected:
-	IRefSymbol(Session *s) : RefData(s){};
-};
 
 template <class T, class t>
-class RefSymbolBase : public IRefSymbol {
+class RefSymbolBase : public RefData {
 public:
-	RefSymbolBase(Session *s) : IRefSymbol(s){};
+	RefSymbolBase(Session *s) : RefData(s){};
     virtual ~RefSymbolBase(){};
     virtual t getValue() = 0;
+	virtual RefSymbolBitType isRefSymbol() = 0;
+
     bool operator ==(RefData &rd) {
         return ref_dynamic_cast<T>(&rd) && ((T*)&rd)->getValue()==this->getValue();
     };
@@ -76,6 +74,8 @@ public:
 	#endif
 	virtual unistring toString(){ return explode(); };
 	virtual unistring debug(){ return explode(); };
+
+	CLASS_SYMBOL_CAST(RefAlphaBase);
 };
 
 class RefIntegerBase : public RefSymbolBase<RefIntegerBase, infint> {
@@ -83,6 +83,8 @@ public:
     ////CLASS_OBJECT_CAST(RefIntegerBase);
 	RefIntegerBase(Session *s) : RefSymbolBase<RefIntegerBase, infint>(s) {};
     virtual ~RefIntegerBase(){};
+
+	CLASS_SYMBOL_CAST(RefIntegerBase);
 };
 
 
@@ -91,6 +93,8 @@ public:
     ////CLASS_OBJECT_CAST(RefRealBase);
 	RefRealBase(Session *s) : RefSymbolBase<RefRealBase, infreal>(s) {};
     virtual ~RefRealBase(){};
+
+	CLASS_SYMBOL_CAST(RefRealBase);
 };
 
 
@@ -100,6 +104,8 @@ public:
     ////CLASS_OBJECT_CAST(RefWordBase);
 	RefWordBase(Session *s) : RefSymbolBase<RefWordBase, unistring>(s) {};
     virtual ~RefWordBase(){};
+
+	CLASS_SYMBOL_CAST(RefWordBase);
 };
 
 
@@ -108,6 +114,8 @@ public:
     ////CLASS_OBJECT_CAST(RefByteBase);
 	RefByteBase(Session *s) : RefSymbolBase<RefByteBase, char>(s) {};
     virtual ~RefByteBase(){};
+
+	CLASS_SYMBOL_CAST(RefByteBase);
 };
 
 
@@ -170,7 +178,6 @@ public:
 template <class TT, class tt>
 TResult  RefSymbolBase<TT, tt>::init(RefData**& tpl, Session* s, RefData**& l, RefData**& r) {
     s->MOVE_TO_next_term(r);
-//	LOG(" " << this->debug() << " == " << ((r && *r) ? (*r)->debug() : "0"));
     if ( r && *r && (this==*r || *this == **r)) {
         s->MOVE_TO_next_template(tpl);
         return GO;

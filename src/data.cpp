@@ -85,11 +85,11 @@ RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
 RefChain::RefChain(Session *s, RefChain *ownchain, RefData **from, RefData **to) : RefData(s) { // size is not lenght
 	first = 0;
 	leng = sysize = 0;
-	if (ownchain->isEmpty()) return;
+	if (ownchain && ownchain->isEmpty()) return;  // если родитель имеется и он пуст - ничего не добавляем
 
     ref_assert(from <= to);
-    ref_assert(ownchain->at_first() <= from);
-    ref_assert(ownchain->at_last()  >= to);
+    ref_assert(!ownchain || ownchain->at_first() <= from);
+    ref_assert(!ownchain || ownchain->at_last()  >= to);
 
 	sysize = leng = to-from+1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);

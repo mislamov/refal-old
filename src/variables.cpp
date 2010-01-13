@@ -22,18 +22,17 @@
 
 TResult  RefVariable_e::init(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
 	RefData **tmp = tpl;
-	IRefSymbol *symb = 0;
 	s->MOVE_TO_next_template(tmp);
 
 
-	if (tmp && (symb=ref_dynamic_cast<IRefSymbol>(*tmp))){ // если следующий элемент шаблона - символ
+	if (tmp && (*tmp)->isRefSymbol()){ // если следующий элемент шаблона - символ
 #ifdef DEBUG
 		std::cout << "e-symbol optimization\n";
 #endif
 		l = r;
 		do {
 			s->MOVE_TO_next_term(r);
-		} while( r && !(*symb == **r) );
+		} while( r && !(**tmp == **r) );
 		if (!r){
 			s->MOVE_TO_pred_template(tpl);
 			return BACK;
@@ -68,16 +67,15 @@ TResult  RefVariable_e::back(RefData**&tpl, Session *s, RefData **&l, RefData **
 
 
 	RefData **tmp = tpl;
-	IRefSymbol *symb = 0;
 	s->MOVE_TO_next_template(tmp);
-	if (tmp && (symb=ref_dynamic_cast<IRefSymbol>(*tmp))){ // если следующий элемент шаблона - символ
+	if (tmp && (*tmp)->isRefSymbol()){ // если следующий элемент шаблона - символ
 #ifdef DEBUG
 		std::cout << "e-symbol optimization\n";
 #endif
 
 		do {
 			s->MOVE_TO_next_term(r);
-		} while( r && !(*symb == **r) );
+		} while( r && !(**tmp == **r) );
 		if (!r){
 			s->MOVE_TO_pred_template(tpl);
 			return BACK;

@@ -56,6 +56,7 @@ class RefData : public RefObject {
 	friend class Session;
 private:
 	char gc_label;//todo:bitmap
+
 protected:
 	RefData *gc_next;
 	RefData() : RefObject(){ gc_next = 0; gc_label=0; co::datas++; }
@@ -79,18 +80,15 @@ public:
 	inline bool is_collected() { return (gc_label&4) != 0; } //   xxxxx0xx  -  НЕ коллекционируемый
 	inline void set_collected(){ gc_label &= 4; } //   xxxxx1xx  -  коллекционируемый
 
-	/*inline*/ void gc_delete()  {
-		if (!is_collected()){
-			delete this;
-			return;
-		}
-		gc_label |= 2; // xxxxxx1x   -  для удаления (ручная отметка)
+	inline void gc_delete()  { if (!is_collected()){ delete this; return; } 	gc_label |= 2; // xxxxxx1x   -  для удаления (ручная отметка)
 	};
 	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для удаления (gc отметка)
 	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11
 	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0
 
-	virtual RefDataBracket* isDataBracket(){ return 0; };
+	const static  RefSymbolBitType bitRefSymbolBitType = bitNotSymbol;
+	virtual RefDataBracket*  isDataBracket(){ return 0; };
+	virtual RefSymbolBitType isRefSymbol(){ return bitNotSymbol; };
 };
 
 

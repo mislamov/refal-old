@@ -87,7 +87,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				if (arg->isEmpty()) SYSTEMERRORs(sess, "Unexpected empty argument for function call-brackets! " << databr->chain->debug());
 				RefData **functionid = (*arg)[0];
 				//TODO: сделать прив€зку функциональных вызовов по именнованым област€м
-				RefWord *fname = ref_dynamic_cast<RefWord>(*functionid);
+				RefWordBase *fname = ref_dynamic_cast<RefWordBase>(*functionid);
 				RefFunctionBase *func = 0;
 				if (!fname || !(func = this->findFunction(fname->getValue()))){
 					RUNTIMEERRORs(sess, "Function not found in program");
@@ -102,33 +102,23 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					fresult = func->exec(0, 0, sess);
 				}
 
-				//arg->killall();
-				//delete arg;
 				//arg = executeExpression(fresult, sess); // опасна€ рекурси€! «аменить
-				//if (arg!=fresult) delete fresult;
 				//*result += arg;  // arg уничтожен оператором +=
+				//continue;
+
+
 
                 if (! fresult->isEmpty()){
-                    size_t idx = result->leng;  // сохран€ем индекс элемента, который будет перед результатом
-                                                // функции в поле зрени€. »ндекс вместо ссылки, так как realloc
-					if (!idx) {
-error:		--idx; // если цепочка была пуста, то в качестве ссылки запоминаем -1 (перед началом)
-					}
-
-                    *result += fresult;
-                    ref_assert(idx+1!=0 && result->at_last() != (result->first + idx) )
-
+      
                     if (++iter < iend){ // если еще есть необработанный хвост
-                        *result += new RefChain(sess, chain, iter, iend);  // сохран€ем хвост
-                    }
-                    iter = result->first + idx;
-                    iend = result->at_afterlast();
+                        *fresult += new RefChain(sess, chain, iter, iend);  // сохран€ем хвост
+	                }
+					iter = fresult->at_first();
+					--iter;
+                    iend = fresult->at_afterlast();
 				} else {
 				    // если результат был пуст, то двигаемс€ дальше
 				}
-
-				std::cout << "\n" << result->debug() << "\n";
-
 			}
 		} else {
 			*result += *iter;
@@ -139,6 +129,7 @@ error:		--idx; // если цепочка была пуста, то в качестве ссылки запоминаем -1 (п
 	sess->gc_exclude(result);
 	sess->gc_clean(gc_save_point);
 
+	//std::cout << "executeExpression: " << result->debug() << "\n";
 	return result;
 };
 
