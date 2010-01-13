@@ -1,0 +1,19 @@
+$ENTRY Go { = <Sing 10>;};
+
+Sing {
+    s.N = <Prout <Verse s.N>>;
+};
+
+Beer {
+    0 = "No more bottles of beer";
+    1 = "One bottle of beer";
+    s.N = s.N "bottles of beer";
+};
+
+Verse {
+   0 = "";
+   s.N = <Beer s.N> "on the wall.\n"
+        "Take one down, pass it around,\n"
+        <Beer <- s.N 1>> "on the wall\n\n"
+        <Verse <- s.N 1>>;
+};
