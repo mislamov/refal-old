@@ -39,6 +39,7 @@ public:
 	~RefProgram();
 	void regModule(RefModuleBase *); // регистрация модуля в программе (перед загрузкой)
     RefChain*  executeExpression (RefChain*, Session*); // вычисляет цепочку
+    RefChain*  executeExpression2 (RefChain*, Session*); // вычисляет цепочку
 	RefFunctionBase *findFunction(unistring  ); // ищет функцию в модулях по id
 	RefTemplateBase *findTemplate(unistring  ); // ищет шаблон в модулях по id
 

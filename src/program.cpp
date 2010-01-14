@@ -133,6 +133,104 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 	return result;
 };
 
+//---------
+RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
+	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
+	PooledTuple2<RefData**, RefData**> futurWay;// <с, до> - запланированые для обработки поля
+	PooledTuple2<size_t, size_t> brackets; // индекс скобки в way, размер ее цепочки
+	PooledStack<RefSegment**> segments;
+	
+	RefData
+		**ifrom = chain->at_beforefirst(),
+		**iend  = chain->at_afterlast(),
+        **iter  = chain->at_first();
+	RefDataBracket *tmpbr;
+	RefStructBrackets *tmpSbr;
+	RefExecBrackets   *tmpEbr;
+	size_t tmpsizet;
+
+	RefSegment *segment = 0;
+	RefChain *currentChain = chain;
+
+	while(true){
+		if (iter == iend){
+			//// закончили гулять внутри подцепочки
+			if (brackets.getLength()==0){
+				// вычисление цепочки для postWay закончено
+				if (futurWay.getLength()==0){  // закончили вычисление всего аргумента. компилируем результат
+					notrealisedERRORn;
+					//return result;
+				} else {
+					// активируем верхнюю отложенную подцепочку
+					futurWay.top_pop(iter, iend);
+					continue;
+				}
+			} else
+			if (/*мы в отрезке?*/ brackets.equalTop(0, 0)) { 
+				//// выпрыгиваем из отрезка;
+				brackets.pop();
+				futurWay.top_pop(iter, iend);
+				continue; 
+			} else {
+				//// значит мы внутри скобки и обработали все ее содержимое
+				size_t br_index;
+				brackets.top_pop(br_index, tmpsizet);
+				PooledTuple2<RefData**,RefData**>::TUPLE2 *lnk = pastWay.getPoolLinkByIndex(br_index);
+				
+
+				notrealisedERRORn;
+
+
+			}
+		} // end: if iter==end
+
+		//// если перед нами непустая подстрока символов
+		if ((*iter)->isRefSymbol()){			
+			do {
+				//sess->MOVE_TO_next_term(iter);  - сегментация учитывается тут принудительно, поэтому ++ :
+				++iter;
+			} while(iter != iend && (*iter)->isRefSymbol());
+			pastWay.put(ifrom+1, iter-1);
+			continue;
+		}
+
+		// перед нами отрезок
+		if (segment = ref_dynamic_cast<RefSegment>(*iter)){
+			if (++iter != iend){
+				// откладываем обработку всего, что после сегмента
+				futurWay.put(iter, iend);
+				brackets.put(0, 0); // кидаем в стек скобок признак того, что мы прыгнули в отрезок, а не в скобку
+			}
+
+			// прыгаем в сегмент
+			iend = segment->own->first + segment->to + 1;
+			iter = segment->own->first + segment->from;
+			continue;
+		}
+
+		// скобки: () или <>
+		if (tmpbr = (*iter)->isDataBracket()){
+			if (++iter != iend){
+				// откладываем обработку всего, что после скобки
+				futurWay.put(iter, iend);
+			}
+
+			brackets.put(pastWay.getLength(), 1);      // 1 - чтобы не конфликтовать с отрезками, если эта скобка с индексом 0
+			pastWay.put(0, tmpbr->getNewInstance(sess));  // первый 0 - означает что второй - RefDataBracket
+
+			// прыгаем в скобку
+			iend = segment->own->first + segment->to + 1;
+			iter = segment->own->first + segment->from;
+			continue;
+		}
+
+		SYSTEMERRORs(sess, "UNREALISED executing for point: " << (*iter)->debug());
+		//++iter; // именно ++, а не next_term, так как отрезки отлавливаются здесь
+	}
+
+};
+
+
 RefFunctionBase* RefProgram::findFunction(unistring id){
 	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
 	RefModuleBase* mod = 0;

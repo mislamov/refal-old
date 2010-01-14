@@ -89,9 +89,19 @@ public:
 	const static  RefSymbolBitType bitRefSymbolBitType = bitNotSymbol;
 	virtual RefDataBracket*  isDataBracket(){ return 0; };
 	virtual RefSymbolBitType isRefSymbol(){ return bitNotSymbol; };
+
+	virtual RefData* getNewInstance(Session* sess){ notrealisedERRORn; };
+
 };
 
+// отрезок
+class RefSegment : public RefData {
+public:
+	RefChain *own;
+	size_t from; // поскольку цепочки увеличиваютс€ в конце, а не в начале, то можетм хранить отступы от начала
+	size_t to;
 
+};
 
 
 class RefDataNull : public RefData {
@@ -226,6 +236,8 @@ public:
 
     TResult init(RefData **&, Session*, RefData **&, RefData **&);
     TResult back(RefData **&, Session*, RefData **&, RefData **&);
+
+	virtual RefData* getNewInstance(Session* sess){ return new RefStructBrackets(sess, 0); };
 };
 
 class RefExecBrackets : public RefDataBracket {
@@ -237,6 +249,9 @@ public:
 
     TResult init(RefData **&, Session*, RefData **&, RefData **&);
     TResult back(RefData **&, Session*, RefData **&, RefData **&);
+
+	virtual RefData* getNewInstance(Session* sess){ return new RefExecBrackets(sess, 0); };
+
 };
 
 
@@ -246,6 +261,11 @@ char* c_str(std::string str);
 //class RefChain;
 //static std::set<RefChain *> allchains;
 
+/*
+  –ефал-цепочка. ћожет только наращиватьс€ справа. Ќе уменьшаетс€.
+  ƒл€ хранени€ ссылок на точки в цепочки использовать только индексы (size_t),
+  так как из-за realloc ссылки могут измен€тьс€.
+*/
 class RefChain : public RefData {
 	friend bool eq(RefChain *, RefChain *);
 	friend class Session;
@@ -278,6 +298,7 @@ public:
 	inline RefData**  at_first(){ return (*this)[0]; };
 	inline RefData**  at_last(){ return (*this)[-1]; };
 	inline RefData**  at_afterlast(){ return (*this)[-1]+1; };
+	inline RefData**  at_beforefirst(){ return (*this)[0]-1; };
 
 	inline bool isEmpty(){ return (leng==0); }
 	inline size_t getLength(){ return leng; }

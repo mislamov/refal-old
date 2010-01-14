@@ -285,6 +285,12 @@ public:
 		i2 = pool_index->i2;
 		return true;
 	}
+
+	inline TUPLE2* getPoolLinkByIndex(size_t idx){
+		ref_assert( idx <= last_ind );
+		return pool + idx;
+	}
+
 	TUPLE2* findTopByFirstKey(T1 key){
 		for(size_t i=last_ind; i; --i){
 			if (pool[i].i1 == key) return pool+i;
@@ -300,6 +306,10 @@ public:
 		memset(pool, 0xff, sizeof(TUPLE2));
     };
 
+	inline bool equalTop(T1 i1, T2 i2){
+		TUPLE2* pool_last_ind = pool + last_ind;
+		return i1 == pool_last_ind->i1  &&  i2 == pool_last_ind->i2;
+	}
 };
 
 
