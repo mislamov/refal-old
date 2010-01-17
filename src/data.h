@@ -287,7 +287,7 @@ public:
 	RefChain(Session *, RefData *);			// цпочка из одного терма
 	RefChain(Session *, size_t systemsize);	// пустая цепочка для systemsize элементов
     RefChain(Session *, RefChain *ownchain, RefData **from, RefData **to); // цепочка из подцепочки
-
+	RefChain(Session *s, RefData** d, size_t sz) : RefData(s){ sysize=leng=sz; first=d; co::chains++; }
 	virtual ~RefChain();
 
 	RefChain*  operator+=(RefData  *ch);

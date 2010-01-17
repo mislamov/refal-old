@@ -261,6 +261,11 @@ public:
 		return true;
 	};
 
+	inline void flushfrom(size_t idx){
+		ref_assert(idx <= last_ind);
+		last_ind = idx+1;
+	};
+
 	inline void setnullfor(T1 key){
 		TUPLE2 *tp = this->findTopByFirstKey(key);
 		if (tp) return;
@@ -286,9 +291,13 @@ public:
 		return true;
 	}
 
-	inline TUPLE2* getPoolLinkByIndex(size_t idx){
+	inline TUPLE2* getPoolLinkForIndex(size_t idx){
 		ref_assert( idx <= last_ind );
-		return pool + idx;
+		return pool + idx + 1;
+	}
+
+	inline TUPLE2* getPoolLinkAfterLast(){
+		return pool+last_ind+1;
 	}
 
 	TUPLE2* findTopByFirstKey(T1 key){
