@@ -234,6 +234,11 @@ public:
 		i2 = pool_last_ind->i2;
 	};
 
+    inline TUPLE2* top_tuple_link(){
+		return pool + last_ind;
+	};
+
+
     inline T1 top1() {
         TUPLE2* pool_last_ind = pool + last_ind;
 		return pool_last_ind->i1;
@@ -263,7 +268,14 @@ public:
 
 	inline void flushfrom(size_t idx){
 		ref_assert(idx <= last_ind);
+#ifdef TESTCODE
+		while(last_ind > idx+1){
+			memset(pool+last_ind, 0xff, sizeof(TUPLE2));
+			last_ind--;
+		}
+#else
 		last_ind = idx+1;
+#endif
 	};
 
 	inline void setnullfor(T1 key){
@@ -282,6 +294,9 @@ public:
 
 	bool getByIndex(size_t index, T1 &i1, T2 &i2){
 		if (index<=0 || index>last_ind) {
+#ifdef DEBUG
+			std::cout << "\nWARN! index<=0 || index>last_ind\n";
+#endif
 			i1 = i2 = 0;
 			return false;
 		}
@@ -424,7 +439,9 @@ public:
 
 	bool getByIndex(size_t index, T1 &i1, T2 &i2, T3 &i3){
 		if (index<=0 || index>last_ind) {
-			i1 = i2 = i3 = 0;
+			i1 = 0;
+			i2 = 0;
+			i3 = 0;
 			return false;
 		}
 		TUPLE3* pool_index = pool + index;

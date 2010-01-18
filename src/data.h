@@ -269,6 +269,7 @@ char* c_str(std::string str);
 class RefChain : public RefData {
 	friend bool eq(RefChain *, RefChain *);
 	friend class Session;
+	friend class RefProgram;
 
 #ifdef TESTCODE
 public:

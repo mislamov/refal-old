@@ -29,6 +29,13 @@ std::string stringtime(struct tm *timeptr) {
     return result;
 }
 
+int main0 ( int argv, char **argc ) {
+    RefProgram *program = new RefProgram();
+	Session *sess = new Session(program);
+	RefChain *res = program->executeExpression(new RefChain(sess), sess);
+	std::cout << res->debug();
+	return 0;
+}
 
 int main ( int argv, char **argc ) {
     char *xmlFile;

@@ -23,6 +23,11 @@ RefAlpha128* RefAlpha128::alphatable = new RefAlpha128[128];
 
 
 unistring the_explode(RefData **a, RefData **b){
+#ifdef DEBUG
+	if (!a) {
+		return "$null, " + (*b)->debug();
+	}
+#endif
 	if (!a) {
 		return "";
 	}

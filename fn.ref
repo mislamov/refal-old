@@ -1,9 +1,19 @@
-$ENTRY Fact {
-               e.all,
-		e.all : 0 = 1;
-               s.N = <Mul s.N <Fact <Dec s.N 1>>>;
-            }
+$ENTRY Go{ = <Ud <Card>>
+}
+Ud {0 = ;
+e.1' 'e.2 = <qia (<Vert e.1>)(e.2)><Ud e.2>;
+e.1 =;
+}
 
-$ENTRY Go {
-= <Prout '10! = ' <Fact 10>>;
-          }
+qia {
+(e.1)(e.1' 'e.2) = <Print <Vert e.1>>;
+(e.1)(e.2' 'e.1' 'e.3) = <Print <Vert e.1>>;
+(e.1)(e.2' 'e.1) = <Print <Vert e.1>>;
+(e.1)(e.1) = <Print <Vert e.1>>;
+e.1 = e.1;
+}
+
+Vert {s.1 = s.1;
+s.1 e.2 s.3 = s.3 <Vert e.2> s.1;
+e.1 = e.1;
+}
