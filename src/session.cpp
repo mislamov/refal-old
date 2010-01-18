@@ -235,7 +235,11 @@ void Session::gc_clean(RefData* save_point){
 					//std::cout << "\n~~~~ " << tmp /*->debug()*/ << std::flush;
 					//if ((tmp)->isDataBracket()) std::cout << "\n    (): " << ((RefDataBracket*)tmp)->chain << std::flush;
 
-					delete tmp;
+					//RefChain *ch = ref_dynamic_cast<RefChain>(tmp);
+					//std::cout << tmp << "\t" << tmp->debug() << "\t" << (ch?ch->getLength() : 0 ) << "\n" << std::flush;
+
+					//if (ch)	
+						delete tmp;
 
 					#ifdef DEBUG
 					++tmpdbg;

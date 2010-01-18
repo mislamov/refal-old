@@ -53,7 +53,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 
 
 //TODO: оптимизировать - без рекурсии
-RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
 		return chain; // new RefChain();
 	}
@@ -133,8 +133,28 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 	return result;
 };
 
+
+class RefChainDoubleLinkManager : protected RefChain {
+	Session *sess;
+public:
+	RefChainDoubleLinkManager(Session *s) : RefChain(s, 64){ sess=s; };
+	RefChain* save(RefData *ch, RefChainDoubleLinkManager *&chain) {
+		ref_assert(chain==this);
+		if (leng == sysize){
+			chain = new RefChainDoubleLinkManager(sess);
+			chain->save(ch, chain);
+		} else {
+			*chain += ch;
+		}
+		return chain;
+};
+
+
+	RefData **at_last(){ return ((RefChain*)this)->at_last(); };
+};
+
 //---------
-RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
 	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля
 	PooledTuple2<size_t, size_t> brackets; // индекс скобки в way, размер ее цепочки
@@ -151,7 +171,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 	RefSegment *segment = 0;
 	RefChain *currentChain = chain;
 
-	RefChain *tmpForInstances = new RefChain(sess, 1024);
+	RefChainDoubleLinkManager *tmpForInstances = new RefChainDoubleLinkManager(sess);
 
 	while(true){
 		/*
@@ -243,6 +263,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 				lnkbr->i1 = lnkbr->i2;
 
 				if (lnkiter==lnknend){ // скобка пуста
+					bb->chain = new RefChain(sess);
 					//ref_assert(lnkbr->i1 == lnkbr->i2);
 					continue;
 				}
@@ -291,7 +312,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 					iend = fresult->at_afterlast();
 				} else {  // (F)
 					pastWay.pop();
-					(*tmpForInstances) += bb;
+					tmpForInstances->save(bb, tmpForInstances);
 					pastWay.put(tmpForInstances->at_last(), tmpForInstances->at_last());  // оптимизировать (на ~ setForTop)
 				}
 
@@ -335,8 +356,8 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 
 			brackets.put(pastWay.getLength(), 1);      // 1 - чтобы не конфликтовать с отрезками, если эта скобка с индексом 0
 			RefData *tmp = tmpbr->getNewInstance(sess);
-((RefDataBracket*)tmp)->chain = tmpbr->chain;
-			(*tmpForInstances) += tmp;
+			((RefDataBracket*)tmp)->chain = 0;//tmpbr->chain;
+			tmpForInstances->save(tmp, tmpForInstances);
 			pastWay.put(0, tmpForInstances->at_last());  // первый 0 - означает что второй - RefDataBracket
 
 			// прыгаем в скобку

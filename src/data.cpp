@@ -101,7 +101,9 @@ RefChain::RefChain(Session *s, RefChain *ownchain, RefData **from, RefData **to)
 
 RefChain::~RefChain(){
 	co::chains--;
-	if (first) free(first);
+	if (sysize) {
+		free(first);
+	}
 };
 
 RefChain* RefChain::operator+=(RefData *ch) {
