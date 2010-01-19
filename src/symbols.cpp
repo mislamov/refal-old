@@ -21,6 +21,20 @@
 
 RefAlpha128* RefAlpha128::alphatable = new RefAlpha128[128];
 
+std::map<unichar, RefAlphaBase*> RefAlpha::alphamap;
+
+RefAlphaBase* newRefAlpha(Session *s, unichar val){
+		if (val < 128){
+			return RefAlpha128::alphatable + val;
+		} else {
+			std::map<unichar, RefAlphaBase*>::iterator it = RefAlpha::alphamap.find(val);
+			if (it == RefAlpha::alphamap.end()){
+				return (RefAlpha::alphamap[val] = new RefAlpha(0, val));
+			}
+			return it->second;
+		}
+};
+
 
 unistring the_explode(RefData **a, RefData **b){
 #ifdef DEBUG

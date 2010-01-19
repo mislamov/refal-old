@@ -274,7 +274,7 @@ class RefChain : public RefData {
 #ifdef TESTCODE
 public:
 #else
-private:
+protected:
 #endif
 
 	RefData** first;

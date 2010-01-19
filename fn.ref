@@ -1,19 +1,33 @@
-$ENTRY Go{ = <Ud <Card>>
-}
-Ud {0 = ;
-e.1' 'e.2 = <qia (<Vert e.1>)(e.2)><Ud e.2>;
-e.1 =;
+$ENTRY  Go {
+	= <Prout <Do <Pair '(firstbr)outofbr(next first br(second br))'>>>;
 }
 
-qia {
-(e.1)(e.1' 'e.2) = <Print <Vert e.1>>;
-(e.1)(e.2' 'e.1' 'e.3) = <Print <Vert e.1>>;
-(e.1)(e.2' 'e.1) = <Print <Vert e.1>>;
-(e.1)(e.1) = <Print <Vert e.1>>;
-e.1 = e.1;
-}
 
-Vert {s.1 = s.1;
-s.1 e.2 s.3 = s.3 <Vert e.2> s.1;
-e.1 = e.1;
-}
+Do {
+	(e.1) = "error 1";
+	(e.1)(e.2) = "error 2";
+	(e.1)e.00(e.01(e.2)) = "success:" "second br=" e.2;
+	e.00 = "error 3";
+};
+
+Pair{
+   e.X  =  <Pair1 (( ))( e.X)>
+   };
+
+Pair1 {
+   (e.L( e.1 ))( '('e.2 )e.R  =  <Pair1 (e.L( e.1)( ))( e.2 )e.R>;
+   (e.L( e.1)(e.2 ))( ')'e.3 )e.R  =  <Pair1 (e.L( e.1(e.2) ))( e.3 )e.R>;
+   (( e.1 ))( ')'e.3 )e.R  =  <Prout '*** ERROR: Unbalanced ")"'
+        'found by Pair:'>  <Prout '*** 'e.1')'>;
+   (e.L( e.1 ))( s.2 e.3 )e.R  =  <Pair1 (e.L( e.1 s.2 ))( e.3 )e.R>;
+   (( e.1 ))( )  =  e.1;
+   (e.L( e.1 ))( )  =  <Prout '*** ERROR: Unbalanced "(" '
+        'found by Pair:'> <Prlmb e.L>;
+   };
+
+/*  PRint Left MultiBracket */
+Prlmb {
+   (e.1)e.2  =  <Prout '*** 'e.1'('> <Prlmb e.2>;
+     =
+   }
+   

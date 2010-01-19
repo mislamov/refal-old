@@ -23,6 +23,7 @@
 #include "session.h"
 
 #include <sstream>
+#include <map>
 
 class RefAlphaBase;
 
@@ -75,6 +76,10 @@ public:
 	virtual unistring toString(){ return explode(); };
 	virtual unistring debug(){ return explode(); };
 
+	bool operator ==(RefData &rd) { 
+		return this-&rd==0;
+	};
+
 	CLASS_SYMBOL_CAST(RefAlphaBase);
 };
 
@@ -120,21 +125,46 @@ public:
 
 
 
-
 class RefAlpha : public RefAlphaBase {
-    unichar value;
+	unichar value;
+
+	RefAlpha(Session *s, unichar val) : RefAlphaBase(0) { value = val; };
+
+	static std::map<unichar, RefAlphaBase*> alphamap;
+
 public:
-	RefAlpha(Session *s, unichar val) : RefAlphaBase(s) { value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
+
+	friend RefAlphaBase* newRefAlpha(Session*, unichar);
+	static void alphamap_clear(){
+		for(std::map<unichar, RefAlphaBase*>::iterator it = alphamap.begin(),
+			iend = alphamap.end();  it!=iend; ++it){
+				delete it->second;
+		}
+		alphamap.clear();
+	};
+
+	void operator delete( void * pointer){
+		return;
+	}
 };
 
+
 class RefAlpha128 : public RefAlphaBase {
-public:
 	RefAlpha128() : RefAlphaBase(0) {};
+public:
 	static RefAlpha128* alphatable;
 	virtual unichar getValue()   { return (this-alphatable); };
+
+	void operator delete( void * pointer){
+		return;
+	}
 };
+
+
+
+
 
 class RefInteger : public RefIntegerBase {
     infint value;

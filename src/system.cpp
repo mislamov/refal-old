@@ -29,7 +29,7 @@ RefChain *StrToChain(Session *s, unistring text){
 	RefChain *res = new RefChain(s, leng);
 
 	for(size_t i=0; i<leng; i++){
-		*res += new RefAlpha(s, text[i]);
+		*res += newRefAlpha(s, text[i]);
 	};
 	return res;
 };
@@ -41,7 +41,7 @@ RefData*   word_creator(unistring value){
 
 RefData*  alpha_creator(unistring value){
 	if (value.length() != 1) SYSTEMERRORn("Data for alpha incorrect: '" << value << "'");
-	return new RefAlpha(0, value[0]);
+	return newRefAlpha(0, value[0]);
 };
 
 RefData*    int_creator(unistring value){
@@ -161,11 +161,11 @@ RefChain*  Compare(RefData** beg, RefData** end, Session* s){
     }
 
     if (**beg > **end){
-        a = new RefAlpha(s, '+');
+        a = newRefAlpha(s, '+');
     } else if (*beg == *end || **beg == **end){
-        a = new RefAlpha(s, '0');
+        a = newRefAlpha(s, '0');
     } else {
-        a = new RefAlpha(s, '-');
+        a = newRefAlpha(s, '-');
     }
     return new RefChain(s, a);
 };
@@ -203,7 +203,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       RefChain *result = new RefChain(s, length);
       for (size_t i=0; i<length; i++){
             if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
-				(*result) += new RefAlpha(s, buffer[i]);
+				(*result) += newRefAlpha(s, buffer[i]);
             }
       }
 
@@ -232,7 +232,7 @@ RefChain* Card (RefData** beg, RefData** end, Session* s){
 		if (text[i] < 128){
 			*rch += RefAlpha128::alphatable+text[i];
 		}else{
-			*rch += new RefAlpha(s, text[i]);
+			*rch += newRefAlpha(s, text[i]);
 		}
     }
 
@@ -259,7 +259,7 @@ RefChain* Explode (RefData** lft, RefData** rht, Session* s){
     unistring str = ww->getValue();
     RefChain *result = new RefChain(s, str.length());
     while(str[i]){
-        *result += new RefAlpha(s, str[i++]);
+        *result += newRefAlpha(s, str[i++]);
     }
     return result;
 };

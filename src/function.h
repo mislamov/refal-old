@@ -42,6 +42,9 @@ public:
 
 class RefBuildInFunction : public RefFunctionBase {
 public:
+	RefBuildInFunction():RefFunctionBase(){
+		return;
+	};
 	unistring debug(){ return "Function " + getName(); };
 };
 

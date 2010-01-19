@@ -69,8 +69,8 @@ int main ( int argv, char **argc ) {
 
     int err = 0;
     if (! strstr(pname, ".xml")) {
-        ss0 << ".\\refgo.exe -e "  << "DiRefal_scaner " << pname << "\n";
-        ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << "DiRefal_scaner " << pname << "\n";
+        ss0 << ".\\refgo.exe -e "  << " direfal_scaner " << pname << "\n";
+        ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << " direfal_scaner " << pname << "\n";
         ss2 << pname << ".xml";
     } else {
         ss2 << pname;
@@ -148,7 +148,8 @@ int main ( int argv, char **argc ) {
     //delete result;
 
     delete program;
-    delete[] RefAlpha128::alphatable;
+	RefAlpha::alphamap_clear();
+	delete[] RefAlpha128::alphatable;
 
     #ifdef TESTCODE
     std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;

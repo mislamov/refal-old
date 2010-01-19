@@ -255,7 +255,7 @@ void XMLCALL  endElement(void *data, const char *name) {
                                                 if ( theCommand.compare(_L("TEXT")) == 0) {  //
                                                     unistring text = loader->currentchars;
                                                     for (size_t i=0; i<text.length(); i++) {
-                                                        *(loader->getCurrChain()) += new RefAlpha(0, text[i]);
+                                                        *(loader->getCurrChain()) += newRefAlpha(0, text[i]);
                                                     }
                                                 } else
                                                     if ( theCommand.compare(_L("BRACKET")) == 0 ) {

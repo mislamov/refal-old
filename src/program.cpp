@@ -52,7 +52,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 };
 
 
-//TODO: оптимизировать - без рекурсии
+// с рекурсией
 RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
 		return chain; // new RefChain();
@@ -134,7 +134,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 };
 
 
-class RefChainDoubleLinkManager : protected RefChain {
+class RefChainDoubleLinkManager : public RefChain {
 	Session *sess;
 public:
 	RefChainDoubleLinkManager(Session *s) : RefChain(s, 64){ sess=s; };
@@ -153,7 +153,7 @@ public:
 	RefData **at_last(){ return ((RefChain*)this)->at_last(); };
 };
 
-//---------
+//--------- без рекурсии
 RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
 	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля
