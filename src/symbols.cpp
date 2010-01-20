@@ -17,6 +17,7 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "symbols.h"
+#include <map>
 
 
 RefAlpha128* RefAlpha128::alphatable = new RefAlpha128[128];
@@ -72,6 +73,32 @@ unistring the_text(RefData **a, RefData **b){
 		result += a[i]->toString();
     }
 	return result;
+};
+
+
+std::map<unichar, RefAlphaBase*> alphamap;
+void alphaMapDestroy(){
+	std::map<unichar, RefAlphaBase*>::iterator it;
+	while(alphamap.size()){
+		it = alphamap.begin();
+		delete it->second;
+		alphamap.erase(it);
+	}
+}
+
+RefAlphaBase* newRefAlpha(Session *s, unichar val){
+	if (val < 128){
+		return RefAlpha128::alphatable + val;
+	}
+
+	std::map<unichar, RefAlphaBase*>::iterator it = alphamap.find(val);
+	if (it != alphamap.end()){
+		return it->second;
+	}
+
+	RefAlphaBase *ab = new RefAlpha(s, val);
+	alphamap[val] = ab;
+	return ab;
 };
 
 

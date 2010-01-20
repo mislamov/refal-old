@@ -58,6 +58,8 @@ private:
 	char gc_label;//todo:bitmap
 
 protected:
+	inline void set_not_deleteble_by_gc_delete(){ gc_label |= 2; };
+
 	RefData *gc_next;
 	RefData() : RefObject(){ gc_next = 0; gc_label=0; co::datas++; }
 	virtual ~RefData(){
@@ -80,11 +82,11 @@ public:
 	inline bool is_collected() { return (gc_label&4) != 0; } //   xxxxx0xx  -  НЕ коллекционируемый
 	inline void set_collected(){ gc_label &= 4; } //   xxxxx1xx  -  коллекционируемый
 
-	inline void gc_delete()  { if (!is_collected()){ delete this; return; } 	gc_label |= 2; // xxxxxx1x   -  для удаления (ручная отметка)
-	};
-	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для удаления (gc отметка)
-	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11
-	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0
+	inline void gc_delete()  { if (!is_collected() && !(gc_label&2)){ delete this; return; } }; // удалить если коллекционируемо и не не удаляемо
+	//gc_label |= 2; // xxxxxx1x   -  для принудительного сохранения (ручная отметка)
+	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для сохранения (gc отметка)
+	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11 - отмечено ли для сохранения
+	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0 - удалить по gc
 
 	const static  RefSymbolBitType bitRefSymbolBitType = bitNotSymbol;
 	virtual RefDataBracket*  isDataBracket(){ return 0; };

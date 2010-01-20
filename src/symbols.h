@@ -23,7 +23,6 @@
 #include "session.h"
 
 #include <sstream>
-#include <map>
 
 class RefAlphaBase;
 
@@ -76,11 +75,8 @@ public:
 	virtual unistring toString(){ return explode(); };
 	virtual unistring debug(){ return explode(); };
 
-	bool operator ==(RefData &rd) { 
-		return this-&rd==0;
-	};
-
 	CLASS_SYMBOL_CAST(RefAlphaBase);
+	virtual bool operator ==(RefData &rd) { return this==&rd; };
 };
 
 class RefIntegerBase : public RefSymbolBase<RefIntegerBase, infint> {
@@ -126,43 +122,23 @@ public:
 
 
 class RefAlpha : public RefAlphaBase {
-	unichar value;
-
-	RefAlpha(Session *s, unichar val) : RefAlphaBase(0) { value = val; };
-
-	static std::map<unichar, RefAlphaBase*> alphamap;
-
+    unichar value;
 public:
+	RefAlpha(Session *s, unichar val) : RefAlphaBase(s) { set_not_deleteble_by_gc_delete();	value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
-
-	friend RefAlphaBase* newRefAlpha(Session*, unichar);
-	static void alphamap_clear(){
-		for(std::map<unichar, RefAlphaBase*>::iterator it = alphamap.begin(),
-			iend = alphamap.end();  it!=iend; ++it){
-				delete it->second;
-		}
-		alphamap.clear();
-	};
-
-	void operator delete( void * pointer){
-		return;
-	}
 };
-
 
 class RefAlpha128 : public RefAlphaBase {
-	RefAlpha128() : RefAlphaBase(0) {};
 public:
+	RefAlpha128() : RefAlphaBase(0) { set_not_deleteble_by_gc_delete();	 };
 	static RefAlpha128* alphatable;
 	virtual unichar getValue()   { return (this-alphatable); };
-
-	void operator delete( void * pointer){
-		return;
-	}
 };
 
 
+RefAlphaBase* newRefAlpha(Session *s, unichar val);
+void alphaMapDestroy();
 
 
 

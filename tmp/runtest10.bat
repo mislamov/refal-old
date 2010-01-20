@@ -1,4 +1,1 @@
-@echo off
-copy ..\direfal_scaner.rsl
-cmd /C (sh -c "for i in `ls *.ref`; do echo $i; cmd //C drefgo10.bat $i; done")
-del *.xml
+cmd /C (sh -c "./runtest10.sh")
