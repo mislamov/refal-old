@@ -75,18 +75,18 @@ unistring the_text(RefData **a, RefData **b){
 	return result;
 };
 
-
-std::map<unichar, RefAlphaBase*> alphamap;
-void alphaMapDestroy(){
+void RefAlpha::alphaMapDestroy(){
 	std::map<unichar, RefAlphaBase*>::iterator it;
 	while(alphamap.size()){
 		it = alphamap.begin();
 		delete it->second;
 		alphamap.erase(it);
 	}
-}
+};
 
-RefAlphaBase* newRefAlpha(Session *s, unichar val){
+
+
+/*RefAlphaBase* newRefAlpha(Session *s, unichar val){
 	if (val < 128){
 		return RefAlpha128::alphatable + val;
 	}
@@ -99,7 +99,7 @@ RefAlphaBase* newRefAlpha(Session *s, unichar val){
 	RefAlphaBase *ab = new RefAlpha(s, val);
 	alphamap[val] = ab;
 	return ab;
-};
+};*/
 
 
 unistring RefWord::debug() {

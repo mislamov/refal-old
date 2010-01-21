@@ -100,7 +100,7 @@ bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefV
 
 
 
-
+//todo: оптимизацию как в е!
 TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData **&r ) {
 	/*	RefData **rr = s->current_view_r();
 	//s->MOVE_TO_pred_term(rr);
@@ -118,8 +118,8 @@ TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData *
 	s->MOVE_TO_next_term(rnext);
 
 	if (rnext){
-		l=rnext;
-		r=s->current_view_r();
+		l = rnext;
+		r = s->current_view_r();
 	}
     s->saveVar((RefVariable*)*tpl, l, r);
 	s->MOVE_TO_next_template(tpl);
@@ -127,6 +127,7 @@ TResult  RefVariable_E::init( RefData**&tpl, Session *s, RefData **&l, RefData *
 
 };
 
+//todo: оптимизацию как в е!
 TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **&r) {
     s->restoreVar((RefVariable*)*tpl, l, r);
     if (!l) {

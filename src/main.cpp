@@ -148,7 +148,7 @@ int main ( int argv, char **argc ) {
     //delete result;
 
     delete program;
-	alphaMapDestroy();
+	RefAlpha::alphaMapDestroy();
     delete[] RefAlpha128::alphatable;
 
     #ifdef TESTCODE

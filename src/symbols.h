@@ -23,8 +23,10 @@
 #include "session.h"
 
 #include <sstream>
+#include <map>
 
 class RefAlphaBase;
+RefAlphaBase* newRefAlpha(Session *, unichar);
 
 
 unistring the_explode(RefData **a, RefData **b);
@@ -124,9 +126,13 @@ public:
 class RefAlpha : public RefAlphaBase {
     unichar value;
 public:
+	static std::map<unichar, RefAlphaBase*> alphamap;
+	static void RefAlpha::alphaMapDestroy();
+
 	RefAlpha(Session *s, unichar val) : RefAlphaBase(s) { set_not_deleteble_by_gc_delete();	value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
+
 };
 
 class RefAlpha128 : public RefAlphaBase {
@@ -135,10 +141,6 @@ public:
 	static RefAlpha128* alphatable;
 	virtual unichar getValue()   { return (this-alphatable); };
 };
-
-
-RefAlphaBase* newRefAlpha(Session *s, unichar val);
-void alphaMapDestroy();
 
 
 
