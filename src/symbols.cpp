@@ -75,6 +75,23 @@ unistring the_text(RefData **a, RefData **b){
 	return result;
 };
 
+
+unistring the_debug_text(RefData **a, RefData **b){
+	if (!a) {
+		return "";
+	}
+	size_t leng = b-a;
+	if (!a || !b || leng<0) RUNTIMEERRORn("the_debug_text(**, **) : error arguments");
+	unistring result = "";
+    for (size_t i=0; i<=leng; i++) {
+		#ifdef TESTCODE
+		if (! a[i]) AchtungERRORn;
+		#endif
+		result += a[i]->debug();
+    }
+	return result;
+};
+
 void RefAlpha::alphaMapDestroy(){
 	std::map<unichar, RefAlphaBase*>::iterator it;
 	while(alphamap.size()){

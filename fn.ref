@@ -1,4 +1,4 @@
 $ENTRY Go {
-	= <Prout 'текст на русском языке'>;
+	= <ProutDebug <RefalTokens <Mount 'fn.ref'>>>;
+	= <Prout 'text' 123 > ;
 }
-

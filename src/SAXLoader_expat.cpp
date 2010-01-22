@@ -18,16 +18,14 @@
 #include "SAXLoader_expat.h"
 #include "SAXLoaderHeap.h"
 
-unistring toWstring(const char *str, unsigned int len) {
+unistring toWstring(const unichar *str, int len) {
     unistring result(str, len);
     return result;
 }
-unistring toWstring(const char *str) {
+unistring toWstring(const unichar *str) {
     return str ? unistring(str) : 0;
 }
-infint str2infint(unistring si) { // строку в число
-    return atol(si.c_str());
-};
+
 
 /*
 void XMLCALL  start(void *data, const char *el, const char **attr) {
@@ -74,11 +72,12 @@ void charData (void *data, const XML_Char *chars, int length) {
     loader->currentchars += toWstring(chars, length);
 }
 
-void XMLCALL startElement(void *data, const char *name, const char **attributes) {
+void XMLCALL startElement(void *data, const XML_Char *name, const XML_Char **attributes) {
     LoaderHeap *loader = (LoaderHeap *)data;
     ref_assert(loader!=0);
 
     unistring theCommand = toWstring(name);
+	//std::cout << "\nSTART: " << theCommand << "\n";
     loader->activeTag.push(theCommand);
 
     loader->currentchars = _L("");  // поскольку чтение строк, содержащих перенос - разделено в этом SAX, то строки набираются накоплением (конкатенациями) и обнуляются для новых тегов
@@ -160,15 +159,16 @@ void XMLCALL startElement(void *data, const char *name, const char **attributes)
                                                                     } else
                                                                         if ( theCommand.compare(_L("ERROR")) == 0 ) {
                                                                         }
-}
+};
 
 
-void XMLCALL  endElement(void *data, const char *name) {
+void XMLCALL  endElement(void *data, const XML_Char *name) {
     LoaderHeap *loader = (LoaderHeap *)data;
     ref_assert(loader!=0);
 
     //RefObject *tmpobj = 0;
     unistring theCommand = toWstring(name);
+	//std::cout << "\nEND: " << theCommand << "\n";
     RefData* tmpvdata = 0;
 
         if (! theCommand.compare(_L("ERROR"))) {

@@ -31,6 +31,7 @@ RefAlphaBase* newRefAlpha(Session *, unichar);
 
 unistring the_explode(RefData **a, RefData **b);
 unistring the_text(RefData **a, RefData **b);
+unistring the_debug_text(RefData **a, RefData **b);
 
 
 
@@ -165,7 +166,8 @@ public:
 class RefWord : public RefWordBase {
     unistring value;
 public:
-	RefWord(Session *s, unistring val) : RefWordBase(s){ value = val; };
+	inline RefWord(Session *s, unistring val) : RefWordBase(s){ value = val; };
+	inline RefWord(Session *s, unichar val) : RefWordBase(s){ value = ""; value += val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
     unistring debug() ;

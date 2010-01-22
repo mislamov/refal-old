@@ -99,6 +99,8 @@ public:
 
 	inline RefData** current_view_l(){ return current_view_borders.top1(); };
 	inline RefData** current_view_r(){ return current_view_borders.top2(); };
+	inline void save_current_view_borders(RefData** from, RefData** to){ current_view_borders.put(from, to); };
+	inline void delete_current_view_borders(){ current_view_borders.pop(); };
 	//inline RefData** current_templ_l(){ return current_templ_borders.top1(); };
 	//inline RefData** current_templ_r(){ return current_templ_borders.top2(); };
 	inline void saveConditionArg(RefConditionBase* cnd, RefChain *arg){ conditionsArgs.put(cnd,	arg); };

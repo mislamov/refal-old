@@ -59,9 +59,13 @@ namespace co {
     #define CHAIN_SYSTEM_PORTION_SIZE_INIT 128
 #endif
 
-
-typedef unsigned char  unichar;
-typedef std::string    unistring;
+#ifdef UNICODE
+	typedef wchar  unichar;
+	typedef std::wstring    unistring;
+#else
+	typedef /*unsigned*/ char  unichar;
+	typedef std::string    unistring;
+#endif
 
 //#define _L(quote) L##quote
 #define _L(quote) quote

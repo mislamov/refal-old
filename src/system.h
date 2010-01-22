@@ -44,8 +44,13 @@ RefChain* Sub   (RefData** beg, RefData** end, Session* s);
 RefChain* Mount (RefData** beg, RefData** end, Session* s);
 RefChain* Card  (RefData** beg, RefData** end, Session* s);
 RefChain* Prout (RefData** beg, RefData** end, Session* s);
+RefChain* ProutDebug (RefData** beg, RefData** end, Session* s);
 RefChain* Print (RefData** beg, RefData** end, Session* s);
 RefChain* Exit  (RefData** beg, RefData** end, Session* s);
+
+
+RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s);
+
 
 
 RefData*   word_creator(unistring value);
@@ -104,13 +109,25 @@ FUNCTION_DEFINITIONS
 		DEFINE_MODULE_FUNCTION(Mount);
 		DEFINE_MODULE_FUNCTION(Card);
 		DEFINE_MODULE_FUNCTION(Prout);
+		DEFINE_MODULE_FUNCTION(ProutDebug);
 		DEFINE_MODULE_FUNCTION(Print);
 		DEFINE_MODULE_FUNCTION(Exit);
+
+		DEFINE_MODULE_FUNCTION(RefalTokens);
+
 
 		DEFINE_MODULE_FUNCTION_ALIAS(Add, Sum);
 		DEFINE_MODULE_FUNCTION_ALIAS(Sub, Dec);
 
 END_DLL_MODULE
+
+inline infint str2infint(unistring si) { // строку в число
+    return atol(si.c_str());
+};
+
+inline infreal str2infreal(unistring si) { // строку в вещественное число
+	return atof(si.c_str());
+};
 
 
 #endif

@@ -109,7 +109,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 
 
                 if (! fresult->isEmpty()){
-      
+
                     if (++iter < iend){ // если еще есть необработанный хвост
                         *fresult += new RefChain(sess, chain, iter, iend);  // сохраняем хвост
 	                }
@@ -159,18 +159,16 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля
 	PooledTuple2<size_t, size_t> brackets; // индекс скобки в way, размер ее цепочки
 	PooledStack<RefSegment**> segments;
-	
+
 	RefData
 		**iend  = chain->at_afterlast(),
         **iter  = chain->at_first();
 	RefDataBracket *tmpbr;
-	//RefStructBrackets *tmpSbr;
-	//RefExecBrackets   *tmpEbr;
 	size_t tmpsizet, br_index, treelevel = 0;
 
 	RefSegment *segment = 0;
-	RefChain *currentChain = chain;
 
+	// склад для ссылок на [ ссылки для новых объектов ]
 	RefChainDoubleLinkManager *tmpForInstances = new RefChainDoubleLinkManager(sess);
 
 	while(true){
@@ -213,12 +211,12 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 						return result;
 					}
 
-					PooledTuple2<RefData**,RefData**>::TUPLE2 
+					PooledTuple2<RefData**,RefData**>::TUPLE2
 						*lnk = pastWay.getPoolLinkForIndex(0),
 						*lnkiter = lnk,
 						*lnknend = pastWay.getPoolLinkAfterLast();
 					size_t count = 0;
-					
+
 					while(lnkiter != lnknend){
 						count += ((lnkiter->i2 - lnkiter->i1) + 1);
 						++lnkiter;
@@ -243,18 +241,18 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					continue;
 				}
 			} else
-			if (/*мы в отрезке?*/ brackets.equalTop(0, 0)) { 
+			if (/*мы в отрезке?*/ brackets.equalTop(0, 0)) {
 				//// выпрыгиваем из отрезка;
 				brackets.pop();
 				futurWay.top_pop(iter, iend, tmpsizet);
 				ref_assert(tmpsizet==treelevel);
-				continue; 
+				continue;
 			} else {
 				//// значит мы внутри скобки и обработали все ее содержимое
 				--treelevel;
 				size_t br_index;
 				brackets.top_pop(br_index, tmpsizet);
-				PooledTuple2<RefData**,RefData**>::TUPLE2 
+				PooledTuple2<RefData**,RefData**>::TUPLE2
 					*lnkbr = pastWay.getPoolLinkForIndex(br_index), // databracket
 					*lnkiter = lnkbr + 1,
 					*lnknend = pastWay.getPoolLinkAfterLast();
@@ -275,7 +273,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					++lnkiter;
 				}
 				++lnkbr; // было на скобке
-				RefData 
+				RefData
 					**arg = (RefData**)malloc(count * sizeof(RefData*)),
 					**dest = arg;
 				tmpsizet = 0;

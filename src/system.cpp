@@ -289,6 +289,12 @@ RefChain* Prout (RefData** lft, RefData** rht, Session* s){
     return new RefChain(s);
 };
 
+RefChain* ProutDebug (RefData** lft, RefData** rht, Session* s){
+    std::cout
+			<< the_debug_text(lft, rht) << "\n";
+    return new RefChain(s);
+};
+
 
 RefChain* Print (RefData** lft, RefData** rht, Session* s){
 	unistring thetext = the_text(lft, rht);
@@ -308,4 +314,154 @@ RefChain* Print (RefData** lft, RefData** rht, Session* s){
 RefChain* Exit (RefData** lft, RefData** rht, Session* s){
 	exit(0);
 	return 0;
+};
+
+#define IS_EN_LETTER(ch)	((ch >=65 && ch <= 90)||(ch >= 97 && ch <= 122))
+#define IS_DIGIT(ch)		(ch >= 48 && ch <= 57)
+#define IS_WHITE(ch)		(ch > 00  && ch <= 32)
+
+inline unichar NEXT_CHAR(Session *s, RefData **&symch){ 
+	s->MOVE_TO_next_term(symch); 
+	if (!symch) return 0;
+	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
+	if (!sym) {
+			RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+	}
+	return sym->getValue();
+}
+
+
+RefChain* closeAllBrackets(Session *s, PooledTuple2<unichar, RefChain*> *reult_stack){
+	ref_assert(reult_stack->getLength());
+	unichar ch;
+	RefChain *chain = 0;
+	reult_stack->top_pop(ch, chain);
+	if (ch == '$') return chain;
+
+	do {
+
+
+
+		switch (ch){
+			case ')' : 
+				
+
+		}
+
+	}
+	while (reult_stack->getLength()){
+		
+	}
+
+	ref_assert(ch=='$');
+};
+
+
+RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
+	RefChain *result = new RefChain(s);
+	if (!beg) {
+		return result;
+	}
+	
+	s->save_current_view_borders(beg, end);  // устанавливаем границы для GET_next_term
+	RefData** symchar = beg; 
+	RefAlphaBase* sym = ref_dynamic_cast<RefAlphaBase>(*symchar);
+	if (!sym) {
+		RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+	}
+	unichar ch = sym->getValue();
+
+
+	PooledTuple2<unichar, RefChain*> reult_stack;
+	reult_stack.put('$', result);
+
+
+	do {
+		// пробелы
+		if (IS_WHITE(ch)){
+			do {
+				ch = NEXT_CHAR(s, symchar);
+			}while (IS_WHITE(ch));
+			(*result) += newRefAlpha(s, ' ');
+			continue;
+		}
+
+		// идентификатор
+		if (IS_EN_LETTER(ch)){
+			unistring word = "";
+			do{
+				word += ch;
+				ch = NEXT_CHAR(s, symchar);
+			}while(IS_EN_LETTER(ch) || IS_DIGIT(ch));
+			RefChain *tmp = new RefChain(s);
+			(*tmp) += new RefWord(s, "word");
+			(*tmp) += new RefWord(s, word);
+			(*result) += new RefStructBrackets(s, tmp);
+			continue;
+		}
+
+		// целое число
+		if (IS_DIGIT(ch)){
+			unistring word = "";
+			do{
+				word += ch;
+				ch = NEXT_CHAR(s, symchar);
+			}while(IS_DIGIT(ch));
+			/*if (ch!=0x46){ // НЕ точка
+				result += new RefInteger(s, word);
+				continue;
+			}*/
+			RefChain *tmp = new RefChain(s);
+			(*tmp) += new RefWord(s, "int");
+			(*tmp) += new RefInteger(s, str2infint(word));
+			(*result) += new RefStructBrackets(s, tmp);
+			
+			continue;
+		}
+
+		// целое число
+		if (ch == '\''){  // кавычка текстового символа
+			unichar ch_pre = '\'';
+			ch = NEXT_CHAR(s, symchar);
+			RefChain *tmp = new RefChain(s, new RefWord(s, "text"));
+			while(ch && (ch != '\'' || ch_pre=='\\')){
+				(*tmp) += (*symchar);
+				ch_pre = ch;
+				ch = NEXT_CHAR(s, symchar);
+			};
+			(*result) += new RefStructBrackets(s, tmp);
+			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			continue;
+		}
+
+		// структурная скобка
+		if (ch == '('){  // кавычка текстового символа
+			reult_stack.put(')', result = new RefChain(s));
+			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			continue;
+		}
+		if (ch == ')'){  // кавычка текстового символа
+			unichar old_chr;
+			Refchain* old_chain;
+			reult_stack.top(old_chr, old_chain);
+			if (old_chr == ch){
+				reult_stack.pop();
+				old_chain += new RefStructBrackets(s, result);
+				result = old_chain;
+				ch = NEXT_CHAR(s, symchar); // уходим от ')'
+				continue;
+			} else {
+				result = new RefChain(s, new RefWord(s, "F"));
+				(*result) += new RefStructBrackets(s, closeAllBrackets(s, &reult_stack));
+				(*result) += new RefStructBrackets(s, new RefChain(s, symchar, end-symchar+1));
+				return result;
+			}
+		}
+
+		(*result) += new RefWord(s, ch);
+		ch = NEXT_CHAR(s, symchar);
+	} while(symchar);
+
+	s->delete_current_view_borders(); // возвращаем сессию в исходное состояние
+	return result;
 };
