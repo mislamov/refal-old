@@ -1,4 +1,40 @@
-$ENTRY Go {
-	= <ProutDebug <RefalTokens <Mount 'fn.ref'>>>;
-	= <Prout 'text' 123 > ;
+
+FirstCode {
+	0 e.e = ;
+	int.t ("(" e.val) E.e = (<FirstCode 1024 e.val>) <FirstCode <- @.t 1> e.val @.e>;
+	int.t ("{" e.val) E.e = "{"<FirstCode 1024 e.val>"}" <FirstCode <- @.t 1> e.val @.e>;
+	int.t ("[" e.val) E.e = "["<FirstCode 1024 e.val>"]" <FirstCode <- @.t 1> e.val @.e>;
+	int.t ("<" e.val) E.e = "<"<FirstCode 1024 e.val>">" <FirstCode <- @.t 1> e.val @.e>;
+	int.t (t.class e.val) E.e = <FirstCode <- @.t 1> e.val @.e>;
+	int.t t.sym E.e = t.sym <FirstCode @.t @.e>;
+	int.t E.e = @.e;
 }
+
+$ENTRY Go {
+	,<Mount 'direfal_scaner.ref_'> : E.code
+	=
+		<Prout <MODULE <RefalTokens @.code>> >;
+}
+
+
+MODULE {
+	(comment END.) E.next = <MODULE @.next>;
+	{ "$" (word ENTRY) ' ' | } (word t.name) {' '|} ("{" e.body)  E.next 
+				=				'<FUNCTION name="' <Explode @.name> '">' <BLOCK @.body> '</FUNCTION>' <MODULE @.next>;
+	(word Template) ":" ":" "=" e.body ";" E.next = '<TEMPLATE name="' <Explode @.name> '">' <LEFT_PART @.body> '</TEMPLATE>' <MODULE @.next>;
+
+	' ' E.next = <MODULE @.next>;
+	";" E.next = <MODULE @.next>;
+	e.else = <Prout 'Function or Template expected here: ' @.else>;
+}
+
+
+BLOCK {
+	e.e = '...';
+}
+
+LEFT_PART {
+	e.e = '....';
+}
+
+

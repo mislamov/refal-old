@@ -191,8 +191,11 @@ public:
 public:
     inline PooledTuple2() {
 		#ifdef TESTCODE
-		if (sizeof(TUPLE2) != sizeof(T1)+sizeof(T2)) SYSTEMERRORn("Platform depend collision! sizeof(TUPLE2) != sizeof( struct{T1 T2} ).");
-		#endif
+		//std::cout << "\n\nsizeof(TUPLE2) = " << sizeof(TUPLE2) << "\n";
+		//std::cout << "sizeof(T1) = " << sizeof(T1) << "   "<< "sizeof(T2) = " << sizeof(T2) << "   " << "\n\n";
+		if (sizeof(TUPLE2) < sizeof(T1)+sizeof(T2)) 
+			SYSTEMERRORn("Platform depend collision! sizeof(TUPLE2) < sizeof( struct{T1 T2} ).");
+#endif
 
         last_ind = 0;
         poolsize = POOLSIZE_DEFAULT;

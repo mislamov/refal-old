@@ -1,4 +1,4 @@
-/*
+/* рус
 // D-Refal - sentential program language
 // Copyright (C) 2008-2009 Islamov Marat Shamilevich
 // islamov.marat@gmail.com
@@ -195,10 +195,11 @@ ScanObjectExprWithExecs {
 				{
 					'N' s.sub s.1 = "<INT>" <Symb s.1> "</INT>"   <ScanObjectExprWithExecs e.next>;
 					'W' s.sub s.1 = "<WORD>" <Explode s.1> "</WORD>" <ScanObjectExprWithExecs e.next>;
-					/*s.0 s.sub s.1 = "<WORD>" s.1 "</WORD>" <ScanObjectExprWithExecs e.next>;*/
+					/*'P' s.sub s.1 = "<WORD>" s.1 "</WORD>" <ScanObjectExprWithExecs e.next>; /* нужно когда слово из одного символа */
 					s.T s.sub s.1 = "@ERROR:" ('unkonown symbol in object-expression = "' s.1 '" of type [' s.T s.sub '] in ' (s.1) e.next);
 				};
 
+	(w s.1) e.next  =  "<WORD>" s.1 "</WORD>" <ScanObjectExprWithExecs e.next>;
 
 	/*термальное предложение*/
 	(e.1) e.next  =  "<WORD>" e.1 "</WORD>" <ScanObjectExprWithExecs e.next>;
@@ -599,6 +600,11 @@ Scan{
 	'+' e.all = (Add)	<Scan e.all>;
 	'-' e.all = (Dec)	<Scan e.all>;
 	'\''e.all = <Scan ('\'' ()) e.all>;
+	/*'"{"' e.all = (w "{")<Scan e.all>;
+	'"}"' e.all = (w "}")<Scan e.all>;
+	'"<"' e.all = (w "<")<Scan e.all>;
+	'">"' e.all = (w ">")<Scan e.all>;*/
+	'"' s.s '"' e.all =  (w s.s)<Scan e.all>;
 	'"' e.all = <Scan ('"'  ()) e.all>;
 	(s.quo (e.e)) '\\' e.all,
 		     e.all : {

@@ -54,12 +54,11 @@ public:
 	*/
 class RefData : public RefObject {
 	friend class Session;
-private:
-	char gc_label;//todo:bitmap
 
 protected:
 	inline void set_not_deleteble_by_gc_delete(){ gc_label |= 2; };
 
+	char gc_label;//todo:bitmap
 	RefData *gc_next;
 	RefData() : RefObject(){ gc_next = 0; gc_label=0; co::datas++; }
 	virtual ~RefData(){
@@ -81,6 +80,8 @@ public:
 
 	inline bool is_collected() { return (gc_label&4) != 0; } //   xxxxx0xx  -  НЕ коллекционируемый
 	inline void set_collected(){ gc_label &= 4; } //   xxxxx1xx  -  коллекционируемый
+
+	// xxxx0xxx  -  бит для использования наследниками RefData. Напр. RefChain
 
 	inline void gc_delete()  { if (!is_collected() && !(gc_label&2)){ delete this; return; } }; // удалить если коллекционируемо и не не удаляемо
 	//gc_label |= 2; // xxxxxx1x   -  для принудительного сохранения (ручная отметка)
@@ -235,6 +236,7 @@ public:
 	virtual ~RefStructBrackets(){};
 	unistring explode();
 	unistring debug();
+	unistring toString();
 
     TResult init(RefData **&, Session*, RefData **&, RefData **&);
     TResult back(RefData **&, Session*, RefData **&, RefData **&);
@@ -248,6 +250,7 @@ public:
 	virtual ~RefExecBrackets(){};
 	unistring explode();
 	unistring debug();
+	unistring toString();
 
     TResult init(RefData **&, Session*, RefData **&, RefData **&);
     TResult back(RefData **&, Session*, RefData **&, RefData **&);
@@ -290,8 +293,9 @@ public:
 	RefChain(Session *, RefData *);			// цпочка из одного терма
 	RefChain(Session *, size_t systemsize);	// пустая цепочка для systemsize элементов
     RefChain(Session *, RefChain *ownchain, RefData **from, RefData **to); // цепочка из подцепочки
-	RefChain(Session *s, RefData** d, size_t sz) : RefData(s){ sysize=leng=sz; first=d; co::chains++; }
+	RefChain(Session *s, RefData** d, size_t sz) : RefData(s){ sysize=leng=sz; first=d; co::chains++; gc_label|=0x08; }
 	virtual ~RefChain();
+	inline bool isMemoryProtected(){ return (gc_label&0x08)!=0; };
 
 	RefChain*  operator+=(RefData  *ch);
 	RefChain*  operator+=(RefChain *ch); // удаляет *ch
@@ -308,6 +312,7 @@ public:
 
 	unistring debug();
 	unistring explode();
+	unistring toString();
 
 	void compile(RefChain *, RefProgram *);
 	//void killall();     // удаление всех RefChain

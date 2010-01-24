@@ -277,11 +277,11 @@ RefChain* Prout (RefData** lft, RefData** rht, Session* s){
     #ifdef DEBUG
             << "\n############################### STDOUT ###############################\n"
             << ":####:\t"
-    #endif
-			<< the_text(lft, rht) << "\n"
-    #ifdef DEBUG
+			<< the_debug_text(lft, rht) << "\n"
             << "\n######################################################################\n"
-    #endif
+#else
+			<< the_text(lft, rht) << "\n"
+#endif
             ;
 	//std::cout << s->debug() << "\n" << std::flush;
 	//std::cout << "o: " << co::objs << "\n" << std::flush;
@@ -316,7 +316,7 @@ RefChain* Exit (RefData** lft, RefData** rht, Session* s){
 	return 0;
 };
 
-#define IS_EN_LETTER(ch)	((ch >=65 && ch <= 90)||(ch >= 97 && ch <= 122))
+#define IS_EN_LETTER(ch)	((ch >=65 && ch <= 90)||(ch >= 97 && ch <= 122) || (ch == '_'))
 #define IS_DIGIT(ch)		(ch >= 48 && ch <= 57)
 #define IS_WHITE(ch)		(ch > 00  && ch <= 32)
 
@@ -330,32 +330,52 @@ inline unichar NEXT_CHAR(Session *s, RefData **&symch){
 	return sym->getValue();
 }
 
+inline unichar AFTER_CHAR(Session *s, RefData **symch){ 
+	symch = s->GET_next_term(symch); 
+	if (!symch) return 0;
+	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
+	if (!sym) {
+			RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+	}
+	return sym->getValue();
+}
 
-RefChain* closeAllBrackets(Session *s, PooledTuple2<unichar, RefChain*> *reult_stack){
-	ref_assert(reult_stack->getLength());
+
+RefChain* closeAllBrackets(Session *s, RefChain *currChain, PooledTuple2<unichar, RefChain*> *result_stack){
+	ref_assert(result_stack->getLength());
 	unichar ch;
 	RefChain *chain = 0;
-	reult_stack->top_pop(ch, chain);
+	result_stack->top_pop(ch, chain);
 	if (ch == '$') return chain;
+	RefStructBrackets *br = 0;
 
+	unistring bracket_code;
 	do {
-
-
-
 		switch (ch){
-			case ')' : 
-				
-
+			case ')' : bracket_code = "("; break;
+			case '}' : bracket_code = "{"; break;
+			case '>' : bracket_code = "<"; break;
+			case ']' : bracket_code = "["; break;
+			default: SYSTEMERRORs(s, "unexpected bracket-type: " << ch);
 		}
-
-	}
-	while (reult_stack->getLength()){
-		
-	}
+		br = new RefStructBrackets(s, currChain);
+		(*chain) += br;
+		currChain = chain;
+		result_stack->top_pop(ch, chain);
+	} while (result_stack->getLength());
 
 	ref_assert(ch=='$');
+	//std::cout << chain->debug() << "\n";
+	return chain;
 };
 
+inline unichar ecran_char(unichar ch){
+	switch(ch){
+		case 't': return '\t'; 
+		case 'n': return '\n'; 
+	}
+	return ch;
+}
 
 RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 	RefChain *result = new RefChain(s);
@@ -372,8 +392,8 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 	unichar ch = sym->getValue();
 
 
-	PooledTuple2<unichar, RefChain*> reult_stack;
-	reult_stack.put('$', result);
+	PooledTuple2<unichar, RefChain*> result_stack;
+	result_stack.put('$', result);
 
 
 	do {
@@ -419,14 +439,16 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 			continue;
 		}
 
-		// целое число
 		if (ch == '\''){  // кавычка текстового символа
-			unichar ch_pre = '\'';
 			ch = NEXT_CHAR(s, symchar);
 			RefChain *tmp = new RefChain(s, new RefWord(s, "text"));
-			while(ch && (ch != '\'' || ch_pre=='\\')){
-				(*tmp) += (*symchar);
-				ch_pre = ch;
+			while(ch && (ch != '\'')){
+				if (ch=='\\'){
+					ch = NEXT_CHAR(s, symchar);
+					(*tmp) += newRefAlpha(s, ecran_char(ch));
+				} else {
+					(*tmp) += (*symchar);
+				}
 				ch = NEXT_CHAR(s, symchar);
 			};
 			(*result) += new RefStructBrackets(s, tmp);
@@ -434,27 +456,108 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 			continue;
 		}
 
-		// структурная скобка
-		if (ch == '('){  // кавычка текстового символа
-			reult_stack.put(')', result = new RefChain(s));
+
+		if (ch == '"'){  // кавычка термального слова
+			unichar ch_pre = '"';
+			ch = NEXT_CHAR(s, symchar);
+			unistring word;
+			RefChain *tmp = new RefChain(s, new RefWord(s, "word"));
+			while(ch && (ch != '"' || ch_pre=='\\')){
+				word += ch;
+				ch_pre = ch;
+				ch = NEXT_CHAR(s, symchar);
+			};
+			(*tmp) += new RefWord(s, word);
+			(*result) += new RefStructBrackets(s, tmp);
 			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
 			continue;
 		}
-		if (ch == ')'){  // кавычка текстового символа
-			unichar old_chr;
-			Refchain* old_chain;
-			reult_stack.top(old_chr, old_chain);
-			if (old_chr == ch){
-				reult_stack.pop();
-				old_chain += new RefStructBrackets(s, result);
-				result = old_chain;
-				ch = NEXT_CHAR(s, symchar); // уходим от ')'
+
+		// скобки
+		if (ch == '('){ 
+			result_stack.put(')', result);
+			result = new RefChain(s, new RefWord(s, ch));
+			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			continue;
+		}
+		if (ch == '<'){ 
+			result_stack.put('>', result);
+			result = new RefChain(s, new RefWord(s, ch));
+			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			continue;
+		}
+		if (ch == '{'){ 
+			result_stack.put('}', result);
+			result = new RefChain(s, new RefWord(s, ch));
+			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			continue;
+		}
+		if (ch == '['){ 
+			result_stack.put(']', result);
+			result = new RefChain(s, new RefWord(s, ch));
+			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			continue;
+		}
+
+		switch (ch){
+			case ')':
+			case '>':
+			case '}':
+			case ']':
+				unichar old_chr;
+				RefChain* old_chain;
+				result_stack.top(old_chr, old_chain);
+				if (old_chr == ch){
+					result_stack.pop();
+					(*old_chain) += new RefStructBrackets(s, result);
+					result = old_chain;
+					//std::cout << "\n::: " << result->debug() << "\n\n";
+					ch = NEXT_CHAR(s, symchar); // уходим от ')'
+					continue;
+				} else {
+					/*RefChain* t_result = new RefChain(s, new RefWord(s, "F"));
+					(*t_result) += new RefStructBrackets(s, closeAllBrackets(s, result, &result_stack));
+					(*t_result) += new RefStructBrackets(s, new RefChain(s, symchar, end-symchar+1));
+					return t_result;*/
+					RefChain* t_result = new RefChain(s, new RefWord(s, "error"));
+					(*t_result) += (symchar ? new RefChain(s, symchar, end-symchar+1) : new RefChain(s));
+					(*result)   += new RefStructBrackets(s, t_result);
+					return closeAllBrackets(s, result, &result_stack);
+				}
+		}
+
+		if (
+			(ch=='/' && AFTER_CHAR(s, symchar)=='*') ||
+			(ch=='\n' && AFTER_CHAR(s, symchar)=='*')
+		){ // коментарии   /* */   and  * \n
+			ch = NEXT_CHAR(s, symchar); // *
+			ch = NEXT_CHAR(s, symchar);
+			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
+			while(symchar && (ch != '*' || AFTER_CHAR(s, symchar)!='/')){
+				(*t_result) += newRefAlpha(s, ch);
+				ch = NEXT_CHAR(s, symchar);
+			}
+			(*result) += new RefStructBrackets(s, t_result);
+			if (symchar){
+				ch = NEXT_CHAR(s, symchar);  //   /
+				ch = NEXT_CHAR(s, symchar);  //   
 				continue;
-			} else {
-				result = new RefChain(s, new RefWord(s, "F"));
-				(*result) += new RefStructBrackets(s, closeAllBrackets(s, &reult_stack));
-				(*result) += new RefStructBrackets(s, new RefChain(s, symchar, end-symchar+1));
-				return result;
+			}
+		}
+
+
+		if (ch=='/' && AFTER_CHAR(s, symchar)=='/'){ // коментарии   //
+			ch = NEXT_CHAR(s, symchar); // /
+			ch = NEXT_CHAR(s, symchar);
+			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
+			while(symchar && (ch != '\n')){
+				(*t_result) += newRefAlpha(s, ch);
+				ch = NEXT_CHAR(s, symchar);
+			}
+			(*result) += new RefStructBrackets(s, t_result);
+			if (symchar){
+				ch = NEXT_CHAR(s, symchar);  //   /n..
+				continue;
 			}
 		}
 
@@ -462,6 +565,24 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 		ch = NEXT_CHAR(s, symchar);
 	} while(symchar);
 
+	ref_assert(result_stack.getLength()>=1);
+
+	if (result_stack.getLength()!=1){
+		/*RefChain *t_result = new RefChain(s, new RefWord(s, "F"));
+		(*t_result) += new RefStructBrackets(s, closeAllBrackets(s, result, &result_stack));
+		(*t_result) += new RefStructBrackets(s, symchar ? new RefChain(s, symchar, end-symchar+1) : new RefChain(s));
+		//std::cout << "\n\n" << t_result->debug() << "\n\n";
+		return t_result;*/
+
+		RefChain* t_result = new RefChain(s, new RefWord(s, "error"));
+		(*t_result) += (symchar ? new RefChain(s, symchar, end-symchar+1) : new RefChain(s));
+		(*result)   += new RefStructBrackets(s, t_result);
+		return closeAllBrackets(s, result, &result_stack);
+	}
+
 	s->delete_current_view_borders(); // возвращаем сессию в исходное состояние
+	//RefChain *tmp = new RefChain(s, new RefWord(s, "T"));
+	//(*tmp) += result;
+	//return tmp;
 	return result;
 };

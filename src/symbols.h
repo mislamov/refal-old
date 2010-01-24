@@ -59,6 +59,10 @@ public:
 		unistring tmp = explode() + " ";
 		return explode() + " ";
 	};
+    unistring toString(){
+		unistring tmp = explode() + " ";
+		return explode() + " ";
+	};
 };
 
 
@@ -70,13 +74,18 @@ public:
     virtual ~RefAlphaBase(){};
     #ifdef TESTCODE
 	virtual unistring explode(){
-		if (getValue() == '\n') return "\\n";
-		if (getValue() == '\t') return "\\t";
+		//if (getValue() == '\n') return "\\n";
+		//if (getValue() == '\t') return "\\t";
 		return RefSymbolBase<RefAlphaBase, unichar>::explode();
 	};
 	#endif
 	virtual unistring toString(){ return explode(); };
-	virtual unistring debug(){ return explode(); };
+	virtual unistring debug(){ 
+		if (getValue() == ' ') return " _ ";
+		if (getValue() == '\n') return "\\n";
+		if (getValue() == '\t') return "\\t";
+		return explode(); 
+	};
 
 	CLASS_SYMBOL_CAST(RefAlphaBase);
 	virtual bool operator ==(RefData &rd) { return this==&rd; };

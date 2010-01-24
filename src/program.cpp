@@ -323,6 +323,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			RefData** ifrom = iter;
 			do {
 				//sess->MOVE_TO_next_term(iter);  - сегментация учитывается тут принудительно, поэтому ++ :
+				unistring ccc = (*iter)->debug();
 				//std::cout << "\n\t\t\t" << (*iter)->debug();
 				++iter;
 			} while(iter != iend && (*iter)->isRefSymbol());

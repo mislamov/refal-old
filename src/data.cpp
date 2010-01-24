@@ -101,7 +101,7 @@ RefChain::RefChain(Session *s, RefChain *ownchain, RefData **from, RefData **to)
 
 RefChain::~RefChain(){
 	co::chains--;
-	if (sysize) {
+	if (sysize && !isMemoryProtected()) {
 		free(first);
 	}
 };
@@ -110,6 +110,8 @@ RefChain* RefChain::operator+=(RefData *ch) {
 	#ifdef TESTCODE
 	if (leng>sysize) SYSTEMERRORn("Achtung!")
 	#endif
+
+		ref_assert(!isMemoryProtected());
 
 	if (leng == sysize){
 		sysize += RefChain::alloc_portion;
@@ -125,6 +127,8 @@ RefChain* RefChain::operator+=(RefData *ch) {
 
 // после - ch не существует!
 RefChain* RefChain::operator+=(RefChain *ch) {
+		ref_assert(!isMemoryProtected());
+
 	sysize += ch->leng;
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
@@ -137,6 +141,8 @@ RefChain* RefChain::operator+=(RefChain *ch) {
 };
 
 RefChain* RefChain::operator+=(RefChain ch) {
+			ref_assert(!isMemoryProtected());
+
 	sysize += ch.leng;
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
@@ -195,8 +201,23 @@ unistring RefChain::explode(){
 			return result;
 };
 
+
+
+unistring RefChain::toString(){
+		    unistring result = "";
+
+			for (size_t i=0; i<leng; i++) {
+				result += (first[i] ? first[i]->toString() : "");
+			}
+			return result;
+};
+
+
+
 unistring RefStructBrackets::explode(){		return "(" + chain->explode() + ") ";	};
 unistring RefExecBrackets::explode(){	return "<" + chain->explode() + "> ";	};
+unistring RefStructBrackets::toString(){		return "(" + chain->toString() + ") ";	};
+unistring RefExecBrackets::toString(){	return "<" + chain->toString() + "> ";	};
 unistring RefStructBrackets::debug(){		return "(" + (chain?chain->debug():"$null") + ") ";	};
 unistring RefExecBrackets::debug(){	return "<" + (chain?chain->debug():"$null") + "> ";	};
 
