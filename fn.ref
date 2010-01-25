@@ -1,17 +1,7 @@
 
-FirstCode {
-	0 e.e = ;
-	int.t ("(" e.val) E.e = (<FirstCode 1024 e.val>) <FirstCode <- @.t 1> e.val @.e>;
-	int.t ("{" e.val) E.e = "{"<FirstCode 1024 e.val>"}" <FirstCode <- @.t 1> e.val @.e>;
-	int.t ("[" e.val) E.e = "["<FirstCode 1024 e.val>"]" <FirstCode <- @.t 1> e.val @.e>;
-	int.t ("<" e.val) E.e = "<"<FirstCode 1024 e.val>">" <FirstCode <- @.t 1> e.val @.e>;
-	int.t (t.class e.val) E.e = <FirstCode <- @.t 1> e.val @.e>;
-	int.t t.sym E.e = t.sym <FirstCode @.t @.e>;
-	int.t E.e = @.e;
-}
-
 $ENTRY Go {
-	,<Mount 'direfal_scaner.ref_'> : E.code
+	//,<Mount 'direfal_scaner.ref_'> : E.code
+	,<Mount 'tt.ref'> : E.code
 	=
 		<Prout <MODULE <RefalTokens @.code>> >;
 }
@@ -20,21 +10,100 @@ $ENTRY Go {
 MODULE {
 	(comment END.) E.next = <MODULE @.next>;
 	{ "$" (word ENTRY) ' ' | } (word t.name) {' '|} ("{" e.body)  E.next 
-				=				'<FUNCTION name="' <Explode @.name> '">' <BLOCK @.body> '</FUNCTION>' <MODULE @.next>;
-	(word Template) ":" ":" "=" e.body ";" E.next = '<TEMPLATE name="' <Explode @.name> '">' <LEFT_PART @.body> '</TEMPLATE>' <MODULE @.next>;
+				=				'<FUNCTION name="' <Explode @.name> '">' <BLOCK @.body> '</FUNCTION>\n' <MODULE @.next>;
+	(word Template) ":" ":" "=" e.body ";" E.next = '<TEMPLATE name="' <Explode @.name> '">' <LEFT_PART @.body> '</TEMPLATE>\n' <MODULE @.next>;
 
 	' ' E.next = <MODULE @.next>;
 	";" E.next = <MODULE @.next>;
-	e.else = <Prout 'Function or Template expected here: ' @.else>;
+	=;
+	e.else = <Prout 'Function or Template expected here: [' @.else ']'>;
 }
 
 
 BLOCK {
-	e.e = '...';
+	(comment E.text) E.next = <BLOCK @.next>;
+	e.sentence ";" E.next = '<SENTENCE>'<SENTENCE @.sentence>'</SENTENCE>'<BLOCK @.next>;
+	{' '|} = ;
+	E.else = //'<SENTENCE>'<SENTENCE @.sentence>'</SENTENCE>';
+			<Error ('Bad sentence') @.else>;
 }
 
-LEFT_PART {
-	e.e = '....';
+
+
+SENTENCE {	
+	e.left_part "=" E.rexpr,
+		<ScanLeftPart  <ObjStream @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
+		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  @.rexpr>)> : E.right_part_code
+			=	
+				'<LEFT-PART>'@.left_part_code'</LEFT-PART>'
+				'<RIGHT-PART>'@.right_part_code'</RIGHT-PART>';
+
+	E.left_part "," {' '|} ! e.rexpr {' '|} ":" {' '|} ("{" E.block) {' '|},
+		<RandFuncName> : word.fname,
+		<ScanLeftPart  <ObjStream @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
+		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  ("<" (word @.fname) @.pattern)>)> : E.right_part_code
+			=	
+				'\n\t<FUNCTION name="' <Explode @.fname> '">' <BLOCK @.block> '</FUNCTION>\n'
+				'<LEFT-PART>'  @.left_part_code  '</LEFT-PART>'
+				'<RIGHT-PART>' @.right_part_code '</RIGHT-PART>';
+
+	{' '|} (comment E.text) {' '|} = ;
+	E.else		=	<Error ('Bad sentence') @.else>;
 }
 
 
+// ищет ошибки в left-part. Возвращает код left-part и информацию для обработки right-part
+// left-part ->  (left-part-code)(left-part-compiledata-stream)
+ScanLeftPart {
+	e.e = ('..')(e.e);
+}
+
+
+// ищет ошибки в right-part, используя инфу из left-part
+// (left-part-compiledata-stream)(right-part) -> right-part-code
+ScanRightPart{
+	(e.1)(e.2) = '....';
+}
+
+ObjStream {
+	e.e = e.e;
+}
+
+
+Substr {
+	{ 0 E.e | int.i } = ;
+	// int.count E.text,  @E.text : s[@.count].str E.nexttext = @.str;
+	int.i t.s E.e = @.s <Substr <- @.i 1> @.e>;
+}
+
+Error {
+	(e.text) e.code,
+		'\n\n<ERROR>\n' e.text': ' <Substr 128 <UnMeta @.code>> '\n\n ' @.code ' \n</ERROR>\n\n' : E.all
+		=	<ProutDebug @.all> @.all;
+	//E.else = <Prout 'ERROR of ERRORs! ' E.else>;
+}
+
+
+UnMeta  {
+	E.e = <UnMeta_post <UnMeta_pre @.e>>;
+}
+
+UnMeta_post {
+	e.1 ' . ' E.2 = e.1'.'<UnMeta_post E.2>;
+	E.e = @.e;
+}
+
+UnMeta_pre {
+	("(" e.val) E.e   = '('<UnMeta_pre e.val> ') '<UnMeta_pre @.e>;
+	("{" e.val) E.e   = '{'<UnMeta_pre e.val>'}'  <UnMeta_pre @.e>;
+	("[" e.val) E.e   = '['<UnMeta_pre e.val>']'  <UnMeta_pre @.e>;
+	("<" e.val) E.e   = '<'<UnMeta_pre e.val>'> ' <UnMeta_pre @.e>;
+	(word.class e.val) E.e	= <UnMeta_pre <ExplodeAll @.val> @.e>;
+	s.sym E.e         	= <ExplodeAll @.sym> <UnMeta_pre @.e>;
+	(t.s) E.e         	= <UnMeta_pre @.s @.e>;
+	E.e 			= @.e;
+}
+
+RandFuncName {
+	= "$RandomFuncName";
+}

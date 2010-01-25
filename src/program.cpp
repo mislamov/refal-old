@@ -503,21 +503,21 @@ unistring RefUserModule::debug(){
 
 void RefModuleBase::setFunctionByName(unistring name, RefFunctionBase* o){
 	std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(name);
-	if (iter != functions.end()) { COMPILETIMEERRORn("function multi-definition"); }
-		functions[name] = o;
+	if (iter != functions.end()) { COMPILETIMEERRORn("function multi-definition: " << iter->first); }
+	functions[name] = o;
 };
 
 void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o){
 	std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(name);
-		if (iter != templates.end()) {	COMPILETIMEERRORn("template multi-definition"); }
-		templates[name] = o;
+	if (iter != templates.end()) { COMPILETIMEERRORn("template multi-definition" << iter->first); }
+	templates[name] = o;
 };
 
 
 RefData* RefDllModule::constructSymbol(unistring typecode, unistring value){
-		std::map<unistring, RefData*(*)(unistring)>::iterator iter = dataConstructors.find(typecode);
-		if (iter==dataConstructors.end()) return 0;
-		return (*iter->second)(value);
+	std::map<unistring, RefData*(*)(unistring)>::iterator iter = dataConstructors.find(typecode);
+	if (iter==dataConstructors.end()) return 0;
+	return (*iter->second)(value);
 };
 
 

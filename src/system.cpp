@@ -340,6 +340,15 @@ inline unichar AFTER_CHAR(Session *s, RefData **symch){
 	return sym->getValue();
 }
 
+inline unichar BEFORE_CHAR(Session *s, RefData **symch){ 
+	symch = s->GET_pred_term(symch); 
+	if (!symch) return 0;
+	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
+	if (!sym) {
+			RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+	}
+	return sym->getValue();
+}
 
 RefChain* closeAllBrackets(Session *s, RefChain *currChain, PooledTuple2<unichar, RefChain*> *result_stack){
 	ref_assert(result_stack->getLength());
@@ -527,9 +536,8 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 		}
 
 		if (
-			(ch=='/' && AFTER_CHAR(s, symchar)=='*') ||
-			(ch=='\n' && AFTER_CHAR(s, symchar)=='*')
-		){ // коментарии   /* */   and  * \n
+			(ch=='/' && AFTER_CHAR(s, symchar)=='*')
+		){ // коментарии   /* */   
 			ch = NEXT_CHAR(s, symchar); // *
 			ch = NEXT_CHAR(s, symchar);
 			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
@@ -546,8 +554,24 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 		}
 
 
+
 		if (ch=='/' && AFTER_CHAR(s, symchar)=='/'){ // коментарии   //
 			ch = NEXT_CHAR(s, symchar); // /
+			ch = NEXT_CHAR(s, symchar);
+			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
+			while(symchar && (ch != '\n')){
+				(*t_result) += newRefAlpha(s, ch);
+				ch = NEXT_CHAR(s, symchar);
+			}
+			(*result) += new RefStructBrackets(s, t_result);
+			if (symchar){
+				ch = NEXT_CHAR(s, symchar);  //   /n..
+				continue;
+			}
+		}
+
+
+		if (ch=='*' && BEFORE_CHAR(s, symchar)=='\n'){ // коментарии   * \n
 			ch = NEXT_CHAR(s, symchar);
 			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
 			while(symchar && (ch != '\n')){
