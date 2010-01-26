@@ -39,6 +39,7 @@ RefAlphaBase* newRefAlpha(Session *s, unichar value){
 
 
 unistring the_explode(RefData **a, RefData **b){
+	ref_assert(b);
 #ifdef DEBUG
 	if (!a) {
 		return "$null, " + (*b)->debug();

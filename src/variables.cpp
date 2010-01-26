@@ -142,10 +142,20 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
     if (l==r) {
         l = 0;
     }
+	//std::cout << "\n\ns->saveVar((RefVariable*)*tpl, l, r) = " << "s->saveVar(" << tpl << ", " << (*l)->debug() << ", " << (*r)->debug() << ")\n\n";
+
     s->MOVE_TO_pred_term(r);
     s->saveVar((RefVariable*)*tpl, l, r);          /// todo оптимизировать: не удалять тело переменной в начале при ресторе, а изменять его параметры
 	s->MOVE_TO_next_template(tpl);
-    return GO;
+
+	#ifdef TESTCODE
+	RefData **i = 0, **endi = 0;
+	VarMap* vm = 0;
+	ref_assert( s->findVar(this, i, endi, vm) || i!=l || endi!=r );
+	#endif
+
+	
+	return GO;
 };
 
 bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd)?true:false; };

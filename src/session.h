@@ -138,6 +138,8 @@ public:
 
 		conditionsArgs.setLength(ss->conditionsArgsCount);
 		while(ss->topVarMap != varMapStack.top()){
+			std::cout << "\nddddddddddddddddddddddddddddddddddddddddddelete varMapStack.top_pop():\n";
+			varMapStack.top()->debug();
 			delete varMapStack.top_pop();
 			#ifdef TESTCODE
 			if (varMapStack.empty()) {unexpectedERRORn;};
@@ -217,26 +219,32 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Va
 //std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
-	#ifdef TESTCODE
+
+	ref_assert( var == varNew );
+
+	/*#ifdef TESTCODE
 	if (var != varNew){
 		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!");
 		//AchtungERRORs(this);
 	}
-	#endif
+	#endif*/
 };
 inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
 //std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	VarMap* vm = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm);
-	#ifdef TESTCODE
+
+	ref_assert((var == varNew) && !vm);
+
+	/*#ifdef TESTCODE
 	if (var != varNew){
 		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!");
 	}
 	if (vm) {
 		unexpectedERRORs(this);
 	}
-	#endif
+	#endif*/
 };
 
 inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, VarMap* &vm) {

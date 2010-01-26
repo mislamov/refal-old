@@ -10,7 +10,7 @@ $ENTRY Go {
 MODULE {
 	(comment END.) E.next = <MODULE @.next>;
 	{ "$" (word ENTRY) ' ' | } (word t.name) {' '|} ("{" e.body)  E.next 
-				=				'<FUNCTION name="' <Explode @.name> '">' <BLOCK @.body> '</FUNCTION>\n' <MODULE @.next>;
+				=				'<FUNCTION name="' <Explode @.name> '">' <Print <BLOCK @.body>> '</FUNCTION>\n' <MODULE @.next>;
 	(word Template) ":" ":" "=" e.body ";" E.next = '<TEMPLATE name="' <Explode @.name> '">' <LEFT_PART @.body> '</TEMPLATE>\n' <MODULE @.next>;
 
 	' ' E.next = <MODULE @.next>;
@@ -21,11 +21,12 @@ MODULE {
 
 
 BLOCK {
+	' ' E.next = <BLOCK @.next>;
 	(comment E.text) E.next = <BLOCK @.next>;
-	e.sentence ";" E.next = '<SENTENCE>'<SENTENCE @.sentence>'</SENTENCE>'<BLOCK @.next>;
-	{' '|} = ;
-	E.else = //'<SENTENCE>'<SENTENCE @.sentence>'</SENTENCE>';
-			<Error ('Bad sentence') @.else>;
+	e.sentence ";" E.next = '\n\t<SENTENCE>'<SENTENCE @.sentence>'</SENTENCE>'<BLOCK @.next>;
+	=;
+	E.else = '<SENTENCE>'<SENTENCE @.else>'</SENTENCE>'; // для блоков без ; в конце
+//			<Error ('Bad sentence in block') @.else>;
 }
 
 
@@ -34,16 +35,20 @@ SENTENCE {
 	e.left_part "=" E.rexpr,
 		<ScanLeftPart  <ObjStream @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
 		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  @.rexpr>)> : E.right_part_code
+		//<ProutDebug '['@.left_part']['@.rexpr']'>:
 			=	
 				'<LEFT-PART>'@.left_part_code'</LEFT-PART>'
 				'<RIGHT-PART>'@.right_part_code'</RIGHT-PART>';
 
-	E.left_part "," {' '|} ! e.rexpr {' '|} ":" {' '|} ("{" E.block) {' '|},
+	//END.all,
+	//@.all : 
+	E.left_part "," e.rexpr ":" {' '|} ("{" E.block) {' '|},   // E.left_part - жадная чтобы захватить все условия
+	<Prout @.left_part "," @.rexpr ":"  ("{" @.block) > : ,
 		<RandFuncName> : word.fname,
 		<ScanLeftPart  <ObjStream @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
-		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  ("<" (word @.fname) @.pattern)>)> : E.right_part_code
+		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  ("<" (word @.fname) @.rexpr)>)> : E.right_part_code
 			=	
-				'\n\t<FUNCTION name="' <Explode @.fname> '">' <BLOCK @.block> '</FUNCTION>\n'
+				'\n\t\t<FUNCTION name="' <Explode @.fname> '">' <Print <BLOCK @.block>> '\n\t\t</FUNCTION>\n'
 				'<LEFT-PART>'  @.left_part_code  '</LEFT-PART>'
 				'<RIGHT-PART>' @.right_part_code '</RIGHT-PART>';
 
@@ -55,14 +60,14 @@ SENTENCE {
 // ищет ошибки в left-part. Возвращает код left-part и информацию для обработки right-part
 // left-part ->  (left-part-code)(left-part-compiledata-stream)
 ScanLeftPart {
-	e.e = ('..')(e.e);
+	e.e = (<UnMeta e.e>)(e.e);
 }
 
 
 // ищет ошибки в right-part, используя инфу из left-part
 // (left-part-compiledata-stream)(right-part) -> right-part-code
 ScanRightPart{
-	(e.1)(e.2) = '....';
+	(e.1)(e.2) = (<UnMeta e.2>);
 }
 
 ObjStream {
@@ -78,8 +83,10 @@ Substr {
 
 Error {
 	(e.text) e.code,
-		'\n\n<ERROR>\n' e.text': ' <Substr 128 <UnMeta @.code>> '\n\n ' @.code ' \n</ERROR>\n\n' : E.all
-		=	<ProutDebug @.all> @.all;
+		<Substr 128 <UnMeta @.code>> : E.cd
+		=
+		<ProutDebug @.cd >
+		'\n\n<ERROR>\n' e.text': ' @.cd '\n\n ' @.code ' \n</ERROR>\n\n';
 	//E.else = <Prout 'ERROR of ERRORs! ' E.else>;
 }
 
@@ -98,6 +105,7 @@ UnMeta_pre {
 	("{" e.val) E.e   = '{'<UnMeta_pre e.val>'}'  <UnMeta_pre @.e>;
 	("[" e.val) E.e   = '['<UnMeta_pre e.val>']'  <UnMeta_pre @.e>;
 	("<" e.val) E.e   = '<'<UnMeta_pre e.val>'> ' <UnMeta_pre @.e>;
+	(text e.val)E.e   = '\''<UnMeta_pre e.val>'\' ' <UnMeta_pre @.e>;
 	(word.class e.val) E.e	= <UnMeta_pre <ExplodeAll @.val> @.e>;
 	s.sym E.e         	= <ExplodeAll @.sym> <UnMeta_pre @.e>;
 	(t.s) E.e         	= <UnMeta_pre @.s @.e>;

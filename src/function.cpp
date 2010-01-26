@@ -27,7 +27,7 @@ void RefUserFunction::initilizeAll(RefProgram *program){
 					sent = body.begin(), // перебор предложений функции
 					stopsent = body.end();
 			while (sent != stopsent){
-				(*sent)->leftPart->compile( (*sent)->leftPart, program );
+				//(*sent)->leftPart->compile( (*sent)->leftPart, program );  компиляция лефрой части делается строкой ниже вместе с правой частью
 				(*sent)->rightPart->compile( (*sent)->leftPart, program );
 				++sent;                
             };  // std: body.end() - элемент после последнего

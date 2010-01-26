@@ -378,12 +378,13 @@ void RefVarChains::setTemplInstant(RefUserTemplate *ntempli){
 };
 
 
+static long comp = 0;
 
 // компиляция цепочки после построения. расстановка ссылок
 // ownchain - левая часть для подстановки this. Тоже компилируется
 void RefChain::compile(RefChain *ownchain, RefProgram *program){
 #ifdef DEBUG
-	std::cout << "compile: " << this->explode() << "\n" << std::flush ;
+	std::cout << "compile: ["<< comp ++ <<"]" << this->explode() << "\n" << std::flush ;
 #endif
 	if (isEmpty()) return;
 
@@ -402,7 +403,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	PooledTuple2<RefData**, RefData**> subchains;
 	subchains.put(this->at_first(), this->at_afterlast());
 	if (ownchain && ownchain!=this && !ownchain->isEmpty()){
-		subchains.put(ownchain->at_first(), ownchain->at_afterlast());
+		subchains.put(ownchain->at_first(), ownchain->at_afterlast());  // родителя обработать раньше
 	}
 
 	while(subchains.getLength()){
@@ -419,6 +420,8 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			point < end;
 			++point){
 
+				//std:: cout << (*point)->debug() << "\t";
+
 			uservar = ref_dynamic_cast<RefVarChains>(*point); // польз переменная или группа
 			if (uservar){ // запоминаем заготовку для переменной
 				if (! program) SYSTEMERRORn("program not null expected");
@@ -430,6 +433,9 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				if (uservar->getType() != EmptyUniString) {
 					uservar->setTemplInstant((RefUserTemplate*) program->findTemplate(uservar->getType()) );
 				}
+				
+				ref_assert(vars.find(uservar->getName())==vars.end());
+
 				vars[uservar->getName()] = uservar; // todo: переделать на ссылки - так как есть безымянные переменные
 
 				if (uservar->templInstant == 0){
@@ -442,8 +448,11 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			}
 
 			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // вырианты
-			if (uservarich){ // запоминаем заготовку для переменной
-				vars[uservarich->getName()] = uservarich;
+			if (uservarich){
+				if (uservarich->getName() != ""){
+					ref_assert(vars.find(uservarich->getName())==vars.end());
+					vars[uservarich->getName()] = uservarich;
+				}
 				subchains.put(point+1, end);
 				for(int i=uservarich->templs.getCount(); i; --i){
 					if (! uservarich->templs.getByIndex(i-1)->isEmpty() ){
@@ -454,26 +463,28 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				//break;
 			}
 
-
-			rept = ref_dynamic_cast<RefRepeaterChain>(*point); // вырианты
-			if (rept){ // запоминаем заготовку для переменной
+			rept = ref_dynamic_cast<RefRepeaterChain>(*point); // поаторитель
+			if (rept){
 				subchains.put(point+1, end);
 				subchains.put(rept->templ->at_first(), rept->templ->at_afterlast());
 				continue;
-				//break;
 			}
 
 
 
 			var = ref_dynamic_cast<RefVariable>(*point);
 			if (var){ // запоминаем переменную
+				if( vars.find(var->getName())!=vars.end() ){
+					SYSTEMERRORn("Variable not changet to link: ?." << var->getName() << "  Chain: " << this->debug());
+				}
+
 				vars[var->getName()] = var;
 				continue;
 			}
 
 
 			link = ref_dynamic_cast<RefLinkToVariable>(*point);
-			if (link && !link->lnk){ // запоминаем ссылку
+			if (link && (! link->lnk)){ // запоминаем ссылку
 				lnks.push(point);
 				continue;
 			}
@@ -488,10 +499,10 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			cond = ref_dynamic_cast<RefUserCondition>(*point);
 			if (cond){
 				subchains.put(point+1, end);
-				if (! cond->getRightPart()->isEmpty())
-					subchains.put(cond->getRightPart()->operator [](0), cond->getRightPart()->operator [](-1)+1);
 				if (! cond->getLeftPart()->isEmpty())
 					subchains.put(cond->getLeftPart()->operator [](0), cond->getLeftPart()->operator [](-1)+1);
+				if (! cond->getRightPart()->isEmpty())
+					subchains.put(cond->getRightPart()->operator [](0), cond->getRightPart()->operator [](-1)+1);
 				break;
 			}
 		}
@@ -505,14 +516,32 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			#endif
 			tmp = (RefLinkToVariable**) lnks.top();
 
-			size_t i = (*tmp)->path.find( varPathSeparator );
-			// ссылка на часть внешней переменной
-			unistring name = (*tmp)->path.substr(0, i);
-			(*tmp)->path = (i!=unistring::npos) ? (*tmp)->path.substr(i+1) : EmptyUniString;
+			ref_assert((*tmp)->lnk || (*tmp)->path!="");
 
-			(*tmp)->lnk = vars[name];
+			if (! (*tmp)->lnk){
+				size_t i = (*tmp)->path.find( varPathSeparator );
+				// ссылка на часть внешней переменной
+				unistring name = (*tmp)->path.substr(0, i);
+				(*tmp)->path = (i!=unistring::npos) ? (*tmp)->path.substr(i+1) : EmptyUniString;
+
+				#ifdef TESTCODE
+				if (vars.find(name)==vars.end()){
+					SYSTEMERRORn("Variable not found ??." << name << ". Line: " << ownchain->debug() << " ==::== " << this->debug() );
+				}
+				#endif
+				ref_assert(vars.find(name)!=vars.end());
+
+				(*tmp)->lnk = vars[name];
+			}
 			lnks.pop();
 	}
+
+	vars.clear();
+
+	#ifdef DEBUG
+	std::cout << "compile-reult: " << this->explode() << "\n" << std::flush ;
+	#endif
+
 };
 
 // вызывается сразу после удачного сопоставления (вместо init правой границы)

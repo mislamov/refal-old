@@ -29,8 +29,8 @@ MKDIR = if not exist $(subst /,\,$1) mkdir $(subst /,\,$1)
 # MAKE_DEP = -MMD -MT $@ -MF $(@:.o=.d)
 
 CFLAGS = -Wall 
-INCLUDES = -IC:\MinGW\include -IC:\msys\1.0\include -Iinclude 
-LDFLAGS = -lexpat -LC:\MinGW\lib -LC:\MinGW\mingw32\lib -LC:\msys\1.0\lib -Llib  -s -Wl,--allow-multiple-definition
+INCLUDES = -Iinclude 
+LDFLAGS = -lexpat -Llib  -s -Wl,--allow-multiple-definition
 RCFLAGS = 
 LDLIBS = $(T_LDLIBS)  -lstdc++
 
@@ -54,7 +54,7 @@ all.before :
 	-
 all.after : $(FIRST_TARGET)
 	
-all.targets : Debug_target 
+all.targets : Debug_target Release_target 
 
 clean :
 	rm -fv $(clean.OBJ)
@@ -65,16 +65,16 @@ clean :
 # -----------------------------------------
 # Debug_target
 
-Debug_target.BIN = bin\direfal-010.exe
+Debug_target.BIN = Debug\direfal-010.exe
 Debug_target.OBJ = src\SAXLoaderHeap.o src\SAXLoader_expat.o src\data.o src\function.o src\main.o src\program.o src\session.o src\symbols.o src\system.o src\variables.o 
 DEP_FILES += src\SAXLoaderHeap.d src\SAXLoader_expat.d src\data.d src\function.d src\main.d src\program.d src\session.d src\symbols.d src\system.d src\variables.d 
 clean.OBJ += $(Debug_target.BIN) $(Debug_target.OBJ)
 
 Debug_target : Debug_target.before $(Debug_target.BIN) Debug_target.after_always
-Debug_target : CFLAGS += -g  -Os
+Debug_target : CFLAGS += -O2 -Wall -pg -g  -Os
 Debug_target : INCLUDES += 
 Debug_target : RCFLAGS += 
-Debug_target : LDFLAGS +=   
+Debug_target : LDFLAGS += -pg -lgmon   
 Debug_target : T_LDLIBS = 
 ifdef LMAKE
 Debug_target : CFLAGS -= -O1 -O2 -g -pipe
@@ -86,6 +86,34 @@ Debug_target.before :
 Debug_target.after_always : $(Debug_target.BIN)
 	
 $(Debug_target.BIN) : $(Debug_target.OBJ)
+	$(call MKDIR,$(dir $@))
+	$(LINK_con)
+	
+
+# -----------------------------------------
+# Release_target
+
+Release_target.BIN = Release\direfal-010.exe
+Release_target.OBJ = src\SAXLoaderHeap.o src\SAXLoader_expat.o src\data.o src\function.o src\main.o src\program.o src\session.o src\symbols.o src\system.o src\variables.o 
+DEP_FILES += src\SAXLoaderHeap.d src\SAXLoader_expat.d src\data.d src\function.d src\main.d src\program.d src\session.d src\symbols.d src\system.d src\variables.d 
+clean.OBJ += $(Release_target.BIN) $(Release_target.OBJ)
+
+Release_target : Release_target.before $(Release_target.BIN) Release_target.after_always
+Release_target : CFLAGS += -fexpensive-optimizations -O3  -Os
+Release_target : INCLUDES += 
+Release_target : RCFLAGS += 
+Release_target : LDFLAGS += -s   
+Release_target : T_LDLIBS = 
+ifdef LMAKE
+Release_target : CFLAGS -= -O1 -O2 -g -pipe
+endif
+
+Release_target.before :
+	
+	
+Release_target.after_always : $(Release_target.BIN)
+	
+$(Release_target.BIN) : $(Release_target.OBJ)
 	$(call MKDIR,$(dir $@))
 	$(LINK_con)
 	

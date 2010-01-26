@@ -339,7 +339,7 @@ bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&v
                 return true;
             }
         }
-            return false;
+        return false;
 };
 
 bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r){

@@ -337,7 +337,14 @@ public:
 	RefLinkToVariable() : RefData(){};
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-	inline unistring explode(){ return " @."+(lnk?lnk->getName():"$notinit$"+path)+" "; };
+	inline unistring explode(){ 
+		if(
+			lnk && lnk->getName()==""
+			){
+				std::cout << "";
+		};
+		return " @."+(lnk?lnk->getName():"$notinit$"+path)+" "; 
+	};
 
 	inline RefLinkToVariable(RefVariable *ln){lnk=ln; path=EmptyUniString; };
 	inline RefLinkToVariable(unistring varName){
