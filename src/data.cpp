@@ -420,7 +420,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			point < end;
 			++point){
 
-				//std:: cout << (*point)->debug() << "\t";
+			//std:: cout << (*point)->debug() << "~\t";
 
 			uservar = ref_dynamic_cast<RefVarChains>(*point); // польз переменная или группа
 			if (uservar){ // запоминаем заготовку для переменной
@@ -441,7 +441,9 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				if (uservar->templInstant == 0){
 					// группа
 					subchains.put(point+1, end);
-					if(! uservar->templ->isEmpty()) { subchains.put(uservar->templ->at_first(), uservar->templ->at_afterlast()); };
+					if(! uservar->templ->isEmpty()) { 
+						subchains.put(uservar->templ->at_first(), uservar->templ->at_afterlast()); 
+					};
 					break;
 				}
 				continue;
@@ -459,21 +461,24 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 						subchains.put(uservarich->templs.getByIndex(i-1)->at_first(), uservarich->templs.getByIndex(i-1)->at_afterlast());
 					}
 				}
-				continue;
-				//break;
+				//continue;
+				break;
 			}
 
 			rept = ref_dynamic_cast<RefRepeaterChain>(*point); // поаторитель
 			if (rept){
 				subchains.put(point+1, end);
 				subchains.put(rept->templ->at_first(), rept->templ->at_afterlast());
-				continue;
+				//continue;
+				break;
 			}
 
 
 
 			var = ref_dynamic_cast<RefVariable>(*point);
-			if (var){ // запоминаем переменную
+			if (var && var->getName()!=""){ // запоминаем переменную
+				//std::cout << "\n::: " << var->debug() << "  :::\n";  
+
 				if( vars.find(var->getName())!=vars.end() ){
 					SYSTEMERRORn("Variable not changet to link: ?." << var->getName() << "  Chain: " << this->debug());
 				}

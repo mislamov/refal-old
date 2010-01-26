@@ -355,7 +355,7 @@ public:
 
 
 inline unistring chain_to_text(RefData** from, RefData** to, int showleng = 356){
-	if (!from || !*from) return "[null]";
+	if (!from || !*from) return "#empty";
 	if (!to || (to-from)<0) return "[error string]";
 	unistring res = "";
 	int i = 0;

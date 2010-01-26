@@ -1,7 +1,7 @@
 
 $ENTRY Go {
-	//,<Mount 'direfal_scaner.ref_'> : E.code
-	,<Mount 'tt.ref'> : E.code
+	,<Mount 'direfal_scaner.ref_'> : E.code
+	//,<Mount 'tt.ref'> : E.code
 	=
 		<Prout <MODULE <RefalTokens @.code>> >;
 }
@@ -10,8 +10,9 @@ $ENTRY Go {
 MODULE {
 	(comment END.) E.next = <MODULE @.next>;
 	{ "$" (word ENTRY) ' ' | } (word t.name) {' '|} ("{" e.body)  E.next 
-				=				'<FUNCTION name="' <Explode @.name> '">' <Print <BLOCK @.body>> '</FUNCTION>\n' <MODULE @.next>;
-	(word Template) ":" ":" "=" e.body ";" E.next = '<TEMPLATE name="' <Explode @.name> '">' <LEFT_PART @.body> '</TEMPLATE>\n' <MODULE @.next>;
+				=				'<FUNCTION name="' <Explode @.name> '">' <BLOCK @.body> '</FUNCTION>\n' <MODULE @.next>;
+	(word Template) ' ' (word t.name) {' '|} ":" ":" "=" e.body ";" E.next 
+				= '<TEMPLATE name="' <Explode @.name> '">' <LEFT_PART @.body> '</TEMPLATE>\n' <MODULE @.next>;
 
 	' ' E.next = <MODULE @.next>;
 	";" E.next = <MODULE @.next>;
@@ -43,16 +44,19 @@ SENTENCE {
 	//END.all,
 	//@.all : 
 	E.left_part "," e.rexpr ":" {' '|} ("{" E.block) {' '|},   // E.left_part - жадная чтобы захватить все условия
-	<Prout @.left_part "," @.rexpr ":"  ("{" @.block) > : ,
+	//<Prout @.left_part "," @.rexpr ":"  ("{" @.block) > : ,
 		<RandFuncName> : word.fname,
 		<ScanLeftPart  <ObjStream @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
 		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  ("<" (word @.fname) @.rexpr)>)> : E.right_part_code
 			=	
-				'\n\t\t<FUNCTION name="' <Explode @.fname> '">' <Print <BLOCK @.block>> '\n\t\t</FUNCTION>\n'
+				'\n\t\t<FUNCTION name="' <Explode @.fname> '">'  <BLOCK @.block> '\n\t\t</FUNCTION>\n'
 				'<LEFT-PART>'  @.left_part_code  '</LEFT-PART>'
 				'<RIGHT-PART>' @.right_part_code '</RIGHT-PART>';
 
 	{' '|} (comment E.text) {' '|} = ;
+	
+	E.1 "," e.2 ":" e.3 = <Prout '\n\n1: ' @.1 '   2: ' @.2 '   3: ' @.3 '\n\n'>;
+	
 	E.else		=	<Error ('Bad sentence') @.else>;
 }
 
@@ -85,7 +89,7 @@ Error {
 	(e.text) e.code,
 		<Substr 128 <UnMeta @.code>> : E.cd
 		=
-		<ProutDebug @.cd >
+		//<ProutDebug @.cd >
 		'\n\n<ERROR>\n' e.text': ' @.cd '\n\n ' @.code ' \n</ERROR>\n\n';
 	//E.else = <Prout 'ERROR of ERRORs! ' E.else>;
 }

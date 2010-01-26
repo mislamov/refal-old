@@ -94,6 +94,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 			};
             #endif
             l=0;
+			//ref_assert(r);
             result_sost = (*activeTemplate)->init(activeTemplate, this, l, r); /// ьюц боепед
             break;
         }
@@ -441,7 +442,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 void Session::printExecTrace(){
 	unistring tab = "";
 	while (execTrace.getLength()){
-		std::cout << tab  << "<" << execTrace.top1()->getName() << " " << chain_to_text(execTrace.top2(), execTrace.top3()) << " >\n";
+		std::cout << tab  << "'--- <" << execTrace.top1()->getName() << " " << chain_to_text(execTrace.top2(), execTrace.top3()) << " >\n";
 		execTrace.pop();
 		tab += "   ";
 	}

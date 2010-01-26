@@ -73,11 +73,13 @@ public:
 	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
 	RefData *gc_last,  // ссылка на последний созданный дата-элемент. служит для построения пути для сборщика мусора
 			*gc_first; // ссылка на первый созданный элемент
+	RefData** alt_r;
 
 public:
 	inline Session(RefProgram *p){
-				gc_first = gc_last = new RefDataNull();
-				program = p;
+		alt_r = 0;
+		gc_first = gc_last = new RefDataNull();
+		program = p;
 	};
 	PooledStack<RefData**> termChainsJumpPoints;
 	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
@@ -196,6 +198,7 @@ public:
 	inline RefData** GET_pred_term (RefData** p);
 	inline RefData** GET_next_template (RefData** p);
 	inline RefData** GET_pred_template (RefData** p);
+	//todo: обязательно переделать определение границ не через 0!!! иначе не поянтно, какая из границ достигнута
 	inline void MOVE_TO_next_term (RefData** &p){ p=GET_next_term(p); };
 	inline void MOVE_TO_pred_term (RefData** &p){ p=GET_pred_term(p); };
 	inline void MOVE_TO_next_template (RefData** &p){ p=GET_next_template(p); };
@@ -266,6 +269,7 @@ inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r) {
 
 inline RefData** Session::GET_next_term(RefData** p){
 	if (p == current_view_r() || !p) {
+		alt_r = p+1;
 		return 0;
 	}
 	return p+1;
@@ -273,6 +277,7 @@ inline RefData** Session::GET_next_term(RefData** p){
 
 inline RefData** Session::GET_pred_term(RefData** p){
 	if (p == current_view_l() || !p) {
+		alt_r = p-1;
 		return 0;
 	}
 	return p-1;

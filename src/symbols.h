@@ -196,7 +196,12 @@ public:
 
 template <class TT, class tt>
 TResult  RefSymbolBase<TT, tt>::init(RefData**& tpl, Session* s, RefData**& l, RefData**& r) {
-    s->MOVE_TO_next_term(r);
+	//todo убрать этот хак. сохранять границы а не 0 при перемещении
+	if (!r && s->alt_r+1==s->current_view_l()){
+		r = s->alt_r;
+	}
+	
+	s->MOVE_TO_next_term(r);
     if ( r && *r && (this==*r || *this == **r)) {
         s->MOVE_TO_next_template(tpl);
         return GO;

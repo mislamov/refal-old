@@ -141,6 +141,7 @@ TResult  RefVariable_E::back(RefData**&tpl, Session *s, RefData **&l, RefData **
 
     if (l==r) {
         l = 0;
+		r;
     }
 	//std::cout << "\n\ns->saveVar((RefVariable*)*tpl, l, r) = " << "s->saveVar(" << tpl << ", " << (*l)->debug() << ", " << (*r)->debug() << ")\n\n";
 
