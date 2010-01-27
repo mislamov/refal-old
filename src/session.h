@@ -140,7 +140,7 @@ public:
 
 		conditionsArgs.setLength(ss->conditionsArgsCount);
 		while(ss->topVarMap != varMapStack.top()){
-			std::cout << "\nddddddddddddddddddddddddddddddddddddddddddelete varMapStack.top_pop():\n";
+			//std::cout << "\nddddddddddddddddddddddddddddddddddddddddddelete varMapStack.top_pop():\n";
 			varMapStack.top()->debug();
 			delete varMapStack.top_pop();
 			#ifdef TESTCODE

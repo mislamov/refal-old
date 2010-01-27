@@ -51,7 +51,6 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 		modules[module->getName()] = module;
 };
 
-
 // с рекурсией
 RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
@@ -111,11 +110,14 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
                 if (! fresult->isEmpty()){
 
                     if (++iter < iend){ // если еще есть необработанный хвост
-                        *fresult += new RefChain(sess, chain, iter, iend);  // сохраняем хвост
+                        *fresult += new RefChain(sess, chain, iter, iend-1);  // сохраняем хвост
 	                }
 					iter = fresult->at_first();
 					--iter;
                     iend = fresult->at_afterlast();
+					chain = fresult;
+					std :: cout << "\n\n\n" << fresult->debug() << "\n";
+					(*(iend-1))->debug();
 				} else {
 				    // если результат был пуст, то двигаемся дальше
 				}

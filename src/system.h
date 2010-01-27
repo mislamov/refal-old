@@ -48,8 +48,10 @@ RefChain* ProutDebug (RefData** beg, RefData** end, Session* s);
 RefChain* Print (RefData** beg, RefData** end, Session* s);
 RefChain* Exit  (RefData** beg, RefData** end, Session* s);
 
+RefChain* RandomIdName(RefData** beg, RefData** end, Session* s);
 
 RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s);
+RefChain* PrintStackTrace   (RefData** beg, RefData** end, Session* s);
 
 
 
@@ -113,8 +115,10 @@ FUNCTION_DEFINITIONS
 		DEFINE_MODULE_FUNCTION(Print);
 		DEFINE_MODULE_FUNCTION(Exit);
 
-		DEFINE_MODULE_FUNCTION(RefalTokens);
+		DEFINE_MODULE_FUNCTION(RandomIdName);
 
+		DEFINE_MODULE_FUNCTION(RefalTokens);
+		DEFINE_MODULE_FUNCTION(PrintStackTrace);
 
 		DEFINE_MODULE_FUNCTION_ALIAS(Add, Sum);
 		DEFINE_MODULE_FUNCTION_ALIAS(Sub, Dec);

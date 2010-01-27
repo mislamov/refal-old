@@ -56,7 +56,7 @@ namespace co {
 #endif
 
 #ifndef CHAIN_SYSTEM_PORTION_SIZE_INIT
-    #define CHAIN_SYSTEM_PORTION_SIZE_INIT 128
+    #define CHAIN_SYSTEM_PORTION_SIZE_INIT 2
 #endif
 
 #ifdef UNICODE

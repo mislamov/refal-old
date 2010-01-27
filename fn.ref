@@ -11,8 +11,9 @@ MODULE {
 	(comment END.) E.next = <MODULE @.next>;
 	{ "$" (word ENTRY) ' ' | } (word t.name) {' '|} ("{" e.body)  E.next 
 				=				'<FUNCTION name="' <Explode @.name> '">' <BLOCK @.body> '</FUNCTION>\n' <MODULE @.next>;
-	(word Template) ' ' (word t.name) {' '|} ":" ":" "=" e.body ";" E.next 
-				= '<TEMPLATE name="' <Explode @.name> '">' <LEFT_PART @.body> '</TEMPLATE>\n' <MODULE @.next>;
+	(word Template) ' ' (word t.name) {' '|} ":" ":" "=" e.body ";" E.next,
+		<ScanLeftPart <LeftPartObjectTree @.body>> : (E.left_part_code)(E.left_part_compiledata_stream)
+				= '<TEMPLATE name="' <Explode @.name> '">' @.left_part_code '</TEMPLATE>\n' <MODULE @.next>;
 
 	' ' E.next = <MODULE @.next>;
 	";" E.next = <MODULE @.next>;
@@ -34,50 +35,180 @@ BLOCK {
 
 SENTENCE {	
 	e.left_part "=" E.rexpr,
-		<ScanLeftPart  <ObjStream @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
-		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  @.rexpr>)> : E.right_part_code
+		<ScanLeftPart  <LeftPartObjectTree @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
+		<ScanRightPart (@.left_part_compiledata_stream)(<ObjectTree  @.rexpr>)> : E.right_part_code
 		//<ProutDebug '['@.left_part']['@.rexpr']'>:
-			=	
+			=
 				'<LEFT-PART>'@.left_part_code'</LEFT-PART>'
 				'<RIGHT-PART>'@.right_part_code'</RIGHT-PART>';
 
-	//END.all,
-	//@.all : 
+	// данное решение временное! это неправильный блок. ѕеременные, определенные в E.left_part должны быть доступны в E.block.
+	// TODO: сделать полноценные блоки
 	E.left_part "," e.rexpr ":" {' '|} ("{" E.block) {' '|},   // E.left_part - жадна€ чтобы захватить все услови€
 	//<Prout @.left_part "," @.rexpr ":"  ("{" @.block) > : ,
-		<RandFuncName> : word.fname,
-		<ScanLeftPart  <ObjStream @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
-		<ScanRightPart (@.left_part_compiledata_stream)(<ObjStream  ("<" (word @.fname) @.rexpr)>)> : E.right_part_code
-			=	
+		<RandomIdName> : word.fname,
+		<ScanLeftPart  <LeftPartObjectTree @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
+		<ScanRightPart (@.left_part_compiledata_stream)(<ObjectTree  ("<" (word @.fname) @.rexpr)>)> : E.right_part_code
+			=
 				'\n\t\t<FUNCTION name="' <Explode @.fname> '">'  <BLOCK @.block> '\n\t\t</FUNCTION>\n'
 				'<LEFT-PART>'  @.left_part_code  '</LEFT-PART>'
 				'<RIGHT-PART>' @.right_part_code '</RIGHT-PART>';
 
 	{' '|} (comment E.text) {' '|} = ;
 	
-	E.1 "," e.2 ":" e.3 = <Prout '\n\n1: ' @.1 '   2: ' @.2 '   3: ' @.3 '\n\n'>;
+	//E.1 "," e.2 ":" e.3 = <Prout '\n\n1: ' @.1 '   2: ' @.2 '   3: ' @.3 '\n\n'>;
 	
 	E.else		=	<Error ('Bad sentence') @.else>;
 }
 
 
 // ищет ошибки в left-part. ¬озвращает код left-part и информацию дл€ обработки right-part
-// left-part ->  (left-part-code)(left-part-compiledata-stream)
+// left-part ->  (left-part-tree)(left-part-compiledata-stream)
 ScanLeftPart {
-	e.e = (<UnMeta e.e>)(e.e);
+	e.e = <ScanPart_process ()() @.e>;
+}
+
+ScanPart_process {
+
+	// ссылка  ("lnk"  t.им€ (e.путь))
+	(e.code)(e.stream)
+	("var" t.type t.name) E.next,
+		e.stream : e. (@.type @.name) E.	=	<ScanPart_process  (@.code ("lnk" @.name ()))((@.type @.name) @.stream) @.next>;
+	
+	(e.code)(e.stream)
+	("var" t.type t.name) E.next,
+		e.stream : e. (t.othertype @.name) E.	=	<ScanPart_process  (@.code (error 
+												<Error ('Can\'t redefine variable by other type') @.type '.' @.name "&" @.othertype '.' @.name>
+											)
+										)(@.stream) @.next>;
+	
+	// открыта€ переменна€ (var t.тип t.им€)
+	(e.code)(e.stream)
+	("var" t.type t.name) E.next			=	<ScanPart_process  (@.code ("var" @.type @.name)) ((@.type @.name) @.stream) @.next>;
+	
+	(e.code)(e.stream)
+	{({"word"|"text"|"bytes"|"int"|"real"} E.)}.symbol E.next    
+							=	<ScanPart_process  (@.code @.symbol)(@.stream) @.next>;
+
+	(e.code)(e.stream)
+	("(" e.word) E.next,
+		<ScanPart_process ()(@.stream) @.word> : (E.br_code)(E.new_stream)
+							=	<ScanPart_process  ( @.code ("(" @.br_code) )(@.new_stream) @.next>;
+
+
+	(e.code)(e.stream)
+	("if" {true|false}.not (E.rp)(E.lp)) E.next,
+		<ScanRightPart ()(@.stream) @.rp>	:	(E.rp_code),
+		<ScanPart_process  ()(@.stream) @.lp>	:	(E.lp_code)(E.new_stream)
+							=
+								<ScanPart_process  (@.code 
+									("if" @.not  
+										("right-part"  @.rp_code)
+										("left-part"   @.lp_code)
+									)
+								)(@.new_stream) @.next>;
+	
+
+
+	(e.code)(e.stream) ' ' E.next			=	<ScanPart_process (e.code)(e.stream) @.next>;
+	
+	{(e.code)(e.stream)}.all  =  @.all;
+	(e.)(e.)E.error			=	<SystemError (ScanPart_process) @.error>;
 }
 
 
 // ищет ошибки в right-part, использу€ инфу из left-part
-// (left-part-compiledata-stream)(right-part) -> right-part-code
+// (left-part-compiledata-stream)(right-part-tree) -> right-part-code
 ScanRightPart{
-	(e.1)(e.2) = (<UnMeta e.2>);
+	(e.1)(e.2) = (e.2);
 }
 
-ObjStream {
-	e.e = e.e;
+// строим дерево левой части
+LeftPartObjectTree {
+	e.pattern "," E.conditions	=
+			<ObjectTree @.pattern>
+			<ConditionsObjectTree @.conditions>;
+	E.pattern
+			=	<ObjectTree @.pattern>;
 }
 
+NotEmpty {
+	= false;
+	e.else = true;
+}
+
+// строим дерево условий
+ConditionsObjectTree {
+	{"$" (word "not") | }.not1  e.rp ":" {"$" (word "not") | }.not2 e.lp "," E.next	
+					=	("if" <NotEmpty @.not1 @.not2> (<ObjectTree @.rp>) (<ObjectTree @.lp>)) <ConditionsObjectTree @.next>;
+					
+	{"$" (word "not") | }.not1  e.rp ":" {"$" (word "not") | }.not2 E.lp		
+					=	("if" <NotEmpty @.not1 @.not2>  (<ObjectTree @.rp>) (<ObjectTree @.lp>));					
+					
+	E.else				
+					=	<Error ("Condition format is ','[RP]':'[LP]. Bad condition") >;
+}
+
+// дерево термов
+ObjectTree {	
+	' ' E.next = <ObjectTree @.next>;
+	
+	// отсечение, разделитель вариантов
+	{"!" | "|"  }.term E.next = @.term <ObjectTree @.next>;
+	
+	// скобки
+	( {"("|"<"}.br  E.data )  E.next	=	(@.br <ObjectTree @.data ' '> ) <ObjectTree @.next>;
+	// группы и варианты:    
+	("{" E.data)  {"." (word t.name) | { '' }.name } ' ' E.next
+						=	<ObjectTree  <ObjectTreeGroup ("group" (@.name) <ObjectTree @.data ' '> ) >  @.next>;
+
+	("{" E.data)  E.specificator_next	=	<ObjectTreeSpecificator ("{" E.data) @.specificator_next>;
+
+	// переменна€  ("var" тип им€ )
+	("word" t.type) "." ({"word"|"int"} t.name) E.next = ("var" @.type @.name) <ObjectTree @.next>;
+	//(word "$not")
+	
+	({"word"|"text"|"int"|"real"|"bytes"}.t e.text) E.next	=	(@.t @.text) <ObjectTree @.next>;
+
+	= ;
+	
+	
+	("comment" E.comm) E.next	=	<ObjectTree @.next>;
+	"+"  E.next	=	("word" "sum")<ObjectTree @.next>;
+	"-"  E.next	=	("word" "dec")<ObjectTree @.next>;
+	"*"  E.next	=	("word" "mul")<ObjectTree @.next>;
+	"\\" E.next	=	("word" "div")<ObjectTree @.next>;
+	
+	
+	
+	
+	E.else = <SystemError (ObjectTree) @.else>;	
+}
+
+// определ€ет дл€ групповых скобок чем они €вл€ютс€: группой или вариантом
+// группа:	("group"   (им€) тело )
+// вариант:	("variant" (им€) (вариант1) .. (вариантN) )
+ObjectTreeGroup {
+	("group" (t.name) E.data),
+		E.data : e.1 "|" E.2,
+		<Variants E.2> : E.variants
+		=	("variant" (t.name) (@.1) @.variants);
+	{ ("group" (t.name) E.data) }.all
+		=	@.all;
+		
+	E.error = <SystemError (ObjectTreeGroup) @.error>;
+}
+
+// определение ObjectTree дл€ первого терма со спецификатором
+ObjectTreeSpecificator {
+	t.type ("[" int.f "." "." {int. | "inf"}.t) E.next
+			=	<ObjectTreeSpecificator ("repeat" (@.f @.t) t.type ) @.next>;
+	t.type  ' '  E.next
+			=	t.type <ObjectTree @.next>;
+	t.type  "." ("word" t.name) ' '  E.next
+			=	("group" (@.name) @.type) <ObjectTree @.next>;
+	E.error = <SystemError (ObjectTreeSpecificator) @.error>;
+}
 
 Substr {
 	{ 0 E.e | int.i } = ;
@@ -116,6 +247,16 @@ UnMeta_pre {
 	E.e 			= @.e;
 }
 
-RandFuncName {
+RandomIdName {
 	= "$RandomFuncName";
 }
+
+SystemError {
+	(E.fname) E.code = 
+		<PrintStackTrace>
+		<Prout '\n####### SYSTEM ERROR in function ' E.fname>
+		<ProutDebug '[ ' E.code ' ]'>
+		<Exit 1>;
+}
+
+

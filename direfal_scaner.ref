@@ -97,25 +97,20 @@ ScanObjectExprWithExecs {
 	('{')  e.oexp  ('}') e.e,
 		<ScanObjectExprWithExecs e.oexp> : e.oexp_I,
 		<ExistError  e.oexp_I> : false
-	=	"<GROUP_F name=\""  /*<GetRandomName>*/  "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
+		=	"<GROUP_F name=\""  /*<GetRandomName>*/  "\">" e.oexp_I "</GROUP_F>" <ScanObjectExprWithExecs e.e>;
 
-		
-	
-	
 
 	/* —кобки */
 	('(') e.inside (')') e.next,
 	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
 	<ExistError  e.insidescaned_I> : false
-	=	"<BRACKET>"  e.insidescaned_I "</BRACKET>" <ScanObjectExprWithExecs  e.next >;
+		=	"<BRACKET>"  e.insidescaned_I "</BRACKET>" <ScanObjectExprWithExecs  e.next >;
+
 
 	('<') (t.word) e.inside ('>') e.next,
 	<ScanObjectExprWithExecs e.inside> : e.insidescaned_I,
 	<ExistError  e.insidescaned_I> : false
-
-	=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
-
-
+		=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
 
 
 	/* продолжение ссылки напеременную */
@@ -123,10 +118,10 @@ ScanObjectExprWithExecs {
 		<Type t.1> : 'W' s.sub1 t.1
 		=	'/' <Explode t.1> <ScanObjectExprWithExecs  "$path" e.next>;
 
+
 	/* конец ссылки напеременную */
 	"$path" e.next		
 		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
-
 
 
 	/*ссылка на переменную*/
@@ -605,6 +600,7 @@ Scan{
 	'"<"' e.all = (w "<")<Scan e.all>;
 	'">"' e.all = (w ">")<Scan e.all>;*/
 	'"' s.s '"' e.all =  (w s.s)<Scan e.all>;
+	'"\\' s.s '"' e.all =  ('\\' s.s)<Scan e.all>;
 	'"' e.all = <Scan ('"'  ()) e.all>;
 	(s.quo (e.e)) '\\' e.all,
 		     e.all : {

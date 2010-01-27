@@ -338,11 +338,11 @@ public:
 	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
     TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
 	inline unistring explode(){ 
-		if(
+		/*if(
 			lnk && lnk->getName()==""
 			){
 				std::cout << "";
-		};
+		};*/
 		return " @."+(lnk?lnk->getName():"$notinit$"+path)+" "; 
 	};
 

@@ -17,6 +17,8 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #include <fstream>
 //#include <stdlib>
+//#include <stdlib.h>
+#include <time.h>
 
 #include "system.h"
 
@@ -316,7 +318,7 @@ RefChain* Exit (RefData** lft, RefData** rht, Session* s){
 	return 0;
 };
 
-#define IS_EN_LETTER(ch)	((ch >=65 && ch <= 90)||(ch >= 97 && ch <= 122) || (ch == '_'))
+#define IS_EN_LETTER(ch)	((ch >=65 && ch <= 90)||(ch >= 97 && ch <= 122) || (ch == '_') || (ch == '-'))
 #define IS_DIGIT(ch)		(ch >= 48 && ch <= 57)
 #define IS_WHITE(ch)		(ch > 00  && ch <= 32)
 
@@ -386,6 +388,23 @@ inline unichar ecran_char(unichar ch){
 	return ch;
 }
 
+inline char getRandAlpha(){
+	return 65 + rand()%26;
+}
+
+RefChain* RandomIdName(RefData** beg, RefData** end, Session* s){
+	unistring word = "ffffffffffffff";
+	//srand ((unsigned int) time(NULL) );
+
+	word[0] = getRandAlpha();
+	for (int i=1; i<14; ++i){
+		word[i] = getRandAlpha();
+	}
+
+	return new RefChain(s, new RefWord(s, word));
+}
+
+
 RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 	RefChain *result = new RefChain(s);
 	if (!beg) {
@@ -403,7 +422,6 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 
 	PooledTuple2<unichar, RefChain*> result_stack;
 	result_stack.put('$', result);
-
 
 	do {
 		// пробелы
@@ -472,7 +490,12 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 			unistring word;
 			RefChain *tmp = new RefChain(s, new RefWord(s, "word"));
 			while(ch && (ch != '"' || ch_pre=='\\')){
-				word += ch;
+				if (ch=='\\'){
+					ch = NEXT_CHAR(s, symchar);
+					word += ecran_char(ch);
+				} else {
+					word += ch;
+				}
 				ch_pre = ch;
 				ch = NEXT_CHAR(s, symchar);
 			};
@@ -518,7 +541,17 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 				result_stack.top(old_chr, old_chain);
 				if (old_chr == ch){
 					result_stack.pop();
-					(*old_chain) += new RefStructBrackets(s, result);
+					if (ch==')') {  
+						RefAlphaBase *ab = ref_dynamic_cast<RefAlphaBase>(*(old_chain->at_last()));
+						if (!ab || (ab->getValue() != ' ')){
+							(*old_chain) += newRefAlpha(s, ' ');  
+						}
+						(*old_chain) += new RefStructBrackets(s, result);
+						//(*old_chain) += newRefAlpha(s, ' '); 
+					} else {
+						(*old_chain) += new RefStructBrackets(s, result);
+					};
+
 					result = old_chain;
 					//std::cout << "\n::: " << result->debug() << "\n\n";
 					ch = NEXT_CHAR(s, symchar); // уходим от ')'
@@ -610,3 +643,12 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 	//return tmp;
 	return result;
 };
+
+
+
+RefChain* PrintStackTrace  (RefData** beg, RefData** end, Session* s){
+	s->printExecTrace();
+	return new RefChain(s);
+};
+
+

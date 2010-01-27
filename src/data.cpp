@@ -115,7 +115,7 @@ RefChain* RefChain::operator+=(RefData *ch) {
 
 	if (leng == sysize){
 		sysize += RefChain::alloc_portion;
-		first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
+		first   =   (RefData**) realloc(first, sizeof(RefData*)*(sysize) );
 		//LOG("realloc");
 		if (! first) RUNTIMEERRORn("memory limit");
 	}
@@ -129,7 +129,7 @@ RefChain* RefChain::operator+=(RefData *ch) {
 RefChain* RefChain::operator+=(RefChain *ch) {
 		ref_assert(!isMemoryProtected());
 
-	sysize += ch->leng;
+	sysize += (ch->leng);
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
 	if (! first) RUNTIMEERRORn("memory limit");
@@ -143,7 +143,7 @@ RefChain* RefChain::operator+=(RefChain *ch) {
 RefChain* RefChain::operator+=(RefChain ch) {
 			ref_assert(!isMemoryProtected());
 
-	sysize += ch.leng;
+	sysize += (ch.leng);
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
 	//LOG("realloc");
 	if (! first) RUNTIMEERRORn("memory limit");
@@ -434,7 +434,12 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 					uservar->setTemplInstant((RefUserTemplate*) program->findTemplate(uservar->getType()) );
 				}
 				
-				ref_assert(vars.find(uservar->getName())==vars.end());
+				#ifdef TESTCODE
+				if(vars.find(uservar->getName())!=vars.end()){
+					std::cout << "compile: " << chain_to_text(point, end-1) << "\n";					
+					std::cout << "WARN. Several same-name-variables in one compiling chain: ?." << uservar->getName() << "\n";					
+				};
+				#endif
 
 				vars[uservar->getName()] = uservar; // todo: переделать на ссылки - так как есть безымянные переменные
 
@@ -449,7 +454,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				continue;
 			}
 
-			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // вырианты
+			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // варианты
 			if (uservarich){
 				if (uservarich->getName() != ""){
 					ref_assert(vars.find(uservarich->getName())==vars.end());
