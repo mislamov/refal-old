@@ -7,14 +7,19 @@ $ENTRY Go {
 }
 
 
+Template FUNCTION ::= { "$" (word ENTRY) ' ' | }  
+		(word t.name) {' '|} ("{" BLOCK.body) {' '|} {";"|} ;
+
+Template TEMPLATE ::=
+		(word Template) ' ' (word t.name) {' '|} ":" ":" "=" LEFT_PART.body ";" ;
+
+Template BLOCK ::= E. ;  // пока нет ссылок на объекты - делать нечего
+		
+		
 MODULE {
 	(comment END.) E.next = <MODULE @.next>;
-	{ "$" (word ENTRY) ' ' | } (word t.name) {' '|} ("{" e.body)  E.next 
-				=				'<FUNCTION name="' <Explode @.name> '">' <BLOCK @.body> '</FUNCTION>\n' <MODULE @.next>;
-	(word Template) ' ' (word t.name) {' '|} ":" ":" "=" e.body ";" E.next,
-		<ScanLeftPart <LeftPartObjectTree @.body>> : (E.left_part_code)(E.left_part_compiledata_stream)
-				= '<TEMPLATE name="' <Explode @.name> '">' @.left_part_code '</TEMPLATE>\n' <MODULE @.next>;
-
+	FUNCTION.func  E.next =	(function @.func::name <F_BLOCK @.func::body>) <MODULE @.next>;
+	TEMPLATE.tmpl  E.next = (template @.tmpl::name <L_PART  @.tmpl::body>) <MODULE @.next>;
 	' ' E.next = <MODULE @.next>;
 	";" E.next = <MODULE @.next>;
 	=;
@@ -22,16 +27,40 @@ MODULE {
 }
 
 
-BLOCK {
-	' ' E.next = <BLOCK @.next>;
-	(comment E.text) E.next = <BLOCK @.next>;
-	e.sentence ";" E.next = '\n\t<SENTENCE>'<SENTENCE @.sentence>'</SENTENCE>'<BLOCK @.next>;
+F_BLOCK {
+	' ' E.next 				=	<F_BLOCK @.next>;
+	(comment E.text) E.next	=	<F_BLOCK @.next>;
+	e.sentence ";" E.next	=	(sentence <SENTENCE @.sentence>) <F_BLOCK @.next>;
 	=;
-	E.else = '<SENTENCE>'<SENTENCE @.else>'</SENTENCE>'; // для блоков без ; в конце
-//			<Error ('Bad sentence in block') @.else>;
-}
+	E.sentence				=	(sentence <SENTENCE @.sentence>); // для блоков без ; в конце
+};
 
 
+Template LPattern   ::= { LTerm.item {' '| } }[0...].tmp ;  // образец: L-выражение
+Template RPattern   ::= { RTerm.item {' '| } }[0...].tmp ;  // R-выражение
+
+Template LTerm ::= {
+	"!" |
+	("(" LPattern.) |
+	TVariable. |
+	Symbols.
+};
+	
+
+Template RTerm ::= {
+	({"("|"<"} RPattern. ) |
+	TLinkToVariable. |
+	Symbols.
+};
+
+Template Symbols ::= ( {"word"|"int"|"real"|"text"|"bytes"}.type E.value ) ;
+
+	
+Template TVariable ::=
+	{ ("word" E.) | ("{" LPattern. ) }.type { TSpecificators. | }.specificator  "." {("word" E.)|}.name 
+;
+Template TLinkToVariable ::= {"@" | ("word" e.type)} "." ("word" e.name) { TNameOut. | };
+Template TNameOut  ::=  { ":" ":" ("word" E.namein) TNameOut. |  ":" ":" ("word" E.namein) } ;
 
 SENTENCE {	
 	e.left_part "=" E.rexpr,
