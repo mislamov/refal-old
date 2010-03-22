@@ -52,7 +52,7 @@ class rf_module_##func : public RefBuildInFunction { \
 		virtual ~rf_module_##func(){ /*LOG("delete " << getName());*/ };  \
 		unistring explode(){ return "$" #func ; };  \
 		unistring getName(){ return #func; };  \
-		RefChain* eval(RefData** fr, RefData** to, Session* s){ return func(fr, to, s); };		\
+		RefChain* eval(RefData** fr, RefData** to, RefChain* lr_own, Session* sess){ return func(fr, to, lr_own, sess); };		\
 	};  \
 	setFunctionByName(#func,  new rf_module_##func());
 

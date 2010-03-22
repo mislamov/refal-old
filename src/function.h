@@ -29,14 +29,14 @@ class RefSentence;
 // рефал-функция
 class RefFunctionBase : public RefObject {
 protected:
-	virtual RefChain* eval(RefData**, RefData**, Session*) = 0;
+	virtual RefChain* eval(RefData**, RefData**, RefChain*, Session*) = 0;
 public:
 	virtual ~RefFunctionBase(){
 	};
 	virtual unistring getName() = 0;
 	virtual void initilizeAll(RefProgram* program){};
 	virtual unistring debug() = 0;
-	RefChain* exec(RefData** l, RefData** r, Session* s);
+	RefChain* exec(RefData** l, RefData** r, RefChain* lr_own, Session* sess);
 
 };
 
@@ -59,7 +59,7 @@ public:
 	unistring debug();
 
 	void initilizeAll(RefProgram *);
-	RefChain* eval(RefData**, RefData**, Session*);
+	RefChain* eval(RefData**, RefData**, RefChain*, Session*);
 };
 
 
@@ -141,8 +141,8 @@ public:
 	inline RefChain *getRightPart(){ return rightPart; };
 
 	unistring explode(){ return " , $UserCondition[ " + rightPart->explode() + " ::: " + leftPart->explode() + " ]"; };
-	TResult init(RefData **&, Session*, RefData **&, RefData **&);
-	TResult back(RefData **&, Session*, RefData **&, RefData **&);
+	TResult init(RefData **&, Session*, RefData **&, RefData **&, RefChain *&);
+	TResult back(RefData **&, Session*, RefData **&, RefData **&, RefChain *&);
 
 };
 

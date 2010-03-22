@@ -38,7 +38,7 @@ unistring the_debug_text(RefData **a, RefData **b);
 template <class T, class t>
 class RefSymbolBase : public RefData {
 public:
-	RefSymbolBase(Session *s) : RefData(s){};
+	RefSymbolBase(Session *sess) : RefData(sess){};
     virtual ~RefSymbolBase(){};
     virtual t getValue() = 0;
 	virtual RefSymbolBitType isRefSymbol() = 0;
@@ -48,8 +48,8 @@ public:
     };
 	bool operator >(RefData &rd){ notrealisedERRORn; };
 
-    TResult init(RefData**&, Session* , RefData**&, RefData**&);
-    TResult back(RefData**&, Session* , RefData**&, RefData**&);
+    TResult init(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
+    TResult back(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
     unistring explode(){
         std::ostringstream os;
         os << getValue();
@@ -68,7 +68,7 @@ public:
 
 class RefAlphaBase : public RefSymbolBase<RefAlphaBase, unichar> {
 public:
-	RefAlphaBase(Session *s) : RefSymbolBase<RefAlphaBase, unichar>(s) {};
+	RefAlphaBase(Session *sess) : RefSymbolBase<RefAlphaBase, unichar>(sess) {};
 
     ////CLASS_OBJECT_CAST(RefAlphaBase);
     virtual ~RefAlphaBase(){};
@@ -94,7 +94,7 @@ public:
 class RefIntegerBase : public RefSymbolBase<RefIntegerBase, infint> {
 public:
     ////CLASS_OBJECT_CAST(RefIntegerBase);
-	RefIntegerBase(Session *s) : RefSymbolBase<RefIntegerBase, infint>(s) {};
+	RefIntegerBase(Session *sess) : RefSymbolBase<RefIntegerBase, infint>(sess) {};
     virtual ~RefIntegerBase(){};
 
 	CLASS_SYMBOL_CAST(RefIntegerBase);
@@ -104,7 +104,7 @@ public:
 class RefRealBase : public RefSymbolBase<RefRealBase, infreal> {
 public:
     ////CLASS_OBJECT_CAST(RefRealBase);
-	RefRealBase(Session *s) : RefSymbolBase<RefRealBase, infreal>(s) {};
+	RefRealBase(Session *sess) : RefSymbolBase<RefRealBase, infreal>(sess) {};
     virtual ~RefRealBase(){};
 
 	CLASS_SYMBOL_CAST(RefRealBase);
@@ -115,7 +115,7 @@ public:
 class RefWordBase : public RefSymbolBase<RefWordBase, unistring> {
 public:
     ////CLASS_OBJECT_CAST(RefWordBase);
-	RefWordBase(Session *s) : RefSymbolBase<RefWordBase, unistring>(s) {};
+	RefWordBase(Session *sess) : RefSymbolBase<RefWordBase, unistring>(sess) {};
     virtual ~RefWordBase(){};
 
 	CLASS_SYMBOL_CAST(RefWordBase);
@@ -125,7 +125,7 @@ public:
 class RefByteBase : public RefSymbolBase<RefByteBase, char> {
 public:
     ////CLASS_OBJECT_CAST(RefByteBase);
-	RefByteBase(Session *s) : RefSymbolBase<RefByteBase, char>(s) {};
+	RefByteBase(Session *sess) : RefSymbolBase<RefByteBase, char>(sess) {};
     virtual ~RefByteBase(){};
 
 	CLASS_SYMBOL_CAST(RefByteBase);
@@ -139,7 +139,7 @@ public:
 	static std::map<unichar, RefAlphaBase*> alphamap;
 	static void RefAlpha::alphaMapDestroy();
 
-	RefAlpha(Session *s, unichar val) : RefAlphaBase(s) { set_not_deleteble_by_gc_delete();	value = val; };
+	RefAlpha(Session *sess, unichar val) : RefAlphaBase(sess) { set_not_deleteble_by_gc_delete();	value = val; };
     virtual ~RefAlpha(){};
     virtual unichar getValue()   { return value; };
 
@@ -157,7 +157,7 @@ public:
 class RefInteger : public RefIntegerBase {
     infint value;
 public:
-	RefInteger(Session *s, infint val) : RefIntegerBase(s) { value = val; };
+	RefInteger(Session *sess, infint val) : RefIntegerBase(sess) { value = val; };
     virtual ~RefInteger(){};
     virtual infint getValue() {return value;};
 };
@@ -166,7 +166,7 @@ public:
 class RefReal : public RefRealBase {
 	infreal value;
 public:
-	RefReal(Session *s, infreal val) : RefRealBase(s){ value = val; };
+	RefReal(Session *sess, infreal val) : RefRealBase(sess){ value = val; };
     virtual ~RefReal(){};
     virtual infreal getValue() {return value;};
 };
@@ -175,8 +175,8 @@ public:
 class RefWord : public RefWordBase {
     unistring value;
 public:
-	inline RefWord(Session *s, unistring val) : RefWordBase(s){ value = val; };
-	inline RefWord(Session *s, unichar val) : RefWordBase(s){ value = ""; value += val; };
+	inline RefWord(Session *sess, unistring val) : RefWordBase(sess){ value = val; };
+	inline RefWord(Session *sess, unichar val) : RefWordBase(sess){ value = ""; value += val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
     unistring debug() ;
@@ -186,7 +186,7 @@ public:
 class RefByte : public RefByteBase {
     char value;
 public:
-	RefByte(Session *s, char val) : RefByteBase(s) { value = val; };
+	RefByte(Session *sess, char val) : RefByteBase(sess) { value = val; };
     virtual ~RefByte(){};
     virtual char getValue() {return value;};
 };
@@ -195,26 +195,26 @@ public:
 
 
 template <class TT, class tt>
-TResult  RefSymbolBase<TT, tt>::init(RefData**& tpl, Session* s, RefData**& l, RefData**& r) {
+TResult  RefSymbolBase<TT, tt>::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own) {
 	//todo убрать этот хак. сохранять границы а не 0 при перемещении
-	if (!r && s->alt_r+1==s->current_view_l()){
-		r = s->alt_r;
+	if (!r && sess->alt_r+1==sess->current_view_l()){
+		r = sess->alt_r;
 	}
 	
-	s->MOVE_TO_next_term(r);
+	sess->MOVE_TO_next_term(r);
     if ( r && *r && (this==*r || *this == **r)) {
-        s->MOVE_TO_next_template(tpl);
+        sess->MOVE_TO_next_template(tpl);
         return GO;
     }
 
-	s->MOVE_TO_pred_template(tpl);
+	sess->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 
 
 template<class T, class t>
-TResult  RefSymbolBase<T, t>::back(RefData**&tpl, Session* s, RefData**&l, RefData**&r) {
-    s->MOVE_TO_pred_template(tpl);
+TResult  RefSymbolBase<T, t>::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own) {
+    sess->MOVE_TO_pred_template(tpl);
     return BACK;
 };
 
@@ -228,20 +228,19 @@ TResult  RefSymbolBase<T, t>::back(RefData**&tpl, Session* s, RefData**&l, RefDa
 template <class T> class RefVarForSymbol : public RefVariable
 {
 public:
-    TResult init(RefData**&, Session* , RefData**&, RefData**&);
-    TResult back(RefData**&, Session* , RefData**&, RefData**&);
+    TResult init(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
+    TResult back(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
 	RefVarForSymbol (unistring name) : RefVariable(name) {};
-
     virtual unistring explode(){        return "RefVarForSymbol<T>."+getName();    }
 };
 
 
 template <class T>
-TResult RefVarForSymbol<T>::init(RefData**&tpl, Session* sess, RefData**&l, RefData**&r){
+TResult RefVarForSymbol<T>::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	sess->MOVE_TO_next_term(r);
     if (r && ref_dynamic_cast<T >(*r)){
         l=r;
-		sess->saveVar(this, l, r);
+		sess->saveVar(this, l, r, lr_own);
 		sess->MOVE_TO_next_template(tpl);
         return GO;
     }
@@ -252,8 +251,8 @@ TResult RefVarForSymbol<T>::init(RefData**&tpl, Session* sess, RefData**&l, RefD
 
 
 template <class T>
-TResult RefVarForSymbol<T>::back(RefData**&tpl, Session* sess, RefData**&l, RefData**&r){
-	sess->restoreVar(this, l, r);
+TResult RefVarForSymbol<T>::back(RefData**&tpl, Session* sess, RefData**&l, RefData**&r, RefChain *&lr_own){
+	sess->restoreVar(this, l, r, lr_own);
 	sess->MOVE_TO_pred_template(tpl);
     return BACK;
 };

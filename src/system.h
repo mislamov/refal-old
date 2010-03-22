@@ -29,29 +29,29 @@
 #include "module_sdk.h"
 
 
-RefChain* Dec  (RefData** beg, RefData** end, Session* s);
-RefChain* Div  (RefData** beg, RefData** end, Session* s);
-RefChain* Mul  (RefData** beg, RefData** end, Session* s);
-RefChain* Sum  (RefData** beg, RefData** end, Session* s);
-RefChain* Numb (RefData** beg, RefData** end, Session* s);
-RefChain* Lenw (RefData** beg, RefData** end, Session* s);
-RefChain* Compare (RefData** beg, RefData** end, Session* s);
-RefChain* Implode (RefData** beg, RefData** end, Session* s);
-RefChain* Explode (RefData** beg, RefData** end, Session* s);
-RefChain* ExplodeAll (RefData** beg, RefData** end, Session* s);
-RefChain* Add   (RefData** beg, RefData** end, Session* s);
-RefChain* Sub   (RefData** beg, RefData** end, Session* s);
-RefChain* Mount (RefData** beg, RefData** end, Session* s);
-RefChain* Card  (RefData** beg, RefData** end, Session* s);
-RefChain* Prout (RefData** beg, RefData** end, Session* s);
-RefChain* ProutDebug (RefData** beg, RefData** end, Session* s);
-RefChain* Print (RefData** beg, RefData** end, Session* s);
-RefChain* Exit  (RefData** beg, RefData** end, Session* s);
+RefChain* Dec  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Div  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Mul  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Sum  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Numb (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Lenw (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Compare (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Implode (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Explode (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* ExplodeAll (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Add   (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Sub   (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Mount (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Card  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Prout (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* ProutDebug (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Print (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Exit  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 
-RefChain* RandomIdName(RefData** beg, RefData** end, Session* s);
+RefChain* RandomIdName(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 
-RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s);
-RefChain* PrintStackTrace   (RefData** beg, RefData** end, Session* s);
+RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* PrintStackTrace   (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 
 
 

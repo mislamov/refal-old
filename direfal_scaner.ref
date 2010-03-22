@@ -113,55 +113,40 @@ ScanObjectExprWithExecs {
 		=	"<EXEC>" "<WORD>" t.word "</WORD>"  e.insidescaned_I "</EXEC>" <ScanObjectExprWithExecs e.next>;
 
 
-	/* продолжение ссылки напеременную */
-	"$path" ('/')(t.1) e.next, 
-		<Type t.1> : 'W' s.sub1 t.1
-		=	'/' <Explode t.1> <ScanObjectExprWithExecs  "$path" e.next>;
+	/* продолжение ссылки на переменную */
+	"$path" ('/')(t.1) e.next
+		=	'/' <ExplodeAll t.1> <ScanObjectExprWithExecs  "$path" e.next>;
+	"$ppath" ('/')(t.1) e.next
+		=	'/' <ExplodeAll t.1> <ScanObjectExprWithExecs  "$ppath" e.next>;
 
 
 	/* конец ссылки напеременную */
 	"$path" e.next		
 		=	"</LNK>" <ScanObjectExprWithExecs  e.next>;
+	"$ppath" e.next		
+		=	"</LNK>" "</POINT>" <ScanObjectExprWithExecs  e.next>;
 
 
 	/*ссылка на переменную*/
-	(t.1)('.')(t.2)('/') e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<LNK>" <Explode t.2>
+	(t.1)('.')(t.2)('/') e.next
+	=	"<LNK>" <ExplodeAll t.2>
 		<ScanObjectExprWithExecs "$path" ('/') e.next>;
 
-	/*ссылка на переменную c числовым именем*/
-	(t.1)('.')(t.2)('/') e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<LNK>" <Symb t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
+	/* ссылка на путь переменной-указателя - не отличается от ссылки на путь переменной */
+	('&')(t.1)('.')(t.2)('/') e.next
+	=	"<POINT>" "<LNK>" <ExplodeAll t.2>
+		<ScanObjectExprWithExecs "$ppath" ('/') e.next>;
 
 	/*ссылка на переменную c @-именем*/
-	('@')('.')(t.2)('/') e.next,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<LNK>" <Symb t.2>
-		<ScanObjectExprWithExecs "$path" ('/') e.next>;
-	('@')('.')(t.2)('/') e.next,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<LNK>" <Explode t.2>
+	('@')('.')(t.2)('/') e.next
+	=	"<LNK>" <ExplodeAll t.2>
 		<ScanObjectExprWithExecs "$path" ('/') e.next>;
 
 	/*переменная*/
 	(t.1)('.')(t.2) e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<VAR>" <Explode t.1> '.' <Explode t.2> "</VAR>"
+	<Type t.1> : 'W' s.sub1 t.1
+	=	"<VAR>" <Explode t.1> '.' <ExplodeAll t.2> "</VAR>"
 		<ScanObjectExprWithExecs e.next>;
-
-	/*переменная с числовым именем*/
-	(t.1)('.')(t.2) e.next,
-	<Type t.1> : 'W' s.sub1 t.1,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<VAR>" <Explode t.1> '.' <Symb t.2> "</VAR>"
-		<ScanObjectExprWithExecs e.next>;
-	/**/
 
 	/*переменная без имени*/
 	(t.1)('.') "$separator" e.next,
@@ -171,19 +156,19 @@ ScanObjectExprWithExecs {
 		<ScanObjectExprWithExecs e.next>;
 	/**/
 
-	/* ссылка на переменную с НЕ числовым именем*/
-	('@')('.')(t.2) e.next,
-	<Type t.2> : 'W' s.sub2 t.2
-	=	"<LNK>" <Explode t.2> "</LNK>"
+	/* переменная-указатель */
+	('&')(t.type)('.')(t.name) e.next
+	=	"<POINT>" "<VAR>" <ExplodeAll t.type>'.'<ExplodeAll t.name> "</VAR>" "</POINT>"
 		<ScanObjectExprWithExecs e.next>;
 	/**/
 
-	/* ссылка на переменную с числовым именем*/
-	('@')('.')(t.2) e.next,
-	<Type t.2> : 'N' s.sub2 t.2
-	=	"<LNK>" <Symb t.2> "</LNK>"
+
+	/* ссылка на переменную с НЕ числовым именем*/
+	('@')('.')(t.2) e.next
+	=	"<LNK>" <ExplodeAll t.2> "</LNK>"
 		<ScanObjectExprWithExecs e.next>;
 	/**/
+
 
 	/*просто слово или число*/
 	(s.1) e.next, <Type s.1> :
@@ -805,3 +790,14 @@ Replace {
 	(e.A s.1 e.B) e.2 s.1 e.3 = <Replace (e.A s.1 e.B) e.2 e.3>;
 	(e.A) e.e = e.e; 
 }
+
+ExplodeAll {
+	s.1 e.2, <Type s.1> : {
+		'W' s.sub s.1 =  <Explode s.1><ExplodeAll e.2>;
+		'N' s.sub s.1 =  <Symb s.1><ExplodeAll e.2>;
+		s.type s.sub e.else = <Prout '#ERROR: ExplodeAll not definded for symbol [' e.else '] of type ' s.type s.sub>;
+	};
+	=;
+	e.else = <Prout '#ERROR: ExplodeAll not definded for non-symbol [' e.else '] '>;
+}
+

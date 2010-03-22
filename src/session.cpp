@@ -21,13 +21,13 @@
 // ТОЛЬКО ДЛЯ ЦЕЛОГО ОБРАЗЦА В ПРЕДЛ. ИЛИ УСЛОВИИ
 // Политика управления varMapб current_LR задается из вне.
 // TODO: подумать над возможностью пердавать 2 chain в аргументах, а не 1 chain и 2 dot.
-bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l, RefData **arg_r, bool isdemaching) {
+bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l, RefData **arg_r, RefChain *arg_chain, bool isdemaching) {
 #ifdef TESTCODE
 	if (! varMapStack.getCount()) SYSTEMERRORs(this, "createVarMap() wanted! No varmaps in stack for matching");
 #endif
 
+	RefChain *lr_chain = arg_chain;
 	//std::cout << thetmplate->debug() << "\n\t\t~  " << chain_to_text(arg_l, arg_r) << "\n" << std::flush;
-
 	//LOG("New MATCHING : tmplateChain=" << thetmplate->debug() << "  isDematching="<<isdemaching);
     RefData **activeTemplate = 0, **l=0, **r=0;
 
@@ -36,7 +36,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 		if (thetmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
         result_sost = BACK;
 		activeTemplate = (*thetmplate)[-1];
-		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
+		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r), lr_chain);
     } else {
         // начинаем новое сопоставление с argl..argr
 		if (thetmplate->isEmpty()) return !arg_l; // дематчинг пустых векторов - неудача
@@ -44,7 +44,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 		l = 0;
 		r = arg_l ? arg_l-1 : 0;
         activeTemplate = (*thetmplate)[0];
-		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r) );
+		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r), lr_chain);
     }
 
 	this->setTmplate(thetmplate);
@@ -71,14 +71,14 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 
 					if (var1) {
-						result_sost = var1->success(activeTemplate, this, l, r);
+						result_sost = var1->success(activeTemplate, this, l, r, lr_chain);
 					} else {
 						RefVariantsChains* var2 = ref_dynamic_cast<RefVariantsChains>(* termChainsJumpPoints.top());
 						if (var2){
-							result_sost = var2->success(activeTemplate, this, l, r);
+							result_sost = var2->success(activeTemplate, this, l, r, lr_chain);
 						} else {
 							RefRepeaterChain* var3 = ref_dynamic_cast<RefRepeaterChain>(* termChainsJumpPoints.top());
-							result_sost = var3->success(activeTemplate, this, l, r);
+							result_sost = var3->success(activeTemplate, this, l, r, lr_chain);
 						}
 					}
 					break;
@@ -95,7 +95,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
             #endif
             l=0;
 			//ref_assert(r);
-            result_sost = (*activeTemplate)->init(activeTemplate, this, l, r); /// ШАГ ВПЕРЕД
+            result_sost = (*activeTemplate)->init(activeTemplate, this, l, r, lr_chain); /// ШАГ ВПЕРЕД
             break;
         }
         case BACK: {
@@ -112,14 +112,14 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 					#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 					if (var1){
-						result_sost = var1->failed(activeTemplate, this, l, r);
+						result_sost = var1->failed(activeTemplate, this, l, r, lr_chain);
 					}else{
 						RefVariantsChains* var2 = ref_dynamic_cast<RefVariantsChains>(* termChainsJumpPoints.top());
 						if (var2){
-							result_sost = var2->failed(activeTemplate, this, l, r);
+							result_sost = var2->failed(activeTemplate, this, l, r, lr_chain);
 						} else {
 							RefRepeaterChain* var3 = ref_dynamic_cast<RefRepeaterChain>(* termChainsJumpPoints.top());
-							result_sost = var3->failed(activeTemplate, this, l, r);
+							result_sost = var3->failed(activeTemplate, this, l, r, lr_chain);
 						}
 					}
 					break;
@@ -129,7 +129,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				break;
 			}
             LOGSTEP("BACK");
-            result_sost = (*activeTemplate)->back(activeTemplate, this, l, r); /// ШАГ НАЗАД
+            result_sost = (*activeTemplate)->back(activeTemplate, this, l, r, lr_chain); /// ШАГ НАЗАД
             break;
         }
 
@@ -278,18 +278,25 @@ void Session::gc_prepare(RefData *save_point){
 
 void Session::gc_exclude(RefChain *chain){
 		if (!chain) return;
-		chain->set_gc_mark();
-		if (chain->isEmpty()) return;
-		for(RefData  **iter=chain->at_first(), **iend=chain->at_afterlast();
+		Session::gc_exclude(chain->at_first(), chain->at_last(), chain);
+	};
+
+void Session::gc_exclude(RefData **l, RefData **r, RefChain *own){
+	own->set_gc_mark();
+	//ref_assert(l and r by own);
+		for(RefData  **iter=l, **iend=r+1;
 			iter<iend;
 			++iter){
 			(*iter)->set_gc_mark();
-			if ((*iter)->isDataBracket()){
+			if ((*iter)->isDataBracket()){ // ДАТА-скобка
 				gc_exclude( ((RefDataBracket*)(*iter))->chain );
 			}
+			RefPoint *point = 0;
+			if (point=ref_dynamic_cast<RefPoint>(*iter)){
+				point->set_gc_mark(this);
+			}
 		}
-	};
-
+};
 
 /*
 unistring MatchState::debug(){
@@ -305,12 +312,13 @@ unistring MatchState::debug(){
 
 
 // ищет по имени переменной ее облать видимости
-bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, VarMap *&vm) {
+bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, RefChain *&lr_own, VarMap *&vm) {
         for (size_t ind = last_ind; ind>=0; --ind) {
             if (pool[ind].i1->getName()==name) {
                 l  = pool[ind].i2;
                 r  = pool[ind].i3;
 				vm = pool[ind].i4;
+				lr_own = pool[ind].i5;
                 return true;
             }
         }
@@ -331,19 +339,20 @@ bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&v
             return false;
 };
 */
-bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&vm) {
+bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap *&vm) {
         for (size_t ind = last_ind+1; ind>0; --ind) {
             if (pool[ind-1].i1==var) {
                 l = pool[ind-1].i2;
                 r = pool[ind-1].i3;
 				vm = pool[ind-1].i4;
+				lr_own = pool[ind-1].i5;
                 return true;
             }
         }
         return false;
 };
 
-bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r){
+bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own){
     #ifdef TESTCODE
 	if (path == EmptyUniString) {
 		AchtungERRORn;
@@ -368,9 +377,33 @@ bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r){
         vname = path.substr(t_from, t_to-t_from);
 
 		if (!vm) return false;
-		vm->findByName(vname, l, r, vm);
+		vm->findByName(vname, l, r, lr_own, vm);
     } while (t_to != std::string::npos);
 	return true;
+}
+
+
+// todo: сохранять только используемые переменные и varmap-ы
+void VarMap::mrk_collect(){
+        for (size_t ind = last_ind+1; ind>0; --ind) {
+			if (pool[ind-1].i1 != 0){
+				(pool[ind-1].i1)->set_gc_mark();
+			}
+
+			RefData **from = pool[ind-1].i2;
+			RefData **to   = pool[ind-1].i3;
+			for(RefData** pp=from; pp<=to; ++pp){
+				(*pp)->set_gc_mark();
+			}
+
+			if (pool[ind-1].i4 != 0) {
+				(pool[ind-1].i4)->set_gc_mark();
+				(pool[ind-1].i4)->mrk_collect();
+			}
+			if (pool[ind-1].i5 != 0){
+				(pool[ind-1].i5)->set_gc_mark();
+			}
+        }
 }
 
 
@@ -396,33 +429,29 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 	RefChain *result = new RefChain(this, chain->leng);
 	RefLinkToVariable *link = 0;
 	RefDataBracket   *brack = 0;
+	RefPointLink     *pointlink = 0;
 	RefData **enditem = chain->at_afterlast();
 	for(RefData **item = chain->at_first(); item < enditem; ++item){
-		link = ref_dynamic_cast<RefLinkToVariable>(*item);
+		link = ref_dynamic_cast<RefLinkToVariable>(*item);  //  ССЫЛКА
 		if (link){
 			RefData **endi, **i;
+			RefChain *i_chain;
 			VarMap* vm = 0;
-			if (! findVar(link->lnk, i, endi, vm)){
+			if (! findVar(link->lnk, i, endi, i_chain, vm)){
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for link " + link->explode());
 			};
 			if (link->path != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! vm->folowByWay(link->path, i, endi)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
+				if (! vm->folowByWay(link->path, i, endi, i_chain)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
 			}
 			if (i){
 				*result += new RefChain(this, 0, i, endi);
-				/*
-				++endi;
-				for( ; i < endi; ++i){
-					*result += *i;
-				}
-				*/
 			}
 
 			continue;
 		}
-		brack = (*item)->isDataBracket();
+		brack = (*item)->isDataBracket(); // ДАТА-СКОБКИ
 		if (brack){
 			if (ref_dynamic_cast<RefStructBrackets>(brack)){
 				*result +=  new RefStructBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
@@ -431,6 +460,21 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 				*result +=  new RefExecBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 			}
 
+			continue;
+		}
+		pointlink = ref_dynamic_cast<RefPointLink>(*item);  //  ССЫЛКА
+		if (pointlink){
+			ref_assert(ref_dynamic_cast<RefVarChains>(pointlink->theLink->lnk));
+			RefData **ther, **thel;  RefChain *thechain;  VarMap* thevm = 0;
+			if (! findVar(pointlink->theLink->lnk, thel, ther, thechain, thevm)){
+				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
+				SYSTEMERRORs(this, "Variable not found for &link " + pointlink->explode());
+			};
+
+			*result +=  new RefPoint(
+				((RefVarChains*)pointlink->theLink->lnk)->getUserType(),
+				thel, ther, thechain, thevm,
+				this);
 			continue;
 		}
 		*result += *item;

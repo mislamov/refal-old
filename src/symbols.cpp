@@ -24,7 +24,7 @@ RefAlpha128* RefAlpha128::alphatable = new RefAlpha128[128];
 
 std::map<unichar, RefAlphaBase*> RefAlpha::alphamap;
 
-RefAlphaBase* newRefAlpha(Session *s, unichar value){
+RefAlphaBase* newRefAlpha(Session *sess, unichar value){
 	unsigned char val = value;
 		if (val < 128){
 			return RefAlpha128::alphatable + val;
@@ -105,7 +105,7 @@ void RefAlpha::alphaMapDestroy(){
 
 
 
-/*RefAlphaBase* newRefAlpha(Session *s, unichar val){
+/*RefAlphaBase* newRefAlpha(Session *sess, unichar val){
 	if (val < 128){
 		return RefAlpha128::alphatable + val;
 	}

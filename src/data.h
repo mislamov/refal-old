@@ -29,6 +29,9 @@ class RefChain;
 class RefDataBracket;
 class RefProgram;
 class VarMap;
+class RefTemplateBase;
+class RefVariable;
+class RefLinkToVariable;
 
 
 
@@ -69,8 +72,8 @@ protected:
 public:
 	RefData(Session *);
 	virtual unistring explode() = 0;
-    virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0; //  --> operator==() => [return GO] else [return BACK]
-    virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft)=0;
+	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot)=0; //  --> operator==() => [return GO] else [return BACK]
+    virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot)=0;
 
 	virtual bool operator >(RefData &rd)  { RUNTIMEERRORn("Not comparable for" << explode() << " and " << rd.explode()); };
 	virtual bool operator ==(RefData &rd) { notrealisedERRORn; };
@@ -85,7 +88,7 @@ public:
 
 	inline void gc_delete()  { if (!is_collected() && !(gc_label&2)){ delete this; return; } }; // удалить если коллекционируемо и не не удаляемо
 	//gc_label |= 2; // xxxxxx1x   -  для принудительного сохранения (ручная отметка)
-	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для сохранения (gc отметка)
+	/*virtual*/inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для сохранения (gc отметка)
 	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11 - отмечено ли для сохранения
 	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0 - удалить по gc
 
@@ -109,8 +112,8 @@ public:
 
 class RefDataNull : public RefData {
 	virtual unistring explode() { return "[RefDataNull]"; };
-	virtual TResult init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);
-    virtual TResult back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft);
+	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+    virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
 public:
 	//RefDataNull();
 
@@ -129,13 +132,14 @@ public:
     inline void setName(unistring s) {        name = s;    };
 };
 
+
 class RefUserTemplate;
 
 // usertype-переменная, группа
 class RefVarChains : public RefVariable {
 	friend class RefChain;
 
-	unistring type;
+	unistring typeString;
 	//RefTemplateBase *templInstant;
 	RefUserTemplate *templInstant;
 	RefChain *templ;
@@ -143,28 +147,29 @@ public:
 
 
 	RefVarChains() : RefVariable() { templ=0; templInstant=0; };
-	RefVarChains(unistring ntype, unistring nname) : RefVariable(nname) { type=ntype; templ=0; templInstant=0; };
+	RefVarChains(unistring ntype, unistring nname) : RefVariable(nname) { typeString=ntype; templ=0; templInstant=0; };
 	virtual ~RefVarChains();
 
 	//////CLASS_OBJECT_CAST(RefVarChainsNotInit);
 
-	void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
-	void setTemplInstant(RefUserTemplate *ntempli);
-    unistring getType() {        return type;    };
-	void setType(unistring ntype) {      type = ntype;    };
+	inline void setTempl(RefChain *ntm){ templ = ntm; templInstant = 0; };
+	inline void setUserType(RefUserTemplate *ntempli);
+	inline RefUserTemplate *getUserType(){ return templInstant; };
+	unistring getTypeString() {        return typeString;    };
+	void setTypeString(unistring ntype) {      typeString = ntype;    };
 	unistring explode();
 
-	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
 
 };
 
 
 
 
-// выриант
+// вариант
 // TODO: совместить с RefVarChains
 class RefVariantsChains : public RefVariable {
 	friend class RefChain;
@@ -177,10 +182,10 @@ public:
 
 	unistring explode();
 
-	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
 
 };
 
@@ -204,10 +209,10 @@ public:
 
 	unistring explode();
 
-	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
-	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r);
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+    TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+	TResult success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+	TResult failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
 };
 
 
@@ -219,7 +224,7 @@ class RefDataBracket : public RefData {
 public:
 	RefChain *chain;
 
-	RefDataBracket(Session *s, RefChain *thechain) : RefData(s){
+	RefDataBracket(Session *sess, RefChain *thechain) : RefData(sess){
 		++co::stbracks;
 		chain = thechain;
 	};
@@ -232,28 +237,28 @@ public:
 
 class RefStructBrackets : public RefDataBracket {
 public:
-	inline RefStructBrackets(Session* s, RefChain* thechain) : RefDataBracket(s, thechain){};
+	inline RefStructBrackets(Session* sess, RefChain* thechain) : RefDataBracket(sess, thechain){};
 	virtual ~RefStructBrackets(){};
 	unistring explode();
 	unistring debug();
 	unistring toString();
 
-    TResult init(RefData **&, Session*, RefData **&, RefData **&);
-    TResult back(RefData **&, Session*, RefData **&, RefData **&);
+    TResult init(RefData **&, Session*, RefData **&, RefData **&, RefChain *&);
+    TResult back(RefData **&, Session*, RefData **&, RefData **&, RefChain *&);
 
 	virtual RefData* getNewInstance(Session* sess){ return new RefStructBrackets(sess, 0); };
 };
 
 class RefExecBrackets : public RefDataBracket {
 public:
-	inline RefExecBrackets(Session *s, RefChain* thechain) : RefDataBracket(s, thechain){};
+	inline RefExecBrackets(Session *sess, RefChain* thechain) : RefDataBracket(sess, thechain){};
 	virtual ~RefExecBrackets(){};
 	unistring explode();
 	unistring debug();
 	unistring toString();
 
-    TResult init(RefData **&, Session*, RefData **&, RefData **&);
-    TResult back(RefData **&, Session*, RefData **&, RefData **&);
+    TResult init(RefData **&, Session*, RefData **&, RefData **&, RefChain *&);
+    TResult back(RefData **&, Session*, RefData **&, RefData **&, RefChain *&);
 
 	virtual RefData* getNewInstance(Session* sess){ return new RefExecBrackets(sess, 0); };
 
@@ -289,11 +294,11 @@ protected:
 	static size_t alloc_portion;
 public:
 
-	RefChain(Session *s) : RefData(s) { sysize=leng=0; first=0; co::chains++; };
+	RefChain(Session *sess) : RefData(sess) { sysize=leng=0; first=0; co::chains++; };
 	RefChain(Session *, RefData *);			// цпочка из одного терма
 	RefChain(Session *, size_t systemsize);	// пустая цепочка для systemsize элементов
     RefChain(Session *, RefChain *ownchain, RefData **from, RefData **to); // цепочка из подцепочки
-	RefChain(Session *s, RefData** d, size_t sz) : RefData(s){ sysize=leng=sz; first=d; co::chains++; gc_label|=0x08; }
+	RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){ sysize=leng=sz; first=d; co::chains++; gc_label|=0x08; }
 	virtual ~RefChain();
 	inline bool isMemoryProtected(){ return (gc_label&0x08)!=0; };
 
@@ -318,8 +323,8 @@ public:
 	//void killall();     // удаление всех RefChain
 	void killalldata(); // удаление всех RefChain и RefData
 
-	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){ return ERROR; };
-	TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){ return ERROR; };
+	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){ return ERROR; };
+	TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){ return ERROR; };
 };
 
 
@@ -335,18 +340,18 @@ class RefLinkToVariable : public RefData {
 	unistring path;
 public:
 	RefLinkToVariable() : RefData(){};
-	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+	TResult init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+    TResult back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
 	inline unistring explode(){ 
 		/*if(
 			lnk && lnk->getName()==""
 			){
 				std::cout << "";
 		};*/
-		return " @."+(lnk?lnk->getName():"$notinit$"+path)+" "; 
+		return " @."+(lnk?lnk->getName():"$notinit$")+(path==EmptyUniString?"":"/"+path)+" "; 
 	};
 
-	inline RefLinkToVariable(RefVariable *ln){lnk=ln; path=EmptyUniString; };
+	inline RefLinkToVariable(RefVariable *ln){ lnk=ln; path=EmptyUniString; };
 	inline RefLinkToVariable(unistring varName){
 		path = varName;
 		lnk=0;
@@ -372,12 +377,54 @@ inline unistring chain_to_text(RefData** from, RefData** to, int showleng = 356)
 class RefMatchingCutter : public RefData {
 public:
 	RefMatchingCutter() : RefData(){};
-	TResult init(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
-    TResult back(RefData **&tpl, Session* s, RefData **&l, RefData **&r);
+	TResult init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
+    TResult back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
 	inline unistring explode(){ return " $cutter$ "; };
 };
 
 
+
+// указатель на ОВ пользовательского типа
+class RefPoint : public RefData {
+	RefPoint(){};
+
+public:
+	RefData **l, **r;      // тело ОВ
+	RefChain *lr_own;
+	RefTemplateBase* type; // тип тела ОВ
+	VarMap *the_namespace; // результат сопоставления ОВ
+
+	inline RefPoint(RefTemplateBase* thetype, RefData **ll, RefData **rr, RefChain *llrr_own, VarMap *tn, Session *sess) : RefData(sess){
+		ll=l;rr=r;lr_own=llrr_own; type=thetype;the_namespace=tn; 
+	};
+
+	virtual unistring explode();
+	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+	virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+
+	void set_gc_mark(Session *sess); // если в RefData не virtual, то вызвать явно в Session::gc_exclude
+	
+};
+
+class RefPointVariable : public RefData {
+public:
+	RefVariable* theVar;
+	RefPointVariable(RefVariable* tV, Session *sess) : RefData(sess){ ref_assert(ref_dynamic_cast<RefVarChains>(tV) != 0); theVar = tV; };
+
+	virtual unistring explode() { return "&[" + theVar->explode() + "]"; };
+	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+    virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+};
+
+class RefPointLink : public RefData {
+public:
+	RefLinkToVariable* theLink;
+	RefPointLink(RefLinkToVariable* tL, Session *sess) : RefData(sess){ theLink = tL; };
+
+	virtual unistring explode();
+	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+    virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+};
 
 
 

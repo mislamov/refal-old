@@ -26,12 +26,12 @@
 #include "symbols.h"
 
 
-RefChain *StrToChain(Session *s, unistring text){
+RefChain *StrToChain(Session *sess, unistring text){
 	size_t leng = text.length();
-	RefChain *res = new RefChain(s, leng);
+	RefChain *res = new RefChain(sess, leng);
 
 	for(size_t i=0; i<leng; i++){
-		*res += newRefAlpha(s, text[i]);
+		*res += newRefAlpha(sess, text[i]);
 	};
 	return res;
 };
@@ -61,36 +61,36 @@ RefData*   byte_creator(unistring value){
 
 
 
-RefChain* Dec (RefData** beg, RefData** end, Session* s){
+RefChain* Dec (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
 	RefIntegerBase *a = ref_dynamic_cast<RefIntegerBase >(*beg);
 	RefIntegerBase *b = ref_dynamic_cast<RefIntegerBase >(*end);
 
 	if (!a || !b || (beg+1 != end)){
-        RUNTIMEERRORs(s, "error arguments");
+        RUNTIMEERRORs(sess, "error arguments");
         return 0;
     };
-    a = new RefInteger(s, a->getValue() - b->getValue());
-	return new RefChain(s, a);
+    a = new RefInteger(sess, a->getValue() - b->getValue());
+	return new RefChain(sess, a);
 };
 
 
 
 
-RefChain* Div (RefData** beg, RefData** end, Session* s){
+RefChain* Div (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
 	RefIntegerBase *a = ref_dynamic_cast<RefIntegerBase >(*beg);
 	RefIntegerBase *b = ref_dynamic_cast<RefIntegerBase >(*end);
     if (!a || !b || (beg+1 != end)){
-        RUNTIMEERRORs(s, "error arguments");
+        RUNTIMEERRORs(sess, "error arguments");
         return 0;
     };
     //std::cout << "\n\nDiv: " << a->getValue() << " / " << b->getValue() ;
-    RefReal* c = new RefReal(s, (float)a->getValue() / b->getValue());
+    RefReal* c = new RefReal(sess, (float)a->getValue() / b->getValue());
     //std::cout << " = " << c->getValue();
-    return new RefChain(s, c);
+    return new RefChain(sess, c);
 };
 
 
-RefChain* Sum (RefData** beg, RefData** end, Session* s){
+RefChain* Sum (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     infint thesum = 0;
     RefIntegerBase *a;
     //std::cout << "\n\nSum: ";
@@ -98,20 +98,20 @@ RefChain* Sum (RefData** beg, RefData** end, Session* s){
 		a = ref_dynamic_cast<RefIntegerBase >(*beg);
 
         if (! a){
-            RUNTIMEERRORs(s, "error arguments");
+            RUNTIMEERRORs(sess, "error arguments");
             return 0;
         }
         thesum += a->getValue();
-        s->MOVE_TO_next_term(beg);
+        sess->MOVE_TO_next_term(beg);
     }
 
     //std::cout << a->getValue() << " = " << thesum ;
-    a = new RefInteger(s, thesum);
-    return new RefChain(s, a);
+    a = new RefInteger(sess, thesum);
+    return new RefChain(sess, a);
 };
 
 
-RefChain* Mul (RefData** beg, RefData** end, Session* s){
+RefChain* Mul (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     infint thesum = 1;
     RefIntegerBase *a;
     //std::cout << "\n\nMul: ";
@@ -119,61 +119,61 @@ RefChain* Mul (RefData** beg, RefData** end, Session* s){
 		a = ref_dynamic_cast<RefIntegerBase >(*beg);
 
         if (! a){
-            RUNTIMEERRORs(s, "error arguments");
+            RUNTIMEERRORs(sess, "error arguments");
             return 0;
         }
         thesum *= a->getValue();
-        s->MOVE_TO_next_term(beg);
+        sess->MOVE_TO_next_term(beg);
     }
-    a = new RefInteger(s, thesum);
-    return new RefChain(s, a);
+    a = new RefInteger(sess, thesum);
+    return new RefChain(sess, a);
 };
 
 
 
 
-RefChain* Lenw (RefData** beg, RefData** end, Session* s){
+RefChain* Lenw (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
 	//TODO:оптимизировать
     infint thecount = 0;
     RefInteger *a;
     if (beg) while(beg != end+1){
         thecount++;
-        s->MOVE_TO_next_term(beg);
+        sess->MOVE_TO_next_term(beg);
     }
 
-    a = new RefInteger(s, thecount);
-    return new RefChain(s, a);
+    a = new RefInteger(sess, thecount);
+    return new RefChain(sess, a);
 };
 
 
 
-RefChain* Numb (RefData** beg, RefData** end, Session* s){
+RefChain* Numb (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     /// todo: сделать не только integer и поверять ошибки
     long l = strtol(the_explode(beg, end).c_str(), NULL, 10);
-    RefInteger *a = new RefInteger(s, l);
-    return new RefChain(s, a);
+    RefInteger *a = new RefInteger(sess, l);
+    return new RefChain(sess, a);
 };
 
 
-RefChain*  Compare(RefData** beg, RefData** end, Session* s){
+RefChain*  Compare(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     RefData *a = 0;
     if (beg+1 != end){
-        RUNTIMEERRORs(s, "Must be 2 arguments");
+        RUNTIMEERRORs(sess, "Must be 2 arguments");
         return 0;
     }
 
     if (**beg > **end){
-        a = newRefAlpha(s, '+');
+        a = newRefAlpha(sess, '+');
     } else if (*beg == *end || **beg == **end){
-        a = newRefAlpha(s, '0');
+        a = newRefAlpha(sess, '0');
     } else {
-        a = newRefAlpha(s, '-');
+        a = newRefAlpha(sess, '-');
     }
-    return new RefChain(s, a);
+    return new RefChain(sess, a);
 };
 
 
-RefChain* Mount (RefData** beg, RefData** end, Session* s){
+RefChain* Mount (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
 
       size_t length;
       char *buffer;
@@ -183,7 +183,7 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
 	  is.open ( filename.c_str(), std::ios::binary );
 
 	  if(! is.is_open()){
-		  RUNTIMEERRORs(s, "Can`t open file: " << filename);
+		  RUNTIMEERRORs(sess, "Can`t open file: " << filename);
 	  }
 
       // get length of file:
@@ -202,10 +202,10 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
       is.read (buffer,length);
       is.close();
 
-      RefChain *result = new RefChain(s, length);
+      RefChain *result = new RefChain(sess, length);
       for (size_t i=0; i<length; i++){
             if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
-				(*result) += newRefAlpha(s, buffer[i]);
+				(*result) += newRefAlpha(sess, buffer[i]);
             }
       }
 
@@ -216,9 +216,9 @@ RefChain* Mount (RefData** beg, RefData** end, Session* s){
 }
 
 
-RefChain* Card (RefData** beg, RefData** end, Session* s){
+RefChain* Card (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     if (beg) {
-		RUNTIMEERRORs(s, "Not empty args in Card : " << the_explode(beg, end));
+		RUNTIMEERRORs(sess, "Not empty args in Card : " << the_explode(beg, end));
         return 0;
     }
     unistring sline; /// todo LOCALE
@@ -227,20 +227,20 @@ RefChain* Card (RefData** beg, RefData** end, Session* s){
     std::getline(std::cin, text);
 
 	size_t tlen = text.length();
-    RefChain *rch = new RefChain(s, tlen);
+    RefChain *rch = new RefChain(sess, tlen);
 
     //for (size_t i=0; i<text.length(); i++){
     for (size_t i=0; i<tlen; i++){
 		if (text[i] < 128){
 			*rch += RefAlpha128::alphatable+text[i];
 		}else{
-			*rch += newRefAlpha(s, text[i]);
+			*rch += newRefAlpha(sess, text[i]);
 		}
     }
 
     // конец файла
     if (std::cin.eof()){
-        *rch += new RefInteger(s, (infint)0);
+        *rch += new RefInteger(sess, (infint)0);
         std::cin.clear();
     }
 
@@ -248,58 +248,58 @@ RefChain* Card (RefData** beg, RefData** end, Session* s){
 };
 
 
-RefChain* Implode (RefData** beg, RefData** end, Session* s){
-	return new RefChain(s, new RefWord(s, the_explode(beg, end)));
+RefChain* Implode (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+	return new RefChain(sess, new RefWord(sess, the_explode(beg, end)));
 };
 
-RefChain* Explode (RefData** lft, RefData** rht, Session* s){
-    if (lft != rht) RUNTIMEERRORs(s, "must be one argument");
-	RefWordBase* ww = ref_dynamic_cast<RefWordBase >(*lft);
-    if (! ww) RUNTIMEERRORs(s, "must be compund-symbol argument");
+RefChain* Explode (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+    if (beg != end) RUNTIMEERRORs(sess, "must be one argument");
+	RefWordBase* ww = ref_dynamic_cast<RefWordBase >(*beg);
+    if (! ww) RUNTIMEERRORs(sess, "must be compund-symbol argument");
 
     long i = 0;
     unistring str = ww->getValue();
-    RefChain *result = new RefChain(s, str.length());
+    RefChain *result = new RefChain(sess, str.length());
     while(str[i]){
-        *result += newRefAlpha(s, str[i++]);
+        *result += newRefAlpha(sess, str[i++]);
     }
     return result;
 };
 
 
-RefChain* ExplodeAll (RefData** lft, RefData** rht, Session* s){
-    unistring str = the_explode(lft, rht);
-    RefChain *result = StrToChain(s, str);
+RefChain* ExplodeAll (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+    unistring str = the_explode(beg, end);
+    RefChain *result = StrToChain(sess, str);
     return result;
 };
 
 
-RefChain* Prout (RefData** lft, RefData** rht, Session* s){
+RefChain* Prout (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     std::cout
     #ifdef DEBUG
             << "\n############################### STDOUT ###############################\n"
             << ":####:\t"
-			<< the_debug_text(lft, rht) << "\n"
+			<< the_debug_text(beg, end) << "\n"
             << "\n######################################################################\n"
 #else
-			<< the_text(lft, rht) << "\n"
+			<< the_text(beg, end) << "\n"
 #endif
             ;
-	//std::cout << s->debug() << "\n" << std::flush;
+	//std::cout << sess->debug() << "\n" << std::flush;
 	//std::cout << "o: " << co::objs << "\n" << std::flush;
 	//std::cout << "c: " << co::chains << "\n" << std::flush;
-    return new RefChain(s);
+    return new RefChain(sess);
 };
 
-RefChain* ProutDebug (RefData** lft, RefData** rht, Session* s){
+RefChain* ProutDebug (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     std::cout
-			<< the_debug_text(lft, rht) << "\n";
-    return new RefChain(s);
+			<< the_debug_text(beg, end) << "\n";
+    return new RefChain(sess);
 };
 
 
-RefChain* Print (RefData** lft, RefData** rht, Session* s){
-	unistring thetext = the_text(lft, rht);
+RefChain* Print (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+	unistring thetext = the_text(beg, end);
     std::cout
     #ifdef DEBUG
             << "\n############################### STDOUT ###############################\n"
@@ -310,10 +310,10 @@ RefChain* Print (RefData** lft, RefData** rht, Session* s){
             << "\n######################################################################\n"
     #endif
             ;
-    return StrToChain(s, thetext);;
+    return StrToChain(sess, thetext);;
 };
 
-RefChain* Exit (RefData** lft, RefData** rht, Session* s){
+RefChain* Exit (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
 	exit(0);
 	return 0;
 };
@@ -322,37 +322,37 @@ RefChain* Exit (RefData** lft, RefData** rht, Session* s){
 #define IS_DIGIT(ch)		(ch >= 48 && ch <= 57)
 #define IS_WHITE(ch)		(ch > 00  && ch <= 32)
 
-inline unichar NEXT_CHAR(Session *s, RefData **&symch){ 
-	s->MOVE_TO_next_term(symch); 
+inline unichar NEXT_CHAR(Session *sess, RefData **&symch){ 
+	sess->MOVE_TO_next_term(symch); 
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
-			RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+			RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
 	}
 	return sym->getValue();
 }
 
-inline unichar AFTER_CHAR(Session *s, RefData **symch){ 
-	symch = s->GET_next_term(symch); 
+inline unichar AFTER_CHAR(Session *sess, RefData **symch){ 
+	symch = sess->GET_next_term(symch); 
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
-			RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+			RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
 	}
 	return sym->getValue();
 }
 
-inline unichar BEFORE_CHAR(Session *s, RefData **symch){ 
-	symch = s->GET_pred_term(symch); 
+inline unichar BEFORE_CHAR(Session *sess, RefData **symch){ 
+	symch = sess->GET_pred_term(symch); 
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
-			RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+			RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
 	}
 	return sym->getValue();
 }
 
-RefChain* closeAllBrackets(Session *s, RefChain *currChain, PooledTuple2<unichar, RefChain*> *result_stack){
+RefChain* closeAllBrackets(Session *sess, RefChain *currChain, PooledTuple2<unichar, RefChain*> *result_stack){
 	ref_assert(result_stack->getLength());
 	unichar ch;
 	RefChain *chain = 0;
@@ -367,9 +367,9 @@ RefChain* closeAllBrackets(Session *s, RefChain *currChain, PooledTuple2<unichar
 			case '}' : bracket_code = "{"; break;
 			case '>' : bracket_code = "<"; break;
 			case ']' : bracket_code = "["; break;
-			default: SYSTEMERRORs(s, "unexpected bracket-type: " << ch);
+			default: SYSTEMERRORs(sess, "unexpected bracket-type: " << ch);
 		}
-		br = new RefStructBrackets(s, currChain);
+		br = new RefStructBrackets(sess, currChain);
 		(*chain) += br;
 		currChain = chain;
 		result_stack->top_pop(ch, chain);
@@ -392,7 +392,7 @@ inline char getRandAlpha(){
 	return 65 + rand()%26;
 }
 
-RefChain* RandomIdName(RefData** beg, RefData** end, Session* s){
+RefChain* RandomIdName(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
 	unistring word = "ffffffffffffff";
 	//srand ((unsigned int) time(NULL) );
 
@@ -401,21 +401,21 @@ RefChain* RandomIdName(RefData** beg, RefData** end, Session* s){
 		word[i] = getRandAlpha();
 	}
 
-	return new RefChain(s, new RefWord(s, word));
+	return new RefChain(sess, new RefWord(sess, word));
 }
 
 
-RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
-	RefChain *result = new RefChain(s);
+RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+	RefChain *result = new RefChain(sess);
 	if (!beg) {
 		return result;
 	}
 	
-	s->save_current_view_borders(beg, end);  // устанавливаем границы для GET_next_term
-	RefData** symchar = beg; 
+	sess->save_current_view_borders(beg, end, sess->current_view_lr_own());  // устанавливаем границы для GET_next_term
+	RefData** symchar = beg;
 	RefAlphaBase* sym = ref_dynamic_cast<RefAlphaBase>(*symchar);
 	if (!sym) {
-		RUNTIMEERRORs(s, "unexpected term: " << sym->debug());
+		RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
 	}
 	unichar ch = sym->getValue();
 
@@ -427,9 +427,9 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 		// пробелы
 		if (IS_WHITE(ch)){
 			do {
-				ch = NEXT_CHAR(s, symchar);
+				ch = NEXT_CHAR(sess, symchar);
 			}while (IS_WHITE(ch));
-			(*result) += newRefAlpha(s, ' ');
+			(*result) += newRefAlpha(sess, ' ');
 			continue;
 		}
 
@@ -438,12 +438,12 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 			unistring word = "";
 			do{
 				word += ch;
-				ch = NEXT_CHAR(s, symchar);
+				ch = NEXT_CHAR(sess, symchar);
 			}while(IS_EN_LETTER(ch) || IS_DIGIT(ch));
-			RefChain *tmp = new RefChain(s);
-			(*tmp) += new RefWord(s, "word");
-			(*tmp) += new RefWord(s, word);
-			(*result) += new RefStructBrackets(s, tmp);
+			RefChain *tmp = new RefChain(sess);
+			(*tmp) += new RefWord(sess, "word");
+			(*tmp) += new RefWord(sess, word);
+			(*result) += new RefStructBrackets(sess, tmp);
 			continue;
 		}
 
@@ -452,82 +452,82 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 			unistring word = "";
 			do{
 				word += ch;
-				ch = NEXT_CHAR(s, symchar);
+				ch = NEXT_CHAR(sess, symchar);
 			}while(IS_DIGIT(ch));
 			/*if (ch!=0x46){ // НЕ точка
-				result += new RefInteger(s, word);
+				result += new RefInteger(sess, word);
 				continue;
 			}*/
-			RefChain *tmp = new RefChain(s);
-			(*tmp) += new RefWord(s, "int");
-			(*tmp) += new RefInteger(s, str2infint(word));
-			(*result) += new RefStructBrackets(s, tmp);
+			RefChain *tmp = new RefChain(sess);
+			(*tmp) += new RefWord(sess, "int");
+			(*tmp) += new RefInteger(sess, str2infint(word));
+			(*result) += new RefStructBrackets(sess, tmp);
 			
 			continue;
 		}
 
 		if (ch == '\''){  // кавычка текстового символа
-			ch = NEXT_CHAR(s, symchar);
-			RefChain *tmp = new RefChain(s, new RefWord(s, "text"));
+			ch = NEXT_CHAR(sess, symchar);
+			RefChain *tmp = new RefChain(sess, new RefWord(sess, "text"));
 			while(ch && (ch != '\'')){
 				if (ch=='\\'){
-					ch = NEXT_CHAR(s, symchar);
-					(*tmp) += newRefAlpha(s, ecran_char(ch));
+					ch = NEXT_CHAR(sess, symchar);
+					(*tmp) += newRefAlpha(sess, ecran_char(ch));
 				} else {
 					(*tmp) += (*symchar);
 				}
-				ch = NEXT_CHAR(s, symchar);
+				ch = NEXT_CHAR(sess, symchar);
 			};
-			(*result) += new RefStructBrackets(s, tmp);
-			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			(*result) += new RefStructBrackets(sess, tmp);
+			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
 
 
 		if (ch == '"'){  // кавычка термального слова
 			unichar ch_pre = '"';
-			ch = NEXT_CHAR(s, symchar);
+			ch = NEXT_CHAR(sess, symchar);
 			unistring word;
-			RefChain *tmp = new RefChain(s, new RefWord(s, "word"));
+			RefChain *tmp = new RefChain(sess, new RefWord(sess, "word"));
 			while(ch && (ch != '"' || ch_pre=='\\')){
 				if (ch=='\\'){
-					ch = NEXT_CHAR(s, symchar);
+					ch = NEXT_CHAR(sess, symchar);
 					word += ecran_char(ch);
 				} else {
 					word += ch;
 				}
 				ch_pre = ch;
-				ch = NEXT_CHAR(s, symchar);
+				ch = NEXT_CHAR(sess, symchar);
 			};
-			(*tmp) += new RefWord(s, word);
-			(*result) += new RefStructBrackets(s, tmp);
-			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			(*tmp) += new RefWord(sess, word);
+			(*result) += new RefStructBrackets(sess, tmp);
+			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
 
 		// скобки
 		if (ch == '('){ 
 			result_stack.put(')', result);
-			result = new RefChain(s, new RefWord(s, ch));
-			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			result = new RefChain(sess, new RefWord(sess, ch));
+			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
 		if (ch == '<'){ 
 			result_stack.put('>', result);
-			result = new RefChain(s, new RefWord(s, ch));
-			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			result = new RefChain(sess, new RefWord(sess, ch));
+			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
 		if (ch == '{'){ 
 			result_stack.put('}', result);
-			result = new RefChain(s, new RefWord(s, ch));
-			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			result = new RefChain(sess, new RefWord(sess, ch));
+			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
 		if (ch == '['){ 
 			result_stack.put(']', result);
-			result = new RefChain(s, new RefWord(s, ch));
-			ch = NEXT_CHAR(s, symchar); // уходим от закр. кавычки
+			result = new RefChain(sess, new RefWord(sess, ch));
+			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
 
@@ -544,101 +544,101 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 					if (ch==')') {  
 						RefAlphaBase *ab = ref_dynamic_cast<RefAlphaBase>(*(old_chain->at_last()));
 						if (!ab || (ab->getValue() != ' ')){
-							(*old_chain) += newRefAlpha(s, ' ');  
+							(*old_chain) += newRefAlpha(sess, ' ');  
 						}
-						(*old_chain) += new RefStructBrackets(s, result);
-						//(*old_chain) += newRefAlpha(s, ' '); 
+						(*old_chain) += new RefStructBrackets(sess, result);
+						//(*old_chain) += newRefAlpha(sess, ' '); 
 					} else {
-						(*old_chain) += new RefStructBrackets(s, result);
+						(*old_chain) += new RefStructBrackets(sess, result);
 					};
 
 					result = old_chain;
 					//std::cout << "\n::: " << result->debug() << "\n\n";
-					ch = NEXT_CHAR(s, symchar); // уходим от ')'
+					ch = NEXT_CHAR(sess, symchar); // уходим от ')'
 					continue;
 				} else {
-					/*RefChain* t_result = new RefChain(s, new RefWord(s, "F"));
-					(*t_result) += new RefStructBrackets(s, closeAllBrackets(s, result, &result_stack));
-					(*t_result) += new RefStructBrackets(s, new RefChain(s, symchar, end-symchar+1));
+					/*RefChain* t_result = new RefChain(sess, new RefWord(sess, "F"));
+					(*t_result) += new RefStructBrackets(sess, closeAllBrackets(sess, result, &result_stack));
+					(*t_result) += new RefStructBrackets(sess, new RefChain(sess, symchar, end-symchar+1));
 					return t_result;*/
-					RefChain* t_result = new RefChain(s, new RefWord(s, "error"));
-					(*t_result) += (symchar ? new RefChain(s, symchar, end-symchar+1) : new RefChain(s));
-					(*result)   += new RefStructBrackets(s, t_result);
-					return closeAllBrackets(s, result, &result_stack);
+					RefChain* t_result = new RefChain(sess, new RefWord(sess, "error"));
+					(*t_result) += (symchar ? new RefChain(sess, symchar, end-symchar+1) : new RefChain(sess));
+					(*result)   += new RefStructBrackets(sess, t_result);
+					return closeAllBrackets(sess, result, &result_stack);
 				}
 		}
 
 		if (
-			(ch=='/' && AFTER_CHAR(s, symchar)=='*')
+			(ch=='/' && AFTER_CHAR(sess, symchar)=='*')
 		){ // коментарии   /* */   
-			ch = NEXT_CHAR(s, symchar); // *
-			ch = NEXT_CHAR(s, symchar);
-			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
-			while(symchar && (ch != '*' || AFTER_CHAR(s, symchar)!='/')){
-				(*t_result) += newRefAlpha(s, ch);
-				ch = NEXT_CHAR(s, symchar);
+			ch = NEXT_CHAR(sess, symchar); // *
+			ch = NEXT_CHAR(sess, symchar);
+			RefChain* t_result = new RefChain(sess, new RefWord(sess, "comment"));
+			while(symchar && (ch != '*' || AFTER_CHAR(sess, symchar)!='/')){
+				(*t_result) += newRefAlpha(sess, ch);
+				ch = NEXT_CHAR(sess, symchar);
 			}
-			(*result) += new RefStructBrackets(s, t_result);
+			(*result) += new RefStructBrackets(sess, t_result);
 			if (symchar){
-				ch = NEXT_CHAR(s, symchar);  //   /
-				ch = NEXT_CHAR(s, symchar);  //   
+				ch = NEXT_CHAR(sess, symchar);  //   /
+				ch = NEXT_CHAR(sess, symchar);  //   
 				continue;
 			}
 		}
 
 
 
-		if (ch=='/' && AFTER_CHAR(s, symchar)=='/'){ // коментарии   //
-			ch = NEXT_CHAR(s, symchar); // /
-			ch = NEXT_CHAR(s, symchar);
-			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
+		if (ch=='/' && AFTER_CHAR(sess, symchar)=='/'){ // коментарии   //
+			ch = NEXT_CHAR(sess, symchar); // /
+			ch = NEXT_CHAR(sess, symchar);
+			RefChain* t_result = new RefChain(sess, new RefWord(sess, "comment"));
 			while(symchar && (ch != '\n')){
-				(*t_result) += newRefAlpha(s, ch);
-				ch = NEXT_CHAR(s, symchar);
+				(*t_result) += newRefAlpha(sess, ch);
+				ch = NEXT_CHAR(sess, symchar);
 			}
-			(*result) += new RefStructBrackets(s, t_result);
+			(*result) += new RefStructBrackets(sess, t_result);
 			if (symchar){
-				ch = NEXT_CHAR(s, symchar);  //   /n..
+				ch = NEXT_CHAR(sess, symchar);  //   /n..
 				continue;
 			}
 		}
 
 
-		if (ch=='*' && BEFORE_CHAR(s, symchar)=='\n'){ // коментарии   * \n
-			ch = NEXT_CHAR(s, symchar);
-			RefChain* t_result = new RefChain(s, new RefWord(s, "comment"));
+		if (ch=='*' && BEFORE_CHAR(sess, symchar)=='\n'){ // коментарии   * \n
+			ch = NEXT_CHAR(sess, symchar);
+			RefChain* t_result = new RefChain(sess, new RefWord(sess, "comment"));
 			while(symchar && (ch != '\n')){
-				(*t_result) += newRefAlpha(s, ch);
-				ch = NEXT_CHAR(s, symchar);
+				(*t_result) += newRefAlpha(sess, ch);
+				ch = NEXT_CHAR(sess, symchar);
 			}
-			(*result) += new RefStructBrackets(s, t_result);
+			(*result) += new RefStructBrackets(sess, t_result);
 			if (symchar){
-				ch = NEXT_CHAR(s, symchar);  //   /n..
+				ch = NEXT_CHAR(sess, symchar);  //   /n..
 				continue;
 			}
 		}
 
-		(*result) += new RefWord(s, ch);
-		ch = NEXT_CHAR(s, symchar);
+		(*result) += new RefWord(sess, ch);
+		ch = NEXT_CHAR(sess, symchar);
 	} while(symchar);
 
 	ref_assert(result_stack.getLength()>=1);
 
 	if (result_stack.getLength()!=1){
-		/*RefChain *t_result = new RefChain(s, new RefWord(s, "F"));
-		(*t_result) += new RefStructBrackets(s, closeAllBrackets(s, result, &result_stack));
-		(*t_result) += new RefStructBrackets(s, symchar ? new RefChain(s, symchar, end-symchar+1) : new RefChain(s));
+		/*RefChain *t_result = new RefChain(sess, new RefWord(sess, "F"));
+		(*t_result) += new RefStructBrackets(sess, closeAllBrackets(sess, result, &result_stack));
+		(*t_result) += new RefStructBrackets(sess, symchar ? new RefChain(sess, symchar, end-symchar+1) : new RefChain(s));
 		//std::cout << "\n\n" << t_result->debug() << "\n\n";
 		return t_result;*/
 
-		RefChain* t_result = new RefChain(s, new RefWord(s, "error"));
-		(*t_result) += (symchar ? new RefChain(s, symchar, end-symchar+1) : new RefChain(s));
-		(*result)   += new RefStructBrackets(s, t_result);
-		return closeAllBrackets(s, result, &result_stack);
+		RefChain* t_result = new RefChain(sess, new RefWord(sess, "error"));
+		(*t_result) += (symchar ? new RefChain(sess, symchar, end-symchar+1) : new RefChain(sess));
+		(*result)   += new RefStructBrackets(sess, t_result);
+		return closeAllBrackets(sess, result, &result_stack);
 	}
 
-	s->delete_current_view_borders(); // возвращаем сессию в исходное состояние
-	//RefChain *tmp = new RefChain(s, new RefWord(s, "T"));
+	sess->delete_current_view_borders(); // возвращаем сессию в исходное состояние
+	//RefChain *tmp = new RefChain(sess, new RefWord(sess, "T"));
 	//(*tmp) += result;
 	//return tmp;
 	return result;
@@ -646,9 +646,9 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, Session* s){
 
 
 
-RefChain* PrintStackTrace  (RefData** beg, RefData** end, Session* s){
-	s->printExecTrace();
-	return new RefChain(s);
+RefChain* PrintStackTrace  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+	sess->printExecTrace();
+	return new RefChain(sess);
 };
 
 

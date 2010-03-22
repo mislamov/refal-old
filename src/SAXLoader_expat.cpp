@@ -113,6 +113,9 @@ void XMLCALL startElement(void *data, const XML_Char *name, const XML_Char **att
                                     if ( theCommand.compare(_L("LNK")) == 0) {  // ссылка на переменную
                                         // ничего не делаем, так как при закрытии тега воспользуемся менеджером переменных и текущим тексом=описателем переменной
                                     } else
+                                        if ( theCommand.compare(_L("POINT")) == 0) {  //
+											loader->createChainToStack();
+										} else
                                         if ( theCommand.compare(_L("TEXT")) == 0) {  //
                                             // ничего не делаем, так как при закрытии тега все сделаем
                                         } else
@@ -201,15 +204,15 @@ void XMLCALL  endElement(void *data, const XML_Char *name) {
                             if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
                             if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not FUNCTION in FUNCTION-stack !!!");
                             #endif
-                            RefSentence     *s =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
+                            RefSentence     *sent =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
                             RefChain *rch = loader->extractCurrChainFromStack();
                             #ifdef TESTCODE
                             if (! dynamic_cast<RefChain*>(rch)) SYSTEMERRORn("alarm xml construct");
                             #endif
-                            s->rightPart = (RefChain*)rch;
-                            s->leftPart  = loader->extractCurrChainFromStack();
+                            sent->rightPart = (RefChain*)rch;
+                            sent->leftPart  = loader->extractCurrChainFromStack();
                             RefUserFunction *f =  (RefUserFunction*)loader->getValueFromStack("FUNCTION");
-                            (f->body).push_back(s);
+                            (f->body).push_back(sent);
                         } else
                             if ( theCommand.compare(_L("LEFT-PART")) == 0) {
                                 //loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
@@ -251,6 +254,21 @@ void XMLCALL  endElement(void *data, const XML_Char *name) {
                                                 // берем по текущему тексту и получаем ссылку на переменную
                                                 *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars);
                                                 //std::cout << loader->getCurrChain()->second->toString();
+                                            } else
+                                            if ( theCommand.compare(_L("POINT")) == 0) {  //
+												RefChain *chn = loader->extractCurrChainFromStack();
+												ref_assert(chn->getLength()==1);
+												RefLinkToVariable *rltv = ref_dynamic_cast<RefLinkToVariable>(*(chn->at_first()));
+												RefVariable *rv = ref_dynamic_cast<RefVariable>(*(chn->at_first()));
+												if (rltv != 0){
+													*(loader->getCurrChain()) += new RefPointLink(rltv, 0);
+												} else
+												if (rv != 0){
+													*(loader->getCurrChain()) += new RefPointVariable(rv, 0);
+												} else {
+													SYSTEMERRORn("ref-POINT LOADER ERROR");
+												}
+												delete chn;
                                             } else
                                                 if ( theCommand.compare(_L("TEXT")) == 0) {  //
                                                     unistring text = loader->currentchars;

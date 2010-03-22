@@ -29,8 +29,8 @@ public:
 
     RefVariable_e(unistring name = EmptyUniString) : RefVariable(name) {};
 
-    TResult  init(RefData **&tpl, Session *, RefData **&, RefData **&);
-    TResult  back(RefData **&tpl, Session *, RefData **&, RefData **&);
+    TResult  init(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
+    TResult  back(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
     bool operator==(RefData &rd);
     virtual unistring explode() {        return " e."+getName()+" ";    };
 };
@@ -43,8 +43,8 @@ public:
 
     RefVariable_E(unistring name = EmptyUniString) : RefVariable(name) {};
 
-    TResult  init(RefData **&tpl, Session *, RefData **&, RefData **&);
-    TResult  back(RefData **&tpl, Session *, RefData **&, RefData **&);
+    TResult  init(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
+    TResult  back(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
     bool operator==(RefData &rd);
     virtual unistring explode() {        return " E."+getName()+" ";    };
 };
@@ -54,7 +54,7 @@ public:
     ////CLASS_OBJECT_CAST(RefVariable_END);
     RefVariable_END(unistring name = EmptyUniString) : RefVariable_E(name) {};
 
-    TResult  back(RefData **&tpl, Session *, RefData **&, RefData **&);
+    TResult  back(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
     virtual unistring explode() {        return " END."+getName()+" ";    };
 };
 
@@ -65,8 +65,8 @@ public:
 
     RefVariable_s(unistring name = EmptyUniString) : RefVariable(name) {};
 
-    TResult  init(RefData **&tpl, Session *, RefData **&, RefData **&);
-    TResult  back(RefData **&tpl, Session *, RefData **&, RefData **&);
+    TResult  init(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
+    TResult  back(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
     bool operator==(RefData &rd);
     virtual unistring explode() {        return " s."+getName()+" ";    };
 };
@@ -78,8 +78,8 @@ public:
 
     RefVariable_t(unistring name = EmptyUniString) : RefVariable(name) {};
 
-    TResult  init(RefData **&tpl, Session *, RefData **&, RefData **&);
-    TResult  back(RefData **&tpl, Session *, RefData **&, RefData **&);
+    TResult  init(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
+    TResult  back(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
     bool operator==(RefData &rd);
     virtual unistring explode() {        return " t."+getName()+" ";    };
 };

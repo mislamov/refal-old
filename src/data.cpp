@@ -47,24 +47,24 @@ char* c_str(std::string str){
 	return ch;
 };
 
-RefData::RefData(Session *s) : RefObject(){
-	if (s){
-		s->gc_last->gc_next = this;
-		s->gc_last = this;
+RefData::RefData(Session *sess) : RefObject(){
+	if (sess){
+		sess->gc_last->gc_next = this;
+		sess->gc_last = this;
 		set_collected();  //  00001000 - коллекционируемый
 	}  else {
 		gc_label = 0;  //  00000000 - НЕ коллекционируемый
 	}
-	//gc_label = s->gc_currentlabel;
+	//gc_label = sess->gc_currentlabel;
 	co::datas++;
 	this->gc_next = 0;
 };
 
-TResult RefDataNull::init(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };
-TResult RefDataNull::back(RefData **&activeTemplate, Session* s, RefData **&currentRight, RefData **&currentLeft){ unexpectedERRORs(s); };
+TResult RefDataNull::init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); };
+TResult RefDataNull::back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); };
 
 
-RefChain::RefChain(Session *s, RefData* d) : RefData(s){
+RefChain::RefChain(Session *sess, RefData* d) : RefData(sess){
 
     sysize = leng = 1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
@@ -72,7 +72,7 @@ RefChain::RefChain(Session *s, RefData* d) : RefData(s){
 	co::chains++;
 };
 
-RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
+RefChain::RefChain(Session *sess, size_t size) : RefData(sess) { // size is not lenght
 
 	sysize = size;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
@@ -82,7 +82,7 @@ RefChain::RefChain(Session *s, size_t size) : RefData(s) { // size is not lenght
 };
 
 
-RefChain::RefChain(Session *s, RefChain *ownchain, RefData **from, RefData **to) : RefData(s) { // size is not lenght
+RefChain::RefChain(Session *sess, RefChain *ownchain, RefData **from, RefData **to) : RefData(sess) { // size is not lenght
 	first = 0;
 	leng = sysize = 0;
 	if (ownchain && ownchain->isEmpty()) return;  // если родитель имеется и он пуст - ничего не добавляем
@@ -222,51 +222,53 @@ unistring RefStructBrackets::debug(){		return "(" + (chain?chain->debug():"$null
 unistring RefExecBrackets::debug(){	return "<" + (chain?chain->debug():"$null") + "> ";	};
 
 
-TResult RefStructBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+TResult RefStructBrackets::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	ref_assert(chain!=0);
 
-	s->MOVE_TO_next_term(r);
+	sess->MOVE_TO_next_term(r);
 	RefStructBrackets *br;
 
+	///todo: организовать стековое "путешествие" в matching, чтобы избавиться от этой рекурсии
 	if (r
 		&& (br=ref_dynamic_cast<RefStructBrackets>(*r))
-		&& (s->matching(
+		&& (sess->matching(
 						0,
 						this->chain,
 						(*(br->chain))[0],
 						(*(br->chain))[-1],
+						br->chain,
 						false
 						)
 			)
 	){
-		s->saveBracketsFromView(this, (RefStructBrackets**)r);
-		s->MOVE_TO_next_template(tpl);
+		sess->saveBracketsFromView(this, (RefStructBrackets**)r);
+		sess->MOVE_TO_next_template(tpl);
 		return GO;
 	}
-	s->MOVE_TO_pred_template(tpl);
+	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
 
 
 };
-TResult RefStructBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+TResult RefStructBrackets::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	// if (br->chain == this->chain) BACK;  - проверить сильно оптимизирует ли. только в сочентании с частью в init!
-	RefStructBrackets** br = s->restoreBracketsFromView(this);
+	RefStructBrackets** br = sess->restoreBracketsFromView(this);
 
-	if (s->matching(0, this->chain, (*((*br)->chain))[0],  (*((*br)->chain))[0]?(*((*br)->chain))[-1]:0, true)){
-		s->saveBracketsFromView(this, br);
-		s->MOVE_TO_next_template(tpl);
+	if (sess->matching(0, this->chain, (*((*br)->chain))[0],  (*((*br)->chain))[0]?(*((*br)->chain))[-1]:0, (*br)->chain, true)){
+		sess->saveBracketsFromView(this, br);
+		sess->MOVE_TO_next_template(tpl);
 		return GO;
 	}
-	s->MOVE_TO_pred_template(tpl);
+	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
 
 
-TResult RefExecBrackets::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-	AchtungERRORs(s);
+TResult RefExecBrackets::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	AchtungERRORs(sess);
 };
-TResult RefExecBrackets::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-	AchtungERRORs(s);
+TResult RefExecBrackets::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	AchtungERRORs(sess);
 };
 
 /*
@@ -318,29 +320,28 @@ inline bool eq(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br){
 
 
 
-TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+TResult RefLinkToVariable::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	RefData **ldata, **rdata;
 	VarMap* vm = 0;
-	if ( ! s->findVar(this->lnk, ldata, rdata, vm) ) {
-        SYSTEMERRORs(s, "INTERNAL ERROR: link to not exists variable! link = " << this->debug());
+	if ( ! sess->findVar(this->lnk, ldata, rdata, lr_own, vm) ) {
+        SYSTEMERRORs(sess, "INTERNAL ERROR: link to not exists variable! link = " << this->debug());
         return ERROR;
-    };
+    }
 
-	if (path != EmptyUniString && !vm->folowByWay(path, ldata, rdata)){
-		RUNTIMEERRORs(s, "Wrong way for variable " << lnk->toString() << " : " << path);
+	if (path != EmptyUniString && !vm->folowByWay(path, ldata, rdata, lr_own)){
+		RUNTIMEERRORs(sess, "Wrong way for variable " << lnk->toString() << " : " << path);
 	}
 
-
 	if (!ldata){ // пустые
-        s->MOVE_TO_next_template(tpl);
+        sess->MOVE_TO_next_template(tpl);
         return GO; // ссылка на пустой отрезок всегда сопоставляется с пустым значением
 	}
 
 	RefDataBracket *brA=0, *brB=0;
 	while(ldata<=rdata){
-		s->MOVE_TO_next_term(r);
+		sess->MOVE_TO_next_term(r);
 		if (!r){  // аргументы кончились
-				s->MOVE_TO_pred_template(tpl);
+				sess->MOVE_TO_pred_template(tpl);
 				return BACK;
 		}
 
@@ -348,31 +349,31 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* s, RefData **&l, RefDat
 		if (brA){
 			brB = (*r)->isDataBracket();
 			if (!brB || !eq(brA->chain, brB->chain)) {
-				s->MOVE_TO_pred_template(tpl);
+				sess->MOVE_TO_pred_template(tpl);
 				return BACK;
 			}
 		} else {
 			if ((*ldata != *r) && !(**ldata == **r)) {
-				s->MOVE_TO_pred_template(tpl);
+				sess->MOVE_TO_pred_template(tpl);
 				return BACK;
 			}
 		}
-		s->MOVE_TO_next_term(ldata);
+		sess->MOVE_TO_next_term(ldata);
 	}
 
 
-    s->MOVE_TO_next_template(tpl);
+    sess->MOVE_TO_next_template(tpl);
     return GO; // ссылка на пустой отрезок - верна
 };
 
 
-TResult RefLinkToVariable::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-	s->MOVE_TO_pred_template(tpl);
+TResult RefLinkToVariable::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
 };
 
 
-void RefVarChains::setTemplInstant(RefUserTemplate *ntempli){
+void RefVarChains::setUserType(RefUserTemplate *ntempli){
 	templInstant = ntempli;
 	templ = ntempli->getLeftPart();
 };
@@ -393,6 +394,8 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 	RefVariable *var;
 	RefLinkToVariable *link;
+	RefPointVariable *pointVar;
+	RefPointLink *pointLink;
 	RefDataBracket *bracks;
 	RefVarChains *uservar;
 	RefVariantsChains *uservarich;
@@ -419,19 +422,18 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 		for(;
 			point < end;
 			++point){
-
 			//std:: cout << (*point)->debug() << "~\t";
 
 			uservar = ref_dynamic_cast<RefVarChains>(*point); // польз переменная или группа
 			if (uservar){ // запоминаем заготовку для переменной
 				if (! program) SYSTEMERRORn("program not null expected");
 				#ifdef TESTCODE
-				if ((uservar->getType() != EmptyUniString) && !(ref_dynamic_cast<RefUserTemplate>(program->findTemplate(uservar->getType()) ))) {
+				if ((uservar->getTypeString() != EmptyUniString) && !(ref_dynamic_cast<RefUserTemplate>(program->findTemplate(uservar->getTypeString()) ))) {
 				    notrealisedERRORn;
 				}
 				#endif
-				if (uservar->getType() != EmptyUniString) {
-					uservar->setTemplInstant((RefUserTemplate*) program->findTemplate(uservar->getType()) );
+				if (uservar->getTypeString() != EmptyUniString) {
+					uservar->setUserType((RefUserTemplate*) program->findTemplate(uservar->getTypeString()) );
 				}
 				
 				#ifdef TESTCODE
@@ -454,6 +456,20 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				continue;
 			}
 
+			pointVar = ref_dynamic_cast<RefPointVariable>(*point);  // ссылка на переменную-указатель
+			if (pointVar){
+				subchains.put(point+1, end);
+				subchains.put((RefData**)&(pointVar->theVar), (RefData**)&(pointVar->theVar)+1);
+				break;
+			}
+
+			pointLink = ref_dynamic_cast<RefPointLink>(*point);  // ссылка на переменную-указатель
+			if (pointLink){
+				subchains.put(point+1, end);
+				subchains.put((RefData**)&(pointLink->theLink), (RefData**)&(pointLink->theLink)+1);
+				break;
+			}
+
 			uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // варианты
 			if (uservarich){
 				if (uservarich->getName() != ""){
@@ -470,7 +486,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				break;
 			}
 
-			rept = ref_dynamic_cast<RefRepeaterChain>(*point); // поаторитель
+			rept = ref_dynamic_cast<RefRepeaterChain>(*point); // поВторитель
 			if (rept){
 				subchains.put(point+1, end);
 				subchains.put(rept->templ->at_first(), rept->templ->at_afterlast());
@@ -480,7 +496,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 
 
-			var = ref_dynamic_cast<RefVariable>(*point);
+			var = ref_dynamic_cast<RefVariable>(*point);  // переменная
 			if (var && var->getName()!=""){ // запоминаем переменную
 				//std::cout << "\n::: " << var->debug() << "  :::\n";  
 
@@ -493,20 +509,20 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 			}
 
 
-			link = ref_dynamic_cast<RefLinkToVariable>(*point);
+			link = ref_dynamic_cast<RefLinkToVariable>(*point);  // ССЫЛКА
 			if (link && (! link->lnk)){ // запоминаем ссылку
 				lnks.push(point);
 				continue;
 			}
 
-			bracks = (*point)->isDataBracket();
+			bracks = (*point)->isDataBracket(); // ДАТА-СКОБКИ
 			if (bracks && !bracks->chain->isEmpty()) { // смотрим в скобки
 				subchains.put(point+1, end);
 				subchains.put(bracks->chain->at_first(), bracks->chain->at_afterlast());
 				break;
 			}
 
-			cond = ref_dynamic_cast<RefUserCondition>(*point);
+			cond = ref_dynamic_cast<RefUserCondition>(*point);  // УСЛОВИЕ
 			if (cond){
 				subchains.put(point+1, end);
 				if (! cond->getLeftPart()->isEmpty())
@@ -555,7 +571,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 };
 
 // вызывается сразу после удачного сопоставления (вместо init правой границы)
-TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
 	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
 #endif
@@ -564,7 +580,7 @@ TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefDa
 	RefData **lold, **rold;
 	VarMap *vm=0, *vm2=0;
 	vm = sess->poptopVarMap(); // сохраняем карту переменных
-	sess->restoreVar(this, lold, rold, vm2); // начало аргумента переменной
+	sess->restoreVar(this, lold, rold, lr_own, vm2); // начало аргумента переменной
 	#ifdef TESTCODE
 		if (vm2) unexpectedERRORs(sess);
 	#endif
@@ -574,7 +590,7 @@ TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefDa
 	} else {
 		l = 0;	// значение переменной пустое
 	}
-	sess->saveVar(this, l, r, vm); // сохраняем полное значение
+	sess->saveVar(this, l, r, lr_own, vm); // сохраняем полное значение
 
 	tpl = sess->termChainsJumpPoints.top_pop(); // выпрыгиваем из user-шаблона
 	sess->popTmplate();
@@ -589,15 +605,16 @@ TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefDa
 };
 
 // вызывается сразу после НЕудачного сопоставления (вместо back левой границы)
-TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
 	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
 #endif
 
 	//std::cout << "RefVarChains::faild\n";
-	delete sess->poptopVarMap();
+	//delete sess->poptopVarMap(); - удалять только сборщиком
+	sess->poptopVarMap();
 	VarMap* tmp = 0;
-	sess->restoreVar(this, l, r, tmp);		 // забываем переменную
+	sess->restoreVar(this, l, r, lr_own, tmp);		 // забываем переменную
 	#ifdef TESTCODE
 		if (tmp) unexpectedERRORs(sess);
 	#endif
@@ -613,7 +630,7 @@ TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefDa
 	return BACK;
 };
 
-TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	//std::cout << "RefVarChains::init\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
@@ -625,7 +642,7 @@ TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData 
 		//sess->MOVE_TO_next_template(tpl);
 		//return GO;
 	}
-	sess->saveVar(this, l=0, r, 0);
+	sess->saveVar(this, l=0, r, lr_own, 0);
 	sess->createVarMap(this);
 	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ);
@@ -634,7 +651,7 @@ TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData 
 };
 
 // вызывается только после ранее удачного сопоставления
-TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	//std::cout << "RefVarChains::back\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
@@ -642,11 +659,11 @@ TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData 
 	sess->termChainsJumpPoints.put(tpl);
 	sess->setTmplate(templ);
 	VarMap *vm = 0; // восстанавливаем карту переменных
-	sess->restoreVar(this, l, r, vm);
+	sess->restoreVar(this, l, r, lr_own, vm);
 	#ifdef TESTCODE
 		if (!vm) unexpectedERRORs(sess);
 	#endif
-	sess->saveVar(this, l?0:l, l?l-1:r, 0);
+	sess->saveVar(this, l?0:l, l?l-1:r, lr_own, 0);
 	sess->putVarMap( vm );
 
 	tpl = templ->at_last();
@@ -669,13 +686,13 @@ unistring RefVarChains::explode() {
 
 
 
-TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
 	#endif
 
 	if (templs.empty()){ notrealisedERRORs(sess);	}
-	sess->saveVar(this, l=0, r, 0);
+	sess->saveVar(this, l=0, r, lr_own, 0);
 	sess->createVarMap(this);
 	RefChain *templ;
 	sess->termChainsJumpPoints.put(tpl);
@@ -688,7 +705,7 @@ TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 
 
 // вызывается сразу после удачного сопоставления (вместо init правой границы)
-TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
 	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
 #endif
@@ -696,7 +713,7 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 	RefData **lold, **rold;
 	VarMap *vm=0, *vm2=0;
 	vm = sess->poptopVarMap(); // сохраняем карту переменных
-	sess->restoreVar(this, lold, rold, vm2); // начало аргумента переменной
+	sess->restoreVar(this, lold, rold, lr_own, vm2); // начало аргумента переменной
 	#ifdef TESTCODE
 	if (vm2) unexpectedERRORs(sess);
 	#endif
@@ -706,7 +723,7 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 	} else {
 		l = 0;	// значение переменной пустое
 	}
-	sess->saveVar(this, l, r, vm); // сохраняем полное значение
+	sess->saveVar(this, l, r, lr_own, vm); // сохраняем полное значение
 
 	tpl = sess->termChainsJumpPoints.top_pop();
 	sess->popTmplate();
@@ -722,7 +739,7 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 
 
 // вызывается сразу после НЕудачного сопоставления (вместо back левой границы)
-TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
 	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
 #endif
@@ -730,10 +747,11 @@ TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, 
 	size_t idx = sess->variants_idxs.top();
 	if (++idx == templs.getCount()){
 		// варианты закончились
-		delete sess->poptopVarMap();
+		//delete sess->poptopVarMap(); - only by g-collector!
+		sess->poptopVarMap();
 		sess->variants_idxs.pop();		//todo: перенестив varmap?
 		VarMap* tmp = 0;
-		sess->restoreVar(this, l, r, tmp);		 // забываем переменную
+		sess->restoreVar(this, l, r, lr_own, tmp);		 // забываем переменную
 		#ifdef TESTCODE
 		if (tmp) unexpectedERRORs(sess);
 		#endif
@@ -760,7 +778,7 @@ TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, 
 
 
 // вызывается только после ранее удачного сопоставления
-TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	//std::cout << "RefVarChains::back\n";
 	#ifdef TESTCODE
 	if (*tpl != this) AchtungERRORs(sess);
@@ -775,11 +793,11 @@ TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 #endif
 
 	VarMap *vm = 0; // восстанавливаем карту переменных
-	sess->restoreVar(this, l, r, vm);
+	sess->restoreVar(this, l, r, lr_own, vm);
 	#ifdef TESTCODE
 		if (!vm) unexpectedERRORs(sess);
 	#endif
-	sess->saveVar(this, l?0:l, l?l-1:r, 0);
+	sess->saveVar(this, l?0:l, l?l-1:r, lr_own, 0);
 	sess->putVarMap( vm );
 
 	tpl = templ->at_last();
@@ -804,7 +822,7 @@ unistring RefRepeaterChain::explode(){
 };
 
 
-TResult RefRepeaterChain::init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefRepeaterChain::init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	if (templ->isEmpty()) SYSTEMERRORs(sess, "unexpected empty chain for repeater");
 	// [
 	if (! getMin()) { // [0..x]
@@ -820,7 +838,7 @@ TResult RefRepeaterChain::init   (RefData **&tpl, Session* sess, RefData **&l, R
     return GO;
 };
 
-TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	///   ]
 	infint currentStep = sess->repeats_idxs_done.top_pop();
 
@@ -839,7 +857,7 @@ TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, R
     return BACK;
 };
 
-TResult RefRepeaterChain::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefRepeaterChain::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
 	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
 #endif
@@ -860,7 +878,7 @@ TResult RefRepeaterChain::success(RefData **&tpl, Session* sess, RefData **&l, R
     return GO;
 };
 
-TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r){
+TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
 	if (tpl) SYSTEMERRORs(sess, "succes and fail must get activeTemplate==0, but nownot");
 #endif
@@ -882,11 +900,11 @@ TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, R
 
 
 
-TResult RefMatchingCutter::init(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
-	s->MOVE_TO_next_template(tpl);
+TResult RefMatchingCutter::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	sess->MOVE_TO_next_template(tpl);
 	return GO;
 };
-TResult RefMatchingCutter::back(RefData **&tpl, Session* s, RefData **&l, RefData **&r){
+TResult RefMatchingCutter::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	// если отсекается пользовательская переменная
 	// если отсекается текущая цепочка
 	tpl=0;
@@ -966,3 +984,70 @@ RefRepeaterChain::~RefRepeaterChain(){
 	templ->killalldata();
 	templ->gc_delete();
 };
+
+
+
+TResult RefPointVariable::init(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	// открытая переменная-указатель сопоставима только с указателем того же типа
+	sess->MOVE_TO_next_term(r);
+	RefPoint *point = 0;
+	if (r && (point=ref_dynamic_cast<RefPoint>(*r)) && point->type==((RefVarChains*)this->theVar)->getUserType()){
+		// указатель подходит
+		//sess->saveVar(this->theVar, r, r, lr_own, point->the_namespace);
+		sess->saveVar(this->theVar, point->l, point->r, point->lr_own, point->the_namespace);
+		l = r;
+		sess->MOVE_TO_next_template(activeTemplate);
+		return GO;
+	}
+
+	sess->MOVE_TO_pred_template(activeTemplate);
+	return BACK;
+
+};
+TResult RefPointVariable::back(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	sess->forgotVar(this->theVar);
+	return BACK;
+};
+
+
+unistring RefPointLink::explode() { return "&@[" + theLink->explode() + "]"; };
+
+TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	// закрытая переменная-указатель сопоставима только с указателем того же типа и equal-содержимого
+
+	sess->MOVE_TO_next_term(r);
+	RefPoint *point = ref_dynamic_cast<RefPoint>(*r);
+	if (point && point->type==((RefVarChains*)this->theLink)->getUserType()){
+		// указатель подходит по типу
+		// совпадает ли содержимое?
+		return this->theLink->init(activeTemplate, sess, l, r, lr_own); // меняет только tempVar и temp_l
+	}
+
+	sess->MOVE_TO_pred_template(activeTemplate);
+	return BACK;	
+};
+
+TResult RefPointLink::back(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	sess->MOVE_TO_pred_template(activeTemplate);
+	return BACK;		
+};
+
+unistring RefPoint::explode(){ 
+	return "&point[type: "+type->getName()+"]"; 
+};
+
+TResult RefPoint::init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){
+	unexpectedERRORs(sess);
+};
+
+TResult RefPoint::back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){
+	unexpectedERRORs(sess);
+};
+
+void RefPoint::set_gc_mark(Session *sess){
+	sess->gc_exclude(this->l, this->r, this->lr_own);
+	the_namespace->set_gc_mark();
+	the_namespace->mrk_collect();
+};
+
+

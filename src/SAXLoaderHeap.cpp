@@ -32,7 +32,7 @@ RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn)
     // создаем пользовательскую переменную
     RefVarChains *v = new RefVarChains();
     v->setName(vn);
-    v->setType(nametype);
+    v->setTypeString(nametype);
     return v;
 };
 

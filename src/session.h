@@ -26,18 +26,26 @@
 #include "function.h"
 #include "poolTuples.h"
 
-class VarMap : public PooledTuple4<RefVariable*, RefData** , RefData**, VarMap*>{
+class VarMap : public PooledTuple5<RefVariable*, RefData** , RefData**, VarMap*, RefChain*>{
 	RefObject *creator;
 	VarMap(const VarMap&){ AchtungERRORn; };  // неконтроллируемое копирование нам не нужно
+	~VarMap(){}; // найти удаление и заменить на коллекционирование. вармап может сохраниться в реф-указателе - поэтому удалять нельзя!
 public:
 	VarMap(RefObject *cr = 0) {	creator = cr;};
 
     // ищет по имени переменной ее облать видимости
-    bool findByName(unistring name, RefData** &l, RefData** &r, VarMap*&);
+    bool findByName(unistring name, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&);
 	// ищет по ссылке на переменную ее облать видимости
-	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap*&);
+	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&);
 	// ищет по текстовому пути
-	bool folowByWay(unistring path, RefData** &l, RefData** &r);
+	bool folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own);
+
+	char gc_label;//todo:bitmap
+	RefData *gc_next;
+	void mrk_collect(); // отмечает содержимое для сохранения сборщиком
+	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для сохранения (gc отметка)
+	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11 - отмечено ли для сохранения
+	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0 - удалить по gc
 
 	unistring debug();
 };
@@ -68,7 +76,7 @@ class Session {
 	};
 
 
-	PooledTuple2 <RefData**, RefData**>  current_view_borders; // крайние view-элементы активного аргумента [для скобок]
+	PooledTuple3 <RefData**, RefData**, RefChain*>  current_view_borders; // крайние view-элементы активного аргумента [для скобок] и их содержащая цепочка
 public:
 	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
 	RefData *gc_last,  // ссылка на последний созданный дата-элемент. служит для построения пути для сборщика мусора
@@ -82,7 +90,7 @@ public:
 		program = p;
 	};
 	PooledStack<RefData**> termChainsJumpPoints;
-	PooledTuple3<RefFunctionBase*, RefData**, RefData**> execTrace;
+	PooledTuple4<RefFunctionBase*, RefData**, RefData**, RefChain*> execTrace;
 	PooledStack<long> variants_idxs;
 	PooledStack<long> variants_idxs_done;
 	PooledStack<infint> repeats_idxs;
@@ -99,9 +107,10 @@ public:
 	//inline RefChain* poptopTmplate(){ return currentTemplates.top_pop(); };
 	inline void popTmplate(){ currentTemplates.pop(); };
 
-	inline RefData** current_view_l(){ return current_view_borders.top1(); };
-	inline RefData** current_view_r(){ return current_view_borders.top2(); };
-	inline void save_current_view_borders(RefData** from, RefData** to){ current_view_borders.put(from, to); };
+	inline RefData** current_view_l()       { return current_view_borders.top1(); };
+	inline RefData** current_view_r()       { return current_view_borders.top2(); };
+	inline RefChain* current_view_lr_own(){ return current_view_borders.top3(); };
+	inline void save_current_view_borders(RefData** from, RefData** to, RefChain* own){ current_view_borders.put(from, to, own); };
 	inline void delete_current_view_borders(){ current_view_borders.pop(); };
 	//inline RefData** current_templ_l(){ return current_templ_borders.top1(); };
 	//inline RefData** current_templ_r(){ return current_templ_borders.top2(); };
@@ -142,7 +151,8 @@ public:
 		while(ss->topVarMap != varMapStack.top()){
 			//std::cout << "\nddddddddddddddddddddddddddddddddddddddddddelete varMapStack.top_pop():\n";
 			varMapStack.top()->debug();
-			delete varMapStack.top_pop();
+			//delete varMapStack.top_pop(); - нельзя. только сборщиком
+			varMapStack.top_pop();
 			#ifdef TESTCODE
 			if (varMapStack.empty()) {unexpectedERRORn;};
 			#endif
@@ -163,7 +173,7 @@ public:
 	};
 
 	// сопоставление образца tmplate с аргументом l..r
-    bool  matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, bool isdemaching);
+	bool  matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, RefChain *arg_chain, bool isdemaching);
 
 	// готовит подстановку: заменяет переменные значениями. Получаем ОВ с угловыми скобками
     RefChain*  substituteExpression(RefChain *);
@@ -171,11 +181,12 @@ public:
 	//void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r); // сохраняет состояние переменной
 	//void RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r); // восстанавливает состояние переменной
 
-	inline void saveVar    (RefVariable *var, RefData **l, RefData **r, VarMap* =0);
-    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r);
-    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, VarMap*&);
-	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r);
-	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r, VarMap*&);
+	inline void saveVar    (RefVariable *var, RefData **l,  RefData **r,  RefChain*, VarMap* =0);
+    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, RefChain*&);
+    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, RefChain*&, VarMap*&);
+    inline void forgotVar  (RefVariable *var);
+	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r, RefChain*&);
+	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r, RefChain*&, VarMap*&);
 
 	void saveBracketsFromView(RefStructBrackets* tpl, RefStructBrackets** br){
 		bracks.put(tpl, br);
@@ -210,33 +221,28 @@ public:
 	void gc_prepare(RefData *save_point=0); // подготовка к сборке мусора
 	inline void gc_exclude(RefData *data);         // исключение точки из удаления
 	void gc_exclude(RefChain *chain);              // исключение цепочки из удаления
+	void gc_exclude(RefData **, RefData **, RefChain*);
 	void gc_clean(RefData* save_point=0);          // сборка мусора
 };
 
-inline void Session::saveVar(RefVariable *var, RefData **l, RefData **r, VarMap* vm) {
+inline void Session::saveVar(RefVariable *var, RefData **l, RefData **r, RefChain *lr_own, VarMap* vm) {
 //std::cout << "Session::saveVar(for " << var->toString() << ")\n";
-	varMapStack.top()->put(var, l, r, vm);
+	varMapStack.top()->put(var, l, r, vm, lr_own);
 };
 
-inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, VarMap* &vm) {
+inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, RefChain *&lr_own, VarMap* &vm) {
 //std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
-	varMapStack.top()->top_pop(varNew, l, r, vm);
+	varMapStack.top()->top_pop(varNew, l, r, vm, lr_own);
 
 	ref_assert( var == varNew );
-
-	/*#ifdef TESTCODE
-	if (var != varNew){
-		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!");
-		//AchtungERRORs(this);
-	}
-	#endif*/
 };
-inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
+
+inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, RefChain *&lr_own) {
 //std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	VarMap* vm = 0;
-	varMapStack.top()->top_pop(varNew, l, r, vm);
+	varMapStack.top()->top_pop(varNew, l, r, vm, lr_own);
 
 	ref_assert((var == varNew) && !vm);
 
@@ -250,19 +256,23 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r) {
 	#endif*/
 };
 
-inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, VarMap* &vm) {
-	return varMapStack.top()->findByLink(var, l, r, vm);
+inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own, VarMap* &vm) {
+	return varMapStack.top()->findByLink(var, l, r, lr_own, vm);
 };
-inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r) {
+inline void Session::forgotVar(RefVariable *var) {
+	ref_assert(varMapStack.top()->top1()==var);
+	varMapStack.pop();
+};
+inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own) {
 	VarMap* vm = 0;
 	#ifdef TESTCODE
-		bool res = varMapStack.top()->findByLink(var, l, r, vm);
+		bool res = varMapStack.top()->findByLink(var, l, r, lr_own, vm);
 		if (vm) {
 			unexpectedERRORs(this);
 		}
 		return res;
 	#else
-		return varMapStack.top()->findByLink(var, l, r, vm);
+		return varMapStack.top()->findByLink(var, l, r, lr_own, vm);
 	#endif
 };
 
@@ -303,6 +313,8 @@ inline void Session::gc_exclude(RefData *data){
 			gc_exclude( br->chain );
 		}
 };
+
+
 
 
 #endif

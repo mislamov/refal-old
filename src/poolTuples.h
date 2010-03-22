@@ -561,6 +561,16 @@ public:
 		return true;
 	};
 
+	bool pop() {
+		if (!last_ind) {return false;}
+		#ifdef TESTCODE
+		memset(pool+last_ind, 0xff, sizeof(TUPLE4));
+		#endif
+        --last_ind;
+		return true;
+	};
+
+
 	size_t getLength(){ return last_ind; }
 	inline void setLength(size_t newlen){
 		#ifdef TESTCODE
@@ -593,6 +603,141 @@ public:
 };
 
 
+
+
+
+
+
+
+
+
+
+
+template <class T1, class T2, class T3, class T4, class T5>
+class PooledTuple5 {
+protected:
+	struct TUPLE5 {T1 i1; T2 i2; T3 i3; T4 i4; T5 i5;};
+
+	TUPLE5* pool;       // нумераци€ с 1
+    size_t last_ind;	// индекс последнего в стеке элемента
+    size_t poolsize;
+
+public:
+    PooledTuple5() {
+		#ifdef TESTCODE
+		if (sizeof(TUPLE5) != sizeof(T1)+sizeof(T2)+sizeof(T3)+sizeof(T4)+sizeof(T5)) SYSTEMERRORn("Platform depend collision! sizeof(TUPLE4) != sizeof( struct{T1 T2 T3 T4} ).");
+		#endif
+
+        last_ind = 0;
+        poolsize = POOLSIZE_DEFAULT;
+        pool = (TUPLE5*)malloc( sizeof(TUPLE5)*POOLSIZE_DEFAULT );
+		#ifdef TESTCODE
+		memset(pool, 0xff, sizeof(TUPLE5)*POOLSIZE_DEFAULT);
+		#endif
+    };
+
+    ~PooledTuple5() {
+        free(pool);
+    };
+
+    // сохран€ет состо€ние item копированием
+    void put(T1 i1, T2 i2, T3 i3, T4 i4, T5 i5) {
+        ++last_ind ;
+        if (last_ind >= poolsize) {
+            // пул исчерпан
+            //LOG("TUPLE4-pool is full. realloc!");
+            poolsize += POOLSIZE_DEFAULT;
+            pool = (TUPLE5*) realloc(pool, poolsize*sizeof(TUPLE5) );
+			if (!pool) RUNTIMEERRORn("TUPLE5-pool : not anouth memory");
+
+			#ifdef TESTCODE
+			memset(pool+last_ind, 0xff, sizeof(TUPLE5)*POOLSIZE_DEFAULT);
+			#endif
+        }
+
+		//memcpy(pool+last_ind,	{&i1,	sizeof(TUPLE4));
+		TUPLE5* pool_last_ind = (TUPLE5*) pool+last_ind;
+		pool_last_ind->i1 = i1;
+		pool_last_ind->i2 = i2;
+		pool_last_ind->i3 = i3;
+		pool_last_ind->i4 = i4;
+		pool_last_ind->i5 = i5;
+        return;
+    };
+
+    void top(T1 &i1, T2 &i2, T3 &i3, T4 &i4, T5 &i5) {
+        TUPLE5* pool_last_ind = pool + last_ind;
+		i1 = pool_last_ind->i1;
+		i2 = pool_last_ind->i2;
+		i3 = pool_last_ind->i3;
+		i4 = pool_last_ind->i4;
+		i5 = pool_last_ind->i5;
+	};
+
+		
+    inline T1 top1() {
+        TUPLE5* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i1;
+	};
+    inline T2 top2() {
+        TUPLE5* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i2;
+	};
+    inline T3 top3() {
+        TUPLE5* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i3;
+	};
+    inline T4 top4() {
+        TUPLE5* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i4;
+	};
+    inline T5 top5() {
+        TUPLE5* pool_last_ind = pool + last_ind;
+		return pool_last_ind->i5;
+	};
+
+
+	bool top_pop(T1 &i1, T2 &i2, T3 &i3, T4 &i4, T5 &i5) {
+		if (!last_ind) {i1=0;i2=0;i3=0;i4=0;i5=0; return false;}
+        top(i1,i2,i3,i4,i5);
+		#ifdef TESTCODE
+		memset(pool+last_ind, 0xff, sizeof(TUPLE5));
+		#endif
+        --last_ind;
+		return true;
+	};
+
+	size_t getLength(){ return last_ind; }
+	inline void setLength(size_t newlen){
+		#ifdef TESTCODE
+		if (newlen > last_ind) AchtungERRORn;
+		#endif
+		last_ind = newlen;
+	};
+
+	bool getByIndex(size_t index, T1 &i1, T2 &i2, T3 &i3, T4 &i4, T5 &i5){
+		if (index<=0 || index>last_ind) {
+			i1 = i2 = i3 = i4 = i5 = 0;
+			return false;
+		}
+		TUPLE5* pool_index = pool + index;
+		i1 = pool_index->i1;
+		i2 = pool_index->i2;
+		i3 = pool_index->i3;
+		i4 = pool_index->i4;
+		i5 = pool_index->i5;
+		return true;
+	}
+
+    void clear() {
+        last_ind = 0;
+		#ifdef TESTCODE
+		memset(pool, 0xff, sizeof(TUPLE5)*poolsize);
+		#endif
+		memset(pool, 0xff, sizeof(TUPLE5));
+    };
+
+};
 
 
 

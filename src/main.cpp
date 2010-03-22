@@ -97,7 +97,7 @@ int main ( int argv, char **argc ) {
     xmlFile = new char[256];
     strncpy(xmlFile, ss2.str().c_str(), 255);
 
-    Session *s = new Session(program);
+    Session *sess = new Session(program);
 
     mod = new RefUserModule(getModuleNameFromFileName(xmlFile));
     program->regModule(mod);
@@ -107,7 +107,7 @@ int main ( int argv, char **argc ) {
     std::cout << mod->debug() << "\n";
     #endif
 
-    //std::cout << s->debug();
+    //std::cout << sess->debug();
 
 
     #ifdef TESTCODE
@@ -125,11 +125,11 @@ int main ( int argv, char **argc ) {
     std::cout << "============================================\n" << std::flush;
     #endif
 
-    RefChain *polez = new RefChain(s);
+    RefChain *polez = new RefChain(sess);
 
-    *polez += new RefExecBrackets(s, new RefChain(s, new RefWord (s, "Go" )));
+    *polez += new RefExecBrackets(sess, new RefChain(sess, new RefWord (sess, "Go" )));
 
-    RefChain *result = program->executeExpression( polez, s );
+    RefChain *result = program->executeExpression( polez, sess );
 
     std::cout << "============================================\nTime: " ;
     std::cout << "Result: " << result->debug() << "\n";
@@ -141,8 +141,8 @@ int main ( int argv, char **argc ) {
     << std::flush;
     #endif
 
-    s->gc_prepare();
-    s->gc_clean();
+    sess->gc_prepare();
+    sess->gc_clean();
 
     //delete polez;
     //delete result;

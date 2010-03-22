@@ -93,12 +93,12 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 				}
 				RefChain *fresult;
 				if (arg->getLength() > 1){
-					fresult = func->exec((*arg)[1], (*arg)[-1], sess);
+					fresult = func->exec((*arg)[1], (*arg)[-1], arg, sess);
 				} else {
 					#ifdef TESTCODE
 					if (arg->getLength() != 1) AchtungERRORs(sess);
 					#endif
-					fresult = func->exec(0, 0, sess);
+					fresult = func->exec(0, 0, arg, sess);
 				}
 
 				//arg = executeExpression(fresult, sess); // опасная рекурсия! Заменить
@@ -127,9 +127,9 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 		}
 	}
 
-	sess->gc_prepare(gc_save_point);
-	sess->gc_exclude(result);
-	sess->gc_clean(gc_save_point);
+	//sess->gc_prepare(gc_save_point);
+	//sess->gc_exclude(result);
+	//sess->gc_clean(gc_save_point);
 
 	//std::cout << "executeExpression: " << result->debug() << "\n";
 	return result;
@@ -137,13 +137,13 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 
 
 class RefChainDoubleLinkManager : public RefChain {
-	Session *sess;
+	Session *session;
 public:
-	RefChainDoubleLinkManager(Session *s) : RefChain(s, 64){ sess=s; };
+	RefChainDoubleLinkManager(Session *sess) : RefChain(sess, 64){ session = sess; };
 	RefChain* save(RefData *ch, RefChainDoubleLinkManager *&chain) {
 		ref_assert(chain==this);
 		if (leng == sysize){
-			chain = new RefChainDoubleLinkManager(sess);
+			chain = new RefChainDoubleLinkManager(session);
 			chain->save(ch, chain);
 		} else {
 			*chain += ch;
@@ -302,10 +302,10 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					}
 					RefChain *fresult;
 					if (count > 1){
-						fresult = func->exec(arg+1, arg+count-1, sess);
+						fresult = func->exec(arg+1, arg+count-1, bb->chain, sess);
 					} else {
 						ref_assert(count==1);
-						fresult = func->exec(0, 0, sess);
+						fresult = func->exec(0, 0, bb->chain, sess);
 					}
 					pastWay.pop(); // не нужно хранить <>
 					iter = fresult->at_first();
@@ -319,19 +319,6 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				continue;
 			}
 		} // end: if iter==end
-
-		//// если перед нами непустая подстрока символов
-		if ((*iter)->isRefSymbol()){
-			RefData** ifrom = iter;
-			do {
-				//sess->MOVE_TO_next_term(iter);  - сегментация учитывается тут принудительно, поэтому ++ :
-				unistring ccc = (*iter)->debug();
-				//std::cout << "\n\t\t\t" << (*iter)->debug();
-				++iter;
-			} while(iter != iend && (*iter)->isRefSymbol());
-			pastWay.put(ifrom, iter-1);
-			continue;
-		}
 
 		// перед нами отрезок
 		if (segment = ref_dynamic_cast<RefSegment>(*iter)){
@@ -366,6 +353,28 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			iter = tmpbr->chain->at_first();
 			continue;
 		}
+
+		//// если перед нами непустая подстрока символов
+		if ((*iter)->isRefSymbol()){
+			RefData** ifrom = iter;
+			do {
+				//sess->MOVE_TO_next_term(iter);  - сегментация учитывается тут принудительно, поэтому ++ :
+				unistring ccc = (*iter)->debug();
+				//std::cout << "\n\t\t\t" << (*iter)->debug();
+				++iter;
+			} while(iter != iend && (*iter)->isRefSymbol());
+			pastWay.put(ifrom, iter-1);
+			continue;
+		}
+
+		// УКАЗАТЕЛЬ (терм, но не символ)
+		RefPoint *rpoint = ref_dynamic_cast<RefPoint>(*iter);
+		if (rpoint){
+			pastWay.put(iter, iter);
+			++iter;
+			continue;
+		}
+
 
 		SYSTEMERRORs(sess, "UNREALISED executing for point: " << (*iter)->debug());
 		//++iter; // именно ++, а не next_term, так как отрезки отлавливаются здесь
@@ -559,12 +568,12 @@ RefModuleBase::~RefModuleBase(){
 			++itt;
 		}
 	};
-RefFunctionBase* RefModuleBase::getFunctionByName(unistring nm, Session *s){
+RefFunctionBase* RefModuleBase::getFunctionByName(unistring nm, Session *sess){
 		std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(nm);
 		if (iter != functions.end()) return iter->second;
 		return 0;
 	};
-RefTemplateBase* RefModuleBase::getTemplateByName(unistring nm, Session *s){
+RefTemplateBase* RefModuleBase::getTemplateByName(unistring nm, Session *sess){
 		std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(nm);
 		if (iter != templates.end()) return iter->second;
 		return 0;
