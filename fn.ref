@@ -2,10 +2,13 @@
   Простейшая порверка работы ссылок
 */
 
-Template Contajner ::= '[' e.body ']' ;
+Template Lett ::= {'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'} ;
+Template Letters ::= { Lett. | Lett. Letters. } ;
+
+Template Contajner ::= '[' Letters.body ']' ;
 
 
-$ENTRY Go { = <Work <Run '12[3456]7890[qwe[rtyu]io[]pa[s]dfghj]klzxcvbnm'>>};
+$ENTRY Go { = <Work <Run '12[3456]7890[012[0989]234[]34[4]7689678]77777'>>};
 //$ENTRY Go { = <Work <Run '1[23456]7'>>};
 
 Run {
@@ -14,7 +17,7 @@ Run {
 }
 
 Work {
-	&Contajner.c e.tail = <Prout @.c::body> &Contajner.c <Work @.tail>;
-	e. = ;
+	e. &Contajner.c e. &Contajner.c e. = <Prout 'Dowble: ' &Contajner.c::body> &Contajner.c ( Contajner.c );
+	e.else = e.else <Prout 'no same'>;
 }
 

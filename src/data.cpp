@@ -322,19 +322,30 @@ inline bool eq(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br){
 
 TResult RefLinkToVariable::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	RefData **ldata, **rdata;
+	RefChain *lrdata_own;
 	VarMap* vm = 0;
-	if ( ! sess->findVar(this->lnk, ldata, rdata, lr_own, vm) ) {
+	if ( ! sess->findVar(this->lnk, ldata, rdata, lrdata_own, vm) ) {
         SYSTEMERRORs(sess, "INTERNAL ERROR: link to not exists variable! link = " << this->debug());
         return ERROR;
     }
 
-	if (path != EmptyUniString && !vm->folowByWay(path, ldata, rdata, lr_own)){
+	if (path != EmptyUniString && !vm->folowByWay(path, ldata, rdata, lrdata_own)){
 		RUNTIMEERRORs(sess, "Wrong way for variable " << lnk->toString() << " : " << path);
 	}
 
 	if (!ldata){ // пустые
         sess->MOVE_TO_next_template(tpl);
         return GO; // ссылка на пустой отрезок всегда сопоставляется с пустым значением
+	}
+
+	if (ldata==l && lr_own==lrdata_own){ // возможно, если указатель-ссылка на это выражение (ldata==l => l!=0 => сравнение pointer->theLink)
+		if (rdata==r){
+			sess->MOVE_TO_next_template(tpl);
+			return GO;
+		} else {
+			sess->MOVE_TO_pred_template(tpl);
+			return BACK;
+		}
 	}
 
 	RefDataBracket *brA=0, *brB=0;
@@ -1020,7 +1031,17 @@ TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&
 	if (point && point->type==((RefVarChains*)this->theLink)->getUserType()){
 		// указатель подходит по типу
 		// совпадает ли содержимое?
-		return this->theLink->init(activeTemplate, sess, l, r, lr_own); // меняет только tempVar и temp_l
+
+		// l==0, r==point
+		RefData 
+			**point_l = point->l, 
+			**point_r = point->r;
+		RefChain
+			*point_lr_own = point->lr_own;
+		sess->save_current_view_borders(point_l, point_r, point_lr_own); // активируем внешние границы
+		TResult result = this->theLink->init(activeTemplate, sess, point_l, point_r, point_lr_own); // меняет только activeTemplate и point_l
+		sess->delete_current_view_borders();  // возвращаем актуальные границы
+		return result;
 	}
 
 	sess->MOVE_TO_pred_template(activeTemplate);
