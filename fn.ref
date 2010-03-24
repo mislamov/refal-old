@@ -3,11 +3,12 @@ Template theint   ::= (int e.value);
 
 Template varname ::= theword | theint ;
 
-Template FUNCTION ::= {"$"(word ENTRY)' '|}  
-		(word t.name) {' '|} ("{" BLOCK.body) {' '|} {";"|} ;
+Template FUNCTION ::= 
+	{"$"(word ENTRY)' '|}  
+	(word t.name) {' '|} ("{" BLOCK.body) {' '|} {";"|};
 
-Template BLOCK ::= 
-		SENTENCE.head ";" { BLOCK. |}.tail ;
+Template BLOCK ::= e.e, <PProut e.e>:,
+		e.e:  SENTENCE.head ";" { BLOCK. |}.tail ;
 
 Template SENTENCE   ::=  LEFT_PART.left_part "=" RIGHT_PART.right_part ;
 Template LEFT_PART  ::=  PATTERN.pattern { IFs. |}.conditions ;
@@ -368,3 +369,13 @@ SystemError {
 
 
 */
+
+
+PProut {
+	(text e.e) e.next = "'" e.e "'" <PProut e.next>;
+	( {int|word|real} e.e ) e.next = e.e <PProut e.next>;
+	e.else = <Prout 'error: ' e.else>;
+}
+
+
+
