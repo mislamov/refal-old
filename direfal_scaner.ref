@@ -171,6 +171,8 @@ ScanObjectExprWithExecs {
 	/**/
 
 
+	('$')("empty")e.next = <ScanObjectExprWithExecs e.next>;
+	
 	/*просто слово или число*/
 	(s.1) e.next, <Type s.1> :
 				{

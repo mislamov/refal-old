@@ -327,7 +327,7 @@ inline unichar NEXT_CHAR(Session *sess, RefData **&symch){
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
-			RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
+			RUNTIMEERRORs(sess, "unexpected term: " << (*symch)->debug());
 	}
 	return sym->getValue();
 }
@@ -337,7 +337,7 @@ inline unichar AFTER_CHAR(Session *sess, RefData **symch){
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
-			RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
+			RUNTIMEERRORs(sess, "unexpected term: " << (*symch)->debug());
 	}
 	return sym->getValue();
 }
@@ -347,7 +347,7 @@ inline unichar BEFORE_CHAR(Session *sess, RefData **symch){
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
-			RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
+			RUNTIMEERRORs(sess, "unexpected term: " << (*symch)->debug());
 	}
 	return sym->getValue();
 }
@@ -409,13 +409,13 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 	RefChain *result = new RefChain(sess);
 	if (!beg) {
 		return result;
-	}
+	} 
 	
 	sess->save_current_view_borders(beg, end, sess->current_view_lr_own());  // устанавливаем границы для GET_next_term
 	RefData** symchar = beg;
 	RefAlphaBase* sym = ref_dynamic_cast<RefAlphaBase>(*symchar);
 	if (!sym) {
-		RUNTIMEERRORs(sess, "unexpected term: " << sym->debug());
+		RUNTIMEERRORs(sess, "unexpected term: " << (*symchar)->debug());
 	}
 	unichar ch = sym->getValue();
 

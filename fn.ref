@@ -1,23 +1,370 @@
+Template theword ::= (word e.value);
+Template theint   ::= (int e.value);
+
+Template varname ::= theword | theint ;
+
+Template FUNCTION ::= {"$"(word ENTRY)' '|}  
+		(word t.name) {' '|} ("{" BLOCK.body) {' '|} {";"|} ;
+
+Template BLOCK ::= 
+		SENTENCE.head ";" { BLOCK. |}.tail ;
+
+Template SENTENCE   ::=  LEFT_PART.left_part "=" RIGHT_PART.right_part ;
+Template LEFT_PART  ::=  PATTERN.pattern { IFs. |}.conditions ;
+Template RIGHT_PART ::=  
+	{' '|} R_ITEM.head {RIGHT_PART. |}.tail ;
+		//$NOT @.pattern : e. (~( e. VAR. E. )~) E.
+		//<SELECT_ALLVAR PATTERN.pattern> : $empty ;   // упростиь, когда появятся сканирующие скобки, или апостраф баша
+
+Template IFs ::= "," IF.head {IFs.|}.tail;
+Template IF  ::= RIGHT_PART.right_part ":" LEFT_PART.left_part;
+
+
+Template PATTERN ::=
+	{' '|} L_ITEM.head {PATTERN. |}.tail ;
+
+Template L_ITEM ::=
+	("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
+
+Template R_ITEM ::=
+	("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
+
+Template SYMBOL ::=
+	theword. | (int e.) | (real e.) | (text e.) ;
+
+
+Template VAR    ::=  { theword. | GROUP_OR_VARIANT. }.type SPECIFICATORS.specificators { varname. | }.namepart ;
+
+Template LNK    ::=  {{ {"@"|"&"} {theword|} }.type "." varname.name }.thevar  VAR_PATH.path ;   // использование @ обязательно!
+Template VAR_PATH ::= ":" ":" varname. VAR_PATH. | $empty ;
+
+Template GROUP_OR_VARIANT ::= ("{" e.) ; //todo: уточнить
+
+Template SPECIFICATORS ::= { REPEATER. }.head SPECIFICATORS.tail | ;
+Template REPEATER ::= ("[" e.); // todo: уточнить
+
+
+SELECT_ALLVAR {
+	( E.a ) E.b = <SELECT_ALLVAR @.a>     <SELECT_ALLVAR @.b>;
+	VAR.v   E.b = &VAR.v 		      <SELECT_ALLVAR @.b>;
+	//&.point E.b = <SELECT_ALLVAR @.point> <SELECT_ALLVAR @.b>;
+	s.1 E.b = <SELECT_ALLVAR @.b>;
+	$empty = $empty;
+};
+
+Go {
+	= <Prout <F <RefalTokens <Mount 'fn.ref'>>>>;
+}
+
+F {
+	e. FUNCTION.f E. = FUNCTION.f;
+	e.else = 'no';
+}
+
+
 /*
-  Простейшая порверка работы ссылок
+SELECT {
+	t.goal FROM () = ;
+	t.goal FROM (e.src), @.src : {
+		{`'&'t.goal'.'`}.v E.tail = @.v <SELECT t.goal FROM (@.tail)>;
+		(e.br)    E.tail = <SELECT t.goal FROM (@.br)> <SELECT t.goal FROM (@.tail)>;
+		&.pointer E.tail = <SELECT t.goal FROM (@.pointer)> <SELECT t.goal FROM (@.tail)>;
+		s.sym E.tail = <SELECT t.goal FROM (@.tail)>;
+	};
+}
 */
 
-Template Lett ::= {'0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'} ;
-Template Letters ::=  Lett.first { Letters. | } ;
 
-Template Contajner ::= '[' Letters.body ']';
-
-
-$ENTRY Go { = <Work <Run '12[3456]7890[012[0989]2[4567]34[]34[4567]7689678]77777'>>};
-//$ENTRY Go { = <Work <Run '1[23456]7'>>};
-
-Run {
-      e. Contajner.c E.next =  &Contajner.c <Run @.next>;
-      e. = ;
+/*
+$ENTRY Go {
+	,<Mount 'direfal_scaner.ref_'> : E.code
+	//,<Mount 'tt.ref'> : E.code
+	=
+		<Prout <MODULE <RefalTokens @.code>> >;
 }
 
-Work {
-	e. &Contajner.c e. &Contajner.c e. = <Prout 'Dowble: ' &Contajner.c::body::first> &Contajner.c::body ( Contajner.c );
-	e.else = e.else <Prout 'no same'>;
+
+Template FUNCTION ::= { "$" (word ENTRY) ' ' | }  
+		(word t.name) {' '|} ("{" BLOCK.body) {' '|} {";"|} ;
+
+Template TEMPLATE ::=
+		(word Template) ' ' (word t.name) {' '|} ":" ":" "=" LEFT_PART.body ";" ;
+
+		
+Template Comment ::= (comment END.);
+		
+		
+MODULE {
+	Comment. E.next = <MODULE @.next>;
+	FUNCTION.func  E.next =	(function @.func::name <F_BLOCK FUNCTION.func::body>) <MODULE @.next>;
+	TEMPLATE.tmpl  E.next = (template @.tmpl::name <L_PART  @.tmpl::body>) <MODULE @.next>;
+	' ' E.next = <MODULE @.next>;
+	";" E.next = <MODULE @.next>;
+	=;
+	e.else = <Prout 'Function or Template expected here: [' @.else ']'>;
 }
 
+
+F_BLOCK {
+	' ' E.next 				=	<F_BLOCK @.next>;
+	(comment E.text) E.next	=	<F_BLOCK @.next>;
+	e.sentence ";" E.next	=	(sentence <SENTENCE @.sentence>) <F_BLOCK @.next>;
+	=;
+	E.sentence				=	(sentence <SENTENCE @.sentence>); // для блоков без ; в конце
+};
+
+
+Template LPattern   ::= { LTerm.item {' '| } }[0...].tmp ;  // образец: L-выражение
+Template RPattern   ::= { RTerm.item {' '| } }[0...].tmp ;  // R-выражение
+
+Template LTerm ::= {
+	"!" |
+	("(" LPattern.) |
+	TVariable. |
+	Symbols.
+};
+	
+
+Template RTerm ::= {
+	({"("|"<"} RPattern. ) |
+	TLinkToVariable. |
+	Symbols.
+};
+
+Template Symbols ::= ( {"word"|"int"|"real"|"text"|"bytes"}.type E.value ) ;
+
+	
+Template TVariable ::=
+	{ ("word" E.) | ("{" LPattern. ) }.type { TSpecificators. | }.specificator  "." {("word" E.)|}.name 
+;
+Template TLinkToVariable ::= {"@" | ("word" e.type)} "." ("word" e.name) { TNameOut. | };
+Template TNameOut  ::=  { ":" ":" ("word" E.namein) TNameOut. |  ":" ":" ("word" E.namein) } ;
+
+SENTENCE {	
+	e.left_part "=" E.rexpr,
+		<ScanLeftPart  <LeftPartObjectTree @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
+		<ScanRightPart (@.left_part_compiledata_stream)(<ObjectTree  @.rexpr>)> : E.right_part_code
+		//<ProutDebug '['@.left_part']['@.rexpr']'>:
+			=
+				'<LEFT-PART>'@.left_part_code'</LEFT-PART>'
+				'<RIGHT-PART>'@.right_part_code'</RIGHT-PART>';
+
+	// данное решение временное! это неправильный блок. Переменные, определенные в E.left_part должны быть доступны в E.block.
+	// TODO: сделать полноценные блоки
+	E.left_part "," e.rexpr ":" {' '|} ("{" E.block) {' '|},   // E.left_part - жадная чтобы захватить все условия
+	//<Prout @.left_part "," @.rexpr ":"  ("{" @.block) > : ,
+		<RandomIdName> : word.fname,
+		<ScanLeftPart  <LeftPartObjectTree @.left_part>> : (E.left_part_code)(E.left_part_compiledata_stream),
+		<ScanRightPart (@.left_part_compiledata_stream)(<ObjectTree  ("<" (word @.fname) @.rexpr)>)> : E.right_part_code
+			=
+				'\n\t\t<FUNCTION name="' <Explode @.fname> '">'  <BLOCK @.block> '\n\t\t</FUNCTION>\n'
+				'<LEFT-PART>'  @.left_part_code  '</LEFT-PART>'
+				'<RIGHT-PART>' @.right_part_code '</RIGHT-PART>';
+
+	{' '|} (comment E.text) {' '|} = ;
+	
+	//E.1 "," e.2 ":" e.3 = <Prout '\n\n1: ' @.1 '   2: ' @.2 '   3: ' @.3 '\n\n'>;
+	
+	E.else		=	<Error ('Bad sentence') @.else>;
+}
+
+
+// ищет ошибки в left-part. Возвращает код left-part и информацию для обработки right-part
+// left-part ->  (left-part-tree)(left-part-compiledata-stream)
+ScanLeftPart {
+	e.e = <ScanPart_process ()() @.e>;
+}
+
+ScanPart_process {
+
+	// ссылка  ("lnk"  t.имя (e.путь))
+	(e.code)(e.stream)
+	("var" t.type t.name) E.next,
+		e.stream : e. (@.type @.name) E.	=	<ScanPart_process  (@.code ("lnk" @.name ()))((@.type @.name) @.stream) @.next>;
+	
+	(e.code)(e.stream)
+	("var" t.type t.name) E.next,
+		e.stream : e. (t.othertype @.name) E.	=	<ScanPart_process  (@.code (error 
+												<Error ('Can\'t redefine variable by other type') @.type '.' @.name "&" @.othertype '.' @.name>
+											)
+										)(@.stream) @.next>;
+	
+	// открытая переменная (var t.тип t.имя)
+	(e.code)(e.stream)
+	("var" t.type t.name) E.next			=	<ScanPart_process  (@.code ("var" @.type @.name)) ((@.type @.name) @.stream) @.next>;
+	
+	(e.code)(e.stream)
+	{({"word"|"text"|"bytes"|"int"|"real"} E.)}.symbol E.next    
+							=	<ScanPart_process  (@.code @.symbol)(@.stream) @.next>;
+
+	(e.code)(e.stream)
+	("(" e.word) E.next,
+		<ScanPart_process ()(@.stream) @.word> : (E.br_code)(E.new_stream)
+							=	<ScanPart_process  ( @.code ("(" @.br_code) )(@.new_stream) @.next>;
+
+
+	(e.code)(e.stream)
+	("if" {true|false}.not (E.rp)(E.lp)) E.next,
+		<ScanRightPart ()(@.stream) @.rp>	:	(E.rp_code),
+		<ScanPart_process  ()(@.stream) @.lp>	:	(E.lp_code)(E.new_stream)
+							=
+								<ScanPart_process  (@.code 
+									("if" @.not  
+										("right-part"  @.rp_code)
+										("left-part"   @.lp_code)
+									)
+								)(@.new_stream) @.next>;
+	
+
+
+	(e.code)(e.stream) ' ' E.next			=	<ScanPart_process (e.code)(e.stream) @.next>;
+	
+	{(e.code)(e.stream)}.all  =  @.all;
+	(e.)(e.)E.error			=	<SystemError (ScanPart_process) @.error>;
+}
+
+
+// ищет ошибки в right-part, используя инфу из left-part
+// (left-part-compiledata-stream)(right-part-tree) -> right-part-code
+ScanRightPart{
+	(e.1)(e.2) = (e.2);
+}
+
+// строим дерево левой части
+LeftPartObjectTree {
+	e.pattern "," E.conditions	=
+			<ObjectTree @.pattern>
+			<ConditionsObjectTree @.conditions>;
+	E.pattern
+			=	<ObjectTree @.pattern>;
+}
+
+NotEmpty {
+	= false;
+	e.else = true;
+}
+
+// строим дерево условий
+ConditionsObjectTree {
+	{"$" (word "not") | }.not1  e.rp ":" {"$" (word "not") | }.not2 e.lp "," E.next	
+					=	("if" <NotEmpty @.not1 @.not2> (<ObjectTree @.rp>) (<ObjectTree @.lp>)) <ConditionsObjectTree @.next>;
+					
+	{"$" (word "not") | }.not1  e.rp ":" {"$" (word "not") | }.not2 E.lp		
+					=	("if" <NotEmpty @.not1 @.not2>  (<ObjectTree @.rp>) (<ObjectTree @.lp>));					
+					
+	E.else				
+					=	<Error ("Condition format is ','[RP]':'[LP]. Bad condition") >;
+}
+
+// дерево термов
+ObjectTree {	
+	' ' E.next = <ObjectTree @.next>;
+	
+	// отсечение, разделитель вариантов
+	{"!" | "|"  }.term E.next = @.term <ObjectTree @.next>;
+	
+	// скобки
+	( {"("|"<"}.br  E.data )  E.next	=	(@.br <ObjectTree @.data ' '> ) <ObjectTree @.next>;
+	// группы и варианты:    
+	("{" E.data)  {"." (word t.name) | { '' }.name } ' ' E.next
+						=	<ObjectTree  <ObjectTreeGroup ("group" (@.name) <ObjectTree @.data ' '> ) >  @.next>;
+
+	("{" E.data)  E.specificator_next	=	<ObjectTreeSpecificator ("{" E.data) @.specificator_next>;
+
+	// переменная  ("var" тип имя )
+	("word" t.type) "." ({"word"|"int"} t.name) E.next = ("var" @.type @.name) <ObjectTree @.next>;
+	//(word "$not")
+	
+	({"word"|"text"|"int"|"real"|"bytes"}.t e.text) E.next	=	(@.t @.text) <ObjectTree @.next>;
+
+	= ;
+	
+	
+	("comment" E.comm) E.next	=	<ObjectTree @.next>;
+	"+"  E.next	=	("word" "sum")<ObjectTree @.next>;
+	"-"  E.next	=	("word" "dec")<ObjectTree @.next>;
+	"*"  E.next	=	("word" "mul")<ObjectTree @.next>;
+	"\\" E.next	=	("word" "div")<ObjectTree @.next>;
+	
+	
+	
+	
+	E.else = <SystemError (ObjectTree) @.else>;	
+}
+
+// определяет для групповых скобок чем они являются: группой или вариантом
+// группа:	("group"   (имя) тело )
+// вариант:	("variant" (имя) (вариант1) .. (вариантN) )
+ObjectTreeGroup {
+	("group" (t.name) E.data),
+		E.data : e.1 "|" E.2,
+		<Variants E.2> : E.variants
+		=	("variant" (t.name) (@.1) @.variants);
+	{ ("group" (t.name) E.data) }.all
+		=	@.all;
+		
+	E.error = <SystemError (ObjectTreeGroup) @.error>;
+}
+
+// определение ObjectTree для первого терма со спецификатором
+ObjectTreeSpecificator {
+	t.type ("[" int.f "." "." {int. | "inf"}.t) E.next
+			=	<ObjectTreeSpecificator ("repeat" (@.f @.t) t.type ) @.next>;
+	t.type  ' '  E.next
+			=	t.type <ObjectTree @.next>;
+	t.type  "." ("word" t.name) ' '  E.next
+			=	("group" (@.name) @.type) <ObjectTree @.next>;
+	E.error = <SystemError (ObjectTreeSpecificator) @.error>;
+}
+
+Substr {
+	{ 0 E.e | int.i } = ;
+	// int.count E.text,  @E.text : s[@.count].str E.nexttext = @.str;
+	int.i t.s E.e = @.s <Substr <- @.i 1> @.e>;
+}
+
+Error {
+	(e.text) e.code,
+		<Substr 128 <UnMeta @.code>> : E.cd
+		=
+		//<ProutDebug @.cd >
+		'\n\n<ERROR>\n' e.text': ' @.cd '\n\n ' @.code ' \n</ERROR>\n\n';
+	//E.else = <Prout 'ERROR of ERRORs! ' E.else>;
+}
+
+
+UnMeta  {
+	E.e = <UnMeta_post <UnMeta_pre @.e>>;
+}
+
+UnMeta_post {
+	e.1 ' . ' E.2 = e.1'.'<UnMeta_post E.2>;
+	E.e = @.e;
+}
+
+UnMeta_pre {
+	("(" e.val) E.e   = '('<UnMeta_pre e.val> ') '<UnMeta_pre @.e>;
+	("{" e.val) E.e   = '{'<UnMeta_pre e.val>'}'  <UnMeta_pre @.e>;
+	("[" e.val) E.e   = '['<UnMeta_pre e.val>']'  <UnMeta_pre @.e>;
+	("<" e.val) E.e   = '<'<UnMeta_pre e.val>'> ' <UnMeta_pre @.e>;
+	(text e.val)E.e   = '\''<UnMeta_pre e.val>'\' ' <UnMeta_pre @.e>;
+	(word.class e.val) E.e	= <UnMeta_pre <ExplodeAll @.val> @.e>;
+	s.sym E.e         	= <ExplodeAll @.sym> <UnMeta_pre @.e>;
+	(t.s) E.e         	= <UnMeta_pre @.s @.e>;
+	E.e 			= @.e;
+}
+
+RandomIdName {
+	= "$RandomFuncName";
+}
+
+SystemError {
+	(E.fname) E.code = 
+		<PrintStackTrace>
+		<Prout '\n####### SYSTEM ERROR in function ' E.fname>
+		<ProutDebug '[ ' E.code ' ]'>
+		<Exit 1>;
+}
+
+
+*/
