@@ -688,7 +688,11 @@ unistring RefVarChains::explode() {
 	if (templInstant == 0 && templ == 0) return " [null] ";
 #endif
 #ifdef TESTCODE
-	if (templInstant == 0 && templ == 0) SYSTEMERRORn("RefVarChains[null, null]->explode()");
+	if (templInstant == 0 && templ == 0){ 
+		SYSTEMERRORn("RefVarChains[null, null]->explode()");
+		return ("RefVarChains[null, null]->explode()");
+	}
+
 #endif
 	return " " + (templInstant?templInstant->getName():("{ "+templ->explode()+" }")) + "." + getName();
 };

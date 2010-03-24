@@ -7,34 +7,38 @@ Template FUNCTION ::=
 	{"$"(word ENTRY)' '|}  
 	(word t.name) {' '|} ("{" BLOCK.body) {' '|} {";"|};
 
-Template BLOCK ::= e.e, <PProut e.e>:,
-		e.e:  SENTENCE.head ";" { BLOCK. |}.tail ;
+Template BLOCK ::= SENTENCE.head ";" { BLOCK. |}.tail ;
 
-Template SENTENCE   ::=  LEFT_PART.left_part "=" RIGHT_PART.right_part ;
+Template SENTENCE   ::=  e.e, <Prout 's: 'e.e>:, e.e : LEFT_PART.left_part "=" RIGHT_PART.right_part ;
 Template LEFT_PART  ::=  PATTERN.pattern { IFs. |}.conditions ;
 Template RIGHT_PART ::=  
-	{' '|} R_ITEM.head {RIGHT_PART. |}.tail ;
+	R_ITEM.head {RIGHT_PART. |}.tail ;
 		//$NOT @.pattern : e. (~( e. VAR. E. )~) E.
 		//<SELECT_ALLVAR PATTERN.pattern> : $empty ;   // упростиь, когда появятся сканирующие скобки, или апостраф баша
 
 Template IFs ::= "," IF.head {IFs.|}.tail;
-Template IF  ::= RIGHT_PART.right_part ":" LEFT_PART.left_part;
+Template IF  ::= RIGHT_PART.right_part ":" PATTERN.left_part;
 
 
 Template PATTERN ::=
-	{' '|} L_ITEM.head {PATTERN. |}.tail ;
+	L_ITEM.head {PATTERN. |}.tail ;
 
 Template L_ITEM ::=
-	("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
+	' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
 
 Template R_ITEM ::=
-	("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
+	' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
 
 Template SYMBOL ::=
 	theword. | (int e.) | (real e.) | (text e.) ;
 
 
-Template VAR    ::=  { theword. | GROUP_OR_VARIANT. }.type SPECIFICATORS.specificators { varname. | }.namepart ;
+Template VAR    ::= {
+	theword.type  		   SPECIFICATORS.specificators  "." { varname. | }.name |
+	GROUP_OR_VARIANT.type  SPECIFICATORS.specificators  { "." varname. | }.name  
+};
+	//	{ theword. | GROUP_OR_VARIANT. }.type SPECIFICATORS.specificators {"."|}.separ { varname. | }.namepart,
+					
 
 Template LNK    ::=  {{ {"@"|"&"} {theword|} }.type "." varname.name }.thevar  VAR_PATH.path ;   // использование @ обязательно!
 Template VAR_PATH ::= ":" ":" varname. VAR_PATH. | $empty ;
@@ -54,11 +58,20 @@ SELECT_ALLVAR {
 };
 
 Go {
-	= <Prout <F <RefalTokens <Mount 'fn.ref'>>>>;
+	= <Prout <F <RefalTokens <Mount 'f.ref'>>>>;
 }
 
+Ff {
+	e.e=e.e;
+}
+
+
+Template VVAR    ::= 
+	theword.type  		   SPECIFICATORS.specificators  "." { varname. | }.name ;
+	
 F {
-	e. FUNCTION.f E. = FUNCTION.f;
+	e.e, <Prout e.e>:, e.e:
+		{' '|} VVAR.f {' '|}  = VVAR.f;
 	e.else = 'no';
 }
 
@@ -374,7 +387,9 @@ SystemError {
 PProut {
 	(text e.e) e.next = "'" e.e "'" <PProut e.next>;
 	( {int|word|real} e.e ) e.next = e.e <PProut e.next>;
-	e.else = <Prout 'error: ' e.else>;
+	{' '|"."|"|"}.sym   e.next = @.sym <PProut e.next>;
+	=;
+	e.else = <Prout 'error: [' e.else ']'>;
 }
 
 

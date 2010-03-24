@@ -200,8 +200,9 @@ public:
 		RefStructBrackets* tpl2 = 0;
 		bracks.top_pop(tpl2, br);
 		#ifdef TESTCODE
-		if (tpl2 != tpl)
-			AchtungERRORs(this);
+		if (tpl2 != tpl){
+			SYSTEMERRORs(this, tpl2->debug() << "  !=  " << tpl->explode());
+		}
 		#endif
 		return br;
 	};
