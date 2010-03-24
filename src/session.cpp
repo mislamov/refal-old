@@ -215,6 +215,17 @@ void Session::gc_clean(RefData* save_point){
 		if (!save_point) save_point = this->gc_first;
 		if (save_point==this->gc_last) return; // когда нечего чистить
 
+		// сначала сохраним активные вармапы
+		//this->varMapStack.foreach( &(Session::gc_exclude) );
+		for(size_t theindex = 0 ; theindex < varMapStack.idx; ++theindex){
+			gc_exclude(varMapStack.getByIndex(theindex));
+			varMapStack.getByIndex(theindex)->debug();
+
+		}
+
+
+
+
 		RefData *tmp=0, *pre=0, *iend=0;
 
 //std::cout << "GC START!\n";
@@ -312,9 +323,10 @@ unistring MatchState::debug(){
 
 
 // ищет по имени переменной ее облать видимости
-bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, RefChain *&lr_own, VarMap *&vm) {
+bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, RefChain *&lr_own, VarMap *&vm, RefVariable *&var) {
         for (size_t ind = last_ind; ind>=0; --ind) {
             if (pool[ind].i1->getName()==name) {
+				var = pool[ind].i1;
                 l  = pool[ind].i2;
                 r  = pool[ind].i3;
 				vm = pool[ind].i4;
@@ -352,7 +364,7 @@ bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* 
         return false;
 };
 
-bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own){
+bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable* &var){
     #ifdef TESTCODE
 	if (path == EmptyUniString) {
 		AchtungERRORn;
@@ -377,7 +389,7 @@ bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &l
         vname = path.substr(t_from, t_to-t_from);
 
 		if (!vm) return false;
-		vm->findByName(vname, l, r, lr_own, vm);
+		vm->findByName(vname, l, r, lr_own, vm, var);
     } while (t_to != std::string::npos);
 	return true;
 }
@@ -427,11 +439,14 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 		//return chain; // в зависимости от того как сделана будет сборка мусора - раскомментировать строку выше
 	}
 	RefChain *result = new RefChain(this, chain->leng);
+	RefVariable *tmpvar = 0;
 	RefLinkToVariable *link = 0;
 	RefDataBracket   *brack = 0;
 	RefPointLink     *pointlink = 0;
 	RefData **enditem = chain->at_afterlast();
 	for(RefData **item = chain->at_first(); item < enditem; ++item){
+
+
 		link = ref_dynamic_cast<RefLinkToVariable>(*item);  //  ССЫЛКА
 		if (link){
 			RefData **endi, **i;
@@ -440,17 +455,18 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			if (! findVar(link->lnk, i, endi, i_chain, vm)){
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for link " + link->explode());
-			};
+			}
 			if (link->path != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! vm->folowByWay(link->path, i, endi, i_chain)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
+				if (! vm->folowByWay(link->path, i, endi, i_chain, tmpvar)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
 			}
 			if (i){
 				*result += new RefChain(this, 0, i, endi);
 			}
-
 			continue;
 		}
+
+
 		brack = (*item)->isDataBracket(); // ДАТА-СКОБКИ
 		if (brack){
 			if (ref_dynamic_cast<RefStructBrackets>(brack)){
@@ -459,9 +475,10 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 				// RefExecBracket
 				*result +=  new RefExecBrackets(this, substituteExpression((RefChain*) brack->chain) ); //TODO: опасно! когда RefChainConstructor != RefChain
 			}
-
 			continue;
 		}
+
+
 		pointlink = ref_dynamic_cast<RefPointLink>(*item);  //  ССЫЛКА
 		if (pointlink){
 			ref_assert(ref_dynamic_cast<RefVarChains>(pointlink->theLink->lnk));
@@ -469,12 +486,31 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			if (! findVar(pointlink->theLink->lnk, thel, ther, thechain, thevm)){
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for &link " + pointlink->explode());
-			};
+			}			
+			if (pointlink->theLink->path != EmptyUniString){
+				// заглядывание в пользовательскую переменную
+				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar)) RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->lnk->toString() << " : " << pointlink->theLink->path);
+			} else {
+				tmpvar = pointlink->theLink->lnk;
+			}
 
+			/**
 			*result +=  new RefPoint(
 				((RefVarChains*)pointlink->theLink->lnk)->getUserType(),
 				thel, ther, thechain, thevm,
 				this);
+			*/
+			RefVarChains *theType = ref_dynamic_cast<RefVarChains>(tmpvar);
+			if (theType){
+				*result +=  new RefPoint(
+					theType->getUserType(),
+					thel, ther, thechain, thevm,
+					this);
+			} else {
+				// определиться с семантикой языка: что делать с ссылками на значения НЕ пользовательского типа
+				//*result += new RefChain(this, thechain, thel, ther);
+				if (tmpvar!=0) RUNTIMEERRORs(this, "Can't create point to object-expression of non-user type: " << pointlink->debug() << " looks to " << (new RefChain(this, thechain, thel, ther))->debug() );
+			}
 			continue;
 		}
 		*result += *item;

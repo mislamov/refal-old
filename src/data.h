@@ -335,6 +335,7 @@ public:
 
 class RefLinkToVariable : public RefData {
 	friend class RefChain;
+	friend class RefPointLink;
 	friend class Session;
 	RefVariable *lnk;
 	unistring path;
@@ -395,7 +396,7 @@ public:
 	VarMap *the_namespace; // результат сопоставления ОВ
 
 	inline RefPoint(RefTemplateBase* thetype, RefData **ll, RefData **rr, RefChain *llrr_own, VarMap *tn, Session *sess) : RefData(sess){
-		ll=l;rr=r;lr_own=llrr_own; type=thetype;the_namespace=tn; 
+		l=ll;r=rr;lr_own=llrr_own; type=thetype;the_namespace=tn; 
 	};
 
 	virtual unistring explode();
@@ -414,7 +415,7 @@ public:
 	virtual unistring explode() { return "&[" + theVar->explode() + "]"; };
 	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
     virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
-};
+	virtual ~RefPointVariable(){ delete theVar; };};
 
 class RefPointLink : public RefData {
 public:
@@ -424,6 +425,7 @@ public:
 	virtual unistring explode();
 	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
     virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
+	virtual ~RefPointLink(){ delete theLink; };
 };
 
 

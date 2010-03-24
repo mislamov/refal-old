@@ -26,28 +26,32 @@
 #include "function.h"
 #include "poolTuples.h"
 
-class VarMap : public PooledTuple5<RefVariable*, RefData** , RefData**, VarMap*, RefChain*>{
+class VarMap : public PooledTuple5<RefVariable*, RefData** , RefData**, VarMap*, RefChain*>, public RefData {
 	RefObject *creator;
 	VarMap(const VarMap&){ AchtungERRORn; };  // неконтроллируемое копирование нам не нужно
 	~VarMap(){}; // найти удаление и заменить на коллекционирование. вармап может сохраниться в реф-указателе - поэтому удалять нельзя!
 public:
-	VarMap(RefObject *cr = 0) {	creator = cr;};
+	VarMap(Session *sess, RefObject *cr = 0) : RefData(sess) {	creator = cr;};
 
     // ищет по имени переменной ее облать видимости
-    bool findByName(unistring name, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&);
+    bool findByName(unistring name, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&, RefVariable* &var);
 	// ищет по ссылке на переменную ее облать видимости
 	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&);
 	// ищет по текстовому пути
-	bool folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own);
+	bool folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable *&var);
+	/*inline bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own){
+		RefVariable *vr;
+		return folowByWay(path, l, r, lr_own, vr);
+	}*/
 
 	char gc_label;//todo:bitmap
-	RefData *gc_next;
 	void mrk_collect(); // отмечает содержимое для сохранения сборщиком
-	inline void set_gc_mark(){ gc_label |= 1; };   // xxxxxxx1  -  для сохранения (gc отметка)
-	inline bool is_gc_mark(){ return  (gc_label&3)!=0; };// xxxxxx10 xxxxxx01 xxxxxx11 - отмечено ли для сохранения
-	inline void flush_gc_mark(){ gc_label &= 254; }; // xxxxxxx0 - удалить по gc
 
 	unistring debug();
+	unistring RefData::explode(void){ return debug(); };
+	TResult init(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
+    TResult back(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
+
 };
 
 
@@ -96,7 +100,7 @@ public:
 	PooledStack<infint> repeats_idxs;
 	PooledStack<infint> repeats_idxs_done;
 	inline RefProgram *getProgram(){ return program; };
-	inline void createVarMap(RefObject *creator){ varMapStack.put(new VarMap(creator)); };
+	inline void createVarMap(RefObject *creator){ varMapStack.put(new VarMap(this, creator)); };
 	inline VarMap* currentMapStack(){ return varMapStack.top(); };
 	inline VarMap* preCurrentMapStack(){ return varMapStack.pretop(); };
 	inline VarMap* poptopVarMap(){ return varMapStack.top_pop(); };
@@ -246,22 +250,15 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Re
 
 	ref_assert((var == varNew) && !vm);
 
-	/*#ifdef TESTCODE
-	if (var != varNew){
-		SYSTEMERRORs(this, "restoreVar: tring " << (var?var->toString():"$0000")  << "  when  " << varNew->toString() << " expect!");
-	}
-	if (vm) {
-		unexpectedERRORs(this);
-	}
-	#endif*/
 };
 
 inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own, VarMap* &vm) {
 	return varMapStack.top()->findByLink(var, l, r, lr_own, vm);
 };
 inline void Session::forgotVar(RefVariable *var) {
+//std::cout << "Session::forgotVar(for " << var->toString() << ")\n";
 	ref_assert(varMapStack.top()->top1()==var);
-	varMapStack.pop();
+	varMapStack.top()->pop();
 };
 inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own) {
 	VarMap* vm = 0;

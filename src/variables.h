@@ -32,7 +32,12 @@ public:
     TResult  init(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
     TResult  back(RefData **&, Session *, RefData **&, RefData **&, RefChain *&);
     bool operator==(RefData &rd);
-    virtual unistring explode() {        return " e."+getName()+" ";    };
+    virtual unistring explode() {        return " e."+getName() + " ";    };
+    /*virtual unistring explode() {        
+		std::ostringstream ss;
+		ss << " e." << getName() << "/" << this << " ";
+		return ss.str();
+	};*/
 };
 
 

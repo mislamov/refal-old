@@ -113,6 +113,12 @@ public:
 		#endif
 		idx = newlen;
 	};
+
+	void foreach( void (*fn)(T) ){
+		for(int theindex = 0 ; theindex < idx; ++theindex){
+			fn(pool[theindex]);
+		}
+	}
 };
 
 
@@ -705,6 +711,15 @@ public:
 		#endif
         --last_ind;
 		return true;
+	};
+
+
+	inline void pop() {
+		if (!last_ind) unexpectedERRORn;
+		#ifdef TESTCODE
+		memset(pool+last_ind, 0xff, sizeof(TUPLE5));
+		#endif
+        --last_ind;
 	};
 
 	size_t getLength(){ return last_ind; }

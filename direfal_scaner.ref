@@ -664,7 +664,9 @@ FixVarLinks2 {
 
 FixVarLinks3 {
 	(e.var'.') e.tail = "<VAR>" e.var '.' "</VAR>" <FixVarLinks2 e.tail>;
-	(e.var) e.t1 "<VAR>" e.var "</VAR>" e.t2 = <FixVarLinks3 (e.var) e.t1 "<LNK>" e.var "</LNK>" e.t2>;
+	(e.var) e.t1 "<VAR>" e.var "</VAR>" e.t2,
+		e.var : e.vname '.' e.vpath 
+		= 	<FixVarLinks3 (e.var) e.t1 "<LNK>" e.vpath "</LNK>" e.t2>;
 	(e.var) e.tail = "<VAR>" e.var "</VAR>" <FixVarLinks2 e.tail>;
 	e.else = <Prout 'SYSTEMERROR: FixVarLinks3: ' e.else>;
 }	
