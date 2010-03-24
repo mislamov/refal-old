@@ -19,7 +19,7 @@
 */
 
 
-ScanObjectExprWithExecs_ { e.e = <PProut "\nScanObjectExprWithExecs: " e.e><ScanObjectExprWithExecs_ e.e>; }
+ScanObjectExprWithExecs_ { e.e, <ScanObjectExprWithExecs_ e.e> : e.result = <PProut "\nScanObjectExprWithExecs: " e.e "  -->  " e.result> e.result; }
 ScanObjectExprWithExecs {
 	=;
 
@@ -116,6 +116,7 @@ ScanObjectExprWithExecs {
 	/* продолжение ссылки на переменную */
 	"$path" ('/')(t.1) e.next
 		=	'/' <ExplodeAll t.1> <ScanObjectExprWithExecs  "$path" e.next>;
+
 	"$ppath" ('/')(t.1) e.next
 		=	'/' <ExplodeAll t.1> <ScanObjectExprWithExecs  "$ppath" e.next>;
 
@@ -265,7 +266,7 @@ ScanPredlsInBody {
 
 
 
-ScanPredl_ { e.e = <PProut "\nScanPredl: " <DeScob e.e>><ScanPredl_ e.e>; }
+ScanPredl_ { e.e, <ScanPredl_ e.e> : e.result = <PProut "\nScanPredl: " <DeScob e.e> "  -->  " e.result>; }
 ScanPredl  {
 	/* TODO: блок - недоработанная заглушка. создает вызов не существуюущей функции */
 	e.left-part (',') e.RIGHT-PART (':') ('{') e.block ('}'),
@@ -306,7 +307,7 @@ ScanPredl  {
 	e.error = <MakeError ScanPredl e.error>;
 
 }
-ScanLeftPart_ { e.e = <PProut "\nScanLeftPart: " <DeScob e.e>><ScanLeftPart_ e.e>; }
+ScanLeftPart_ { e.e, <ScanLeftPart_ e.e> : e.result = <PProut "\nScanLeftPart: " <DeScob e.e> "  -->  " e.result> e.result; }
 ScanLeftPart {
 	=;
 
@@ -639,7 +640,7 @@ FixVarLinksInSent_ {
 */
 
 /* переводит закр. перем. в ссылки */
-FixVarLinks_{ e.e = <Prout e.e><FixVarLinks_ e.e>; };
+FixVarLinks_ { e.e, <FixVarLinks_ e.e> : e.result = <Prout "FixVarLinks: " e.e "  --->  " e.result> e.result; };
 
 FixVarLinks{
 
@@ -652,31 +653,29 @@ FixVarLinks{
 	=;
 	
 }
-/*
-FixVarLinks{
-	e.1 "<SENTENCE>" e.sent "</SENTENCE>" e.2 = <Print e.1> "<SENTENCE>" <FixVarLinks2 e.sent> "</SENTENCE>" <FixVarLinks e.2>;
-	e.e=e.e;
-}
-*/
 
 
-FixVarLinks2_{
-	e.e = <Prout "\n\n" e.e><FixVarLinks2_ e.e>;
-}
-FixVarLinks2{
-	e.1 "<VAR>" e.var "</VAR>" e.2 "<VAR>" e.var "</VAR>" e.3,
-	    e.var : e.vtype '.' s.vname1 e.vname2,
-	    <Type s.vname1> : s.LD e.else1,
-	    'LD' : e.else2 s.LD e.else3
-		    =   <FixVarLinks2 e.1 "<VAR>" e.var "</VAR>" e.2 "<LNK>" s.vname1 e.vname2 "</LNK>" e.3 >;
+FixVarLinks2_  { e.e, <FixVarLinks2_ e.e> : e.result = <Prout "FixVarLinks2: " e.e "  --->  " e.result> e.result; };
 
+FixVarLinks2 {
+	e.1 "<VAR>" e.var "</VAR>" e.tail = e.1 <FixVarLinks3 (e.var) e.tail>;
 	e.e = e.e;
 }
+
+FixVarLinks3 {
+	(e.var'.') e.tail = "<VAR>" e.var '.' "</VAR>" <FixVarLinks2 e.tail>;
+	(e.var) e.t1 "<VAR>" e.var "</VAR>" e.t2 = <FixVarLinks3 (e.var) e.t1 "<LNK>" e.var "</LNK>" e.t2>;
+	(e.var) e.tail = "<VAR>" e.var "</VAR>" <FixVarLinks2 e.tail>;
+	e.else = <Prout 'SYSTEMERROR: FixVarLinks3: ' e.else>;
+}	
+	
+
 
 
 
 
 /*обрабатывает сообщения об ошибках, закрытые переменные переводит в ссылки на открытые*/
+Preproc_ { e.e, <Preproc_ e.e> : e.result = <PProut "Preproc: " e.e "  -->  " e.result> e.result; };
 Preproc{
 	e.all = <PrintErrors e.all><FormatXml <FixVarLinks <PreprocPragma e.all>>>;
 }
@@ -795,7 +794,7 @@ ExplodeAll {
 	s.1 e.2, <Type s.1> : {
 		'W' s.sub s.1 =  <Explode s.1><ExplodeAll e.2>;
 		'N' s.sub s.1 =  <Symb s.1><ExplodeAll e.2>;
-		s.type s.sub e.else = <Prout '#ERROR: ExplodeAll not definded for symbol [' e.else '] of type ' s.type s.sub>;
+		s.type s.sub s.1 = <Prout '#ERROR: ExplodeAll not definded for symbol [' s.1 '] of type ' s.type s.sub>;
 	};
 	=;
 	e.else = <Prout '#ERROR: ExplodeAll not definded for non-symbol [' e.else '] '>;
