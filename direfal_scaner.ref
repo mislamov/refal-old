@@ -52,7 +52,7 @@ ScanObjectExprWithExecs {
 			e.oexp_I 
 			"</GROUP_F>"
 		"</REPEAT>" 
-		"</GROUP_F>" 
+		"</GROUP_F>"
 		<ScanObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"["(e.from)"..." "]" ('.')(t.varname) e.e,
@@ -64,7 +64,7 @@ ScanObjectExprWithExecs {
 			e.oexp_I 
 			"</GROUP_F>"
 		"</REPEAT>" 
-		"</GROUP_F>" 
+		"</GROUP_F>"
 		<ScanObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"[" "..."(e.to)"]" ('.')(t.varname) e.e,
@@ -76,7 +76,7 @@ ScanObjectExprWithExecs {
 			e.oexp_I 
 			"</GROUP_F>"
 		"</REPEAT>" 
-		"</GROUP_F>" 
+		"</GROUP_F>"
 		<ScanObjectExprWithExecs e.e>;
 
 	('{')  e.oexp  ('}')"[" (e.fromto)"]" ('.')(t.varname) e.e,
@@ -88,7 +88,7 @@ ScanObjectExprWithExecs {
 			e.oexp_I 
 			"</GROUP_F>"
 		"</REPEAT>" 
-		"</GROUP_F>" 
+		"</GROUP_F>"
 		<ScanObjectExprWithExecs e.e>;
 
 
@@ -340,12 +340,13 @@ ScanObjectExprWithoutExecs {
 }
 
 IsVarName_ { e.e, <IsVarName_ e.e> : e.res = e.res <Prout 'IsVarName:  [' e.e '] -> 'e.res>;}
-IsVarName  {= true;
+IsVarName {
+	= true;
 	e.name,
 	<Type e.name> : {
 		'L' s.sub s.1 e.2 = <IsVarName e.2>;
 		'D' s.sub s.1 e.2 = <IsVarName e.2>;
-		'*' e.e = true;
+		'P' s.sub '_' e.2 = <IsVarName e.2>;
 		e.else = false;
 	};
 }
@@ -648,7 +649,7 @@ FixVarLinksInSent_ {
 /* переводит закр. перем. в ссылки */
 FixVarLinks_ { e.e, <FixVarLinks_ e.e> : e.result = <Prout "FixVarLinks: " e.e "  --->  " e.result> e.result; };
 
-FixVarLinks{
+FixVarLinks {
 
 	"<SENTENCE>" e.body "</SENTENCE>" e.2 = "<SENTENCE>" <FixVarLinks2 e.body> "</SENTENCE>" <FixVarLinks e.2>;
 	t.template   e.body "</TEMPLATE>" e.2,	
@@ -662,30 +663,13 @@ FixVarLinks{
 
 
 FixVarLinks2_  { e.e, <FixVarLinks2_ e.e> : e.result = <Prout "FixVarLinks2: " e.e "  --->  " e.result> e.result; };
-
 FixVarLinks2 {
 
-	"<GROUP name=\""  e.vname "\">" e.next
-		=	"<GROUP name=\""  e.vname "\">" <FixVarLinks3 (e.vname) e.next>;
-
-	"<VARIANTS name=\"" e.vname "\">" e.next,
-		<FixVarLinksInVariants e.next> : (e.intovariants)(e.aftervariants)
-		=  
-			"<VARIANTS name=\"" e.vname "\">" 
-			e.intovariants
-			"</VARIANTS">
-			<FixVarLinks3 (e.vname) e.aftervariants>;
-
-	
-	
 	"<VAR>" e.var "</VAR>" e.tail = <FixVarLinks3 (e.var) e.tail>;
 	t.1 e.e = t.1 <FixVarLinks2 e.e>;
 	=;
 }
 
-FixVarLinksInVariants {
-	
-}
 
 
 FixVarLinks3 {

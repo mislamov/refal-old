@@ -110,9 +110,9 @@ int main ( int argv, char **argc ) {
     //std::cout << sess->debug();
 
 
-    #ifdef TESTCODE
     time_t starttime, stoptime;
     time ( &starttime );
+    #ifdef TESTCODE
 
     std::cout << "\n";
     //<< stringtime(localtime (&starttime))
@@ -132,14 +132,13 @@ int main ( int argv, char **argc ) {
     RefChain *result = program->executeExpression( polez, sess );
 
     std::cout << "============================================\nTime: " ;
-    std::cout << "Result: " << result->debug() << "\n";
-    #ifdef TESTCODE
+    //#ifdef TESTCODE
     time ( &stoptime );
     std::cout
-//		<< stringtime(localtime (&stoptime)) << "\n"
     << difftime(stoptime, starttime) << " sec.\n"
     << std::flush;
-    #endif
+    //#endif
+    std::cout << "Result: " << result->debug() << "\n";
 
     sess->gc_prepare();
     sess->gc_clean();

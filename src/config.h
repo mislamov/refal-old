@@ -21,7 +21,7 @@
 
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2010 Marat Islamov"
 #define TESTCODE
-#define DEBUG
+//#define DEBUG
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины
