@@ -52,7 +52,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 };
 
 // с рекурсией
-RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
 		return chain; // new RefChain();
 	}
@@ -116,7 +116,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 					--iter;
                     iend = fresult->at_afterlast();
 					chain = fresult;
-					std :: cout << "\n\n\n" << fresult->debug() << "\n";
+					//std :: cout << "\n\n\n" << fresult->debug() << "\n";
 					(*(iend-1))->debug();
 				} else {
 				    // если результат был пуст, то двигаемся дальше
@@ -127,9 +127,9 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 		}
 	}
 
-	//sess->gc_prepare(gc_save_point);
-	//sess->gc_exclude(result);
-	//sess->gc_clean(gc_save_point);
+	sess->gc_prepare(gc_save_point);
+	sess->gc_exclude(result);
+	sess->gc_clean(gc_save_point);
 
 	//std::cout << "executeExpression: " << result->debug() << "\n";
 	return result;
@@ -156,7 +156,7 @@ public:
 };
 
 //--------- без рекурсии
-RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля
 	PooledTuple2<size_t, size_t> brackets; // индекс скобки в way, размер ее цепочки

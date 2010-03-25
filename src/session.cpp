@@ -5,7 +5,7 @@
 
 #ifdef DEBUG
 #define LOGSTEP(s) \
-	std::cout <<variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0, 50)) << "\n" << std::flush;
+	std::cout << (int)r << "\t" << variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0, 50)) << "\n" << std::flush;
 #define LOGMATCH() \
 	std::cout << "\n\n"<< co::objs<<" STEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r, 50)) << "\n" << std::flush;
 #else
@@ -230,7 +230,7 @@ void Session::gc_clean(RefData* save_point){
 
 //std::cout << "GC START!\n";
 
-		#ifdef DEBUG
+		#ifdef xDEBUG
 		size_t tmpdbg = 0;
 		/*std::cout << "\nsave_point: " << save_point <<
 			"\ns_p->next: " << save_point->gc_next <<
@@ -246,7 +246,7 @@ void Session::gc_clean(RefData* save_point){
 					pre->gc_next = pre->gc_next->gc_next;
 					delete tmp;
 
-					#ifdef DEBUG
+					#ifdef xDEBUG
 					++tmpdbg;
 					#endif
 
@@ -257,7 +257,7 @@ void Session::gc_clean(RefData* save_point){
 		this->gc_last = pre;
 		this->gc_last->gc_next = 0;
 
-		#ifdef DEBUG
+		#ifdef xDEBUG
 				std::cout << "############ GARBAGE: " << tmpdbg << " was deleted !\n" << std::flush;
 		#endif
 
@@ -267,7 +267,7 @@ void Session::gc_clean(RefData* save_point){
 
 
 void Session::gc_prepare(RefData *save_point){
-		#ifdef DEBUG
+		#ifdef xDEBUG
 				size_t tmpdbg = 0;
 		#endif
 		for(
@@ -277,23 +277,24 @@ void Session::gc_prepare(RefData *save_point){
 			iter!=iend;
 			iter=iter->gc_next){
 			iter->flush_gc_mark();
-		#ifdef DEBUG
+		#ifdef xDEBUG
 			++tmpdbg;
 		#endif
 		}
 
-		#ifdef DEBUG
+		#ifdef xDEBUG
 				std::cout << "############ GARBAGE: " << tmpdbg << " was prepared !\n" << std::flush;
 		#endif
 	};
 
 void Session::gc_exclude(RefChain *chain){
-		if (!chain) return;
+	if (!chain) return;
 		Session::gc_exclude(chain->at_first(), chain->at_last(), chain);
 	};
 
 void Session::gc_exclude(RefData **l, RefData **r, RefChain *own){
 	own->set_gc_mark();
+	if (!l) return;
 	//ref_assert(l and r by own);
 		for(RefData  **iter=l, **iend=r+1;
 			iter<iend;

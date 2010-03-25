@@ -380,10 +380,13 @@ RefChain* closeAllBrackets(Session *sess, RefChain *currChain, PooledTuple2<unic
 	return chain;
 };
 
-inline unichar ecran_char(unichar ch){
+inline unichar ecran_char(unichar &ch){
 	switch(ch){
 		case 't': return '\t'; 
 		case 'n': return '\n'; 
+		case '\\':
+				ch = 0; // чтобы не экранировать " если "\\"
+				return '\\';
 	}
 	return ch;
 }
