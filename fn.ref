@@ -1,7 +1,7 @@
 Template theword ::= (word e.value);
 Template theint   ::= (int e.value);
 
-Template varname ::= theword | theint ;
+Template varname ::= { theword. | theint. } ;
 
 Template FUNCTION ::= 
 	{"$"(word ENTRY)' '|}  
@@ -24,17 +24,17 @@ Template PATTERN ::=
 	L_ITEM.head {PATTERN. |}.tail ;
 
 Template L_ITEM ::=
-	' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
+	{ ' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. } ;
 
 Template R_ITEM ::=
-	' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. ;
+	{ ' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. } ;
 
 Template SYMBOL ::=
-	theword. | (int e.) | (real e.) | (text e.) ;
+	{ theword. | (int e.) | (real e.) | (text e.) | "$" (word empty) } ;
 
 
 Template VAR    ::= {
-	theword.type  		   SPECIFICATORS.specificators  "." { varname. | }.name |
+	theword.type  	       SPECIFICATORS.specificators  "." { varname. | }.name |
 	GROUP_OR_VARIANT.type  SPECIFICATORS.specificators  { "." varname. | }.name  
 };
 	//	{ theword. | GROUP_OR_VARIANT. }.type SPECIFICATORS.specificators {"."|}.separ { varname. | }.namepart,
@@ -45,7 +45,7 @@ Template VAR_PATH ::= ":" ":" varname. VAR_PATH. | $empty ;
 
 Template GROUP_OR_VARIANT ::= ("{" e.) ; //todo: уточнить
 
-Template SPECIFICATORS ::= { REPEATER. }.head SPECIFICATORS.tail | ;
+Template SPECIFICATORS ::= { { REPEATER. }.head SPECIFICATORS.tail |} ;
 Template REPEATER ::= ("[" e.); // todo: уточнить
 
 
@@ -57,23 +57,29 @@ SELECT_ALLVAR {
 	$empty = $empty;
 };
 
-Go {
-	= <Prout <F <RefalTokens <Mount 'f.ref'>>>>;
-}
-
-Ff {
-	e.e=e.e;
-}
 
 
-Template VVAR    ::= 
-	theword.type  		   SPECIFICATORS.specificators  "." { varname. | }.name ;
+
 	
 F {
-	e.e, <Prout e.e>:, e.e:
-		{' '|} VVAR.f {' '|}  = VVAR.f;
+	{' '|} PATTERN.f {' '|}  = @.f;
 	e.else = 'no';
 }
+
+Go {
+	= <Prout <F <RefalTokens '   { \' \'| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. }  '>>>;
+}
+
+
+PProut {
+	(text e.e) e.next = "'" e.e "'" <PProut e.next>;
+	( {int|word|real} e.e ) e.next = e.e <PProut e.next>;
+	{' '|"."|"|"}.sym   e.next = @.sym <PProut e.next>;
+	=;
+	e.else = <Prout 'error: [' e.else ']'>;
+}
+
+
 
 
 /*
@@ -382,15 +388,5 @@ SystemError {
 
 
 */
-
-
-PProut {
-	(text e.e) e.next = "'" e.e "'" <PProut e.next>;
-	( {int|word|real} e.e ) e.next = e.e <PProut e.next>;
-	{' '|"."|"|"}.sym   e.next = @.sym <PProut e.next>;
-	=;
-	e.else = <Prout 'error: [' e.else ']'>;
-}
-
 
 

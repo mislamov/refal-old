@@ -693,7 +693,7 @@ unistring RefVarChains::explode() {
 #endif
 #ifdef TESTCODE
 	if (templInstant == 0 && templ == 0){ 
-		SYSTEMERRORn("RefVarChains[null, null]->explode()");
+		//SYSTEMERRORn("RefVarChains[null, null]->explode()");
 		return ("RefVarChains[null, null]->explode()");
 	}
 

@@ -329,7 +329,7 @@ ScanRigthPart {
 
 
 
-ScanObjectExprWithoutExecs_ { e.e = <PProut "\nScanObjectExprWithoutExecs: " e.e><ScanObjectExprWithoutExecs_ e.e>; }
+ScanObjectExprWithoutExecs_ { e.e, <ScanObjectExprWithoutExecs_ e.e> : e.res = e.res <Prout 'ScanObjectExprWithoutExecs: ' e.e '  -->  ' e.res>; }
 ScanObjectExprWithoutExecs {
 	e.arg, 
 		<ScanObjectExprWithoutExecsFirst e.arg> : e.arg_I,
@@ -339,7 +339,8 @@ ScanObjectExprWithoutExecs {
 		};
 }
 
-IsVarName {
+IsVarName_ { e.e, <IsVarName_ e.e> : e.res = e.res <Prout 'IsVarName:  [' e.e '] -> 'e.res>;}
+IsVarName  {= true;
 	e.name,
 	<Type e.name> : {
 		'L' s.sub s.1 e.2 = <IsVarName e.2>;
@@ -352,15 +353,16 @@ IsVarName {
 /* перестраивает спецификаторы для загрузки программы: 
 	варианты:	  {o   | => o   | => o   | => x   ? }
 */
-TransformSpecificatorsInObjectExprWithoutExecs_ { e.e = <Prout "TransformSpecificatorsInObjectExprWithoutExecs:" e.e><TransformSpecificatorsInObjectExprWithoutExecs e.e>; };
+TransformSpecificatorsInObjectExprWithoutExecs_ { e.e, <TransformSpecificatorsInObjectExprWithoutExecs_ e.e> : e.res  
+				= e.res <Prout "TransformSpecificatorsInObjectExprWithoutExecs:" e.e '  -->  ' e.res>; };
 TransformSpecificatorsInObjectExprWithoutExecs {
 	e.all,
 	e.all : e.1 "<GROUP_F name=\"" e.gname "\">" e.2 "</GROUP_F>" e.3,
+		<IsVarName e.gname> : true,
 		<NotHas "</GROUP_F>" e.2> : true,
 		<NotHas "<GROUP_F name=\"" e.2> : true,
-		<IsVarName e.gname> : true,
 		e.2 : e.4 "|" e.5  
-		=  	<TransformSpecificatorsInObjectExprWithoutExecs   
+		=	<TransformSpecificatorsInObjectExprWithoutExecs   
 				e.1 
 				"<VARIANTS name=\"" e.gname "\">"
 				<ReplaceAll ("|") by ("<THE-VARIANT/>") in (e.2)> 
@@ -370,8 +372,10 @@ TransformSpecificatorsInObjectExprWithoutExecs {
 
 	e.all,
 	e.all : e.1 "<GROUP_F name=\"" e.gname "\">" e.2 "</GROUP_F>" e.3,
+		<IsVarName e.gname> : true,
 		<NotHas "</GROUP_F>" e.2> : true,
-		<NotHas "<GROUP_F name=\"" e.2> : true
+		<NotHas "<GROUP_F name=\"" e.2> : true,
+		<NotHas "|" e.2> : true
 		=	<TransformSpecificatorsInObjectExprWithoutExecs   e.1 "<GROUP name=\"" e.gname "\">" e.2 "</GROUP>" e.3 >;
 
 	e.noOldGroups = e.noOldGroups;
@@ -660,9 +664,29 @@ FixVarLinks{
 FixVarLinks2_  { e.e, <FixVarLinks2_ e.e> : e.result = <Prout "FixVarLinks2: " e.e "  --->  " e.result> e.result; };
 
 FixVarLinks2 {
-	e.1 "<VAR>" e.var "</VAR>" e.tail = e.1 <FixVarLinks3 (e.var) e.tail>;
-	e.e = e.e;
+
+	"<GROUP name=\""  e.vname "\">" e.next
+		=	"<GROUP name=\""  e.vname "\">" <FixVarLinks3 (e.vname) e.next>;
+
+	"<VARIANTS name=\"" e.vname "\">" e.next,
+		<FixVarLinksInVariants e.next> : (e.intovariants)(e.aftervariants)
+		=  
+			"<VARIANTS name=\"" e.vname "\">" 
+			e.intovariants
+			"</VARIANTS">
+			<FixVarLinks3 (e.vname) e.aftervariants>;
+
+	
+	
+	"<VAR>" e.var "</VAR>" e.tail = <FixVarLinks3 (e.var) e.tail>;
+	t.1 e.e = t.1 <FixVarLinks2 e.e>;
+	=;
 }
+
+FixVarLinksInVariants {
+	
+}
+
 
 FixVarLinks3 {
 	(e.var'.') e.tail = "<VAR>" e.var '.' "</VAR>" <FixVarLinks2 e.tail>;
@@ -738,7 +762,7 @@ PrintAll { e.e = <PProut e.e>; }
 PProut { e.e = <Prout e.e>; }
 PPrint { e.e = <Print e.e>; }
 
-
+ScanTemplate_ { e.e, <ScanTemplate_ e.e> : e.res = <Prout 'ScanTemplate: ' e.e '  -->  ' e.res>; }
 ScanTemplate {
 	(e.tname)(':')(':')('=') e.left-part,
 		<ScanLeftPart e.left-part>   : e.lpscaned,
