@@ -485,7 +485,11 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				uservarich = ref_dynamic_cast<RefVariantsChains>(*point); // варианты
 				if (uservarich){
 					if (uservarich->getName() != ""){
-						ref_assert(vars.find(uservarich->getName())==vars.end());
+#ifdef TESTCODE
+						if (vars.find(uservarich->getName())!=vars.end()){
+							std::cout << "\nWARN: several same-name-variables in one part. Error, if not a VARIANTS. Var: " << uservarich->getName() << "\n" << std::flush;
+						};
+#endif
 						vars[uservarich->getName()] = uservarich;
 					}
 					subchains.put(point+1, end); // todo: if (point+1!=end) subchains.put(point+1, end); мм?
