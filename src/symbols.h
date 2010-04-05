@@ -51,17 +51,20 @@ public:
     TResult init(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
     TResult back(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
     unistring explode(){
+		//return getValue();
         std::ostringstream os;
         os << getValue();
         return os.str();
         };
     unistring debug(){
-		unistring tmp = explode() + " ";
 		return explode() + " ";
 	};
     unistring toString(){
-		unistring tmp = explode() + " ";
+#ifdef TESTCODE
+		return debug() + " ";
+#else
 		return explode() + " ";
+#endif
 	};
 };
 

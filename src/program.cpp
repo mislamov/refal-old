@@ -52,7 +52,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 };
 
 // с рекурсией
-RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
 		return chain; // new RefChain();
 	}
@@ -156,7 +156,7 @@ public:
 };
 
 //--------- без рекурсии
-RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
+RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
 	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля
 	PooledTuple2<size_t, size_t> brackets; // индекс скобки в way, размер ее цепочки
@@ -359,7 +359,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 			RefData** ifrom = iter;
 			do {
 				//sess->MOVE_TO_next_term(iter);  - сегментация учитывается тут принудительно, поэтому ++ :
-				unistring ccc = (*iter)->debug();
+				//unistring ccc = (*iter)->debug();
 				//std::cout << "\n\t\t\t" << (*iter)->debug();
 				++iter;
 			} while(iter != iend && (*iter)->isRefSymbol());

@@ -107,6 +107,10 @@ public:
 	size_t from; // поскольку цепочки увеличиваются в конце, а не в начале, то можетм хранить отступы от начала
 	size_t to;
 
+	RefSegment(Session *s, RefChain *o, RefData **f, RefData **t);
+	virtual unistring explode(){ return "[segment]";};
+	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot){unexpectedERRORn;};
+	virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot){unexpectedERRORn;};
 };
 
 

@@ -4,7 +4,6 @@ Template theint   ::= (int e.value);
 
 Template varname ::= { theword. | theint. } ;
 
-Template PROGRAM ::= {' '|} { FUNCTION. | TEMPLATE. }   {";"|} {PROGRAM. |} {' '|};
 
 Template FUNCTION ::= 
 	{"$"(word ENTRY)' '|}  
@@ -12,6 +11,15 @@ Template FUNCTION ::=
 
 Template TEMPLATE ::=
 	(word Template) ' ' theword.name {' '|} ":" ":" "=" LEFT_PART.body ;
+
+PROGRAM {
+	FUNCTION.f  {";" |} E.next = <Prout 'F: ' @.f::name> <PROGRAM @.next>;
+	TEMPLATE.tm  ";" E.next = <Prout 'T: ' @.tm::name> <PROGRAM @.next>;
+	' ' e.e = <PROGRAM e.e>;
+	=;
+	e.else = 'no: ' e.else;
+}
+
 	
 Template BLOCK ::= SENTENCE.head ";" {' '|} { BLOCK. |}.tail ;
 Template SENTENCE   ::=  { LEFT_PART. | }.left_part "=" { RIGHT_PART. | }.right_part ;
@@ -69,19 +77,22 @@ SELECT_ALLVAR {
 
 
 	
-F {
-	PROGRAM.f = @.f;
-	e.else = 'no';
-}
 
 Go {
-	= <Prout <F <DelComments <RefalTokens <Mount 'f.ref'>>>>>;
+	= <Prout <PROGRAM
+		<Prout 'xx'>
+		<DelComments <RefalTokens <Mount 'f.ref'>>>
+		<Prout 'yy'>
+	>>;
 }
 
+DelComments_ {
+	e.e = <Prout 'del: 'e.e><DelComments_ e.e>;
+}
 DelComments {
 	{' '|} (comment e.) {' '|} e.e = <DelComments e.e>;
-	(e.1) e.e = (<DelComments e.1>) <DelComments e.e>;
-	s.1 e.e = s.1 <DelComments e.e>;
+	e.0 ( {"("|"{"|"["|"<"}.sig  e.1 ) e.e = e.0 (@.sig <DelComments e.1>) <DelComments e.e>;
+	t.1 e.e = @.1 <DelComments e.e>;
 	=;
 }
 
@@ -94,7 +105,9 @@ PProut {
 }
 
 
-
+F {
+	 e.e = ; 
+}
 
 /*
 SELECT {

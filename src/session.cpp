@@ -325,7 +325,8 @@ unistring MatchState::debug(){
 
 // ищет по имени переменной ее облать видимости
 bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, RefChain *&lr_own, VarMap *&vm, RefVariable *&var) {
-        for (size_t ind = last_ind; ind>=0; --ind) {
+        //for (size_t ind = last_ind; ind>=0; --ind) {
+        for (size_t ind = last_ind; ind>0; --ind) {
             if (pool[ind].i1->getName()==name) {
 				var = pool[ind].i1;
                 l  = pool[ind].i2;
@@ -365,7 +366,7 @@ bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* 
         return false;
 };
 
-bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable* &var){
+bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable* &var, VarMap* &vm){
     #ifdef TESTCODE
 	if (path == EmptyUniString) {
 		AchtungERRORn;
@@ -382,15 +383,14 @@ bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &l
     #endif
 
     unistring vname;
-	VarMap *vm = this;
+	vm = this;
 
 	do {
         t_from = t_to+1;
         t_to   = path.find(varPathSeparator, t_from);
         vname = path.substr(t_from, t_to-t_from);
 
-		if (!vm) return false;
-		vm->findByName(vname, l, r, lr_own, vm, var);
+		if (!vm || !vm->findByName(vname, l, r, lr_own, vm, var)) return false;
     } while (t_to != std::string::npos);
 	return true;
 }
@@ -439,6 +439,9 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 		return new RefChain(this);
 		//return chain; // в зависимости от того как сделана будет сборка мусора - раскомментировать строку выше
 	}
+
+	//std::cout << "\n" << chain->debug() << "\n\n" << std::flush;
+
 	RefChain *result = new RefChain(this, chain->leng);
 	RefVariable *tmpvar = 0;
 	RefLinkToVariable *link = 0;
@@ -459,10 +462,11 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			}
 			if (link->path != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! vm->folowByWay(link->path, i, endi, i_chain, tmpvar)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
+				if (! vm->folowByWay(link->path, i, endi, i_chain, tmpvar, vm)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
 			}
 			if (i){
 				*result += new RefChain(this, 0, i, endi);
+				//*result += new RefSegment(this, i_chain, i, endi);
 			}
 			continue;
 		}
@@ -480,7 +484,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 		}
 
 
-		pointlink = ref_dynamic_cast<RefPointLink>(*item);  //  ССЫЛКА
+		pointlink = ref_dynamic_cast<RefPointLink>(*item);  //  ССЫЛКА-УКАЗАТЕЛЬ
 		if (pointlink){
 			ref_assert(ref_dynamic_cast<RefVarChains>(pointlink->theLink->lnk));
 			RefData **ther, **thel;  RefChain *thechain;  VarMap* thevm = 0;
@@ -490,7 +494,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			}			
 			if (pointlink->theLink->path != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar)) RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->lnk->toString() << " : " << pointlink->theLink->path);
+				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar, thevm)) RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->lnk->toString() << " : " << pointlink->theLink->path);
 			} else {
 				tmpvar = pointlink->theLink->lnk;
 			}

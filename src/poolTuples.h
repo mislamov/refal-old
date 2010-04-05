@@ -744,6 +744,14 @@ public:
 		return true;
 	}
 
+	T1 get1ByIndex(size_t index){
+		if (index<=0 || index>last_ind) {
+			return 0;
+		}
+		TUPLE5* pool_index = pool + index;
+		return pool_index->i1;
+	}
+
     void clear() {
         last_ind = 0;
 		#ifdef TESTCODE

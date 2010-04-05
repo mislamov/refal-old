@@ -60,6 +60,14 @@ RefData::RefData(Session *sess) : RefObject(){
 	this->gc_next = 0;
 };
 
+
+RefSegment::RefSegment(Session *s, RefChain *o, RefData **f, RefData **t) : RefData(s){ 
+	own=o; 
+	from=f-own->first; 
+	to=t-own->first; 
+}
+
+
 TResult RefDataNull::init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); };
 TResult RefDataNull::back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); };
 
@@ -330,7 +338,7 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 		return ERROR;
 	}
 
-	if (path != EmptyUniString && !vm->folowByWay(path, ldata, rdata, lrdata_own, tmpvar)){
+	if (path != EmptyUniString && !vm->folowByWay(path, ldata, rdata, lrdata_own, tmpvar, vm)){
 		RUNTIMEERRORs(sess, "Wrong way for variable " << lnk->toString() << " : " << path);
 	}
 
@@ -1075,7 +1083,7 @@ TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&
 		SYSTEMERRORs(sess, "INTERNAL ERROR: link to not exists variable! link = " << this->debug());
 	}
 	RefVariable *tmpvar = 0;
-	if (theLink->path != EmptyUniString && !vm->folowByWay(theLink->path, ldata, rdata, lrdata_own, tmpvar)){
+	if (theLink->path != EmptyUniString && !vm->folowByWay(theLink->path, ldata, rdata, lrdata_own, tmpvar, vm)){
 		RUNTIMEERRORs(sess, "Wrong way for variable " << theLink->lnk->toString() << " : " << theLink->path);
 	}
 
@@ -1131,8 +1139,14 @@ TResult RefPointLink::back(RefData **&activeTemplate, Session* sess, RefData **&
 	return BACK;		
 };
 
-unistring RefPoint::explode(){ 
-	return "&point["+(type?type->getName():"o-expr") + ": "+chain_to_text(l, r)+"]"; 
+unistring RefPoint::explode(){
+	std::stringstream ss;
+	ss << "&" << (type?type->getName():"o-expr") << "[";
+	for(size_t i=1, maxi = this->the_namespace->getLength(); i<=maxi; ++i){
+		ss << this->the_namespace->get1ByIndex(i)->getName() << " ";
+	}
+	ss << "]";
+	return ss.str();
 };
 
 TResult RefPoint::init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){

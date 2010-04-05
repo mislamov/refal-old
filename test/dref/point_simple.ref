@@ -1,0 +1,19 @@
+/*
+  Простейшая порверка работы ссылок
+*/
+
+Template Contajner ::= '[' e.body ']' ;
+
+
+$ENTRY Go { = <Work <Run '12[3456]7890[qwe[rtyu]io[]pa[s]dfghj]klzxcvbnm'>>};
+
+Run {
+      e. Contajner.c E.next =  &Contajner.c <Run @.next>;
+      e. = ;
+}
+
+Work {
+	&Contajner.c e.tail = <Prout @.c::body> &Contajner.c <Work @.tail>;
+	e. = ;
+}
+

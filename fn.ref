@@ -4,15 +4,14 @@ Template theint   ::= (int e.value);
 
 Template varname ::= { theword. | theint. } ;
 
-Template PROGRAM ::= {' '|} { FUNCTION. | TEMPLATE. }   {";"|} {PROGRAM. |} {' '|};
 
 Template FUNCTION ::= 
 	{"$"(word ENTRY)' '|}  
 	(word t.name) {' '|} ("{" BLOCK.body) {' '|};
 
 Template TEMPLATE ::=
-	(word Template) ' ' theword.name {' '|} ":" ":" "=" LEFT_PART.body ;
-	
+	(word Template) ' ' (word t.name) {' '|} ":" ":" "=" LEFT_PART.body ;
+
 Template BLOCK ::= SENTENCE.head ";" {' '|} { BLOCK. |}.tail ;
 Template SENTENCE   ::=  { LEFT_PART. | }.left_part "=" { RIGHT_PART. | }.right_part ;
 
@@ -67,21 +66,46 @@ SELECT_ALLVAR {
 };
 
 
+PROGRAM {
+	FUNCTION.f  {";" |} E.next = <Prout 'Function: ' @.f::name> &FUNCTION.f <PROGRAM @.next>;
+	TEMPLATE.tm  ";" E.next = <Prout 'Template: ' @.tm::name> &TEMPLATE.tm <PROGRAM @.next>;
+	' ' e.e = <PROGRAM e.e>;
+	=;
+	e.else = 'no: ' e.else;
+}
 
+// Семантический анализ
+SEMANTIC {
+	&FUNCTION.f e.next = '<FUNCTION name="' @.f::name '">' <Sentences &FUNCTION.f::body> '</FUNCTION>\n' <SEMANTIC e.next>;
+	&TEMPLATE.t e.next = '<TEMPLATE name="' @.t::name '"><LEFT-PART>' <LeftPart &TEMPLATE.t::body> '</LEFT-PART></TEMPLATE>\n'<SEMANTIC e.next>;
+	=;
+}
+
+LeftPart {
+	e.e=e.e; 
+}
 	
-F {
-	PROGRAM.f = @.f;
-	e.else = 'no';
+Sentences {
+	e.e=e.e;
 }
 
 Go {
-	= <Prout <F <DelComments <RefalTokens <Mount 'f.ref'>>>>>;
+	= <Prout 
+		<SEMANTIC <PROGRAM
+			<Prout 'Delete comments...'>
+			<DelComments <RefalTokens <Mount 'f.ref'>>>
+			<Prout 'done'>
+		>>
+	>;
 }
 
+DelComments_ {
+	e.e = <Prout 'del: 'e.e><DelComments_ e.e>;
+}
 DelComments {
-	{' '|} (comment e.) {' '|} e.e = <DelComments e.e>;
-	(e.1) e.e = (<DelComments e.1>) <DelComments e.e>;
-	s.1 e.e = s.1 <DelComments e.e>;
+	{' '|} (comment e.comm) {' '|} e.e = <DelComments ' ' e.e>;
+	( {"("|"{"|"["|"<"}.sig  e.1 ) e.e = (@.sig <DelComments e.1>) <DelComments e.e>;
+	t.1 e.e = @.1 <DelComments e.e>;
 	=;
 }
 
@@ -94,7 +118,9 @@ PProut {
 }
 
 
-
+F {
+	 e.e = ; 
+}
 
 /*
 SELECT {

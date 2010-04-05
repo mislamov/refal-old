@@ -38,7 +38,7 @@ public:
 	// ищет по ссылке на переменную ее облать видимости
 	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&);
 	// ищет по текстовому пути
-	bool folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable *&var);
+	bool folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable *&var, VarMap* &);
 	/*inline bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own){
 		RefVariable *vr;
 		return folowByWay(path, l, r, lr_own, vr);
