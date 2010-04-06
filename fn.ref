@@ -24,8 +24,8 @@ Template IFs ::= "," IF.head {IFs.|}.tail;
 Template IF  ::= RIGHT_PART.right_part ":" L_PATTERN.left_part;
 
 
-Template L_PATTERN ::= { | L_PATTERN_nonemp. } ;
-Template R_PATTERN ::= { | R_PATTERN_nonemp. } ;
+Template L_PATTERN ::= { | L_PATTERN_nonemp.p } ;
+Template R_PATTERN ::= { | R_PATTERN_nonemp.p } ;
 
 Template L_PATTERN_nonemp ::=
 	L_ITEM.head {L_PATTERN_nonemp. |}.tail ;
@@ -71,18 +71,28 @@ PROGRAM {
 	TEMPLATE.tm  ";" E.next = <Prout 'Template: ' @.tm::name> &TEMPLATE.tm <PROGRAM @.next>;
 	' ' e.e = <PROGRAM e.e>;
 	=;
+	// ОШИБКИ
+	e.1 TEMPLATE.tm  ";" E.next = <PROGRAM e.1> &TEMPLATE.tm <PROGRAM @.next>;;
+	e.1 FUNCTION.f   {";"|}  E.next = <PROGRAM e.1> &FUNCTION.f <PROGRAM @.next>;;
 	e.else = 'no: ' e.else;
 }
 
 // Семантический анализ
 SEMANTIC {
 	&FUNCTION.f e.next = '<FUNCTION name="' @.f::name '">' <Sentences &FUNCTION.f::body> '</FUNCTION>\n' <SEMANTIC e.next>;
-	&TEMPLATE.t e.next = '<TEMPLATE name="' @.t::name '"><LEFT-PART>' <LeftPart &TEMPLATE.t::body> '</LEFT-PART></TEMPLATE>\n'<SEMANTIC e.next>;
+	&TEMPLATE.t e.next = '<TEMPLATE name="' @.t::name '"><LEFT-PART>' <LeftPart <PatternToPoints &TEMPLATE.t::body::pattern> &TEMPLATE.t::body::conditions> '</LEFT-PART></TEMPLATE>\n'<SEMANTIC e.next>;
 	=;
 }
 
 LeftPart {
+	;
+	 &IFs.conds = ;
 	e.e=e.e; 
+}
+
+PatternToPoints {
+	{ &L_PATTERN.x |  &R_PATTERN.x |  {$empty}.x }, @.x : $empty =; 
+	&.pattern 
 }
 	
 Sentences {
