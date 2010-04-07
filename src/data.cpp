@@ -1141,9 +1141,13 @@ TResult RefPointLink::back(RefData **&activeTemplate, Session* sess, RefData **&
 
 unistring RefPoint::explode(){
 	std::stringstream ss;
-	ss << "&" << (type?type->getName():"o-expr") << "[";
-	for(size_t i=1, maxi = this->the_namespace->getLength(); i<=maxi; ++i){
-		ss << this->the_namespace->get1ByIndex(i)->getName() << " ";
+	ss << "&" << (type?type->getName():"e") << "[";
+	if (this->the_namespace!=0){
+		for(size_t i=1, maxi = this->the_namespace->getLength(); i<=maxi; ++i){
+			ss << this->the_namespace->get1ByIndex(i)->getName() << " ";
+		}
+	} else {
+		ss << chain_to_text(l, r);
 	}
 	ss << "]";
 	return ss.str();

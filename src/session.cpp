@@ -487,14 +487,16 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 		pointlink = ref_dynamic_cast<RefPointLink>(*item);  //  ССЫЛКА-УКАЗАТЕЛЬ
 		if (pointlink){
 			ref_assert(ref_dynamic_cast<RefVarChains>(pointlink->theLink->lnk));
-			RefData **ther, **thel;  RefChain *thechain;  VarMap* thevm = 0;
+			RefData **ther=0, **thel=0;  RefChain *thechain=0;  VarMap* thevm = 0;
 			if (! findVar(pointlink->theLink->lnk, thel, ther, thechain, thevm)){
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for &link " + pointlink->explode());
 			}			
 			if (pointlink->theLink->path != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar, thevm)) RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->lnk->toString() << " : " << pointlink->theLink->path);
+				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar, thevm)){ 
+					RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->lnk->toString() << " : " << pointlink->theLink->path);
+				}
 			} else {
 				tmpvar = pointlink->theLink->lnk;
 			}
@@ -514,7 +516,15 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			} else {
 				// определиться с семантикой языка: что делать с ссылками на значения НЕ пользовательского типа
 				//*result += new RefChain(this, thechain, thel, ther);
-				if (tmpvar!=0) RUNTIMEERRORs(this, "Can't create point to object-expression of non-user type: " << pointlink->debug() << " looks to " << (new RefChain(this, thechain, thel, ther))->debug() );
+				if (tmpvar!=0) {
+					//RUNTIMEERRORs(this, "Can't create point to object-expression of non-user type: " << pointlink->debug() << " looks to " << (new RefChain(this, thechain, thel, ther))->debug() );
+					*result +=  new RefPoint(
+						0,
+						thel, ther, thechain, thevm,
+						this);
+				}else{
+					unexpectedERRORs(this);
+				}
 			}
 			continue;
 		}

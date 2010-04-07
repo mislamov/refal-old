@@ -24,13 +24,13 @@ Template IFs ::= "," IF.head {IFs.|}.tail;
 Template IF  ::= RIGHT_PART.right_part ":" L_PATTERN.left_part;
 
 
-Template L_PATTERN ::= { | L_PATTERN_nonemp.p } ;
-Template R_PATTERN ::= { | R_PATTERN_nonemp.p } ;
+Template L_PATTERN ::= { {}.p | L_PATTERN_nonemp.p } ;
+Template R_PATTERN ::= { {}.p | R_PATTERN_nonemp.p } ;
 
 Template L_PATTERN_nonemp ::=
-	L_ITEM.head {L_PATTERN_nonemp. |}.tail ;
+	L_ITEM.head {L_PATTERN_nonemp.tail | {}.tail } ;
 Template R_PATTERN_nonemp ::=
-	R_ITEM.head {R_PATTERN_nonemp. |}.tail ;
+	R_ITEM.head {R_PATTERN_nonemp.tail | {}.tail } ;
 
 Template L_ITEM ::=
 	{ ' '| ("(" L_PATTERN. ) | VAR. | LNK. | SYMBOL. } ;
@@ -80,19 +80,24 @@ PROGRAM {
 // Семантический анализ
 SEMANTIC {
 	&FUNCTION.f e.next = '<FUNCTION name="' @.f::name '">' <Sentences &FUNCTION.f::body> '</FUNCTION>\n' <SEMANTIC e.next>;
-	&TEMPLATE.t e.next = '<TEMPLATE name="' @.t::name '"><LEFT-PART>' <LeftPart <PatternToPoints &TEMPLATE.t::body::pattern> &TEMPLATE.t::body::conditions> '</LEFT-PART></TEMPLATE>\n'<SEMANTIC e.next>;
+	&TEMPLATE.t e.next = '<TEMPLATE name="' @.t::name '"><LEFT-PART>' <LeftPart_XML <LeftPart_SEMANTIC <PatternToPoints &TEMPLATE.t::body::pattern> &TEMPLATE.t::body::conditions>> '</LEFT-PART></TEMPLATE>\n'<SEMANTIC e.next>;
 	=;
 }
 
-LeftPart {
-	;
-	 &IFs.conds = ;
-	e.e=e.e; 
+LeftPart_SEMANTIC {
+	E.patt &IFs.conds,
+		<NormizeVariables () E.patt> : (E.vars) E.patt_var,
+		<IFs_SEMANTIC (E.vars) &IFs.conds>
+		= E.patt_var;
+
+	E.patt,
+		<NormizeVariables () E.patt> : (E.vars) E.patt_var
+		= E.patt_var;	
 }
 
 PatternToPoints {
-	{ &L_PATTERN.x |  &R_PATTERN.x |  {$empty}.x }, @.x : $empty =; 
-	&.pattern 
+	{ &L_PATTERN.x |  &R_PATTERN.x |  {$empty}.x }, @.x : $empty = ; 
+	&.pattern = &.pattern::p::head <PatternToPoints &.pattern::p::tail>;
 }
 	
 Sentences {
