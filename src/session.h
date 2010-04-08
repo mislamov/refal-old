@@ -52,6 +52,8 @@ public:
 	TResult init(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
     TResult back(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
 
+	bool createdByFigureBrackets(){ 
+		return ref_dynamic_cast<RefVarChains>(creator) || ref_dynamic_cast<RefVariantsChains>(creator); };
 };
 
 
@@ -253,8 +255,23 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Re
 
 };
 
-inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own, VarMap* &vm) {
-	return varMapStack.top()->findByLink(var, l, r, lr_own, vm);
+inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own, VarMap* &vm) {	
+	if (varMapStack.top()->findByLink(var, l, r, lr_own, vm)) return true;
+	
+	// если переменная не найдена, то возможно это не ошибка, а ссылка внутри фигурных скобок (группы илил вариантов),
+	// для которых в стак были созданы новые вармапы	
+	for(
+		size_t idx = varMapStack.getCount()-1;
+		idx;
+		--idx){
+			vm = varMapStack.getByIndex(idx);
+			if (vm->createdByFigureBrackets()){
+				if (vm->findByLink(var, l, r, lr_own, vm)) return true;
+			} else {
+				return false;
+			}
+	}
+	return false;
 };
 inline void Session::forgotVar(RefVariable *var) {
 //std::cout << "Session::forgotVar(for " << var->toString() << ")\n";

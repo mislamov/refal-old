@@ -72,6 +72,7 @@ void charData (void *data, const XML_Char *chars, int length) {
     loader->currentchars += toWstring(chars, length);
 }
 
+
 void XMLCALL startElement(void *data, const XML_Char *name, const XML_Char **attributes) {
     LoaderHeap *loader = (LoaderHeap *)data;
     ref_assert(loader!=0);
@@ -357,7 +358,6 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, char* xmlFile) {
         return -1;
     }
 
-
     for (;;) {
         int done;
         int len;
@@ -368,6 +368,8 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, char* xmlFile) {
             return 2;
         }
         done = feof(ifile);
+
+		
 
         if (XML_Parse(p, Bufff, len, done) == XML_STATUS_ERROR) {
             fprintf(stderr, "Parse error at line %" XML_FMT_INT_MOD "u:\n%s\n",

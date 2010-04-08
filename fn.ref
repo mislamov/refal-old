@@ -13,48 +13,72 @@ Template TEMPLATE ::=
 	(word Template) ' ' (word t.name) {' '|} ":" ":" "=" LEFT_PART.body ;
 
 Template BLOCK ::= SENTENCE.head ";" {' '|} { BLOCK. |}.tail ;
-Template SENTENCE   ::=  { LEFT_PART. | }.left_part "=" { RIGHT_PART. | }.right_part ;
+Template SENTENCE   ::=  LEFT_PART.left_part "=" RIGHT_PART.right_part ;
 
-Template LEFT_PART  ::=  L_PATTERN.pattern { IFs. |}.conditions ;
-Template RIGHT_PART ::=  R_PATTERN.pattern ;
-		//$NOT @.pattern : e. (~( e. VAR. E. )~) E.
-		//<SELECT_ALLVAR PATTERN.pattern> : $empty ;   // упростиь, когда появятся сканирующие скобки, или апостраф баша
+
+Template LEFT_PART  ::=  PATTERN.pattern { IFs. |}.conditions ;
+Template RIGHT_PART ::=  SUBSTIT.pattern ;
 
 Template IFs ::= "," IF.head {IFs.|}.tail;
-Template IF  ::= RIGHT_PART.right_part ":" L_PATTERN.left_part;
+Template IF  ::= SUBSTIT.substitution ":" PATTERN.pattern;
 
-
-Template L_PATTERN ::= { {}.p | L_PATTERN_nonemp.p } ;
-Template R_PATTERN ::= { {}.p | R_PATTERN_nonemp.p } ;
-
-Template L_PATTERN_nonemp ::=
-	L_ITEM.head {L_PATTERN_nonemp.tail | {}.tail } ;
-Template R_PATTERN_nonemp ::=
-	R_ITEM.head {R_PATTERN_nonemp.tail | {}.tail } ;
+Template PATTERN ::= e. ;
+Template SUBSTIT ::= e. ;
 
 Template L_ITEM ::=
-	{ ' '| ("(" L_PATTERN. ) | VAR. | LNK. | SYMBOL. } ;
+	{ ' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. } ;
 
 Template R_ITEM ::=
-	{ ' '| ("(" RIGHT_PART. ) | ("<" R_PATTERN_nonemp. ) | VAR. | LNK. | SYMBOL. } ;
+	{ ' '| ("(" SUBSTIT. ) | ("<" SUBSTIT. ) | VAR. | LNK. | SYMBOL. } ;
 
 Template SYMBOL ::=
 	{ theword. | (int e.) | (real e.) | (text e.) | "$" (word empty) } ;
 
 
+/*
 Template VAR    ::= {
-	theword.type1  	       SPECIFICATORS.s1  "." { varname. | }.name1 |
-	GROUP_OR_VARIANT.type2  SPECIFICATORS.s2  { "." varname. | }.name2  
+	theword.type  	       SPECIFICATORS.specs  "." { varname. | }.name |
+	GROUP_OR_VARIANT.type  SPECIFICATORS.specs  { "." varname. | }.name  
 };
+*/
+
+
+/*
+	word.name
+	word.
+	word[x..y].name
+	word[x..y].
+	{...}
+	{...}.name
+	{...}[x..y].name
+*/
+Template VAR    ::=
+	{ theword. | GROUP_OR_VARIANT. }.type  SPECIFICATORS.specs {"."|}.dot { varname. | }.name,
+		// точка может отсутствовать только для безымянной группы/варианта		
+		@.type @.specs @.dot : { ("{" e.) @.specs | e. "." },
+		<Prout $line ' : ' @.type @.specs @.dot> :
+;
 					
 
 Template LNK    ::=  { {  "@"{theword.|} | "&"{theword.|} | theword. }.type "." varname.name }.thevar  VAR_PATH.path ;   // использование @ обязательно!
 Template VAR_PATH ::= { ":" ":" varname. VAR_PATH. | $empty } ;
 
-Template GROUP_OR_VARIANT ::= ("{" e.) ; //todo: уточнить
+Template GROUP_OR_VARIANT ::= ("{" e.body) ; //todo: уточнить
 
 Template SPECIFICATORS ::= { { REPEATER. }.head SPECIFICATORS.tail |} ;
 Template REPEATER ::= ("[" e.); // todo: уточнить
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 SELECT_ALLVAR {
@@ -70,48 +94,148 @@ PROGRAM {
 	FUNCTION.f  {";" |} E.next = <Prout 'Function: ' @.f::name> &FUNCTION.f <PROGRAM @.next>;
 	TEMPLATE.tm  ";" E.next = <Prout 'Template: ' @.tm::name> &TEMPLATE.tm <PROGRAM @.next>;
 	' ' e.e = <PROGRAM e.e>;
-	=;
+	$empty = $empty;
+
 	// ОШИБКИ
-	e.1 TEMPLATE.tm  ";" E.next = <PROGRAM e.1> &TEMPLATE.tm <PROGRAM @.next>;;
-	e.1 FUNCTION.f   {";"|}  E.next = <PROGRAM e.1> &FUNCTION.f <PROGRAM @.next>;;
-	e.else = 'no: ' e.else;
-}
+	e.1 TEMPLATE.tm  ";" E.next = <PROGRAM e.1> &TEMPLATE.tm <PROGRAM @.next>;
+	e.1 FUNCTION.f   {";"|}  E.next = <PROGRAM e.1> &FUNCTION.f <PROGRAM @.next>;
+	e.else = 'Error Function or Template definition: ' e.else;
+};
 
 // Семантический анализ
 SEMANTIC {
-	&FUNCTION.f e.next = '<FUNCTION name="' @.f::name '">' <Sentences &FUNCTION.f::body> '</FUNCTION>\n' <SEMANTIC e.next>;
-	&TEMPLATE.t e.next = '<TEMPLATE name="' @.t::name '"><LEFT-PART>' <LeftPart_XML <LeftPart_SEMANTIC <PatternToPoints &TEMPLATE.t::body::pattern> &TEMPLATE.t::body::conditions>> '</LEFT-PART></TEMPLATE>\n'<SEMANTIC e.next>;
-	=;
-}
-
-LeftPart_SEMANTIC {
-	E.patt &IFs.conds,
-		<NormizeVariables () E.patt> : (E.vars) E.patt_var,
-		<IFs_SEMANTIC (E.vars) &IFs.conds>
-		= E.patt_var;
-
-	E.patt,
-		<NormizeVariables () E.patt> : (E.vars) E.patt_var
-		= E.patt_var;	
-}
-
-//		<NormizeVariables (E.vars_begin) E.patt> : (E.vars) E.patt_var,
-//		E.vars_begin - ранее открытые переменные
-//       E.vars - теперь открытые переменные
-//		E.patt_var - ОВ E.patt, в котором по факту закрытые переменные переведены в ссылки
-NormizeVariables {
-//	(E.vars_begin) E.patt = (E.vars_begin) E.patt ;
-	(E.vars_begin) E.patt = (E.vars_begin) E.patt ;
-}
-
-PatternToPoints {
-	{ &L_PATTERN.x |  &R_PATTERN.x |  {$empty}.x }, @.x : $empty = ; 
-	&.pattern = &.pattern::p::head <PatternToPoints &.pattern::p::tail>;
-}
+	&FUNCTION.f e.next 
+			= 
+				'<FUNCTION name="' @.f::name '">' 
+					<Sentences FUNCTION.f::body> 
+				'</FUNCTION>\n' 
+				<SEMANTIC e.next>;
+				
+	&TEMPLATE.t e.next,
+		<PatternAnalise     ( )( )         TEMPLATE.t::body::pattern>    : (e.variables)(e.resultPattern),
+		<ConditionsAnalise  (e.variables)()  <CondToList TEMPLATE.t::body::conditions>> : (e.variables2)(e.resultConditions)
+			= 
+				'<TEMPLATE name="' @.t::name '">'
+				'<LEFT-PART>'
+					<PatternToXML    @.resultPattern>
+					<ConditionsToXML @.resultConditions>
+				'</LEFT-PART>'
+				'</TEMPLATE>\n'					
+				<SEMANTIC e.next>;
 	
+	$empty = $empty;
+};
+
 Sentences {
-	e.e=e.e;
+	=;
+	
+	BLOCK.sents,
+		BLOCK.sents::head : LEFT_PART.left_part "=" RIGHT_PART.right_part,
+		<PatternAnalise     ( )( )         TLEFT_PART.left_part::pattern>    : (e.variables)(e.resultPattern),
+		<ConditionsAnalise  (e.variables)()  <CondToList LEFT_PART.left_part::conditions>> : (e.variables2)(e.resultConditions),
+		<SubstitutAnalise   (e.variables2)() RIGHT_PART.right_part> : (e.variables3)(e.resultConstitute)
+		=	("SENTENCE" ("LEFT_PART" e.resultPattern  e.resultConditions)("RIGHT_PART" e.resultConstitute)) <Sentences BLOCK.sents::tail>;
+		
+	E.else = <Prout '#### ERROR SENTENCE: ' @.else>;
+		
+};
+
+
+CondToList { =; IFs.conds = &IFs.conds::head <CondToList IFs.conds::tail>; }
+
+//(e.vars)( ) e.substitution  =  (e.vars) (e.result);
+SubstitutAnalise {
+	// закрытая переменная
+	(e.vars1 VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
+		VAR.exsvar::name   : VAR.var::name,
+		'@.' VAR.var::name : LNK.lnk,
+		<Prout $line  'condition'>:
+		=	<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
+			<SubstitutAnalise (e.vars1 VAR.exsvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
+
+	(e.vars)(e.result) LNK.lnk e.otherpart 
+		=	<SubstitutAnalise (e.vars)(e.result &LNK.lnk) e.otherpart>;
+	
+	(e.vars)(e.result) ("<" SUBSTIT.subs ) e.otherpart,
+		<SubstitutAnalise (e.vars)() SUBSTIT.subs> : (e.vars1)(e.res1)
+		=	<SubstitutAnalise (e.vars1)(e.result ("<" e.res1)) e.otherpart>;
+		
+	(e.vars)(e.result) ' ' e.otherpart
+		=	<SubstitutAnalise (e.vars)(e.result) e.otherpart>;
+
+		=;
 }
+
+//(e.vars)( ) e.leftpart = (e.vars) (e.leftpart);
+PatternAnalise_ { e.e, <PatternAnalise_ e.e> : e.res = <Prout '<PatternAnalise ' e.e '>  --->  'e.res> e.res; }
+PatternAnalise {
+	// скобка
+	(e.vars) (e.result) ("(" e.data) e.next,
+		<PatternAnalise (e.vars)() e.data> : (e.mkvars)(e.mkdata)
+
+		=	<PatternAnalise (e.mkvars)(e.result ("(" e.mkdata)) e.next>;
+
+	// закрытая переменная
+	(e.vars1 VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
+		VAR.exsvar::name   : VAR.var::name,
+		'@.' VAR.var::name : LNK.lnk,
+		<Prout $line  'condition'>:
+		=	<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
+			<PatternAnalise (e.vars1 VAR.exsvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
+
+	////// ОТКРЫТЫЕ ПЕРЕМЕННЫЕ:
+	// открытая переменная с именем
+	(e.vars) (e.result) VAR.var e.otherpart,
+		$NOT VAR.var::name : $empty,
+		<PatternAnaliseVar (e.vars) &VAR.var> : (e.mkvars) &VAR.mkvar
+		=	<PatternAnalise (e.mkvars &VAR.var)(e.result &VAR.mkvar) e.otherpart>;
+
+	// открытая безымянная переменная
+	(e.vars) (e.result) VAR.var e.otherpart,
+		VAR.var::name : $empty		=	<PatternAnalise (e.vars)(e.result &VAR.var) e.otherpart>;
+	(e.vars) (e.result) VAR.var e.otherpart	=	<Prout '#### ERROR: unparsed variable: ' @.var>;
+	(e.vars) (e.result) ' ' e.next		=	<PatternAnalise (e.vars) (e.result) e.next>;
+	(e.vars) (e.result) SYMBOL.s e.next	=	<PatternAnalise (e.vars) (e.result &SYMBOL.s) e.next>;
+	(e.vars) (e.result) = (e.vars) (e.result);
+	(e.vars) (e.result) e.else		=	"$ERROR"  <Prout 'Unknown item for PatternAnalise: [' e.else ']'>;
+}
+
+// Для переменных-групп/вариантов выполняет PatternAnalise в body
+PatternAnaliseVar {
+	(e.vars) &VAR.var,
+		VAR.var  : GROUP_OR_VARIANT.gtype e.vartail,
+		<ForEachInBody_PatternAnalise (e.vars) @.gtype::body> : (e.mkvars) e.mkbody,
+		("{" e.mkbody) @.vartail : &VAR.mkvar 
+		=
+			(e.mkvars) &VAR.mkvar;
+	
+	(e.vars) &VAR.var = (e.vars) &VAR.var;
+}
+
+ForEachInBody_PatternAnalise {
+	(e.vars) e.1 "|" e.2 = ;
+	(e.vars) e.1 = ;
+}
+
+
+// (e.vars)() &IF[...]   =  (e.vars-result)(e.result)
+ConditionsAnalise {
+	(e.vars)(e.result) = (e.vars)(e.result);
+	
+	(e.vars)(e.result) &IF.cond e.ifs,
+		<SubstitutAnalise (e.vars )( ) IF.cond::substitution> : (e.vars1)(e.subst1),
+		<PatternAnalise   (e.vars1)( ) IF.cond::pattern     > : (e.vars2)(e.pattn2)
+			=	<ConditionsAnalise (e.vars2)(e.result ("IF" e.subst1 ":" e.pattn2)) e.ifs>;
+}
+
+// Template IF  ::= SUBSTIT.substitution ":" PATTERN.pattern;
+
+
+ErrorIfNotEqual {
+	(e.1)(e.1)(e.error) = $empty;
+	(e.1)(e.2)(e.error) = <Prout '#### PARSER_ERROR: ' e.error>;
+}
+
 
 Go {
 	= <Prout 
@@ -126,6 +250,7 @@ Go {
 DelComments_ {
 	e.e = <Prout 'del: 'e.e><DelComments_ e.e>;
 }
+
 DelComments {
 	{' '|} (comment e.comm) {' '|} e.e = <DelComments ' ' e.e>;
 	( {"("|"{"|"["|"<"}.sig  e.1 ) e.e = (@.sig <DelComments e.1>) <DelComments e.e>;
@@ -142,6 +267,12 @@ PProut {
 }
 
 
-F {
-	 e.e = ; 
+
+
+PatternToXML {
+	e.e = e.e;
+}
+
+ConditionsToXML {
+	e.e =e.e;
 }

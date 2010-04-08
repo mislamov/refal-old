@@ -310,7 +310,8 @@ RefChain* Print (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
             << "\n######################################################################\n"
     #endif
             ;
-    return StrToChain(sess, thetext);;
+    //return StrToChain(sess, thetext);
+	return new RefChain(sess, begend_chain, beg, end);
 };
 
 RefChain* Exit (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){

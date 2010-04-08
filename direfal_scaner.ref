@@ -196,8 +196,6 @@ ScanObjectExprWithExecs {
 }
 
 
-
-
 Repeat {
 	t.fname e.arg While (e.exp),
 	<Mu t.fname e.arg> : {
@@ -208,8 +206,30 @@ Repeat {
 	e.else = <PPrint "@ERROR:" ('in Repeat: ' e.else)>;
 }
 
+
+
 Mount {
-	e.fname = <Open 'r' 9 e.fname>'\n'<Repeat Get 9 While (0)>;
+	e.fname =
+		<Open 'r' 9 e.fname> '\n'
+		<ReadCode 1 <Get 9>>;
+}
+/*
+Mount2 {
+	e.fname =
+		<Open 'r' 9 e.fname> '\n'
+		<Repeat Get 9 While (0)>;
+}
+*/
+
+ReadCode {
+	t.line e.text 0 = <Directives t.line e.text> '\n';
+	t.line e.text   =  <Directives t.line e.text> '\n' <ReadCode <+ 1 t.line> <Get 9>>;
+}
+
+Directives {
+	t.line e.1 '$line'  e.2 = e.1 '\''t.line'\'' e.2;
+	t.line e.1 '$empty' e.2 = e.1 e.2;
+	t.line e.e = e.e;
 }
 
 ImplNumb {
@@ -253,14 +273,14 @@ ScanPredlsInBody {
 	<ScanPredl e.predl>	: e.pscaned,
 	<ExistError e.pscaned>	: false,
 	e.nextBodyPredl : {
-					=	"<SENTENCE>" e.pscaned "</SENTENCE>";
-				e.e	=	"<SENTENCE>" e.pscaned "</SENTENCE>" <ScanPredlsInBody e.e>;
+					=	"\n\t<SENTENCE>" e.pscaned "</SENTENCE>";
+				e.e	=	"\n\t<SENTENCE>" e.pscaned "</SENTENCE>" <ScanPredlsInBody e.e>;
 	};
 
 	e.predl t.last, 
 		t.last : {
-			(';')   = "<SENTENCE>" <ScanPredl  e.predl> "</SENTENCE>";
-			t.last  = "<SENTENCE>" <ScanPredl  e.predl t.last> "</SENTENCE>";
+			(';')   = "\n\t<SENTENCE>" <ScanPredl  e.predl> "</SENTENCE>";
+			t.last  = "\n\t<SENTENCE>" <ScanPredl  e.predl t.last> "</SENTENCE>";
 		};
 
 	= <MakeError ScanPredlsInBody  'can\'t be empty body of block'>;
@@ -286,8 +306,8 @@ ScanPredl  {
 	<Explode t.rand> : e.randtext,
 	<ScanIfs (',') e.RIGHT-PART (':') (e)('.')(t.rand)> : e.lp
 
-	=	"<LEFT-PART>"  e.lpscaned  e.lp  "</LEFT-PART>"
-		"<RIGHT-PART>" <ScanRigthPart  ('<')(t.rand)(e)('.')(t.rand)('>')> "</RIGHT-PART>";
+	=	"\n\t\t<LEFT-PART>"  e.lpscaned  e.lp  "</LEFT-PART>"
+		"\n\t\t<RIGHT-PART>" <ScanRigthPart  ('<')(t.rand)(e)('.')(t.rand)('>')> "</RIGHT-PART>";
 
 
 	e.leftpart ('=') e.rigthpart,
@@ -299,8 +319,8 @@ ScanPredl  {
 		<ScanRigthPart e.rigthpart> : e.rigthScanned,
 		<ExistError e.rigthScanned> : {
 			false	=
-				"<LEFT-PART>"  e.leftScanned  "</LEFT-PART>"
-				"<RIGHT-PART>" e.rigthScanned "</RIGHT-PART>";
+				"\n\t\t<LEFT-PART>"  e.leftScanned  "</LEFT-PART>"
+				"\n\t\t<RIGHT-PART>" e.rigthScanned "</RIGHT-PART>";
 			true	=
 				<MakeError ScanPredl e.rigthScanned>;
 			};
@@ -427,7 +447,7 @@ ScanIfs {
 	<ExistError  e.rpscaned> : false,
 	<ScanIfs (',') e.ifs> : e.ifscaned,
 	<ExistError  e.ifscaned> : false
-	=	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
+	=	"<IF>" "\n\t\t<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
 		e.ifscaned;
 */
 
@@ -438,15 +458,15 @@ ScanIfs {
 		<ScanLeftPart e.left-part>   : e.lpscaned,
 		<ExistError  e.lpscaned> : {
 				false, e.rpscaned : "<NOT/>" e.rpscanednext
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
+				= 	"\n<IF not=\"true\">" "\n\t\t<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
 					<ScanIfs (',') e.ifs>;
 					
 				false, e.lpscaned : "<NOT/>" e.lpscanednext
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>"
+				= 	"\n<IF not=\"true\">" "\n\t\t<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>"
 					<ScanIfs (',') e.ifs>;
 					
 				false
-				= 	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
+				= 	"\n<IF>" "\n\t\t<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
 					<ScanIfs (',') e.ifs>;
 					
 				true  = <MakeError ScanIfs e.lpscaned>;
@@ -456,11 +476,11 @@ ScanIfs {
 		<ScanLeftPart e.left-part>   : e.lpscaned,
 		<ExistError  e.lpscaned> : {
 				false, e.rpscaned : "<NOT/>" e.rpscanednext 
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
+				= 	"\n<IF not=\"true\">" "\n\t\t<RIGHT-PART>" e.rpscanednext "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
 				false, e.lpscaned : "<NOT/>" e.lpscanednext 
-				= 	"<IF not=\"true\">" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>";
+				= 	"\n<IF not=\"true\">" "\n\t\t<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscanednext "</LEFT-PART>" "</IF>";
 				false
-				= 	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
+				= 	"\n<IF>" "\n\t\t<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>";
 				true  
 				=	<MakeError ScanIfs e.lpscaned>;
 		};
@@ -474,7 +494,7 @@ ScanIfs {
 	<ExistError  e.lpscaned> : false,
 	<ScanRigthPart e.RIGHT-PART> : e.rpscaned,
 	<ExistError  e.rpscaned> : false
-	=	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
+	=	"<IF>" "\n\t\t<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>"
 		<ScanIfs (',') e.ifs>;
 */
 
@@ -484,7 +504,7 @@ ScanIfs {
 	<ExistError  e.lpscaned> 	: false,
 	<ScanRigthPart e.RIGHT-PART>	: e.rpscaned,
 	<ExistError  e.rpscaned>	: false
-	=	"<IF>" "<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>" ;
+	=	"<IF>" "\n\t\t<RIGHT-PART>" e.rpscaned "</RIGHT-PART>" "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>" "</IF>" ;
 */
 
 	e.error = <MakeError ScanIfs e.error>;
@@ -527,7 +547,7 @@ $ENTRY Go {
 	=
 		<Open 'w' 3 <Arg1>'.xml'>
 		<Put 3 
-			<DePlode "<BEGIN>"<Preproc <FindAndUseBlock() <Scan <Mount <Arg1> >>>>"</BEGIN>">
+			<DePlode "<BEGIN>" e.program "</BEGIN>">
 		>;
 		
 		
@@ -651,7 +671,7 @@ FixVarLinks_ { e.e, <FixVarLinks_ e.e> : e.result = <Prout "FixVarLinks: " e.e "
 
 FixVarLinks {
 
-	"<SENTENCE>" e.body "</SENTENCE>" e.2 = "<SENTENCE>" <FixVarLinks2 e.body> "</SENTENCE>" <FixVarLinks e.2>;
+	"\n\t<SENTENCE>" e.body "</SENTENCE>" e.2 = "\n\t<SENTENCE>" <FixVarLinks2 e.body> "</SENTENCE>" <FixVarLinks e.2>;
 	t.template   e.body "</TEMPLATE>" e.2,	
 		<Type    t.template> : 'W' s.subt t.template,
 		<Explode t.template> : '<TEMPLATE' e.ee
@@ -751,7 +771,7 @@ ScanTemplate {
 	(e.tname)(':')(':')('=') e.left-part,
 		<ScanLeftPart e.left-part>   : e.lpscaned,
 		<ExistError  e.lpscaned> : {
-			false	=  "<LEFT-PART>" e.lpscaned "</LEFT-PART>";
+			false	=  "\n\t\t<LEFT-PART>" e.lpscaned "</LEFT-PART>";
 			true	=  <MakeError ScanTemplate 'error left-part difinition in Template : ' e.lpscaned>;
 		};
 
@@ -788,7 +808,7 @@ FindAndUseBlock {
 	(e.some)t.sym e.e = <FindAndUseBlock (e.some t.sym) e.e>;
 	(e.some), <Cp scanbl> : {
 			0	= <ScanModule e.some>;
-			t.else	= <MakeError  FindAndUseBlock  'ERROR body item at the end: ' t.else>;
+			t.else	= <MakeError  FindAndUseBlock  'Figure Brackets are not balansed in program! ERROR body item at the end: ' t.else>;
 			};
 }
 
