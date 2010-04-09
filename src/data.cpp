@@ -60,6 +60,8 @@ RefData::RefData(Session *sess) : RefObject(){
 	this->gc_next = 0;
 };
 
+RefSegment::~RefSegment(){
+}
 
 RefSegment::RefSegment(Session *s, RefChain *o, RefData **f, RefData **t) : RefData(s){ 
 	own=o; 

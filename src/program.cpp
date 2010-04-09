@@ -51,7 +51,8 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 		modules[module->getName()] = module;
 };
 
-// с рекурсией
+
+// с рекурсией. 
 RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
 		return chain; // new RefChain();
@@ -123,7 +124,15 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 				}
 			}
 		} else {
-			*result += *iter;
+			RefSegment* seg = ref_dynamic_cast<RefSegment>(*iter);
+			RefChain *chch = 0;
+			if (seg){
+				RefChain *tmpch = new RefChain(sess, seg->own, seg->own->at(seg->from), seg->own->at(seg->to));
+				chch = executeExpression(tmpch, sess);
+				*result += chch;
+			} else {
+				*result += *iter;
+			}
 		}
 	}
 
@@ -159,14 +168,17 @@ public:
 RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
 	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля
-	PooledTuple2<size_t, size_t> brackets; // индекс скобки в way, размер ее цепочки
+	PooledTuple2<size_t, size_t> brackets; // <индекс скобки в way, размер ее цепочки> - стек скобок, в которые прыгаем
 	PooledStack<RefSegment**> segments;
 
 	RefData
 		**iend  = chain->at_afterlast(),
         **iter  = chain->at_first();
 	RefDataBracket *tmpbr;
-	size_t tmpsizet, br_index, treelevel = 0;
+	size_t 
+		tmpsizet, 
+		br_index, 
+		treelevel = 0; // текущая глубина обработки. При прыжке в скобку - увеличивается
 
 	RefSegment *segment = 0;
 
@@ -246,7 +258,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			if (/*мы в отрезке?*/ brackets.equalTop(0, 0)) {
 				//// выпрыгиваем из отрезка;
 				brackets.pop();
-				futurWay.top_pop(iter, iend, tmpsizet);
+				futurWay.top_pop(iter, iend, tmpsizet); // теперь в tmpsizet - глубина запланированного для обработки поля
 				ref_assert(tmpsizet==treelevel);
 				continue;
 			} else {

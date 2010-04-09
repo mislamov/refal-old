@@ -33,15 +33,15 @@ class VarMap : public PooledTuple5<RefVariable*, RefData** , RefData**, VarMap*,
 public:
 	VarMap(Session *sess, RefObject *cr = 0) : RefData(sess) {	creator = cr;};
 
-    // ищет по имени переменной ее облать видимости
-    bool findByName(unistring name, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&, RefVariable* &var);
+	// ищет по имени переменной ее облать видимости
+	bool findByName(unistring name, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&, RefVariable* &var);
 	// ищет по ссылке на переменную ее облать видимости
 	bool findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap*&);
 	// ищет по текстовому пути
 	bool folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable *&var, VarMap* &);
 	/*inline bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own){
-		RefVariable *vr;
-		return folowByWay(path, l, r, lr_own, vr);
+	RefVariable *vr;
+	return folowByWay(path, l, r, lr_own, vr);
 	}*/
 
 	char gc_label;//todo:bitmap
@@ -50,7 +50,7 @@ public:
 	unistring debug();
 	unistring RefData::explode(void){ return debug(); };
 	TResult init(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
-    TResult back(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
+	TResult back(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
 
 	bool createdByFigureBrackets(){ 
 		return ref_dynamic_cast<RefVarChains>(creator) || ref_dynamic_cast<RefVariantsChains>(creator); };
@@ -61,6 +61,7 @@ struct SessionStatePoint {
 	size_t conditionsArgsCount;
 	VarMap* topVarMap;
 	size_t topVarMap_leng;
+	size_t bracks_len;  // верхушка стека скобок
 	RefChain *currentTemplateTop;		// не должен изменитьс€ после матчинга
 	RefData** termChainsJumpPointsTop;	// не должен изменитьс€ после матчинга
 	size_t count_variants_idxs;		// не должен изменитьс€ после матчинга
@@ -71,7 +72,7 @@ struct SessionStatePoint {
 
 // среда дл€ вычислени€ пользовательской функции
 class Session {
-    TResult  result_sost;
+	TResult  result_sost;
 	RefProgram *program;
 
 	PooledStack<VarMap*>  varMapStack; // карты переменных
@@ -86,7 +87,7 @@ class Session {
 public:
 	PooledTuple2 <RefConditionBase*, RefChain*> conditionsArgs;
 	RefData *gc_last,  // ссылка на последний созданный дата-элемент. служит дл€ построени€ пути дл€ сборщика мусора
-			*gc_first; // ссылка на первый созданный элемент
+		*gc_first; // ссылка на первый созданный элемент
 	RefData** alt_r;
 
 public:
@@ -125,9 +126,9 @@ public:
 		RefConditionBase* cnd0;
 		RefChain *res;
 		conditionsArgs.top_pop(cnd0, res);
-		#ifdef TESTCODE
+#ifdef TESTCODE
 		if (cnd!=cnd0) AchtungERRORs(this);
-		#endif
+#endif
 		return res;
 	};
 
@@ -138,13 +139,14 @@ public:
 		ss->topVarMap_leng = ss->topVarMap->getLength();
 		ss->count_variants_idxs_done = variants_idxs_done.getLength();
 		ss->count_repeats_idxs_done  = repeats_idxs_done.getLength();
+		ss->bracks_len = bracks.getLength();
 
-		#ifdef TESTCODE
+#ifdef TESTCODE
 		ss->currentTemplateTop		= currentTemplates.empty()?0:currentTemplates.top();		// не должен изменитьс€ после матчинга
 		ss->termChainsJumpPointsTop	= termChainsJumpPoints.empty()?0:termChainsJumpPoints.top();	// не должен изменитьс€ после матчинга
 		ss->count_variants_idxs		= variants_idxs.getLength();			// не должен изменитьс€ после матчинга
 		ss->count_repeats_idxs		= repeats_idxs.getLength();			// не должен изменитьс€ после матчинга
-		#endif
+#endif
 		return ss;
 	};
 
@@ -153,6 +155,7 @@ public:
 		if (ss->conditionsArgsCount > conditionsArgs.getLength()) AchtungERRORs(this);
 		#endif
 
+		bracks.setLength( ss->bracks_len );
 		conditionsArgs.setLength(ss->conditionsArgsCount);
 		while(ss->topVarMap != varMapStack.top()){
 			//std::cout << "\nddddddddddddddddddddddddddddddddddddddddddelete varMapStack.top_pop():\n";
@@ -167,14 +170,14 @@ public:
 		variants_idxs_done.setLength(ss->count_variants_idxs_done);
 		repeats_idxs_done.setLength (ss->count_repeats_idxs_done);
 
-		#ifdef TESTCODE
+#ifdef TESTCODE
 		if (ss->currentTemplateTop && ss->currentTemplateTop		!= currentTemplates.top()) SYSTEMERRORs(this, "unexpected  changes in SessionState");		// не должен изменитьс€ после матчинга
 		if (ss->termChainsJumpPointsTop	 &&   ss->termChainsJumpPointsTop	!= termChainsJumpPoints.top()) SYSTEMERRORs(this, "unexpected  changes in SessionState");	// не должен изменитьс€ после матчинга
 		if (!ss->currentTemplateTop      &&  !currentTemplates.empty()) SYSTEMERRORs(this, "unexpected  changes in SessionState");		// не должен изменитьс€ после матчинга
 		if (!ss->termChainsJumpPointsTop &&  !termChainsJumpPoints.empty()) SYSTEMERRORs(this, "unexpected  changes in SessionState");	// не должен изменитьс€ после матчинга
 		if (ss->count_variants_idxs		!= variants_idxs.getLength()) SYSTEMERRORs(this, "unexpected  changes in SessionState");			// не должен изменитьс€ после матчинга
 		if (ss->count_repeats_idxs		!= repeats_idxs.getLength()) SYSTEMERRORs(this, "unexpected  changes in SessionState");			// не должен изменитьс€ после матчинга
-		#endif
+#endif
 
 	};
 
@@ -182,15 +185,15 @@ public:
 	bool  matching(RefObject *initer, RefChain *tmplate, RefData **arg_l, RefData **arg_r, RefChain *arg_chain, bool isdemaching);
 
 	// готовит подстановку: замен€ет переменные значени€ми. ѕолучаем ќ¬ с угловыми скобками
-    RefChain*  substituteExpression(RefChain *);
+	RefChain*  substituteExpression(RefChain *);
 
 	//void SAVE_VAR_STATE   (RefData** activeTemplate, RefData** &l, RefData** &r); // сохран€ет состо€ние переменной
 	//void RESTORE_VAR_STATE(RefData** activeTemplate, RefData** &l, RefData** &r); // восстанавливает состо€ние переменной
 
 	inline void saveVar    (RefVariable *var, RefData **l,  RefData **r,  RefChain*, VarMap* =0);
-    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, RefChain*&);
-    inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, RefChain*&, VarMap*&);
-    inline void forgotVar  (RefVariable *var);
+	inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, RefChain*&);
+	inline void restoreVar (RefVariable *var, RefData **&l, RefData **&r, RefChain*&, VarMap*&);
+	inline void forgotVar  (RefVariable *var);
 	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r, RefChain*&);
 	inline bool findVar    (RefVariable *var, RefData **&l, RefData **&r, RefChain*&, VarMap*&);
 
@@ -201,11 +204,11 @@ public:
 		RefStructBrackets **br  = 0;
 		RefStructBrackets* tpl2 = 0;
 		bracks.top_pop(tpl2, br);
-		#ifdef TESTCODE
+#ifdef TESTCODE
 		if (tpl2 != tpl){
 			SYSTEMERRORs(this, tpl2->debug() << "  !=  " << tpl->explode());
 		}
-		#endif
+#endif
 		return br;
 	};
 
@@ -233,12 +236,12 @@ public:
 };
 
 inline void Session::saveVar(RefVariable *var, RefData **l, RefData **r, RefChain *lr_own, VarMap* vm) {
-//std::cout << "Session::saveVar(for " << var->toString() << ")\n";
+	//std::cout << "Session::saveVar(for " << var->toString() << ")\n";
 	varMapStack.top()->put(var, l, r, vm, lr_own);
 };
 
 inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, RefChain *&lr_own, VarMap* &vm) {
-//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
+	//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm, lr_own);
 
@@ -246,7 +249,7 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Re
 };
 
 inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, RefChain *&lr_own) {
-//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
+	//std::cout << "Session::restoreVar(for " << var->toString() << ")\n";
 	RefVariable *varNew = 0;
 	VarMap* vm = 0;
 	varMapStack.top()->top_pop(varNew, l, r, vm, lr_own);
@@ -257,38 +260,38 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Re
 
 inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own, VarMap* &vm) {	
 	if (varMapStack.top()->findByLink(var, l, r, lr_own, vm)) return true;
-	
+
 	// если переменна€ не найдена, то возможно это не ошибка, а ссылка внутри фигурных скобок (группы илил вариантов),
 	// дл€ которых в стак были созданы новые вармапы	
 	for(
-		size_t idx = varMapStack.getCount()-1;
-		idx;
-		--idx){
-			vm = varMapStack.getByIndex(idx);
-			if (vm->createdByFigureBrackets()){
-				if (vm->findByLink(var, l, r, lr_own, vm)) return true;
-			} else {
-				return false;
-			}
+	  size_t idx = varMapStack.getCount()-1;
+	  idx;
+	  --idx){
+		vm = varMapStack.getByIndex(idx);
+		if (vm->createdByFigureBrackets()){
+			if (vm->findByLink(var, l, r, lr_own, vm)) return true;
+		} else {
+			return false;
+		}
 	}
 	return false;
 };
 inline void Session::forgotVar(RefVariable *var) {
-//std::cout << "Session::forgotVar(for " << var->toString() << ")\n";
+	//std::cout << "Session::forgotVar(for " << var->toString() << ")\n";
 	ref_assert(varMapStack.top()->top1()==var);
 	varMapStack.top()->pop();
 };
 inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own) {
 	VarMap* vm = 0;
-	#ifdef TESTCODE
-		bool res = varMapStack.top()->findByLink(var, l, r, lr_own, vm);
-		if (vm) {
-			unexpectedERRORs(this);
-		}
-		return res;
-	#else
-		return varMapStack.top()->findByLink(var, l, r, lr_own, vm);
-	#endif
+#ifdef TESTCODE
+	bool res = varMapStack.top()->findByLink(var, l, r, lr_own, vm);
+	if (vm) {
+		unexpectedERRORs(this);
+	}
+	return res;
+#else
+	return varMapStack.top()->findByLink(var, l, r, lr_own, vm);
+#endif
 };
 
 
@@ -322,11 +325,11 @@ inline RefData** Session::GET_pred_template(RefData** p){
 };
 
 inline void Session::gc_exclude(RefData *data){
-		data->set_gc_mark();
-		if ((data)->isDataBracket()){
-			RefDataBracket *br = (RefDataBracket*)data;
-			gc_exclude( br->chain );
-		}
+	data->set_gc_mark();
+	if ((data)->isDataBracket()){
+		RefDataBracket *br = (RefDataBracket*)data;
+		gc_exclude( br->chain );
+	}
 };
 
 

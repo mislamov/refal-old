@@ -359,16 +359,18 @@ ScanObjectExprWithoutExecs {
 		};
 }
 
-IsVarName_ { e.e, <IsVarName_ e.e> : e.res = e.res <Prout 'IsVarName:  [' e.e '] -> 'e.res>;}
+IsVarName_ { e.e, <IsVarName_ e.e> : e.res = e.res <Prout 'IsVarName:  [' e.e '] -> 'e.res><Prout <Type e.e>>;}
 IsVarName {
 	= true;
+	t.name,
+		<Type t.name> : 'Wi' t.name = <IsVarName <Explode t.name>>;
 	e.name,
-	<Type e.name> : {
-		'L' s.sub s.1 e.2 = <IsVarName e.2>;
-		'D' s.sub s.1 e.2 = <IsVarName e.2>;
-		'P' s.sub '_' e.2 = <IsVarName e.2>;
-		e.else = false;
-	};
+		<Type e.name> : {
+			'L' s.sub s.1 e.2 = <IsVarName e.2>;
+			'D' s.sub s.1 e.2 = <IsVarName e.2>;
+			'P' s.sub '_' e.2 = <IsVarName e.2>;		
+			e.else = false;
+		};
 }
 
 /* перестраивает спецификаторы для загрузки программы: 

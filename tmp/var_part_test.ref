@@ -1,5 +1,5 @@
 /*
-   Парсер главного сайта rbc.ru
+	Парсер главного сайта rbc.ru
 */
 
 $ENTRY Go { = <Run <Mount 'rbc.html'>> ; };
@@ -23,7 +23,7 @@ Template rbcbody  ::=
 
 
 /* тест переменной - имени переменной:
-Template DIV	::= '<div class="' $varName '">' html.body '</div>' ;	
+	Template DIV	::= '<div class="' $varName '">' html.body '</div>' ;	
 */
 
 

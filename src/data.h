@@ -108,6 +108,7 @@ public:
 	size_t to;
 
 	RefSegment(Session *s, RefChain *o, RefData **f, RefData **t);
+	virtual ~RefSegment();
 	virtual unistring explode(){ return "[segment]";};
 	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot){unexpectedERRORn;};
 	virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot){unexpectedERRORn;};
@@ -302,7 +303,18 @@ public:
 	RefChain(Session *, RefData *);			// цпочка из одного терма
 	RefChain(Session *, size_t systemsize);	// пустая цепочка для systemsize элементов
     RefChain(Session *, RefChain *ownchain, RefData **from, RefData **to); // цепочка из подцепочки
-	RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){ sysize=leng=sz; first=d; co::chains++; gc_label|=0x08; }
+	RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){ 
+		co::chains++; 
+		sysize=leng=sz; 
+		/* todo: оптимизировать. без копирования сделать		
+		first=d; 
+		gc_label|=0x08; 
+		*/
+		#ifdef TESTCODE
+		first = (RefData**)malloc(sizeof(RefData*) * sysize);
+		memcpy(first, d, sizeof(RefData*)*sz);
+		#endif
+	}
 	virtual ~RefChain();
 	inline bool isMemoryProtected(){ return (gc_label&0x08)!=0; };
 

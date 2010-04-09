@@ -29,23 +29,23 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 	RefChain *lr_chain = arg_chain;
 	//std::cout << thetmplate->debug() << "\n\t\t~  " << chain_to_text(arg_l, arg_r) << "\n" << std::flush;
 	//LOG("New MATCHING : tmplateChain=" << thetmplate->debug() << "  isDematching="<<isdemaching);
-    RefData **activeTemplate = 0, **l=0, **r=0;
+	RefData **activeTemplate = 0, **l=0, **r=0;
 
-    if (isdemaching) {
-        // продолжаем ранее успешное сопоставление
+	if (isdemaching) {
+		// продолжаем ранее успешное сопоставление
 		if (thetmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
-        result_sost = BACK;
+		result_sost = BACK;
 		activeTemplate = (*thetmplate)[-1];
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r), lr_chain);
-    } else {
-        // начинаем новое сопоставление с argl..argr
+	} else {
+		// начинаем новое сопоставление с argl..argr
 		if (thetmplate->isEmpty()) return !arg_l; // дематчинг пустых векторов - неудача
-        result_sost = GO;
+		result_sost = GO;
 		l = 0;
 		r = arg_l ? arg_l-1 : 0;
-        activeTemplate = (*thetmplate)[0];
+		activeTemplate = (*thetmplate)[0];
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r), lr_chain);
-    }
+	}
 
 	this->setTmplate(thetmplate);
 	//LOGMATCH();
@@ -54,20 +54,20 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 	bool ireturn = false;
 
 	while (! ireturn) {
-        // сопоставляем текущий шаблон
-        switch (result_sost) {
+		// сопоставляем текущий шаблон
+		switch (result_sost) {
 
-        case GO: {
+		case GO: {
 			if (!activeTemplate || activeTemplate == tmplate()->at_afterlast()){ // достигнут правый край сопоставления! DataDOT
 				activeTemplate = 0;
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
-					#ifdef TESTCODE
-						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
-					#endif
-					#ifdef DEBUG
-						std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
-					#endif
+#ifdef TESTCODE
+					if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
+#endif
+#ifdef DEBUG
+					std::cout << "SUCCESS JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 
 					if (var1) {
@@ -87,29 +87,29 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				result_sost = (r==arg_r) ? SUCCESS : BACK;  // не двигали r вперед => сравниваем с (*arg)[-1]
 				break;
 			}
-            LOGSTEP("GO  ");
-            #ifdef TESTCODE
-            if (l && !r) {
+			LOGSTEP("GO  ");
+#ifdef TESTCODE
+			if (l && !r) {
 				SYSTEMERRORs(this, "RefData::init() tring to matching with NULL address!");
 			};
-            #endif
-            l=0;
+#endif
+			l=0;
 			//ref_assert(r);
-            result_sost = (*activeTemplate)->init(activeTemplate, this, l, r, lr_chain); /// ШАГ ВПЕРЕД
-            break;
-        }
-        case BACK: {
+			result_sost = (*activeTemplate)->init(activeTemplate, this, l, r, lr_chain); /// ШАГ ВПЕРЕД
+			break;
+				 }
+		case BACK: {
 			//if (activeTemplate== this->tmplate()->at_first()-1){ // достигнут левый край сопоставления! DataDOT
 			if (!activeTemplate || activeTemplate== this->tmplate()->at_first()-1){ // достигнут левый край сопоставления! DataDOT
 				activeTemplate = 0;
 				//TODO: привести все методы к одному условию
 				if (this->tmplate()!=thetmplate){ // завершилось сопоставление user-шаблона
-					#ifdef TESTCODE
-						if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
-					#endif
-					#ifdef DEBUG
-						std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
-					#endif
+#ifdef TESTCODE
+					if (! termChainsJumpPoints.getLength()) AchtungERRORs(this);
+#endif
+#ifdef DEBUG
+					std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
+#endif
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 					if (var1){
 						result_sost = var1->failed(activeTemplate, this, l, r, lr_chain);
@@ -128,36 +128,36 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 				result_sost = FAIL;
 				break;
 			}
-            LOGSTEP("BACK");
-            result_sost = (*activeTemplate)->back(activeTemplate, this, l, r, lr_chain); /// ШАГ НАЗАД
-            break;
-        }
+			LOGSTEP("BACK");
+			result_sost = (*activeTemplate)->back(activeTemplate, this, l, r, lr_chain); /// ШАГ НАЗАД
+			break;
+				   }
 
-        case SUCCESS :
-            #ifdef DEBUG
+		case SUCCESS :
+#ifdef DEBUG
 			std::cout << "SUCCESS\n######\n";
-            #endif
+#endif
 			ireturn = true;
 			break;
 
-        case ERROR :
-            #ifdef DEBUG
+		case ERROR :
+#ifdef DEBUG
 			std::cout << "ERROR\n######\n";
-            #endif
+#endif
 			ireturn = true;
 			break;
-        case FAIL   :
-            #ifdef DEBUG
+		case FAIL   :
+#ifdef DEBUG
 			std::cout << "FAIL\n######\n";
-            #endif
+#endif
 			ireturn = true;
 			break;
 
-        default:
+		default:
 			SYSTEMERRORs(this, "Unexpected result_sost value");
-            break;
-        }
-    };
+			break;
+		}
+	};
 
 
 	current_view_borders.pop();
@@ -167,139 +167,149 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 
 #ifdef TESTCODE
 unistring Session::debug(){
-		std::ostringstream s;
+	std::ostringstream s;
 
-		s << "variants_idxs: ";
-		for(size_t i=0; i<variants_idxs.getCount(); ++i){
-			s << variants_idxs.getByIndex(i) << " ";
-		}
-		s << "\n";
-		s << "variants_idxs_done: ";
-		for(size_t i=0; i<variants_idxs_done.getCount(); ++i){
-			s << variants_idxs_done.getByIndex(i) << " ";
-		}
-		s << "\n";
+	s << "variants_idxs: ";
+	for(size_t i=0; i<variants_idxs.getCount(); ++i){
+		s << variants_idxs.getByIndex(i) << " ";
+	}
+	s << "\n";
+	s << "variants_idxs_done: ";
+	for(size_t i=0; i<variants_idxs_done.getCount(); ++i){
+		s << variants_idxs_done.getByIndex(i) << " ";
+	}
+	s << "\n";
 
-		for (int i=varMapStack.getCount()-1; i>=0; --i){
-			s << "--------------------------------------- " << i+1 << "\n";
-			s << varMapStack.pool[i]->debug();
-		}
+	for (int i=varMapStack.getCount()-1; i>=0; --i){
+		s << "--------------------------------------- " << i+1 << "\n";
+		s << varMapStack.pool[i]->debug();
+	}
+
+	s << "\n";
+	for (int i=bracks.getLength(); i>0; --i){
+		RefStructBrackets*  t1 = 0;
+		RefStructBrackets** t2 = 0;
+		bracks.getByIndex(i, t1, t2);
+		s << "\t" << t1->debug() << "    --:"<<i<<":--   " << (*t2)->debug() << "\n";
+	}
+
 
 	return s.str();
 };
 #else
 unistring Session::debug(){
-		std::ostringstream s;
+	std::ostringstream s;
 
-		s << "vvvvariants_idxs: ";
-		for(size_t i=0; i<variants_idxs.getCount(); ++i){
-			s << variants_idxs.getByIndex(i) << " ";
-		}
-		s << "\n";
-		s << "variants_idxs_done: ";
-		for(size_t i=0; i<variants_idxs_done.getCount(); ++i){
-			s << variants_idxs_done.getByIndex(i) << " ";
-		}
-		s << "\n";
+	s << "vvvvariants_idxs: ";
+	for(size_t i=0; i<variants_idxs.getCount(); ++i){
+		s << variants_idxs.getByIndex(i) << " ";
+	}
+	s << "\n";
+	s << "variants_idxs_done: ";
+	for(size_t i=0; i<variants_idxs_done.getCount(); ++i){
+		s << variants_idxs_done.getByIndex(i) << " ";
+	}
+	s << "\n";
 
-		for (size_t i=varMapStack.getCount(); i>0; --i){
-			s << "--------------------------------------- " << i+2 << "\n";
-			s << varMapStack.pool[i+1]->debug();
-		}
-		return s.str();
+	for (size_t i=varMapStack.getCount(); i>0; --i){
+		s << "--------------------------------------- " << i+2 << "\n";
+		s << varMapStack.pool[i+1]->debug();
+	}
+	return s.str();
 };
 #endif
 
 
 void Session::gc_clean(RefData* save_point){
-		if (!save_point) save_point = this->gc_first;
-		if (save_point==this->gc_last) return; // когда нечего чистить
+	if (!save_point) save_point = this->gc_first;
+	if (save_point==this->gc_last) return; // когда нечего чистить
 
-		// сначала сохраним активные вармапы
-		//this->varMapStack.foreach( &(Session::gc_exclude) );
-		for(size_t theindex = 0 ; theindex < varMapStack.idx; ++theindex){
-			gc_exclude(varMapStack.getByIndex(theindex));
-			varMapStack.getByIndex(theindex)->debug();
+	// сначала сохраним активные вармапы
+	//this->varMapStack.foreach( &(Session::gc_exclude) );
+	for(size_t theindex = 0 ; theindex < varMapStack.idx; ++theindex){
+		gc_exclude(varMapStack.getByIndex(theindex));
+		varMapStack.getByIndex(theindex)->debug();
 
+	}
+
+
+
+
+	RefData *tmp=0, *pre=0, *iend=0;
+
+	//		std::cout << "GC START! " << co::objs << "\n";
+
+#ifdef xDEBUG
+	size_t tmpdbg = 0;
+	/*std::cout << "\nsave_point: " << save_point <<
+	"\ns_p->next: " << save_point->gc_next <<
+	"\ngc_last:   " << gc_last << " " << (int)gc_last->gc_label <<
+	"\ngc_last->next: " << gc_last->gc_next;*/
+#endif
+	for(pre= save_point,
+		iend=this->gc_last->gc_next; // null
+		pre->gc_next!=iend;
+	){
+		if (! pre->gc_next->is_gc_mark()){
+			tmp = pre->gc_next;
+			pre->gc_next = pre->gc_next->gc_next;
+			delete tmp;
+
+			#ifdef xDEBUG
+			++tmpdbg;
+			#endif
+
+		} else {
+			pre = pre->gc_next;
 		}
+	}
+	this->gc_last = pre;
+	this->gc_last->gc_next = 0;
 
+#ifdef xDEBUG
+	std::cout << "############ GARBAGE: " << tmpdbg << " was deleted !\n" << std::flush;
+#endif
 
-
-
-		RefData *tmp=0, *pre=0, *iend=0;
-
-//std::cout << "GC START!\n";
-
-		#ifdef xDEBUG
-		size_t tmpdbg = 0;
-		/*std::cout << "\nsave_point: " << save_point <<
-			"\ns_p->next: " << save_point->gc_next <<
-			"\ngc_last:   " << gc_last << " " << (int)gc_last->gc_label <<
-			"\ngc_last->next: " << gc_last->gc_next;*/
-		#endif
-		for(pre= save_point,
-			iend=this->gc_last->gc_next; // null
-			pre->gc_next!=iend;
-			){
-				if (! pre->gc_next->is_gc_mark()){
-					tmp = pre->gc_next;
-					pre->gc_next = pre->gc_next->gc_next;
-					delete tmp;
-
-					#ifdef xDEBUG
-					++tmpdbg;
-					#endif
-
-				} else {
-					pre = pre->gc_next;
-				}
-		}
-		this->gc_last = pre;
-		this->gc_last->gc_next = 0;
-
-		#ifdef xDEBUG
-				std::cout << "############ GARBAGE: " << tmpdbg << " was deleted !\n" << std::flush;
-		#endif
-
-//std::cout << "GC FINISH!\n";
+	//std::cout << "GC FINISH!\n";
 
 };
 
 
 void Session::gc_prepare(RefData *save_point){
-		#ifdef xDEBUG
-				size_t tmpdbg = 0;
-		#endif
-		for(
-			RefData
-			  *iter = (save_point ? save_point : this->gc_first),
-			  *iend = this->gc_last->gc_next;
-			iter!=iend;
-			iter=iter->gc_next){
-			iter->flush_gc_mark();
-		#ifdef xDEBUG
-			++tmpdbg;
-		#endif
-		}
+#ifdef xDEBUG
+	size_t tmpdbg = 0;
+#endif
+	for(
+		RefData
+		*iter = (save_point ? save_point : this->gc_first),
+		*iend = this->gc_last->gc_next;
+	iter!=iend;
+	iter=iter->gc_next){
+		iter->flush_gc_mark();
+#ifdef xDEBUG
+		++tmpdbg;
+#endif
+	}
 
-		#ifdef xDEBUG
-				std::cout << "############ GARBAGE: " << tmpdbg << " was prepared !\n" << std::flush;
-		#endif
-	};
+#ifdef xDEBUG
+	std::cout << "############ GARBAGE: " << tmpdbg << " was prepared !\n" << std::flush;
+#endif
+};
 
 void Session::gc_exclude(RefChain *chain){
 	if (!chain) return;
-		Session::gc_exclude(chain->at_first(), chain->at_last(), chain);
-	};
+	Session::gc_exclude(chain->at_first(), chain->at_last(), chain);
+};
 
 void Session::gc_exclude(RefData **l, RefData **r, RefChain *own){
 	own->set_gc_mark();
 	if (!l) return;
 	//ref_assert(l and r by own);
-		for(RefData  **iter=l, **iend=r+1;
-			iter<iend;
-			++iter){
+	for(RefData  **iter=l, **iend=r+1;
+		iter<iend;
+		++iter){
 			(*iter)->set_gc_mark();
+
 			if ((*iter)->isDataBracket()){ // ДАТА-скобка
 				gc_exclude( ((RefDataBracket*)(*iter))->chain );
 			}
@@ -307,16 +317,21 @@ void Session::gc_exclude(RefData **l, RefData **r, RefChain *own){
 			if (point=ref_dynamic_cast<RefPoint>(*iter)){
 				point->set_gc_mark(this);
 			}
-		}
+
+			RefSegment *seg = ref_dynamic_cast<RefSegment>(*iter);
+			if (seg){
+				gc_exclude(seg->own->at(seg->from), seg->own->at(seg->to), seg->own);
+			}
+	}
 };
 
 /*
 unistring MatchState::debug(){
-		std::ostringstream s;
+std::ostringstream s;
 
-		s << "****\tMatchState:\t" << std::flush << chain_to_text(view_l, view_r) << "\t~\t" << tpl->debug() << "\n";
-		s << varmap.debug();
-		return s.str();
+s << "****\tMatchState:\t" << std::flush << chain_to_text(view_l, view_r) << "\t~\t" << tpl->debug() << "\n";
+s << varmap.debug();
+return s.str();
 };
 */
 
@@ -325,111 +340,115 @@ unistring MatchState::debug(){
 
 // ищет по имени переменной ее облать видимости
 bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, RefChain *&lr_own, VarMap *&vm, RefVariable *&var) {
-        //for (size_t ind = last_ind; ind>=0; --ind) {
-        for (size_t ind = last_ind; ind>0; --ind) {
-            if (pool[ind].i1->getName()==name) {
-				var = pool[ind].i1;
-                l  = pool[ind].i2;
-                r  = pool[ind].i3;
-				vm = pool[ind].i4;
-				lr_own = pool[ind].i5;
-                return true;
-            }
-        }
-            return false;
+	//for (size_t ind = last_ind; ind>=0; --ind) {
+	for (size_t ind = last_ind; ind>0; --ind) {
+		if (pool[ind].i1->getName()==name) {
+			var = pool[ind].i1;
+			l  = pool[ind].i2;
+			r  = pool[ind].i3;
+			vm = pool[ind].i4;
+			lr_own = pool[ind].i5;
+			return true;
+		}
+	}
+	return false;
 };
 
 // ищет по ссылке на переменную ее облать видимости
 /*
 bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, VarMap *&vm) {
-        for (size_t ind = last_ind; ind>=0; --ind) {
-            if (pool[ind].i1==var) {
-                l = pool[ind].i2;
-                r = pool[ind].i3;
-				vm = pool[ind].i4;
-                return true;
-            }
-        }
-            return false;
+for (size_t ind = last_ind; ind>=0; --ind) {
+if (pool[ind].i1==var) {
+l = pool[ind].i2;
+r = pool[ind].i3;
+vm = pool[ind].i4;
+return true;
+}
+}
+return false;
 };
 */
 bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap *&vm) {
-        for (size_t ind = last_ind+1; ind>0; --ind) {
-            if (pool[ind-1].i1==var) {
-                l = pool[ind-1].i2;
-                r = pool[ind-1].i3;
-				vm = pool[ind-1].i4;
-				lr_own = pool[ind-1].i5;
-                return true;
-            }
-        }
-        return false;
+	for (size_t ind = last_ind+1; ind>0; --ind) {
+		if (pool[ind-1].i1==var) {
+			l = pool[ind-1].i2;
+			r = pool[ind-1].i3;
+			vm = pool[ind-1].i4;
+			lr_own = pool[ind-1].i5;
+			return true;
+		}
+	}
+	return false;
 };
 
 bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable* &var, VarMap* &vm){
-    #ifdef TESTCODE
+#ifdef TESTCODE
 	if (path == EmptyUniString) {
 		AchtungERRORn;
 	}
-    #endif
+#endif
 	size_t t_from  = 0;
-    size_t t_to    = 0;
-    t_to = t_to-1;
-    #ifdef TESTCODE
-    size_t stmp = 0;
-    stmp = stmp-3;
-    stmp = stmp+3;
-    if (stmp!=0) SYSTEMERRORn("Invalid size_t operation! 0-3+3 != 0 for size_t. Change session.cpp for this platform!");
-    #endif
+	size_t t_to    = 0;
+	t_to = t_to-1;
+#ifdef TESTCODE
+	size_t stmp = 0;
+	stmp = stmp-3;
+	stmp = stmp+3;
+	if (stmp!=0) SYSTEMERRORn("Invalid size_t operation! 0-3+3 != 0 for size_t. Change session.cpp for this platform!");
+#endif
 
-    unistring vname;
+	unistring vname;
 	vm = this;
 
 	do {
-        t_from = t_to+1;
-        t_to   = path.find(varPathSeparator, t_from);
-        vname = path.substr(t_from, t_to-t_from);
+		t_from = t_to+1;
+		t_to   = path.find(varPathSeparator, t_from);
+		vname = path.substr(t_from, t_to-t_from);
 
 		if (!vm || !vm->findByName(vname, l, r, lr_own, vm, var)) return false;
-    } while (t_to != std::string::npos);
+	} while (t_to != std::string::npos);
 	return true;
 }
 
 
 // todo: сохранять только используемые переменные и varmap-ы
 void VarMap::mrk_collect(){
-        for (size_t ind = last_ind+1; ind>0; --ind) {
-			if (pool[ind-1].i1 != 0){
-				(pool[ind-1].i1)->set_gc_mark();
-			}
 
-			RefData **from = pool[ind-1].i2;
-			RefData **to   = pool[ind-1].i3;
+	for (size_t ind = last_ind; ind>0; --ind) {
+		if (pool[ind].i1 != 0){
+			(pool[ind].i1)->set_gc_mark();
+		}
+
+		RefData **from = pool[ind].i2;
+		RefData **to   = pool[ind].i3;
+
+		if (from) {
 			for(RefData** pp=from; pp<=to; ++pp){
 				(*pp)->set_gc_mark();
 			}
+		}
 
-			if (pool[ind-1].i4 != 0) {
-				(pool[ind-1].i4)->set_gc_mark();
-				(pool[ind-1].i4)->mrk_collect();
-			}
-			if (pool[ind-1].i5 != 0){
-				(pool[ind-1].i5)->set_gc_mark();
-			}
-        }
+		if (pool[ind].i4 != 0) {
+			(pool[ind].i4)->set_gc_mark();
+			(pool[ind].i4)->mrk_collect();
+		}
+		if (pool[ind].i5 != 0){
+			(pool[ind].i5)->set_gc_mark();
+		}
+	}
 }
 
 
 unistring VarMap::debug(){
-		std::ostringstream s;
+	std::ostringstream s;
 
-		s << "****\t\tVarMap pool:   (by"<< (creator?creator->debug().substr(0, 15):" 0 ") <<")" << std::flush << "\n";
-		size_t ind = last_ind;
-		while(ind){
-			s << "****\t\t\t" << ind << ") " << std::flush << pool[ind].i1->debug() << " : " << chain_to_text( pool[ind].i2,  pool[ind].i3 ) << "\n";
-			--ind;
-		};
-		return s.str();
+	s << "****\t\tVarMap pool:   (by"<< (creator?creator->debug().substr(0, 15):" 0 ") <<")" << std::flush << "\n";
+	size_t ind = last_ind;
+	while(ind){
+		s << "****\t\t\t" << ind << ") " << std::flush << pool[ind].i1->debug() << " : " << chain_to_text( pool[ind].i2,  pool[ind].i3 ) << "\n";
+		--ind;
+	};
+	return s.str();
 };
 
 
@@ -451,7 +470,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 	for(RefData **item = chain->at_first(); item < enditem; ++item){
 
 
-		link = ref_dynamic_cast<RefLinkToVariable>(*item);  //  ССЫЛКА
+		link = ref_dynamic_cast<RefLinkToVariable>(*item);  //  ССЫЛКА (ЗАКРЫТАЯ ПЕРЕМЕННАЯ)
 		if (link){
 			RefData **endi, **i;
 			RefChain *i_chain;
@@ -465,8 +484,8 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 				if (! vm->folowByWay(link->path, i, endi, i_chain, tmpvar, vm)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
 			}
 			if (i){
-				*result += new RefChain(this, 0, i, endi);
-				//*result += new RefSegment(this, i_chain, i, endi);
+				//*result += new RefChain(this, 0, i, endi);
+				*result += new RefSegment(this, i_chain, i, endi);
 			}
 			continue;
 		}
@@ -487,6 +506,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 		pointlink = ref_dynamic_cast<RefPointLink>(*item);  //  ССЫЛКА-УКАЗАТЕЛЬ
 		if (pointlink){
 			ref_assert(ref_dynamic_cast<RefVarChains>(pointlink->theLink->lnk));
+
 			RefData **ther=0, **thel=0;  RefChain *thechain=0;  VarMap* thevm = 0;
 			if (! findVar(pointlink->theLink->lnk, thel, ther, thechain, thevm)){
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
@@ -503,9 +523,9 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 
 			/**
 			*result +=  new RefPoint(
-				((RefVarChains*)pointlink->theLink->lnk)->getUserType(),
-				thel, ther, thechain, thevm,
-				this);
+			((RefVarChains*)pointlink->theLink->lnk)->getUserType(),
+			thel, ther, thechain, thevm,
+			this);
 			*/
 			RefVarChains *theType = ref_dynamic_cast<RefVarChains>(tmpvar);
 			if (theType){

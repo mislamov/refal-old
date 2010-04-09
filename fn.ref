@@ -55,8 +55,7 @@ Template VAR    ::= {
 Template VAR    ::=
 	{ theword. | GROUP_OR_VARIANT. }.type  SPECIFICATORS.specs {"."|}.dot { varname. | }.name,
 		// точка может отсутствовать только для безымянной группы/варианта		
-		@.type @.specs @.dot : { ("{" e.) @.specs | e. "." },
-		<Prout $line ' : ' @.type @.specs @.dot> :
+		@.type @.specs @.dot : { ("{" e.) @.specs | e. "." }
 ;
 					
 
@@ -148,8 +147,7 @@ SubstitutAnalise {
 	// закрытая переменная
 	(e.vars1 VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
 		VAR.exsvar::name   : VAR.var::name,
-		'@.' VAR.var::name : LNK.lnk,
-		<Prout $line  'condition'>:
+		'@.' VAR.var::name : LNK.lnk
 		=	<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
 			<SubstitutAnalise (e.vars1 VAR.exsvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
 
@@ -163,7 +161,10 @@ SubstitutAnalise {
 	(e.vars)(e.result) ' ' e.otherpart
 		=	<SubstitutAnalise (e.vars)(e.result) e.otherpart>;
 
-		=;
+	(e.vars) (e.result) SYMBOL.s e.next	=	<SubstitutAnalise (e.vars) (e.result &SYMBOL.s) e.next>;
+	(e.vars) (e.result) = (e.vars) (e.result);
+	(e.vars) (e.result) e.else		=	"$ERROR"  <Prout 'Unknown item for SubstitutAnalise: [' e.else ']'>;
+		
 }
 
 //(e.vars)( ) e.leftpart = (e.vars) (e.leftpart);
@@ -178,8 +179,7 @@ PatternAnalise {
 	// закрытая переменная
 	(e.vars1 VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
 		VAR.exsvar::name   : VAR.var::name,
-		'@.' VAR.var::name : LNK.lnk,
-		<Prout $line  'condition'>:
+		'@.' VAR.var::name : LNK.lnk
 		=	<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
 			<PatternAnalise (e.vars1 VAR.exsvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
 
@@ -196,25 +196,46 @@ PatternAnalise {
 	(e.vars) (e.result) VAR.var e.otherpart	=	<Prout '#### ERROR: unparsed variable: ' @.var>;
 	(e.vars) (e.result) ' ' e.next		=	<PatternAnalise (e.vars) (e.result) e.next>;
 	(e.vars) (e.result) SYMBOL.s e.next	=	<PatternAnalise (e.vars) (e.result &SYMBOL.s) e.next>;
-	(e.vars) (e.result) = (e.vars) (e.result);
+	(e.vars) (e.result)			=	(e.vars) (e.result);
 	(e.vars) (e.result) e.else		=	"$ERROR"  <Prout 'Unknown item for PatternAnalise: [' e.else ']'>;
 }
 
 // Для переменных-групп/вариантов выполняет PatternAnalise в body
-PatternAnaliseVar {
+PatternAnaliseVar { e.e,  
+	e.e : (e.v) &VAR.vv e.o,
+	<Prout '<PatternAnaliseVar  ' @.vv '>'><PatternAnaliseVar_ e.e> : e.res 
+		=	<Prout '<PatternAnaliseVar  ' e.e '>  ---->  ' e.res> e.res;
+}
+PatternAnaliseVar_ {
 	(e.vars) &VAR.var,
 		VAR.var  : GROUP_OR_VARIANT.gtype e.vartail,
-		<ForEachInBody_PatternAnalise (e.vars) @.gtype::body> : (e.mkvars) e.mkbody,
-		("{" e.mkbody) @.vartail : &VAR.mkvar 
+		<VariantToGroup <ForEachInBody_PatternAnalise (e.vars) @.gtype::body>> : (e.mkvars) e.mkbody,
+		("{" e.mkbody) @.vartail    : &VAR.mkvar		
 		=
 			(e.mkvars) &VAR.mkvar;
 	
-	(e.vars) &VAR.var = (e.vars) &VAR.var;
+	(e.vars) &VAR.var
+		=	(e.vars) &VAR.var;
+		
+	e.else 
+		=	<Prout '####ERROR PatternAnaliseVar: ' e.else> <Exit 9>;
 }
 
+// (переменные)(тело_варианта)  =  (новые_переменные)метакод_тела
 ForEachInBody_PatternAnalise {
-	(e.vars) e.1 "|" e.2 = ;
-	(e.vars) e.1 = ;
+	(e.vars) e.1 "|" e.2,
+		<PatternAnalise (e.vars)() e.1> : (e.vars1)( e.result1),
+		<ForEachInBody_PatternAnalise (e.vars) e.2> : (e.vars) e.meta
+		= 	(e.vars)("|" e.result1) e.meta;  // переменные не изменяются
+	
+	(e.vars) e.1,
+		<PatternAnalise (e.vars)( ) e.1> : (e.vars1) (e.result1)
+		=	(e.vars)("|" e.result1);
+}
+
+VariantToGroup {
+	(e.var)("|" e.body) = (e.var)(e.body); // один вариант - это группа
+	e.e = e.e;
 }
 
 
@@ -241,7 +262,8 @@ Go {
 	= <Prout 
 		<SEMANTIC <PROGRAM
 			<Prout 'Delete comments...'>
-			<DelComments <RefalTokens <Mount 'f.ref'>>>
+//			<DelComments <RefalTokens <Mount 'f.ref'>>>
+			<RefalTokens <Mount 'f.ref'>>
 			<Prout 'done'>
 		>>
 	>;
