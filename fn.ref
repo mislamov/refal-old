@@ -43,7 +43,7 @@ Template VAR    ::= {
 */
 
 
-/*
+/*-----------------------------
 	word.name
 	word.
 	word[x..y].name
@@ -51,7 +51,7 @@ Template VAR    ::= {
 	{...}
 	{...}.name
 	{...}[x..y].name
-*/
+-------------------------------*/
 Template VAR    ::=
 	{ theword. | GROUP_OR_VARIANT. }.type  SPECIFICATORS.specs {"."|}.dot { varname. | }.name,
 		// точка может отсутствовать только для безымянной группы/варианта		
@@ -66,16 +66,6 @@ Template GROUP_OR_VARIANT ::= ("{" e.body) ; //todo: уточнить
 
 Template SPECIFICATORS ::= { { REPEATER. }.head SPECIFICATORS.tail |} ;
 Template REPEATER ::= ("[" e.); // todo: уточнить
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -105,21 +95,23 @@ PROGRAM {
 SEMANTIC {
 	&FUNCTION.f e.next 
 			= 
-				'<FUNCTION name="' @.f::name '">' 
+				'\n\n'
+				("FUNCTION" @.f::name
 					<Sentences FUNCTION.f::body> 
-				'</FUNCTION>\n' 
+				)
 				<SEMANTIC e.next>;
 				
 	&TEMPLATE.t e.next,
 		<PatternAnalise     ( )( )         TEMPLATE.t::body::pattern>    : (e.variables)(e.resultPattern),
 		<ConditionsAnalise  (e.variables)()  <CondToList TEMPLATE.t::body::conditions>> : (e.variables2)(e.resultConditions)
 			= 
-				'<TEMPLATE name="' @.t::name '">'
-				'<LEFT-PART>'
-					<PatternToXML    @.resultPattern>
-					<ConditionsToXML @.resultConditions>
-				'</LEFT-PART>'
-				'</TEMPLATE>\n'					
+				'\n\n'
+				("TEMPLATE" @.t::name
+					("LEFT_PART"
+						<PatternToXML    @.resultPattern>
+						<ConditionsToXML @.resultConditions>
+					)
+				)
 				<SEMANTIC e.next>;
 	
 	$empty = $empty;
@@ -149,12 +141,12 @@ SubstitutAnalise {
 		VAR.exsvar::name   : VAR.var::name,
 		'@.' VAR.var::name : LNK.lnk
 		=	<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
-			<SubstitutAnalise (e.vars1 VAR.exsvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
+			<SubstitutAnalise (e.vars1 VAR.exsvar e.vars2)(e.result "$ERROR" &LNK.lnk) e.otherpart>;
 
 	(e.vars)(e.result) LNK.lnk e.otherpart 
 		=	<SubstitutAnalise (e.vars)(e.result &LNK.lnk) e.otherpart>;
 	
-	(e.vars)(e.result) ("<" SUBSTIT.subs ) e.otherpart,
+	(e.vars)(e.result) ({"<"|"("}	SUBSTIT.subs ) e.otherpart,
 		<SubstitutAnalise (e.vars)() SUBSTIT.subs> : (e.vars1)(e.res1)
 		=	<SubstitutAnalise (e.vars1)(e.result ("<" e.res1)) e.otherpart>;
 		
@@ -166,6 +158,9 @@ SubstitutAnalise {
 	(e.vars) (e.result) e.else		=	"$ERROR"  <Prout 'Unknown item for SubstitutAnalise: [' e.else ']'>;
 		
 }
+
+
+
 
 //(e.vars)( ) e.leftpart = (e.vars) (e.leftpart);
 PatternAnalise_ { e.e, <PatternAnalise_ e.e> : e.res = <Prout '<PatternAnalise ' e.e '>  --->  'e.res> e.res; }
@@ -201,16 +196,16 @@ PatternAnalise {
 }
 
 // Для переменных-групп/вариантов выполняет PatternAnalise в body
-PatternAnaliseVar { e.e,  
+PatternAnaliseVar_ { e.e,  
 	e.e : (e.v) &VAR.vv e.o,
 	<Prout '<PatternAnaliseVar  ' @.vv '>'><PatternAnaliseVar_ e.e> : e.res 
 		=	<Prout '<PatternAnaliseVar  ' e.e '>  ---->  ' e.res> e.res;
 }
-PatternAnaliseVar_ {
+PatternAnaliseVar {
 	(e.vars) &VAR.var,
 		VAR.var  : GROUP_OR_VARIANT.gtype e.vartail,
 		<VariantToGroup <ForEachInBody_PatternAnalise (e.vars) @.gtype::body>> : (e.mkvars) e.mkbody,
-		("{" e.mkbody) @.vartail    : &VAR.mkvar		
+		("{" e.mkbody) @.vartail    : VAR.mkvar		
 		=
 			(e.mkvars) &VAR.mkvar;
 	
@@ -260,12 +255,13 @@ ErrorIfNotEqual {
 
 Go {
 	= <Prout 
+		<META2XML
 		<SEMANTIC <PROGRAM
 			<Prout 'Delete comments...'>
 //			<DelComments <RefalTokens <Mount 'f.ref'>>>
 			<RefalTokens <Mount 'f.ref'>>
 			<Prout 'done'>
-		>>
+		>>>
 	>;
 }
 
@@ -298,3 +294,73 @@ PatternToXML {
 ConditionsToXML {
 	e.e =e.e;
 }
+
+
+
+META2XML {
+	( {"TEMPLATE"|"FUNCTION"}.type word.name E.body) E.next		=	
+				'<' @.type 'name="' word.name '">'     
+					<META2XML E.body>
+				'</' @.type '>'
+				<META2XML E.next>;
+
+
+	( {"SENTENCE" | "LEFT_PART" | "RIGHT_PART" }.type  E.body) E.next
+				=
+				'\n''<'  @.type '>'
+					<META2XML E.body>
+				'</' @.type '>'
+				<META2XML E.next>;
+
+	{'\n' | '\t' | ' ' } E.next	=	
+				<META2XML E.next>;
+	
+			
+	("("  E.body) E.next	=
+				'<BRACKET>'
+					<META2XML E.body>
+				'</BRACKET>'
+				<META2XML E.next>;
+				
+	("<"  E.body) E.next	=
+				'<EXEC>'
+					<META2XML E.body>
+				'</EXEC>'
+				<META2XML E.next>;
+
+	&SYMBOL.sym E.next	=
+				<SYMBOL2XML @.sym>
+				<META2XML E.next>;
+			
+	&LNK.var E.next		=	'<LNK>' @.var::thevar::name <PATH2XML @.var::path> '</LNK>';
+	
+	&VAR.var E.next		=
+				<OPENVAR2XML @.var>
+				<META2XML E.next>;
+	
+	=;
+}
+
+PATH2XML {
+	= ;
+	":" ":" E.next		=	'/' <PATH2XML E.next>;
+	theword.w E.next	=	@.w::value <PATH2XML E.next>;
+}
+
+SYMBOL2XML {
+	(word e.value) 	 =	'<WORD>' e.value '</WORD>';
+	(int e.value ) 	 =	'<INT>'  e.value '</INT>';
+	(real e.value) 	 =	'<REAL>' e.value '</REAL>';
+	(text e.value) 	 =	'<TEXT>' e.value '</TEXT>';
+	"$" (word empty) =	;
+}
+
+//&VAR[type specs dot name  ]
+OPENVAR2XML {
+	(word E.type)"."(word E.name)	=	'<VAR>' @.type '.' @.name '</VAR>';
+	("{" (E.body))			=	'<GROUP name="">' <META2XML E.body> '</GROUP>';
+	E.else				=	'<ERROR>Unresponsed variable: ' e.else '</ERROR>';
+}
+
+
+

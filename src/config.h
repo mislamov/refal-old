@@ -22,7 +22,7 @@
 #define REFVERSION "D-Refal 0.1.0 pre-alpha  Copyright (c) 2008-2010 Marat Islamov"
 #define TESTCODE
 //#define DEBUG
-//#define xDEBUG  // garbage collector
+#define xDEBUG  // garbage collector
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины

@@ -1,6 +1,6 @@
 
-Template theword ::= (word e.value);
-Template theint   ::= (int e.value);
+Template theword  ::=  (word e.value);
+Template theint   ::=  (int  e.value);
 
 Template varname ::= { theword. | theint. } ;
 
@@ -86,7 +86,7 @@ DelComments_ {
 	e.e = <Prout 'del: 'e.e><DelComments_ e.e>;
 }
 DelComments {
-	{' '|} (comment e.) {' '|} e.e = <DelComments e.e>;
+	{' '|} (comment e.) {' '|} e.e = <DelComments e.d>;
 	e.0 ( {"("|"{"|"["|"<"}.sig  e.1 ) e.e = e.0 (@.sig <DelComments e.1>) <DelComments e.e>;
 	t.1 e.e = @.1 <DelComments e.e>;
 	=;
