@@ -521,13 +521,12 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				}
 
 
-
 				var = ref_dynamic_cast<RefVariable>(*point);  // переменная
 				if (var && var->getName()!=""){ // запоминаем переменную
 					//std::cout << "\n::: " << var->debug() << "  :::\n";  
 
 					if( vars.find(var->getName())!=vars.end() ){
-						SYSTEMERRORn("Variable not changet to link: ?." << var->getName() << "  Chain: " << this->debug());
+						SYSTEMERRORn("Unexpected variable redifinition: ?." << var->getName() << "  at chain: " << this->debug());
 					}
 
 					vars[var->getName()] = var;
