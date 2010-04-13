@@ -228,8 +228,7 @@ void Session::gc_clean(RefData* save_point){
 	//this->varMapStack.foreach( &(Session::gc_exclude) );
 	for(size_t theindex = 0 ; theindex < varMapStack.idx; ++theindex){
 		gc_exclude(varMapStack.getByIndex(theindex));
-		varMapStack.getByIndex(theindex)->debug();
-
+		//varMapStack.getByIndex(theindex)->debug();
 	}
 
 
@@ -239,13 +238,14 @@ void Session::gc_clean(RefData* save_point){
 
 	//		std::cout << "GC START! " << co::objs << "\n";
 
-#ifdef xDEBUG
+	//#ifdef xDEBUG
 	size_t tmpdbg = 0;
+	size_t tmpdbgsv = 0;
 	/*std::cout << "\nsave_point: " << save_point <<
 	"\ns_p->next: " << save_point->gc_next <<
 	"\ngc_last:   " << gc_last << " " << (int)gc_last->gc_label <<
 	"\ngc_last->next: " << gc_last->gc_next;*/
-#endif
+	//#endif
 	for(pre= save_point,
 		iend=this->gc_last->gc_next; // null
 		pre->gc_next!=iend;
@@ -255,30 +255,35 @@ void Session::gc_clean(RefData* save_point){
 			pre->gc_next = pre->gc_next->gc_next;
 			delete tmp;
 
-			#ifdef xDEBUG
+			//#ifdef xDEBUG
 			++tmpdbg;
-			#endif
+			//#endif
 
 		} else {
 			pre = pre->gc_next;
+			pre->flush_gc_mark(); // сн€ть отметку о сохранении. ¬ следующий раз будет удалено, если €вно не сохранить
+			++tmpdbgsv;
 		}
 	}
 	this->gc_last = pre;
 	this->gc_last->gc_next = 0;
 
-#ifdef xDEBUG
-	std::cout << "############ GARBAGE: " << tmpdbg << " was deleted !\n" << std::flush;
-#endif
+	#ifdef DEBUG
+	std::cout << "############ GARBAGE: " << tmpdbg << " was deleted !\t\t" << tmpdbgsv << " was saved.\t\tDATAS: " << co::datas << "\n" << std::flush;
+	#endif
 
 	//std::cout << "GC FINISH!\n";
 
 };
 
 
-void Session::gc_prepare(RefData *save_point){
-#ifdef xDEBUG
+
+
+
+bool Session::gc_prepare(RefData *save_point){
+	//#ifdef xDEBUG
 	size_t tmpdbg = 0;
-#endif
+	//#endif
 	for(
 		RefData
 		*iter = (save_point ? save_point : this->gc_first),
@@ -286,14 +291,16 @@ void Session::gc_prepare(RefData *save_point){
 	iter!=iend;
 	iter=iter->gc_next){
 		iter->flush_gc_mark();
-#ifdef xDEBUG
+		//#ifdef xDEBUG
 		++tmpdbg;
-#endif
+		//#endif
 	}
 
-#ifdef xDEBUG
+#ifdef DEBUG
 	std::cout << "############ GARBAGE: " << tmpdbg << " was prepared !\n" << std::flush;
 #endif
+	if (tmpdbg > 1024) return true;
+	return false;
 };
 
 void Session::gc_exclude(RefChain *chain){

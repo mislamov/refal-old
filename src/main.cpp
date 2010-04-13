@@ -140,7 +140,7 @@ int main ( int argv, char **argc ) {
     //#endif
     std::cout << "Result: " << result->debug() << "\n";
 
-    sess->gc_prepare();
+    //sess->gc_prepare(); - не нужно, так как отметка уже снята у всех (снимается при создании и при сборке)
     sess->gc_clean();
 
     //delete polez;

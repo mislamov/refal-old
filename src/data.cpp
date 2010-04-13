@@ -63,10 +63,10 @@ RefData::RefData(Session *sess) : RefObject(){
 RefSegment::~RefSegment(){
 }
 
-RefSegment::RefSegment(Session *s, RefChain *o, RefData **f, RefData **t) : RefData(s){ 
-	own=o; 
-	from=f-own->first; 
-	to=t-own->first; 
+RefSegment::RefSegment(Session *s, RefChain *o, RefData **f, RefData **t) : RefData(s){
+	own=o;
+	from=f-own->at_first();
+	to=t-own->at_first();
 }
 
 
@@ -401,7 +401,7 @@ void RefVarChains::setUserType(RefUserTemplate *ntempli){
 };
 
 
-static long comp = 0;
+size_t comp = 0;
 
 // компиляция цепочки после построения. расстановка ссылок
 // ownchain - левая часть для подстановки this. Тоже компилируется
@@ -409,7 +409,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 #ifdef DEBUG
 	std::cout << "compile: ["<< comp ++ <<"]" << this->explode() << "\n" << std::flush ;
 #endif
-	if (isEmpty()) return;
+	//if (isEmpty()) return; - нельзя выходить! если правая часть пуста, то левая все равно должна быть откомпилированна
 
 	std::map<unistring, RefVariable*> vars;
 	std::stack<RefData**> lnks;
@@ -426,7 +426,9 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 
 	PooledTuple2<RefData**, RefData**> subchains;
-	subchains.put(this->at_first(), this->at_afterlast());
+	if (!this->isEmpty()){
+		subchains.put(this->at_first(), this->at_afterlast());
+	}
 	if (ownchain && ownchain!=this && !ownchain->isEmpty()){
 		subchains.put(ownchain->at_first(), ownchain->at_afterlast());  // родителя обработать раньше
 	}
@@ -460,8 +462,8 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 #ifdef TESTCODE
 					if(uservar->getName()!=EmptyUniString && vars.find(uservar->getName())!=vars.end()){
-						std::cout << "compile: " << chain_to_text(point, end-1) << "\n";					
-						std::cout << "WARN. Several same-name-variables in one compiling chain: ?." << uservar->getName() << "\n";					
+						std::cout << "compile: " << chain_to_text(point, end-1) << "\n";
+						std::cout << "WARN. Several same-name-variables in one compiling chain: ?." << uservar->getName() << "\n";
 					};
 #endif
 
@@ -470,8 +472,8 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 					if (uservar->templInstant == 0){
 						// группа
 						subchains.put(point+1, end);
-						if(! uservar->templ->isEmpty()) { 
-							subchains.put(uservar->templ->at_first(), uservar->templ->at_afterlast()); 
+						if(! uservar->templ->isEmpty()) {
+							subchains.put(uservar->templ->at_first(), uservar->templ->at_afterlast());
 						};
 						break;
 					}
@@ -523,7 +525,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 				var = ref_dynamic_cast<RefVariable>(*point);  // переменная
 				if (var && var->getName()!=""){ // запоминаем переменную
-					//std::cout << "\n::: " << var->debug() << "  :::\n";  
+					//std::cout << "\n::: " << var->debug() << "  :::\n";
 
 					if( vars.find(var->getName())!=vars.end() ){
 						SYSTEMERRORn("Unexpected variable redifinition: ?." << var->getName() << "  at chain: " << this->debug());
@@ -701,7 +703,7 @@ unistring RefVarChains::explode() {
 	if (templInstant == 0 && templ == 0) return " [null] ";
 #endif
 #ifdef TESTCODE
-	if (templInstant == 0 && templ == 0){ 
+	if (templInstant == 0 && templ == 0){
 		//SYSTEMERRORn("RefVarChains[null, null]->explode()");
 		return ("RefVarChains[null, null]->explode()");
 	}
@@ -1073,8 +1075,8 @@ TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&
 	// совпадает ли содержимое?
 
 	// l==0, r==point
-	RefData 
-		**point_l = point->l, 
+	RefData
+		**point_l = point->l,
 		**point_r = point->r;
 	RefChain
 		*point_lr_own = point->lr_own;
@@ -1123,7 +1125,7 @@ TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&
 
 		}
 	}
-	
+
 	sess->delete_current_view_borders(); // возврашаем исходные внешние границы
 
 
@@ -1137,7 +1139,7 @@ TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&
 
 TResult RefPointLink::back(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	sess->MOVE_TO_pred_template(activeTemplate);
-	return BACK;		
+	return BACK;
 };
 
 unistring RefPoint::explode(){

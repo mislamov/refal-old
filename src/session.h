@@ -48,11 +48,11 @@ public:
 	void mrk_collect(); // отмечает содержимое для сохранения сборщиком
 
 	unistring debug();
-	unistring RefData::explode(void){ return debug(); };
+	unistring explode(void){ return debug(); };
 	TResult init(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
 	TResult back(RefData **&, Session* sess, RefData **&, RefData **&, RefChain *&){unexpectedERRORn; };
 
-	bool createdByFigureBrackets(){ 
+	bool createdByFigureBrackets(){
 		return ref_dynamic_cast<RefVarChains>(creator) || ref_dynamic_cast<RefVariantsChains>(creator); };
 };
 
@@ -228,7 +228,7 @@ public:
 	//inline void setNewView(); - должно передаваться в аргументе matching'а
 	//inline void setNewTempl(RefChain* ch);
 
-	void gc_prepare(RefData *save_point=0); // подготовка к сборке мусора
+	bool gc_prepare(RefData *save_point=0); // подготовка к сборке мусора
 	inline void gc_exclude(RefData *data);         // исключение точки из удаления
 	void gc_exclude(RefChain *chain);              // исключение цепочки из удаления
 	void gc_exclude(RefData **, RefData **, RefChain*);
@@ -258,11 +258,11 @@ inline void Session::restoreVar(RefVariable *var, RefData **&l, RefData **&r, Re
 
 };
 
-inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own, VarMap* &vm) {	
+inline bool Session::findVar(RefVariable *var, RefData **&l, RefData **&r, RefChain*&lr_own, VarMap* &vm) {
 	if (varMapStack.top()->findByLink(var, l, r, lr_own, vm)) return true;
 
 	// если переменная не найдена, то возможно это не ошибка, а ссылка внутри фигурных скобок (группы илил вариантов),
-	// для которых в стак были созданы новые вармапы	
+	// для которых в стак были созданы новые вармапы
 	for(
 	  size_t idx = varMapStack.getCount()-1;
 	  idx;

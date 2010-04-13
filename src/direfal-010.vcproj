@@ -300,6 +300,10 @@
 			>
 		</Filter>
 		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
+		<File
 			RelativePath=".\VTune\direfal-010.vpj"
 			>
 		</File>

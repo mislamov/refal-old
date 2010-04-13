@@ -136,7 +136,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 		}
 	}
 
-	sess->gc_prepare(gc_save_point);
+	//sess->gc_prepare(gc_save_point); - отметка об удалении устоит у всех (ставится при создании и при каждой сборке)
 	sess->gc_exclude(result);
 	sess->gc_clean(gc_save_point);
 
@@ -164,8 +164,19 @@ public:
 	RefData **at_last(){ return ((RefChain*)this)->at_last(); };
 };
 
+
+
+
+inline void gcollect(Session *sess, RefData* gc_save_point, RefChain *result, size_t cc){
+		//sess->gc_prepare(gc_save_point); - отметка об удалении устоит у всех (ставится при создании и при каждой сборке)
+		sess->gc_exclude(result);
+		sess->gc_clean(gc_save_point);
+}
+
 //--------- без рекурсии
 RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
+	RefData* gc_save_point = sess->gc_last;
+	size_t gc_save_count = co::datas;
 
 #ifdef DEBUG
 	std::cout << "\nRefProgram::executeExpression:\t" << chain->debug() << "\n" << std::flush;
@@ -227,6 +238,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 					RefChain *result = new RefChain(sess);
 					if (pastWay.getLength()==0){
+						gcollect(sess, gc_save_point, result, gc_save_count);
 						return result;
 					}
 
@@ -252,6 +264,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 					result->first = dt;
 					result->leng  = count;
+					gcollect(sess, gc_save_point, result, gc_save_count);
 					return result;
 				} else {
 					// активируем верхнюю отложенную подцепочку

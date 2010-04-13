@@ -20,16 +20,26 @@ Template LEFT_PART  ::=  PATTERN.pattern { IFs. |}.conditions ;
 Template RIGHT_PART ::=  SUBSTIT.pattern ;
 
 Template IFs ::= "," IF.head {IFs.|}.tail;
+/*Template IF  ::= e.substitution ":" E.pattern,
+			<IsPattern  E.pattern>		: True,
+			<IsSubstit  e.substitution>	: True;
+*/
 Template IF  ::= SUBSTIT.substitution ":" PATTERN.pattern;
 
-Template PATTERN ::= e. ;
-Template SUBSTIT ::= e. ;
+Template PATTERN ::= e.e, <IsPattern @.e> : True ;
+Template SUBSTIT ::= e.e, <IsSubstit @.e> : True ;
+
+IsPattern_  { e.e, <IsPattern_ e.e> : e.res = e.res <Prout '<IsPattern  ' e.e '>   -->   ' e.res>; }
+IsPattern { = True; L_ITEM. E.tail, <IsPattern E.tail> : True = True; E.else = False; };
+
+IsSubstit_  { e.e, <IsSubstit_ e.e> : e.res = e.res <Prout '<IsSubstit  ' e.e '>   -->   ' e.res>; }
+IsSubstit { = True; R_ITEM. E.tail, <IsSubstit @.tail> : True = True; E.else = False; };
 
 Template L_ITEM ::=
-	{ ' '| ("(" PATTERN. ) | VAR. | LNK. | SYMBOL. } ;
+	{ ' '| ("(" PATTERN. ) | VAR. | SYMBOL. } ;
 
 Template R_ITEM ::=
-	{ ' '| ("(" SUBSTIT. ) | ("<" SUBSTIT. ) | VAR. | LNK. | SYMBOL. } ;
+	{ ' '| ("(" SUBSTIT. ) | ("<" SUBSTIT. ) | VAR. | SYMBOL. } ;
 
 Template SYMBOL ::=
 	{ theword. | (int e.) | (real e.) | (text e.) | "$" (word empty) } ;
@@ -52,14 +62,16 @@ Template VAR    ::= {
 	{...}.name
 	{...}[x..y].name
 -------------------------------*/
+// открытые и закрытые переменные
 Template VAR    ::=
-	{ theword. | GROUP_OR_VARIANT. }.type  SPECIFICATORS.specs {"."|}.dot { varname. | }.name,
+	{ theword. | "@"{theword.|} | "&"{theword.|} | GROUP_OR_VARIANT. }.type  SPECIFICATORS.specs {"."|}.dot { varname. | }.name VAR_PATH.path,
 		// точка может отсутствовать только для безымянной группы/варианта		
 		@.type @.specs @.dot : { ("{" e.) @.specs | e. "." }
 ;
 					
+Template LNK    ::= '@.' varname.name VAR_PATH.path;  // шаблон для работы с закрытими переменными-указателями
 
-Template LNK    ::=  { {  "@"{theword.|} | "&"{theword.|} | theword. }.type "." varname.name }.thevar  VAR_PATH.path ;   // использование @ обязательно!
+
 Template VAR_PATH ::= { ":" ":" varname. VAR_PATH. | $empty } ;
 
 Template GROUP_OR_VARIANT ::= ("{" e.body) ; //todo: уточнить
@@ -80,22 +92,22 @@ SELECT_ALLVAR {
 
 
 PROGRAM {
-	FUNCTION.f  {";" |} E.next = <Prout 'Function: ' @.f::name> &FUNCTION.f <PROGRAM @.next>;
-	TEMPLATE.tm  ";" E.next = <Prout 'Template: ' @.tm::name> &TEMPLATE.tm <PROGRAM @.next>;
+	FUNCTION.f  {";" |} E.next = <Prout 'Function: ' @.f::name>  &FUNCTION.f  <PROGRAM @.next>;
+	TEMPLATE.tm  ";"  E.next   = <Prout 'Template: ' @.tm::name> &TEMPLATE.tm <PROGRAM @.next>;
 	' ' e.e = <PROGRAM e.e>;
 	$empty = $empty;
 
 	// ОШИБКИ
-	e.1 TEMPLATE.tm  ";" E.next = <PROGRAM e.1> &TEMPLATE.tm <PROGRAM @.next>;
-	e.1 FUNCTION.f   {";"|}  E.next = <PROGRAM e.1> &FUNCTION.f <PROGRAM @.next>;
-	e.else = 'Error Function or Template definition: ' e.else;
+	e.error { TEMPLATE. ";" | FUNCTION.}.fnd E.next = <PROGRAM e.error> <PROGRAM @.fnd @.next>;
+	//e.A TEMPLATE.tm  ";" E.next = <PROGRAM e.A> &TEMPLATE.tm <PROGRAM @.next>;
+	//e.A FUNCTION.f   {";"|} E.next = <PROGRAM e.A> &FUNCTION.f <PROGRAM @.next>;
+	e.else = <Prout 'Error Function or Template definition: ' e.else>;
 };
 
 // Семантический анализ
 SEMANTIC {
 	&FUNCTION.f e.next 
 			= 
-				'\n\n'
 				("FUNCTION" @.f::name
 					<Sentences FUNCTION.f::body> 
 				)
@@ -105,7 +117,6 @@ SEMANTIC {
 		<PatternAnalise     ( )( )         TEMPLATE.t::body::pattern>    : (e.variables)(e.resultPattern),
 		<ConditionsAnalise  (e.variables)()  <CondToList TEMPLATE.t::body::conditions>> : (e.variables2)(e.resultConditions)
 			= 
-				'\n\n'
 				("TEMPLATE" @.t::name
 					("LEFT_PART"
 						<PatternToXML    @.resultPattern>
@@ -132,20 +143,23 @@ Sentences {
 };
 
 
-CondToList { =; IFs.conds = &IFs.conds::head <CondToList IFs.conds::tail>; }
+CondToList { =; IFs.conds = &IFs.conds::head <CondToList IFs.conds::tail> ; }
 
 //(e.vars)( ) e.substitution  =  (e.vars) (e.result);
 SubstitutAnalise {
 	// закрытая переменная
-	(e.vars1 VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
-		VAR.exsvar::name   : VAR.var::name,
-		'@.' VAR.var::name : LNK.lnk
-		=	<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
-			<SubstitutAnalise (e.vars1 VAR.exsvar e.vars2)(e.result "$ERROR" &LNK.lnk) e.otherpart>;
+	(e.vars1 &VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
+		VAR.exsvar::name   		 : VAR.var::name,
+		'@.' VAR.var::name VAR.var::path : LNK.lnk
+		=	
+			<ErrorIfNotClosedVariable &VAR.var>
+			<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
+			<SubstitutAnalise (e.vars1 VAR.exsvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
 
-	(e.vars)(e.result) LNK.lnk e.otherpart 
-		=	<SubstitutAnalise (e.vars)(e.result &LNK.lnk) e.otherpart>;
-	
+	(e.vars) (e.result) VAR.lnk e.otherpart
+		=	
+			<SubstitutAnalise (e.vars)(e.result "$ERROR" <Print 'Unexpected opened-variable in substitution: ' VAR.lnk>) e.otherpart>;
+
 	(e.vars)(e.result) ({"<"|"("}	SUBSTIT.subs ) e.otherpart,
 		<SubstitutAnalise (e.vars)() SUBSTIT.subs> : (e.vars1)(e.res1)
 		=	<SubstitutAnalise (e.vars1)(e.result ("<" e.res1)) e.otherpart>;
@@ -154,8 +168,9 @@ SubstitutAnalise {
 		=	<SubstitutAnalise (e.vars)(e.result) e.otherpart>;
 
 	(e.vars) (e.result) SYMBOL.s e.next	=	<SubstitutAnalise (e.vars) (e.result &SYMBOL.s) e.next>;
-	(e.vars) (e.result) = (e.vars) (e.result);
-	(e.vars) (e.result) e.else		=	"$ERROR"  <Prout 'Unknown item for SubstitutAnalise: [' e.else ']'>;
+	(e.vars) (e.result)			=	(e.vars) (e.result);
+	(e.vars) (e.result) e.else		=	(e.vars)(e.result "$ERROR"  
+								<Print 'Unknown item for SubstitutAnalise: [' e.else ']'>);
 		
 }
 
@@ -171,10 +186,12 @@ PatternAnalise {
 		=	<PatternAnalise (e.mkvars)(e.result ("(" e.mkdata)) e.next>;
 
 	// закрытая переменная
-	(e.vars1 VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
-		VAR.exsvar::name   : VAR.var::name,
-		'@.' VAR.var::name : LNK.lnk
-		=	<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
+	(e.vars1 &VAR.exsvar e.vars2) (e.result) VAR.var e.otherpart,
+		VAR.exsvar::name		 : VAR.var::name,
+		'@.' VAR.var::name VAR.var::path : LNK.lnk
+		=	
+			<ErrorIfNotClosedVariable &VAR.var>
+			<ErrorIfNotEqual (VAR.exsvar::type)(VAR.var::type)('Different variables with the same name: ' VAR.exsvar '  &  ' VAR.var)>
 			<PatternAnalise (e.vars1 VAR.exsvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
 
 	////// ОТКРЫТЫЕ ПЕРЕМЕННЫЕ:
@@ -182,7 +199,9 @@ PatternAnalise {
 	(e.vars) (e.result) VAR.var e.otherpart,
 		$NOT VAR.var::name : $empty,
 		<PatternAnaliseVar (e.vars) &VAR.var> : (e.mkvars) &VAR.mkvar
-		=	<PatternAnalise (e.mkvars &VAR.var)(e.result &VAR.mkvar) e.otherpart>;
+		=	
+			<ErrorIfNotOpenedVariable &VAR.var>
+			<PatternAnalise (e.mkvars &VAR.var)(e.result &VAR.mkvar) e.otherpart>;
 
 	// открытая безымянная переменная
 	(e.vars) (e.result) VAR.var e.otherpart,
@@ -192,11 +211,27 @@ PatternAnalise {
 
 	(e.vars) (e.result) VAR.var e.otherpart	=	<Prout '#### ERROR: unparsed variable: ' @.var>;
 	(e.vars) (e.result) ' ' e.next		=	<PatternAnalise (e.vars) (e.result) e.next>;
-	(e.vars) (e.result) LNK.s e.next	=	<PatternAnalise (e.vars) (e.result &LNK.s) e.next>;
 	(e.vars) (e.result) SYMBOL.s e.next	=	<PatternAnalise (e.vars) (e.result &SYMBOL.s) e.next>;
 	(e.vars) (e.result)			=	(e.vars) (e.result);
-	(e.vars) (e.result) e.else		=	"$ERROR"  <Prout 'Unknown item for PatternAnalise: [' e.else ']'>;
+	(e.vars) (e.result) e.else		=	(e.vars) (e.result "$ERROR" <Print 'Unknown item for PatternAnalise: [' e.else ']'>);
+							//<Prout '<PatternAnalise  ' (e.vars) (e.result) e.else '>'>;
 }
+
+
+ErrorIfNotOpenedVariable_ { e.e = <Prout e.e><ErrorIfNotOpenedVariable_ e.e>; };
+ErrorIfNotOpenedVariable {
+	&VAR.var, @.var::path  :  $not $empty = "$ERROR" <Print 'unexpected closed variable [1]: ' @.var>;
+	&VAR.var, @.var::type  :  '@' E. = "$ERROR" <Print 'unexpected closed variable [2]: ' @.var>;
+	&VAR.var = ;
+}
+
+
+ErrorIfNotClosedVariable {
+	&VAR.var, @.var::specs :  $not $empty = "$ERROR" <Print 'unexpected specificator in variable: ' @.var>;
+	&VAR.var, @.var::type  :  GROUP_OR_VARIANT. = "$ERROR" <Print 'unexpected gruop: ' @.var>;
+	&VAR.var = ;
+}
+
 
 // Для переменных-групп/вариантов выполняет PatternAnalise в body
 PatternAnaliseVar_ { e.e,
@@ -204,6 +239,7 @@ PatternAnaliseVar_ { e.e,
 	<Prout '<PatternAnaliseVar  ' @.vv '>'><PatternAnaliseVar_ e.e> : e.res 
 		=	<Prout '<PatternAnaliseVar  ' e.e '>  ---->  ' e.res> e.res;
 }
+
 
 PatternAnaliseVar {
 	(e.vars) &VAR.var,
@@ -239,10 +275,12 @@ VariantToGroup {
 
 
 // (e.vars)() &IF[...]   =  (e.vars-result)(e.result)
-ConditionsAnalise {
+ConditionsAnalise_ { e.e, <ConditionsAnalise_ e.e> : e.res = e.res <Prout '<ConditionsAnalise ' e.e '>   -->  ' e.res>; }
+ConditionsAnalise  {
 	(e.vars)(e.result) = (e.vars)(e.result);
 	
 	(e.vars)(e.result) &IF.cond e.ifs,
+		//<Prout '\n' &IF.cond '=\t'  IF.cond::substitution '\t:\t' IF.cond::pattern>:,
 		<SubstitutAnalise (e.vars )( ) IF.cond::substitution> : (e.vars1)(e.subst1),
 		<PatternAnalise   (e.vars1)( ) IF.cond::pattern     > : (e.vars2)(e.pattn2)
 			=	<ConditionsAnalise (e.vars2)(e.result ("IF" e.subst1 ":" e.pattn2)) e.ifs>;
@@ -263,8 +301,8 @@ Go {
 		<META2XML
 		<SEMANTIC <PROGRAM
 			<Prout 'Delete comments...'>
-			<DelComments <RefalTokens <Mount 'fn.ref'>>>
-//			<RefalTokens <Mount 'fn.ref'>>
+			<DelComments <RefalTokens <Mount 'f.ref'>>>
+//			<RefalTokens <Mount 'f.ref'>>
 			<Prout 'done'>
 		>>>
 	>;
@@ -304,6 +342,7 @@ ConditionsToXML {
 
 META2XML {
 	( {"TEMPLATE"|"FUNCTION"}.type word.name E.body) E.next		=	
+				'\n'
 				'<' @.type 'name="' word.name '">'     
 					<META2XML E.body>
 				'</' @.type '>'
@@ -312,7 +351,7 @@ META2XML {
 
 	( {"SENTENCE" | "LEFT_PART" | "RIGHT_PART" }.type  E.body) E.next
 				=
-				'\n''<'  @.type '>'
+				'\n\t''<'  @.type '>'
 					<META2XML E.body>
 				'</' @.type '>'
 				<META2XML E.next>;
@@ -341,6 +380,14 @@ META2XML {
 	
 	&VAR.var E.next		=
 				<OPENVAR2XML @.var>
+				<META2XML E.next>;
+	
+	("IF" e.lp ":" E.rp) E.next		=
+				'<IF><RIGHT-PART>' 
+					<META2XML @.lp> 
+				'</RIGHT-PART><LEFT-PART>'
+					<META2XML @.rp>
+				'</LEFT-PART></IF>'
 				<META2XML E.next>;
 	
 	=;

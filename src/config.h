@@ -242,7 +242,7 @@ class RefData;
 /*
 template <class T>
 T* ref_dynamic_cast(RefData* d) {
-	if (d->isRefSymbol()) 
+	if (d->isRefSymbol())
 		return (d->isRefSymbol() & T::bitRefSymbolBitType ? (T*)d : 0);
 	return dynamic_cast<T*>(d);
 }*/

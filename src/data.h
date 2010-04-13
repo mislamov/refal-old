@@ -310,10 +310,8 @@ public:
 		first=d; 
 		gc_label|=0x08; 
 		*/
-		#ifdef TESTCODE
 		first = (RefData**)malloc(sizeof(RefData*) * sysize);
 		memcpy(first, d, sizeof(RefData*)*sz);
-		#endif
 	}
 	virtual ~RefChain();
 	inline bool isMemoryProtected(){ return (gc_label&0x08)!=0; };
