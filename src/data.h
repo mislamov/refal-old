@@ -421,6 +421,7 @@ public:
 	
 };
 
+// открытая переменная-указатель
 class RefPointVariable : public RefData {
 public:
 	RefVariable* theVar;
@@ -431,6 +432,7 @@ public:
     virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
 	virtual ~RefPointVariable(){ delete theVar; };};
 
+// закрытая переменная-указатель
 class RefPointLink : public RefData {
 public:
 	RefLinkToVariable* theLink;

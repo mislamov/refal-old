@@ -267,6 +267,7 @@ TResult RefStructBrackets::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 	if (sess->matching(0, this->chain, (*((*br)->chain))[0],  (*((*br)->chain))[0]?(*((*br)->chain))[-1]:0, (*br)->chain, true)){
 		sess->saveBracketsFromView(this, br);
 		sess->MOVE_TO_next_template(tpl);
+		r = (RefData**)br;
 		return GO;
 	}
 	sess->MOVE_TO_pred_template(tpl);
@@ -1039,6 +1040,8 @@ TResult RefPointVariable::init(RefData **&activeTemplate, Session* sess, RefData
 
 };
 TResult RefPointVariable::back(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
+	int i = this->theVar->getName().length();
+
 	sess->forgotVar(this->theVar);
 	//RefData **ll, **rr; RefChain *llrr_own; VarMap *vm=0;
 	//sess->restoreVar(this->theVar, ll, rr, llrr_own, vm);

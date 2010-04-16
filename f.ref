@@ -1,9 +1,16 @@
 
-SubstitutAnalise {
-	e.e,
-		e.e  : @.e::name
-		=	;
-		
+//&VAR[type specs dot name  ]
+OPENVAR2XML {
+	(word E.type)"."({word|int} E.name)	=	'<VAR>' @.type '.' @.name	'</VAR>';
+	(word E.type)"."					=	'<VAR>' @.type '.'			'</VAR>';
+	("{" ("|" E.variant) E.variants)	=	'<VARIANTS name="">' <META2XML E.variant>  <OPENVAR2XML E.variants> ;
+	("{" ("|" E.variant) E.variants)"."({word|int} E.name)	=	'<VARIANTS name="' E.name '">' <META2XML E.variant>  <OPENVAR2XML E.variants> ;
+	("|" E.body)		=	'<THE-VARIANT/>' <META2XML E.body> '</VARIANTS>';
+	("|" E.body) E.next	=	'<THE-VARIANT/>' <META2XML E.body> <OPENVAR2XML E.next>;
+	("{" (E.body))		=	'<GROUP name="">' <META2XML E.body> '</GROUP>';
+	("{" (E.body))"."({word|int} E.name)		=	'<GROUP name="' E.name '">' <META2XML E.body> '</GROUP>';
+	E.else				=	'<ERROR>Unresponsed variable: ' E.else '</ERROR>';
 }
+
 
 
