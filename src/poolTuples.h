@@ -374,7 +374,7 @@ public:
 	};
 
 	// сохран€ет состо€ние item копированием
-	void put(T1 i1, T2 i2, T3 i3) {
+	inline void put(T1 i1, T2 i2, T3 i3) {
 		++last_ind ;
 		if (last_ind >= poolsize) {
 			// пул исчерпан
@@ -508,7 +508,7 @@ public:
 	};
 
 	// сохран€ет состо€ние item копированием
-	void put(T1 i1, T2 i2, T3 i3, T4 i4) {
+	inline void put(T1 i1, T2 i2, T3 i3, T4 i4) {
 		++last_ind ;
 		if (last_ind >= poolsize) {
 			// пул исчерпан
@@ -648,7 +648,7 @@ public:
 	};
 
 	// сохран€ет состо€ние item копированием
-	void put(T1 i1, T2 i2, T3 i3, T4 i4, T5 i5) {
+	inline void put(T1 i1, T2 i2, T3 i3, T4 i4, T5 i5) {
 		++last_ind ;
 		if (last_ind >= poolsize) {
 			// пул исчерпан

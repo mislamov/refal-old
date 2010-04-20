@@ -5,6 +5,17 @@
 
 #ifdef DEBUG
 #define LOGSTEP(s) \
+	std::cout << (int)r << "\t" << variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\n" << std::flush;
+#define LOGMATCH() \
+	std::cout << "\n\n"<< co::objs<<" STEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\n" << std::flush;
+#else
+#define LOGSTEP(s)
+#define LOGMATCH()
+#endif
+
+/*
+#ifdef DEBUG
+#define LOGSTEP(s) \
 	std::cout << (int)r << "\t" << variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\t\t~\t\t" << std::flush << (s=="BACK"?"":chain_to_text(r?r+1:0, arg_l?arg_r:0, 50)) << "\n" << std::flush;
 #define LOGMATCH() \
 	std::cout << "\n\n"<< co::objs<<" STEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\t\t~\t\t" << std::flush << (!arg_l?" $empty":chain_to_text(arg_l, arg_r, 50)) << "\n" << std::flush;
@@ -13,7 +24,7 @@
 #define LOGMATCH()
 #endif
 
-
+*/
 
 
 // сопоставляет образец tmplate с объектным выражением arg.
