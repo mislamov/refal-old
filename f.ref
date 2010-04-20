@@ -1,4 +1,4 @@
-/*
+//*
 Template theword ::= (word e.value);
 Template theint   ::= (int e.value);
 
@@ -140,7 +140,7 @@ SEMANTIC {
 };
 
 Sentences {
-	=;
+	{' '|} =;
 	
 	BLOCK.sents,
 		BLOCK.sents::head : LEFT_PART.left_part "=" RIGHT_PART.right_part,
@@ -428,6 +428,8 @@ META2XML {
 	=;
 }
 
+
+
 PATH2XML {
 	= ;
 	":" ":" E.next		=	'/' <PATH2XML E.next>;
@@ -442,7 +444,7 @@ SYMBOL2XML {
 	"$" (word empty) =	;
 }
 
-*/
+
 
 //&VAR[type specs dot name  ]
 OPENVAR2XML {
@@ -450,11 +452,11 @@ OPENVAR2XML {
 	(word E.type)"."					=	'<VAR>' @.type '.'			'</VAR>';
 	("{" ("|" E.variant) E.variants)	=	'<VARIANTS name="">' <META2XML E.variant>  <OPENVAR2XML E.variants> ;
 	("{" ("|" E.variant) E.variants)"."({word|int} E.name)	=	'<VARIANTS name="' E.name '">' <META2XML E.variant>  <OPENVAR2XML E.variants> ;
-	("|" E.body)		=	'<THE-VARIANT/>' <META2XML E.body> '</VARIANTS>';
-	("|" E.body) E.next	=	'<THE-VARIANT/>' <META2XML E.body> <OPENVAR2XML E.next>;
+	("|" E.body) 		=	'<THE-VARIANT/>' <META2XML E.body> '</VARIANTS>';
+	("|" E.body) E.next	=	'<THE-VARIANT/>' <META2XML E.body>  <OPENVAR2XML E.next>;
 	("{" (E.body))		=	'<GROUP name="">' <META2XML E.body> '</GROUP>';
 	("{" (E.body))"."({word|int} E.name)		=	'<GROUP name="' E.name '">' <META2XML E.body> '</GROUP>';
-	E.else				=	'<ERROR>Unresponsed variable: ' E.else '</ERROR>';
+	E.else				=	'<ERROR>Unresponsed variable: ' @.else  '</ERROR>';
 }
 
 

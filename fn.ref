@@ -12,7 +12,8 @@ Template FUNCTION ::=
 Template TEMPLATE ::=
 	(word Template) ' ' (word t.name) {' '|} ":" ":" "=" LEFT_PART.body ;
 
-Template BLOCK ::= SENTENCE.head ";" {' '|} { BLOCK. |}.tail ;
+//Template BLOCK ::= SENTENCE.head ";" {' '|} { BLOCK. |}.tail ;
+Template BLOCK ::= e.block ;
 Template SENTENCE   ::=  LEFT_PART.left_part "=" RIGHT_PART.right_part ;
 
 
@@ -121,7 +122,7 @@ PROGRAM {
 	e.error { TEMPLATE. ";" | FUNCTION.}.fnd E.next = <PROGRAM e.error> <PROGRAM @.fnd @.next>;
 	//e.A TEMPLATE.tm  ";" E.next = <PROGRAM e.A> &TEMPLATE.tm <PROGRAM @.next>;
 	//e.A FUNCTION.f   {";"|} E.next = <PROGRAM e.A> &FUNCTION.f <PROGRAM @.next>;
-	e.else = <Prout 'Error Function or Template definition: ' e.else>;
+	e.else = <ProutError 'Error Function or Template definition: ' e.else>;
 };
 
 // Семантический анализ
@@ -131,6 +132,7 @@ SEMANTIC {
 				("FUNCTION" @.f::name
 					<Sentences FUNCTION.f::body> 
 				)
+				<Prout 'sym  FUNCTION: ' @.f::name>
 				<SEMANTIC e.next>;
 				
 	&TEMPLATE.t e.next,
@@ -143,27 +145,39 @@ SEMANTIC {
 						<ConditionsToXML @.resultConditions>
 					)
 				)
+				<Prout 'sym  TEMPLATE: ' @.t::name>
 				<SEMANTIC e.next>;
 	
 	$empty = $empty;
 };
 
 Sentences {
-	=;
+	{' '|} =;
 	
-	BLOCK.sents,
+	SENTENCE.sent ";" ! E.next,
+		@.sent : LEFT_PART.left_part "=" RIGHT_PART.right_part,
+		<PatternAnalise     ( )( )         LEFT_PART.left_part::pattern>    : (e.variables)(e.resultPattern),
+		<ConditionsAnalise  (e.variables)()  <CondToList LEFT_PART.left_part::conditions>> : (e.variables2)(e.resultConditions),
+		<SubstitutAnalise   (e.variables2)() RIGHT_PART.right_part> : (e.variables3)(e.resultConstitute)
+		=	("SENTENCE" ("LEFT_PART" e.resultPattern  e.resultConditions)("RIGHT_PART" e.resultConstitute)) <Sentences E.next>;
+	
+/*	BLOCK.sents,
 		BLOCK.sents::head : LEFT_PART.left_part "=" RIGHT_PART.right_part,
 		<PatternAnalise     ( )( )         LEFT_PART.left_part::pattern>    : (e.variables)(e.resultPattern),
 		<ConditionsAnalise  (e.variables)()  <CondToList LEFT_PART.left_part::conditions>> : (e.variables2)(e.resultConditions),
 		<SubstitutAnalise   (e.variables2)() RIGHT_PART.right_part> : (e.variables3)(e.resultConstitute)
 		=	("SENTENCE" ("LEFT_PART" e.resultPattern  e.resultConditions)("RIGHT_PART" e.resultConstitute)) <Sentences BLOCK.sents::tail>;
-		
-	E.else = <Prout '#### ERROR SENTENCE: ' @.else>;
+*/		
+	e.sent ";" E.else = 
+			<ProutError 'SENTENCE: ' @.sent>
+			<ProutError <FindErrorInSentence e.sent>>
+			<Exit 9>
+			<Sentences @.else>;
 		
 };
 
 
-CondToList { =; IFs.conds = &IFs.conds::head <CondToList IFs.conds::tail> ; }
+CondToList { =; IFs.conds = &IFs.conds::head <CondToList IFs.conds::tail> ; IF.c = &IF.c; e.else = <ProutError 'bad conditions: ' e.else><Exit 9>; }
 
 //(e.vars)( ) e.substitution  =  (e.vars) (e.result);
 SubstitutAnalise_ { e.e = <Prout '<SubstitutAnalise ' e.e '>'><SubstitutAnalise_ e.e>; };
@@ -178,7 +192,8 @@ SubstitutAnalise {
 			<SubstitutAnalise (e.vars1 &VAR.exstvar e.vars2)(e.result &LNK.lnk) e.otherpart>;
 
 	(e.vars) (e.result) VAR.lnk e.otherpart
-		=	<SubstitutAnalise (e.vars)(e.result "$ERROR" <Print 'Unexpected opened-variable in substitution: ' VAR.lnk ' vars: '<UnPoint e.vars>>) e.otherpart>;
+		=	<ProutError  'Unexpected opened-variable in substitution: ' VAR.lnk '. Expected closed variables: '<UnPoint e.vars>>
+			<SubstitutAnalise (e.vars)(e.result "$ERROR" 'Unexpected opened-variable in substitution: ' VAR.lnk '. Expected closed variables: '<UnPoint e.vars>) e.otherpart>;
 
 	(e.vars)(e.result) ({"<"|"("}.sig SUBSTIT.subs ) e.otherpart,
 		<SubstitutAnalise (e.vars)() SUBSTIT.subs> : (e.vars1)(e.res1)
@@ -189,8 +204,9 @@ SubstitutAnalise {
 
 	(e.vars) (e.result) SYMBOL.s e.next	=	<SubstitutAnalise (e.vars) (e.result &SYMBOL.s) e.next>;
 	(e.vars) (e.result)			=	(e.vars) (e.result);
-	(e.vars) (e.result) e.else		=	(e.vars)(e.result "$ERROR"  
-								<Print 'Unknown item for SubstitutAnalise: [' e.else ']'>);
+	(e.vars) (e.result) e.else		=	
+							<ProutError  'Unknown item for SubstitutAnalise: \n\t' e.else >
+							(e.vars)(e.result "$ERROR"  'Unknown item for SubstitutAnalise: \n\t' e.else);
 		
 }
 
@@ -232,26 +248,27 @@ PatternAnalise {
 		<PatternAnaliseVar (e.vars) &VAR.var> : (e.mkvars) &VAR.mkvar
 		=	<PatternAnalise (e.mkvars)(e.result &VAR.mkvar) e.otherpart>;
 
-	(e.vars) (e.result) VAR.var e.otherpart	=	<Prout '#### ERROR: unparsed variable: ' @.var>;
+	(e.vars) (e.result) VAR.var e.otherpart	=	<ProutError 'unparsed variable: ' @.var>;
 	(e.vars) (e.result) ' ' e.next		=	<PatternAnalise (e.vars) (e.result) e.next>;
 	(e.vars) (e.result) SYMBOL.s e.next	=	<PatternAnalise (e.vars) (e.result &SYMBOL.s) e.next>;
 	(e.vars) (e.result)			=	(e.vars) (e.result);
-	(e.vars) (e.result) e.else		=	(e.vars) (e.result "$ERROR" <Print 'Unknown item for PatternAnalise: [' e.else ']'>);
-							//<Prout '<PatternAnalise  ' (e.vars) (e.result) e.else '>'>;
+	(e.vars) (e.result) e.else		=	
+							<ProutError 'Unknown item for PatternAnalise: [' e.else ']'>
+							(e.vars) (e.result "$ERROR" 'Unknown item for PatternAnalise: [' e.else ']');
 }
 
 
 ErrorIfNotOpenedVariable_ { e.e = <Prout e.e><ErrorIfNotOpenedVariable_ e.e>; };
 ErrorIfNotOpenedVariable {
-	&VAR.var, $NOT @.var::path  :   $empty = "$ERROR" <Print 'unexpected closed variable [1]: ' @.var>;
-	&VAR.var, @.var::type  :  '@' E. = "$ERROR" <Print 'unexpected closed variable [2]: ' @.var>;
+	&VAR.var, $NOT @.var::path  :   $empty	=	<ProutError 'unexpected closed variable [1]: ' @.var> "$ERROR" 'unexpected closed variable [1]: ' @.var;
+	&VAR.var, @.var::type  :  '@' E.	=	<ProutError 'unexpected closed variable [2]: ' @.var> "$ERROR" 'unexpected closed variable [2]: ' @.var;
 	&VAR.var = ;
 }
 
 
 ErrorIfNotClosedVariable {
-	&VAR.var, $NOT @.var::specs :  $empty = "$ERROR" <Print 'unexpected specificator in variable: ' @.var>;
-	&VAR.var, @.var::type  :  GROUP_OR_VARIANT. = "$ERROR" <Print 'unexpected gruop: ' @.var>;
+	&VAR.var, $NOT @.var::specs :  $empty =		<ProutError 'unexpected specificator in variable: ' @.var> "$ERROR" 'unexpected specificator in variable: ' @.var;
+	&VAR.var, @.var::type  :  GROUP_OR_VARIANT. =	<ProutError 'unexpected gruop: ' @.var >"$ERROR" 'unexpected gruop: ' @.var;
 	&VAR.var = ;
 }
 
@@ -276,7 +293,9 @@ PatternAnaliseVar {
 		=	(e.vars) &VAR.var;
 		
 	e.else 
-		=	<Prout '####ERROR PatternAnaliseVar: ' e.else> <Exit 9>;
+		=	
+			<ProutError '####ERROR PatternAnaliseVar: ' e.else>
+			<Exit 9>;
 }
 
 // (переменные)(тело_варианта)  =  (новые_переменные)метакод_тела
@@ -317,7 +336,7 @@ IF {
 	equal (e.A)(e.A) THEN e.result ELSE e.	=	e.result;
 
 	e. THEN e. ELSE e.result	=	e.result;
-	E.else = <Prout 'IF-function syntax error: <IF ' @.else '>'><Exit 9>;
+	E.else = <ProutError 'IF-function syntax error: <IF ' @.else '>'><Exit 9>;
 }
 
 
@@ -325,7 +344,7 @@ ErrorIfNotEqualType {
 	(e.1)(e.1)(e.error) = $empty;
 	({"@"|"&"|} e.1)({"@"|"&"|} e.1)(e.error) = $empty;
 	e. ("@") e. (e.error) = $empty;
-	(e.1)(e.2)(e.error) = <Prout '#### PARSER_ERROR: ' e.error>;
+	(e.1)(e.2)(e.error) = <ProutError '#### PARSER_ERROR: ' e.error>;
 }
 
 
@@ -359,7 +378,7 @@ PProut {
 	( {int|word|real} e.e ) e.next = e.e <PProut e.next>;
 	{' '|"."|"|"}.sym   e.next = @.sym <PProut e.next>;
 	=;
-	e.else = <Prout 'error: [' e.else ']'>;
+	e.else = <ProutError 'PProut [' e.else ']'>;
 }
 
 
@@ -435,6 +454,7 @@ META2XML {
 				<META2XML E.next>;
 	
 	=;
+	"$ERROR" e.text		= <ProutError e.text><Exit 9>;
 }
 
 PATH2XML {
@@ -447,7 +467,7 @@ SYMBOL2XML {
 	(word e.value) 	 =	'<WORD>' e.value '</WORD>';
 	(int e.value ) 	 =	'<INT>'  e.value '</INT>';
 	(real e.value) 	 =	'<REAL>' e.value '</REAL>';
-	(text e.value) 	 =	'<TEXT>' e.value '</TEXT>';
+	(text e.value) 	 =	'<TEXT>' <TEXT2XML e.value> '</TEXT>';
 	"$" (word empty) =	;
 }
 
@@ -461,8 +481,54 @@ OPENVAR2XML {
 	("|" E.body) E.next	=	'<THE-VARIANT/>' <META2XML E.body> <OPENVAR2XML E.next>;
 	("{" (E.body))		=	'<GROUP name="">' <META2XML E.body> '</GROUP>';
 	("{" (E.body))"."({word|int} E.name)		=	'<GROUP name="' E.name '">' <META2XML E.body> '</GROUP>';
-	E.else				=	'<ERROR>Unresponsed variable: ' E.else '</ERROR>';
+	"&" e.var = '<POINT>' <OPENVAR2XML @.var> '</POINT>';
+	E.else				=	
+			<Prout E.else>
+			<ProutError 'Unresponsed variable: ' E.else >
+			'<ERROR>Unresponsed variable: ' E.else '</ERROR>';
 }
 
 
+TEXT2XML {
+	'<' e.e = '&lt;'<TEXT2XML e.e>;
+	'>' e.e = '&gt;'<TEXT2XML e.e>;
+	s.s e.e =  s.s  <TEXT2XML e.e>;
+	=;
+}
 
+ProutError {
+	e.e = <Prout '#### ERROR: ' <META2TEXT e.e>>;
+}
+
+META2TEXT {
+	(word e.w)"."(word e.ww) e.e 		= 	<ExplodeAll @.w>'.'<ExplodeAll @.ww> <META2TEXT e.e>;
+	(word e.w) e.e 		= 	'"'<ExplodeAll @.w>'"' <META2TEXT e.e>;
+	(text e.w) e.e 		= 	'\''<ExplodeAll @.w>'\'' <META2TEXT e.e>;
+	( {"("|"{"|"["|"<"}.br e.w ) e.e,
+		"(" ")" "{" "}" "[" "]" "<" ">" : e. @.br t.clbr e.
+				=	<Explode @.br> <META2TEXT @.w> <Explode @.clbr> <META2TEXT e.e>;
+	word.t e.e		=	<ExplodeAll @.t> <META2TEXT e.e>;
+	s.s e.e			=	s.s <META2TEXT e.e>;
+	=;
+}
+
+
+FindErrorInSentence {
+	LEFT_PART.left_part "=" e.right_part,
+		<PatternAnalise     ( )( )         LEFT_PART.left_part::pattern>    : (e.variables)(e.resultPattern),
+		<ConditionsAnalise  (e.variables)()  <CondToList LEFT_PART.left_part::conditions>> : (e.variables2)(e.resultConditions),
+		<SubstitutAnalise   (e.variables2)() @.right_part> : (e.) (e. "$ERROR" e.error) = e.error;
+		
+	e.left_part "," e.conds "=" RIGHT_PART.right_part,
+		<PatternAnalise     ( )( )         @.left_part>    : (e.variables)(e.resultPattern),
+		<ConditionsAnalise  (e.variables)()  <CondToList @.conds>> : e. "$ERROR" e.error = e.error;
+		
+	e.left_part "," e.conds "=" RIGHT_PART.right_part,
+		<PatternAnalise     ( )( )         @.left_part>    : (e.) (e. "$ERROR" e.error) = e.error ;
+		
+	e.left_part "=" RIGHT_PART.right_part,
+		<PatternAnalise     ( )( )         @.left_part>    : (e.) (e. "$ERROR" e.error) = e.error;
+		
+	e.lp "=" e.rp = 'left part and right part error: ' e.lp "=" e.rp;
+	e. = '= - separator not found';	
+}
