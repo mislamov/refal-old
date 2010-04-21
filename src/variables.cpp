@@ -141,7 +141,6 @@ TResult  RefVariable_E::back(RefData **&tpl, Session* sess, RefData **&l, RefDat
 
     if (l==r) {
         l = 0;
-		r;
     }
 	//std::cout << "\n\ns->saveVar((RefVariable*)*tpl, l, r) = " << "s->saveVar(" << tpl << ", " << (*l)->debug() << ", " << (*r)->debug() << ")\n\n";
 
@@ -155,7 +154,7 @@ TResult  RefVariable_E::back(RefData **&tpl, Session* sess, RefData **&l, RefDat
 	ref_assert( sess->findVar(this, i, endi, lr_own, vm) || i!=l || endi!=r );
 	#endif
 
-	
+
 	return GO;
 };
 

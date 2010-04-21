@@ -84,10 +84,10 @@ public:
 	#endif
 	virtual unistring toString(){ return explode(); };
 	virtual unistring debug(){ 
-		if (getValue() == ' ') return " _ ";
-		if (getValue() == '\n') return "\\n";
-		if (getValue() == '\t') return "\\t";
-		return explode(); 
+		if (getValue() == ' ') return "' ' ";
+		if (getValue() == '\n') return "'\\n' ";
+		if (getValue() == '\t') return "'\\t' ";
+		return "'" + explode() + "' "; 
 	};
 
 	CLASS_SYMBOL_CAST(RefAlphaBase);
@@ -120,6 +120,24 @@ public:
     ////CLASS_OBJECT_CAST(RefWordBase);
 	RefWordBase(Session *sess) : RefSymbolBase<RefWordBase, unistring>(sess) {};
     virtual ~RefWordBase(){};
+	virtual unistring debug(){ 
+		std::stringstream result;
+		unistring str = getValue();
+		for (int i=0, ilen = str.length(); i<ilen; ++i){
+			if (str.at(i) == '\n') {
+				result << "\\n";
+			} else if (str.at(i) == '\t') {
+				result << "\\t";
+			} else if (str.at(i) >= 00  && str.at(i) <= 32){
+				result << "\\x" << (int)str.at(i);
+			} else {
+				result << str.at(i);
+			}
+		}
+		return "\"" + result.str() + "\" "; 
+
+	};
+
 
 	CLASS_SYMBOL_CAST(RefWordBase);
 };
@@ -182,7 +200,7 @@ public:
 	inline RefWord(Session *sess, unichar val) : RefWordBase(sess){ value = ""; value += val; };
     virtual ~RefWord(){};
     virtual unistring getValue() {return value;};
-    unistring debug() ;
+    //unistring debug() ;
 };
 
 

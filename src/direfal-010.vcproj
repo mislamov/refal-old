@@ -135,10 +135,12 @@
 				AdditionalDependencies="libexpat.lib"
 				AdditionalLibraryDirectories="$(SolutionDir)lib"
 				GenerateDebugInformation="true"
+				GenerateMapFile="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				OptimizeForWindows98="0"
 				TargetMachine="1"
+				Profile="true"
 			/>
 			<Tool
 				Name="VCALinkTool"

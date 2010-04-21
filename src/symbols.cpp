@@ -121,12 +121,13 @@ void RefAlpha::alphaMapDestroy(){
 };*/
 
 
+/*
 unistring RefWord::debug() {
 		std::ostringstream ss;
         ss << '"' << replace(value, "\n", "\\n") << "\" ";
         return ss.str();	
 };
-
+*/
 
 
 

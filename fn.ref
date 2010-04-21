@@ -112,6 +112,7 @@ SELECT_ALLVAR {
 };
 
 
+//PROGRAM { e.e = <ProutDebug '<PROGRAM ' e.e '>'><PROGRAM_ e.e>; }
 PROGRAM {
 	FUNCTION.f  {";" |} E.next = <Prout 'Function: ' @.f::name>  &FUNCTION.f  <PROGRAM @.next>;
 	TEMPLATE.tm  ";"  E.next   = <Prout 'Template: ' @.tm::name> &TEMPLATE.tm <PROGRAM @.next>;
@@ -122,7 +123,7 @@ PROGRAM {
 	e.error { TEMPLATE. ";" | FUNCTION.}.fnd E.next = <PROGRAM e.error> <PROGRAM @.fnd @.next>;
 	//e.A TEMPLATE.tm  ";" E.next = <PROGRAM e.A> &TEMPLATE.tm <PROGRAM @.next>;
 	//e.A FUNCTION.f   {";"|} E.next = <PROGRAM e.A> &FUNCTION.f <PROGRAM @.next>;
-	e.else = <ProutError 'Error Function or Template definition: ' e.else>;
+	e.else = <ProutError 'Error Function or Template definition: [' e.else ']'><Exit 9>;
 };
 
 // Семантический анализ

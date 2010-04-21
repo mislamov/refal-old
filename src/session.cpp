@@ -5,7 +5,7 @@
 
 #ifdef DEBUG
 #define LOGSTEP(s) \
-	std::cout << (int)r << "\t" << variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\n" << std::flush;
+	std::cout << variants_idxs.getCount()<< " "<< s << " | " << ((activeTemplate && *activeTemplate) ? (*activeTemplate)->debug():"null") << "\n" << std::flush;
 #define LOGMATCH() \
 	std::cout << "\n\n"<< co::objs<<" STEP: "<< ++(program->step) <<"\n###### maps:" << varMapStack.getCount() << "\n" << (isdemaching?"DMTCH|":"START| ") << (thetmplate && !thetmplate->isEmpty() ? thetmplate->debug() : "$empty") << "\n" << std::flush;
 #else

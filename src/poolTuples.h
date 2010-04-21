@@ -206,6 +206,7 @@ public:
 		last_ind = 0;
 		poolsize = POOLSIZE_DEFAULT;
 		pool = (TUPLE2*)malloc( sizeof(TUPLE2)*POOLSIZE_DEFAULT );
+		if (!pool) RUNTIMEERRORn("memory limit");
 #ifdef TESTCODE
 		memset(pool, 0xff, sizeof(TUPLE2)*POOLSIZE_DEFAULT);
 #endif
@@ -364,6 +365,7 @@ public:
 		last_ind = 0;
 		poolsize = POOLSIZE_DEFAULT;
 		pool = (TUPLE3*)malloc( sizeof(TUPLE3)*POOLSIZE_DEFAULT );
+		if (!pool) RUNTIMEERRORn("memory limit");
 #ifdef TESTCODE
 		memset(pool, 0xff, sizeof(TUPLE3)*POOLSIZE_DEFAULT);
 #endif
@@ -498,6 +500,7 @@ public:
 		last_ind = 0;
 		poolsize = POOLSIZE_DEFAULT;
 		pool = (TUPLE4*)malloc( sizeof(TUPLE4)*POOLSIZE_DEFAULT );
+		if (!pool) RUNTIMEERRORn("memory limit");
 #ifdef TESTCODE
 		memset(pool, 0xff, sizeof(TUPLE4)*POOLSIZE_DEFAULT);
 #endif
@@ -638,6 +641,7 @@ public:
 		last_ind = 0;
 		poolsize = POOLSIZE_DEFAULT;
 		pool = (TUPLE5*)malloc( sizeof(TUPLE5)*POOLSIZE_DEFAULT );
+		if (!pool) RUNTIMEERRORn("memory limit");
 #ifdef TESTCODE
 		memset(pool, 0xff, sizeof(TUPLE5)*POOLSIZE_DEFAULT);
 #endif

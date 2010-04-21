@@ -321,7 +321,7 @@ RefChain* Exit (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 
 #define IS_EN_LETTER(ch)	((ch >=65 && ch <= 90)||(ch >= 97 && ch <= 122) || (ch == '_') || (ch == '-'))
 #define IS_DIGIT(ch)		(ch >= 48 && ch <= 57)
-#define IS_WHITE(ch)		(ch > 00  && ch <= 32)
+#define IS_WHITE(ch)		(ch >= 00  && ch <= 32)
 
 inline unichar NEXT_CHAR(Session *sess, RefData **&symch){ 
 	sess->MOVE_TO_next_term(symch); 
@@ -603,8 +603,8 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 			(*result) += new RefStructBrackets(sess, t_result);
 			if (symchar){
 				ch = NEXT_CHAR(sess, symchar);  //   /n..
-				continue;
 			}
+			continue;
 		}
 
 
@@ -618,8 +618,8 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 			(*result) += new RefStructBrackets(sess, t_result);
 			if (symchar){
 				ch = NEXT_CHAR(sess, symchar);  //   /n..
-				continue;
 			}
+			continue;
 		}
 
 		(*result) += new RefWord(sess, ch);

@@ -311,6 +311,7 @@ public:
 		gc_label|=0x08; 
 		*/
 		first = (RefData**)malloc(sizeof(RefData*) * sysize);
+		if (!first) RUNTIMEERRORn("memory limit");
 		memcpy(first, d, sizeof(RefData*)*sz);
 	}
 	virtual ~RefChain();
@@ -319,7 +320,9 @@ public:
 	RefChain*  operator+=(RefData  *ch);
 	RefChain*  operator+=(RefChain *ch); // удаляет *ch
 	RefChain*  operator+=(RefChain  ch); // только копирует *ch
-	RefData**  operator[](signed long idx);
+	inline RefData**  operator[](signed long idx){
+		return leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
+	}
 	inline RefData**  at(signed long idx){ return (*this)[idx]; };
 	inline RefData**  at_first(){ return (*this)[0]; };
 	inline RefData**  at_last(){ return (*this)[-1]; };
@@ -339,6 +342,9 @@ public:
 
 	TResult init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){ return ERROR; };
 	TResult back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){ return ERROR; };
+
+	//void *operator new(size_t size);
+	//void operator delete(void *p);
 };
 
 

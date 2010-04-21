@@ -255,6 +255,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					RefData
 						**dt = (RefData**)malloc(sizeof(RefData*)*count),
 						**dest = dt;
+					if (!dt) RUNTIMEERRORn("memory limit");
 					while (lnk != lnknend){
 						br_index = lnk->i2 - lnk->i1 + 1; // используем переменную для копирования
 						memcpy(dest, lnk->i1, sizeof(RefData*)*br_index);
@@ -334,6 +335,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					RefData
 						**arg = (RefData**)malloc(count * sizeof(RefData*)),
 						**dest = arg;
+					if (!arg) RUNTIMEERRORn("memory limit");
 					tmpsizet = 0;
 					while(lnkbr != lnknend){
 						tmpsizet = lnkbr->i2 - lnkbr->i1 + 1; // используем переменную для копирования
@@ -379,7 +381,10 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 		// перед нами отрезок
 		if (segment = ref_dynamic_cast<RefSegment>(*iter)){
-			if (*(++iter) != *iend){
+			//std::cout << iend << "\n" << std::flush;
+			//std::cout << "\t" << *iend << "\n" << std::flush;
+			//if (*(++iter) != *iend){
+			if (++iter != iend){
 				// откладываем обработку всего, что после сегмента
 				futurWay.put(iter, iend, treelevel);
 				// ниже закомментировано, поскольку не надо сохранять данные о прыжке в отрезок - достаточно указать 

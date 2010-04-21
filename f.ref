@@ -1,4 +1,4 @@
-//*
+
 Template theword ::= (word e.value);
 Template theint   ::= (int e.value);
 
@@ -28,6 +28,7 @@ Template IF  ::=
 Template PATTERN ::= e.e, <IsPattern @.e> : True ;
 Template SUBSTIT ::= e.e, <IsSubstit @.e> : True ;
 
+
 IsPattern_  { e.e, <IsPattern_ e.e> : e.res = e.res <Prout '<IsPattern  ' e.e '>   -->   ' e.res>; }
 IsPattern { = True; L_ITEM. E.tail, <IsPattern E.tail> : True = True; E.else = False; };
 
@@ -42,7 +43,7 @@ Template R_ITEM ::=
 
 Template SYMBOL ::=
 	{ theword. | (int e.) | (real e.) | (text e.) | "$" (word empty) } ;
-
+//*
 
 
 
@@ -461,3 +462,4 @@ OPENVAR2XML {
 
 
 
+//*/

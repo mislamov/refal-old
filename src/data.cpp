@@ -78,6 +78,7 @@ RefChain::RefChain(Session *sess, RefData* d) : RefData(sess){
 
 	sysize = leng = 1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
+	if (!first) RUNTIMEERRORn("memory limit");
 	first[0] = d;
 	co::chains++;
 };
@@ -86,6 +87,7 @@ RefChain::RefChain(Session *sess, size_t size) : RefData(sess) { // size is not 
 
 	sysize = size;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
+	if (!first) RUNTIMEERRORn("memory limit");
 	leng = 0;
 	*first = 0;
 	co::chains++;
@@ -103,6 +105,7 @@ RefChain::RefChain(Session *sess, RefChain *ownchain, RefData **from, RefData **
 
 	sysize = leng = to-from+1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
+	if (!first) RUNTIMEERRORn("memory limit");
 	memcpy(first, from, sizeof(RefData*)*leng);
 	co::chains++;
 };
@@ -116,6 +119,50 @@ RefChain::~RefChain(){
 	}
 };
 
+/*
+static int a1 = 0;
+static int a2 = 0;
+
+static std::stack<void*> *chainpool = new std::stack<void*>();
+
+void *RefChain::operator new(size_t size){
+	void *p;
+
+	if (! chainpool->empty()) {
+		p = chainpool->top();
+		chainpool->pop();
+		return p;
+	}
+
+	//std::cout << ++a1 << " " << a2  << "  In overloaded new.\n" << std::flush;
+	++a1;
+
+	p =  malloc(size);
+	if(!p) {
+		RUNTIMEERRORn("no memory");
+		return 0;
+	}
+	return p;
+}
+
+void RefChain::operator delete(void *p){
+	//std::cout << a1 << " " << ++a2  << "  In overloaded delete.\n" << std::flush;
+	std::cout << chainpool->size() << "  In overloaded delete.\n" << std::flush;
+
+	chainpool->push(p);
+	return;
+
+	free(p);
+}
+*/
+
+
+/*static int i1=0;
+static int i2=0;
+static int i3=0;
+static int i4=0;
+static int i5=0;*/
+
 RefChain* RefChain::operator+=(RefData *ch) {
 #ifdef TESTCODE
 	if (leng>sysize) SYSTEMERRORn("Achtung!")
@@ -128,6 +175,8 @@ RefChain* RefChain::operator+=(RefData *ch) {
 		first   =   (RefData**) realloc(first, sizeof(RefData*)*(sysize) );
 		//LOG("realloc");
 		if (! first) RUNTIMEERRORn("memory limit");
+
+		//std::cout << "\n" << ++i1 << " " << i2 << " " << i3 << " " << i4 << " " << i5;
 	}
 	first[leng] = ch;
 	++leng;
@@ -141,6 +190,7 @@ RefChain* RefChain::operator+=(RefChain *ch) {
 
 	sysize += (ch->leng);
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
+	//std::cout << "\n" << i1 << " " << ++i2 << " " << i3 << " " << i4 << " " << i5;
 	//LOG("realloc");
 	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch->first, sizeof(RefData*)*(ch->leng));
@@ -155,6 +205,7 @@ RefChain* RefChain::operator+=(RefChain ch) {
 
 	sysize += (ch.leng);
 	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
+	//std::cout << "\n" << i1 << " " << i2 << " " << ++i3 << " " << i4 << " " << i5;
 	//LOG("realloc");
 	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch.first, sizeof(RefData*)*(ch.leng));
@@ -163,16 +214,11 @@ RefChain* RefChain::operator+=(RefChain ch) {
 };
 
 
-
+/*
 RefData** RefChain::operator[](signed long idx) {
-	/*#ifdef TESTCODE
-	if ((idx<0 && (long)leng+idx<0) || (idx>0 && idx>=leng))
-	AchtungERRORn;
-	#endif*/
-	//ref_assert(this!=0);
 	return	leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
 };
-
+*/
 
 
 
@@ -1040,8 +1086,6 @@ TResult RefPointVariable::init(RefData **&activeTemplate, Session* sess, RefData
 
 };
 TResult RefPointVariable::back(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
-	int i = this->theVar->getName().length();
-
 	sess->forgotVar(this->theVar);
 	//RefData **ll, **rr; RefChain *llrr_own; VarMap *vm=0;
 	//sess->restoreVar(this->theVar, ll, rr, llrr_own, vm);
