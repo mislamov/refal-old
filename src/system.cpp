@@ -202,19 +202,66 @@ RefChain* Mount (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
       is.read (buffer,length);
       is.close();
 
-      RefChain *result = new RefChain(sess, length);
-      for (size_t i=0; i<length; i++){
-            if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
-				(*result) += newRefAlpha(sess, buffer[i]);
-            }
-      }
+	  RefChain *result = text_to_chain(sess, buffer, length);
 
       delete[] buffer;
       return result;
-
-
 }
 
+RefChain* File (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+    if (!beg) {
+		RUNTIMEERRORs(sess, "Empty args in File");
+        return 0;
+    }
+	unistring fname = (*beg)->explode();
+	if (beg == end){
+		beg = 0;
+	} else {
+		sess->MOVE_TO_next_term(beg);
+	}
+	
+
+	std::ofstream file;
+	file.open(fname.c_str());
+	if (! file.is_open()){
+		RUNTIMEERRORs(sess, "Can't open file: " << fname);
+		return 0;
+	}
+
+	RefChain *tmp = new RefChain(sess, begend_chain, beg, end);
+	file << tmp->explode();
+	file.close();
+	return new RefChain(sess);
+}
+
+RefChain* Args (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+	if (beg) RUNTIMEERRORs(sess, "Not empty args in Args : " << the_explode(beg, end));
+
+
+	if (sess->getProgram()->argchain != 0) {
+		//std::cout<< "\n" << sess->getProgram()->argchain << "\n" << std::flush;
+		return sess->getProgram()->argchain;
+	}
+
+	RefChain *res = new RefChain(0); // не для коллектора! Хранится всю программу
+	int argc = sess->getProgram()->argc; 
+	char** argv = sess->getProgram()->argv;
+
+	/*if (argc > 1) (*res) += text_to_chain(sess, argv[2]);
+	for (int i=3; i<argc; ++i){
+		(*res) += newRefAlpha(sess, ' ');
+		(*res) += text_to_chain(sess, argv[i]);
+	}*/
+
+	if (argc > 1) (*res) += new RefWord(0, argv[2]);  // не для коллектора! Хранится всю программу
+	for (int i=3; i<argc; ++i){
+		(*res) += new RefWord(0, argv[i]);  // не для коллектора! Хранится всю программу
+	}
+	
+
+	sess->getProgram()->argchain = res;
+	return res;
+}
 
 RefChain* Card (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     if (beg) {

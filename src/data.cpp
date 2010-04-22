@@ -97,7 +97,7 @@ RefChain::RefChain(Session *sess, size_t size) : RefData(sess) { // size is not 
 RefChain::RefChain(Session *sess, RefChain *ownchain, RefData **from, RefData **to) : RefData(sess) { // size is not lenght
 	first = 0;
 	leng = sysize = 0;
-	if (ownchain && ownchain->isEmpty()) return;  // если родитель имеется и он пуст - ничего не добавляем
+	if ((ownchain && ownchain->isEmpty()) || !from) return;  // если родитель имеется и он пуст - ничего не добавляем
 
 	ref_assert(from <= to);
 	ref_assert(!ownchain || ownchain->at_first() <= from);

@@ -494,6 +494,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			RefChain *i_chain;
 			VarMap* vm = 0;
 			if (! findVar(link->lnk, i, endi, i_chain, vm)){
+				//std::cout << link->explode() << std::flush;
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for link " + link->explode());
 			}

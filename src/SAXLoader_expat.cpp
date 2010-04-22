@@ -340,7 +340,7 @@ void XMLCALL  endElement(void *data, const XML_Char *name) {
 char Bufff[BUFFSIZE];
 
 
-int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, char* xmlFile) {
+int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlFile) {
     XML_Parser p = XML_ParserCreate(NULL);
     if (! p) {
         fprintf(stderr, "Couldn't allocate memory for parser\n");

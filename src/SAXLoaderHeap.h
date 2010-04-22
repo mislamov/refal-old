@@ -60,6 +60,7 @@ class LoaderHeap {
             return r;
         }
         RefChain* getCurrChain(){
+			if (stckChains.size()==0) SYSTEMERRORn("stckChains stack is empty");
             return stckChains.top();
         }
 

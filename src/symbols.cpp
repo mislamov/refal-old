@@ -41,7 +41,7 @@ RefAlphaBase* newRefAlpha(Session *sess, unichar value){
 unistring the_explode(RefData **a, RefData **b){
 	ref_assert(b || !a);
 #ifdef DEBUG
-	if (!a) {
+	if (!a && b) {
 		return "$null, " + (*b)->debug();
 	}
 #endif
@@ -93,6 +93,27 @@ unistring the_debug_text(RefData **a, RefData **b){
     }
 	return result;
 };
+
+
+
+RefChain *text_to_chain(Session *sess, char *buffer){
+	RefChain *result = new RefChain(sess, 1024);
+	while (*buffer){
+		(*result) += newRefAlpha(sess, *buffer);
+		buffer++;
+	}
+	return result;
+}
+RefChain *text_to_chain(Session *sess, char *buffer, size_t length){
+	RefChain *result = new RefChain(sess, length);
+	for (size_t i=0; i<length; i++){
+		if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
+			(*result) += newRefAlpha(sess, buffer[i]);
+		}
+	}
+	return result;
+}
+
 
 void RefAlpha::alphaMapDestroy(){
 	std::map<unichar, RefAlphaBase*>::iterator it;

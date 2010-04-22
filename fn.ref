@@ -141,7 +141,7 @@ SEMANTIC {
 		<ConditionsAnalise  (e.variables)()  <CondToList TEMPLATE.t::body::conditions>> : (e.variables2)(e.resultConditions)
 			= 
 				("TEMPLATE" @.t::name
-					("LEFT_PART"
+					("LEFT-PART"
 						<PatternToXML    @.resultPattern>
 						<ConditionsToXML @.resultConditions>
 					)
@@ -155,20 +155,14 @@ SEMANTIC {
 Sentences {
 	{' '|} =;
 	
-	SENTENCE.sent ";" ! E.next,
+	SENTENCE.sent ";" E.next,
 		@.sent : LEFT_PART.left_part "=" RIGHT_PART.right_part,
 		<PatternAnalise     ( )( )         LEFT_PART.left_part::pattern>    : (e.variables)(e.resultPattern),
 		<ConditionsAnalise  (e.variables)()  <CondToList LEFT_PART.left_part::conditions>> : (e.variables2)(e.resultConditions),
 		<SubstitutAnalise   (e.variables2)() RIGHT_PART.right_part> : (e.variables3)(e.resultConstitute)
-		=	("SENTENCE" ("LEFT_PART" e.resultPattern  e.resultConditions)("RIGHT_PART" e.resultConstitute)) <Sentences E.next>;
+		=	("SENTENCE" ("LEFT-PART" e.resultPattern  e.resultConditions)("RIGHT-PART" e.resultConstitute)) <Sentences E.next>;
 	
-/*	BLOCK.sents,
-		BLOCK.sents::head : LEFT_PART.left_part "=" RIGHT_PART.right_part,
-		<PatternAnalise     ( )( )         LEFT_PART.left_part::pattern>    : (e.variables)(e.resultPattern),
-		<ConditionsAnalise  (e.variables)()  <CondToList LEFT_PART.left_part::conditions>> : (e.variables2)(e.resultConditions),
-		<SubstitutAnalise   (e.variables2)() RIGHT_PART.right_part> : (e.variables3)(e.resultConstitute)
-		=	("SENTENCE" ("LEFT_PART" e.resultPattern  e.resultConditions)("RIGHT_PART" e.resultConstitute)) <Sentences BLOCK.sents::tail>;
-*/		
+
 	e.sent ";" E.else = 
 			<ProutError 'SENTENCE: ' @.sent>
 			<ProutError <FindErrorInSentence e.sent>>
@@ -348,19 +342,31 @@ ErrorIfNotEqualType {
 	(e.1)(e.2)(e.error) = <ProutError '#### PARSER_ERROR: ' e.error>;
 }
 
+GetArgName {
+	,<ExplodeAll <Args>> : e.fname '.ref' e. = @.fname;
+	= <Prout '#### Bad .ref filename: '<Args>>;
+}
 
-Go {
-	= 
-	<Prout
-		<ExplodeAll
-		<META2XML
-		<SEMANTIC <PROGRAM
-			<Prout 'Delete comments...'>
-			<DelComments <RefalTokens <Mount 'f.ref'>>>
-//			<RefalTokens <Mount 'f.ref'>>
-			<Prout 'done'>
-		>>>>
-	>;
+Go {=<REFAL <GetArgName>>;};
+
+REFAL {
+	e.fname,
+		<Implode @.fname '.out.xml'> : t.resultname
+		= 
+			<File @.resultname
+				<ExplodeAll
+					"<BEGIN>"
+					<META2XML
+						<SEMANTIC <PROGRAM
+							<Prout 'Delete comments...'>
+							<DelComments <RefalTokens <Mount @.fname '.ref'>>>
+							<Prout '...done'>
+						>>
+					>'\n'
+					"</BEGIN>"
+				>
+			>
+			t.resultname;
 }
 
 DelComments_ {
@@ -404,7 +410,7 @@ META2XML {
 				<META2XML E.next>;
 
 
-	( {"SENTENCE" | "LEFT_PART" | "RIGHT_PART" }.type  E.body) E.next
+	( {"SENTENCE" | "LEFT-PART" | "RIGHT-PART" }.type  E.body) E.next
 				=
 				'\n\t''<'  @.type '>'
 					<META2XML E.body>
@@ -463,15 +469,15 @@ PATH2XML {
 	":" ":" E.next		=	'/' <PATH2XML E.next>;
 	theword.w E.next	=	@.w::value <PATH2XML E.next>;
 }
-
+ 
 SYMBOL2XML {
-	(word e.value) 	 =	'<WORD>' e.value '</WORD>';
+	(word e.value) 	 =	'<WORD>' <TEXT2XML <ExplodeAll e.value>> '</WORD>';
 	(int e.value ) 	 =	'<INT>'  e.value '</INT>';
 	(real e.value) 	 =	'<REAL>' e.value '</REAL>';
 	(text e.value) 	 =	'<TEXT>' <TEXT2XML e.value> '</TEXT>';
 	"$" (word empty) =	;
 }
-
+ 
 //&VAR[type specs dot name  ]
 OPENVAR2XML {
 	(word E.type)"."({word|int} E.name)	=	'<VAR>' @.type '.' @.name	'</VAR>';
@@ -493,6 +499,7 @@ OPENVAR2XML {
 TEXT2XML {
 	'<' e.e = '&lt;'<TEXT2XML e.e>;
 	'>' e.e = '&gt;'<TEXT2XML e.e>;
+	'&' e.e = '&amp;'<TEXT2XML e.e>;
 	s.s e.e =  s.s  <TEXT2XML e.e>;
 	=;
 }

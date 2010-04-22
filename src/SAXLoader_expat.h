@@ -22,6 +22,6 @@
 
 	#define BUFFSIZE        8192
 
-int loadModuleFromXmlFile(RefUserModule*, RefProgram*, char* );
+int loadModuleFromXmlFile(RefUserModule*, RefProgram*, const char* );
 
 #endif

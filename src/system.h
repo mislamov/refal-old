@@ -42,6 +42,8 @@ RefChain* ExplodeAll (RefData** beg, RefData** end, RefChain* begend_chain, Sess
 RefChain* Add   (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Sub   (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Mount (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* File  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Args  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Card  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Prout (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* ProutDebug (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
@@ -109,6 +111,8 @@ FUNCTION_DEFINITIONS
 		DEFINE_MODULE_FUNCTION(Explode);
 		DEFINE_MODULE_FUNCTION(ExplodeAll);
 		DEFINE_MODULE_FUNCTION(Mount);
+		DEFINE_MODULE_FUNCTION(File);
+		DEFINE_MODULE_FUNCTION(Args);
 		DEFINE_MODULE_FUNCTION(Card);
 		DEFINE_MODULE_FUNCTION(Prout);
 		DEFINE_MODULE_FUNCTION(ProutDebug);

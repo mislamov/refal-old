@@ -22,9 +22,12 @@
 #include "system.h"
 
 
-RefProgram::RefProgram(){
+RefProgram::RefProgram(int argc, char **argv){
 	step = 0;
+	argchain = 0;
 	this->regModule(new ModSystem());
+	this->argv = argv;
+	this->argc = argc;
 }
 
 
