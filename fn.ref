@@ -114,8 +114,8 @@ SELECT_ALLVAR {
 
 //PROGRAM { e.e = <ProutDebug '<PROGRAM ' e.e '>'><PROGRAM_ e.e>; }
 PROGRAM {
-	FUNCTION.f  {";" |} E.next = <Prout 'Function: ' @.f::name>  &FUNCTION.f  <PROGRAM @.next>;
-	TEMPLATE.tm  ";"  E.next   = <Prout 'Template: ' @.tm::name> &TEMPLATE.tm <PROGRAM @.next>;
+	FUNCTION.f  {";" |} E.next = <Prout 'Function: ' @.f::name>  <SEMANTIC &FUNCTION.f>  <PROGRAM @.next>;
+	TEMPLATE.tm  ";"  E.next   = <Prout 'Template: ' @.tm::name> <SEMANTIC &TEMPLATE.tm> <PROGRAM @.next>;
 	' ' e.e = <PROGRAM e.e>;
 	$empty = $empty;
 
@@ -128,15 +128,15 @@ PROGRAM {
 
 // Семантический анализ
 SEMANTIC {
-	&FUNCTION.f e.next 
+	&FUNCTION.f  e.next 
 			= 
 				("FUNCTION" @.f::name
 					<Sentences FUNCTION.f::body> 
 				)
-				<Prout 'sym  FUNCTION: ' @.f::name>
+				//<Prout 'sym  FUNCTION: ' @.f::name>
 				<SEMANTIC e.next>;
 				
-	&TEMPLATE.t e.next,
+	&TEMPLATE.t  e.next,
 		<PatternAnalise     ( )( )         TEMPLATE.t::body::pattern>    : (e.variables)(e.resultPattern),
 		<ConditionsAnalise  (e.variables)()  <CondToList TEMPLATE.t::body::conditions>> : (e.variables2)(e.resultConditions)
 			= 
@@ -146,12 +146,15 @@ SEMANTIC {
 						<ConditionsToXML @.resultConditions>
 					)
 				)
-				<Prout 'sym  TEMPLATE: ' @.t::name>
+				//<Prout 'sym  TEMPLATE: ' @.t::name>
 				<SEMANTIC e.next>;
 	
 	$empty = $empty;
 };
 
+
+Sentences_ { e.e, <Sentences_ e.e> : e.result = e.result <Prout '<Sentences  ' e.e '> -->  ' e.result>;
+}
 Sentences {
 	{' '|} =;
 	
@@ -356,13 +359,13 @@ REFAL {
 			<File @.resultname
 				<ExplodeAll
 					"<BEGIN>"
-					<META2XML
-						<SEMANTIC <PROGRAM
+					<Print <META2XML
+						<PROGRAM
 							<Prout 'Delete comments...'>
 							<DelComments <RefalTokens <Mount @.fname '.ref'>>>
 							<Prout '...done'>
-						>>
-					>'\n'
+						>
+					>>'\n'
 					"</BEGIN>"
 				>
 			>
@@ -469,7 +472,7 @@ PATH2XML {
 	":" ":" E.next		=	'/' <PATH2XML E.next>;
 	theword.w E.next	=	@.w::value <PATH2XML E.next>;
 }
- 
+  
 SYMBOL2XML {
 	(word e.value) 	 =	'<WORD>' <TEXT2XML <ExplodeAll e.value>> '</WORD>';
 	(int e.value ) 	 =	'<INT>'  e.value '</INT>';
