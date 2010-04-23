@@ -32,7 +32,7 @@ RefProgram::RefProgram(int argc, char **argv){
 
 
 RefProgram::~RefProgram(){
-	std::map<unistring, RefModuleBase*>::iterator
+	std::list<std::pair <unistring, RefModuleBase*>>::iterator
 		iter = modules.begin(),
 		iend = modules.end();
 	while(iter != iend){
@@ -45,13 +45,22 @@ RefProgram::~RefProgram(){
 
 }
 
+MODULE_LIST::iterator MODULE_LIST::find(unistring key){
+		MODULE_LIST::iterator iter = begin();
+		while (iter != end() && iter->first != key){
+			++iter;
+		}
+		return iter;
+}
+
 
 void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в программе (перед загрузкой)
 	if (module->getName() == EmptyUniString)
 		SYSTEMERRORn("Empty module name");
 	if (modules.find(module->getName()) != modules.end())
 		SYSTEMERRORn("Several loads of module [" << module->getName() << "] ");
-	modules[module->getName()] = module;
+	modules.push_front( std::pair<unistring, RefModuleBase*>(module->getName(), module) );
+	//modules[module->getName()] = module;
 };
 
 
@@ -451,7 +460,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 
 RefFunctionBase* RefProgram::findFunction(unistring id){
-	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	MODULE_LIST::iterator modit = modules.begin(), end = modules.end();
 	RefModuleBase* mod = 0;
 
 	RefFunctionBase* obj;
@@ -469,7 +478,7 @@ RefFunctionBase* RefProgram::findFunction(unistring id){
 
 
 RefTemplateBase* RefProgram::findTemplate(unistring id){
-	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	MODULE_LIST::reverse_iterator modit = modules.rbegin(), end = modules.rend();
 	RefModuleBase* mod = 0;
 
 	RefTemplateBase* obj;
@@ -488,7 +497,7 @@ RefTemplateBase* RefProgram::findTemplate(unistring id){
 
 
 RefData* RefProgram::createSymbolByCode(unistring code, unistring value){
-	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	MODULE_LIST::iterator modit = modules.begin(), end = modules.end();
 	RefDllModule* dllmod = 0;
 	RefData* result = 0;
 
@@ -508,7 +517,7 @@ RefData* RefProgram::createSymbolByCode(unistring code, unistring value){
 
 // создает переменную с именем по коду. Ищет в подключенных модулях (среди встроенных переменных и пользовательских шаблонов)
 RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
-	std::map<unistring, RefModuleBase*>::iterator modit = modules.begin(), end = modules.end();
+	MODULE_LIST::iterator modit = modules.begin(), end = modules.end();
 	RefModuleBase* mod = 0;
 	RefDllModule  *dllmod = 0;
 	RefUserModule *usermod= 0;

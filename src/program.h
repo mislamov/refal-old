@@ -29,9 +29,14 @@
 
 class RefModuleBase;
 
+class MODULE_LIST : public std::list<std::pair<unistring, RefModuleBase*>> {
+public:
+	MODULE_LIST::iterator find(unistring key);	
+};
+
 // ןנמדנאללא
 class RefProgram {
-	std::map<unistring, RefModuleBase*> modules;
+	MODULE_LIST modules;
 public:
 	int argc; char **argv ;
 	long long step;

@@ -324,57 +324,57 @@ inline std::string replace(std::string text, std::string s, std::string d)
 
 #ifdef DEBUG
     #define SYSTEMERRORn(msg) { \
-        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
-		std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+        std::cerr << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+		std::cerr << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         exit(-1); \
         };
     #define SYSTEMERRORs(sess, msg) { \
 		sess->printExecTrace(); \
-		std::cout << sess->debug(); \
-        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
-		std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+		std::cerr << sess->debug(); \
+        std::cerr << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+		std::cerr << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         exit(-1); \
         };
 
     #define LOG(msg) { \
-        std::cout << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
+        std::cerr << "\n####### LOG::" << __FILE__ << '[' << __LINE__ << "] : " << __FUNCTION__ << "():: " << msg << "\n" << std::flush; \
         };
 #else
     #define SYSTEMERRORn(msg) { \
-        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
-        std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+        std::cerr << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+        std::cerr << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         exit(-1); \
         };
     #define SYSTEMERRORs(sess, msg) { \
 		sess->printExecTrace(); \
-		std::cout << sess->debug(); \
-        std::cout << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
-        std::cout << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
+		std::cerr << sess->debug(); \
+        std::cerr << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
+        std::cerr << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
         exit(-1); \
         };
     #define LOG(msg) {}
 #endif
 
 #define RUNTIMEERRORn(msg) { \
-	std::cout << "\n######## RUNTIMEERROR: " << msg << "\n" << std::flush; \
+	std::cerr << "\n######## RUNTIMEERROR: " << msg << "\n" << std::flush; \
     exit(-1); \
 	};
 
 #define RUNTIMEERRORs(sess, msg) { \
-	std::cout << "\n######## RUNTIMEERROR: " << msg << "\n" << std::flush; \
+	std::cerr << "\n######## RUNTIMEERROR: " << msg << "\n" << std::flush; \
 	sess->printExecTrace(); \
     exit(-1); \
     };
 
 #define COMPILETIMEERRORn(msg) { \
-    std::cout << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
+    std::cerr << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
     exit(-1); \
     };
 
 #define COMPILETIMEERRORs(sess, msg) { \
 	sess->printExecTrace(); \
-	std::cout << sess->debug(); \
-    std::cout << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
+	std::cerr << sess->debug(); \
+    std::cerr << "\n####:#### COMPILETIMEERROR "<< __FILE__ << '[' << __LINE__ << "] : " << msg << "\n" << std::flush; \
     exit(-1); \
     };
 

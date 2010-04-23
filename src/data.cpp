@@ -1196,9 +1196,12 @@ unistring RefPoint::explode(){
 		for(size_t i=1, maxi = this->the_namespace->getLength(); i<=maxi; ++i){
 			ss << this->the_namespace->get1ByIndex(i)->getName() << " ";
 		}
-	} else {
+		ss << ":: ";
+	}// else {
 		ss << chain_to_text(l, r);
-	}
+	//}
+	
+
 	ss << "]";
 	return ss.str();
 };

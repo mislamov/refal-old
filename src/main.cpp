@@ -22,6 +22,8 @@
 #include "stringutils.h"
 
 #include <ctime>
+#include <iostream>
+#include <fstream>
 
 std::string stringtime(struct tm *timeptr) {
 	char result[256];
@@ -29,15 +31,64 @@ std::string stringtime(struct tm *timeptr) {
 	return result;
 }
 
-int main ( int argc, char **argv ) {
+void help(char *pname){
 	std::cout << REFVERSION << "\n" << std::flush;
+	std::cout << "Usage: "<< pname <<" [-h|--help] [-v|--verbose] [-d|--debug] filename [arg1 arg2 ... argN]\n" << std::flush;
+	std::cout << "\t-h (or --help) to see this message\n" << std::flush;
+	std::cout << "\t-v (or --verbose) to see more information when program execution\n" << std::flush;
+	std::cout << "\t-d (or --debug) to see debug information when program execution\n" << std::flush;
+}
+
+int main ( int argc, char **argv ) {
+	bool verbose = false;
+	bool debug = false;
+
 	if (argc <= 1) {
-		std::cout << "Usage: "<<argv[0]<<" <file_name.ref>\n\n" << std::flush;
+		help(argv[0]);		
 		return 0;
 	}
 
-	char *scanerxmlFile = "direfal_scaner.xml";
+	char *prog = 0;
+	for (int i=1; i<argc; ++i){
+		if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help")){
+			help(argv[0]);
+			return 0;
+		}
+		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose")){
+			verbose = true;
+			continue;
+		}
+		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--debug")){
+			debug = true;
+			continue;
+		}
+		if (argv[i] && argv[i][0]=='-'){
+			RUNTIMEERRORn("Invalid option: " << argv[i]);
+			return -2;
+		}
 
+		// имя файла программы и аргументы
+		prog = argv[i];
+		argc = argc - i;
+		argv = (argc-1)? &(argv[i]) : 0;
+		break;
+	}
+
+
+	if (!prog) {
+		RUNTIMEERRORn("File expected.");
+		return -1;
+	}
+
+
+	// перенаправляем поток в файл
+	std::streambuf *stdbuf = 0;
+	std::ostream nullstream(0, false);
+	if (!verbose){
+		stdbuf = std::cout.rdbuf(nullstream.rdbuf());
+	}
+
+	char *scanerxmlFile = "direfal_scaner.xml";
 	RefUserModule *parser = new RefUserModule(getModuleNameFromFileName(scanerxmlFile));	
 	RefProgram *program = new RefProgram( argc, argv );
 	Session *sess = new Session( program );
@@ -47,14 +98,22 @@ int main ( int argc, char **argv ) {
 	int err = loadModuleFromXmlFile ( parser, program, scanerxmlFile);
 	if (err) return err;
 
+	//std::cout << parser->debug() << "\n";
+
+
 	std::string go_function_name = "REFAL";
 	RefChain *executeline = new RefChain(sess, new RefWord (sess, go_function_name));
-	(*executeline) += text_to_chain(sess, argv[1]);
+	(*executeline) += text_to_chain(sess, prog);
 	RefChain *result = program->executeExpression( 
 		new RefChain(sess, new RefExecBrackets(sess, executeline)), 
 		sess 
 		);
 	// теперь в result результат синт- и семант-ического анализа и оптимизации. При успехе - это термальное слово = имя созданного файла
+	if (!verbose){
+		std::cout.rdbuf(stdbuf);
+	}
+
+
 
 	unistring rslname = "";
 	if (result->getLength()==1 && ref_dynamic_cast<RefWordBase>(*(result->at_first()))){

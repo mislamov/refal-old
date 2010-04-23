@@ -253,8 +253,8 @@ RefChain* Args (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 		(*res) += text_to_chain(sess, argv[i]);
 	}*/
 
-	if (argc > 1) (*res) += new RefWord(0, argv[2]);  // не для коллектора! Хранится всю программу
-	for (int i=3; i<argc; ++i){
+	if (argc > 1) (*res) += new RefWord(0, argv[1]);  // не для коллектора! Хранится всю программу
+	for (int i=2; i<argc; ++i){
 		(*res) += new RefWord(0, argv[i]);  // не для коллектора! Хранится всю программу
 	}
 	
@@ -344,6 +344,10 @@ RefChain* ProutDebug (RefData** beg, RefData** end, RefChain* begend_chain, Sess
     return new RefChain(sess);
 };
 
+RefChain* StdErr (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+	std::cerr << the_text(beg, end) << "\n";
+    return new RefChain(sess);
+};
 
 RefChain* Print (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
 	unistring thetext = the_text(beg, end);
@@ -479,7 +483,7 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 		if (IS_WHITE(ch)){
 			do {
 				ch = NEXT_CHAR(sess, symchar);
-			}while (IS_WHITE(ch));
+			}while (symchar && IS_WHITE(ch));
 			(*result) += newRefAlpha(sess, ' ');
 			continue;
 		}

@@ -47,6 +47,7 @@ RefChain* Args  (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
 RefChain* Card  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Prout (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* ProutDebug (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* StdErr(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Print (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Exit  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 
@@ -116,6 +117,7 @@ FUNCTION_DEFINITIONS
 		DEFINE_MODULE_FUNCTION(Card);
 		DEFINE_MODULE_FUNCTION(Prout);
 		DEFINE_MODULE_FUNCTION(ProutDebug);
+		DEFINE_MODULE_FUNCTION(StdErr);		
 		DEFINE_MODULE_FUNCTION(Print);
 		DEFINE_MODULE_FUNCTION(Exit);
 
@@ -126,6 +128,8 @@ FUNCTION_DEFINITIONS
 
 		DEFINE_MODULE_FUNCTION_ALIAS(Add, Sum);
 		DEFINE_MODULE_FUNCTION_ALIAS(Sub, Dec);
+		DEFINE_MODULE_FUNCTION_ALIAS(+, Sum);
+		DEFINE_MODULE_FUNCTION_ALIAS(-, Dec);
 
 END_DLL_MODULE
 
