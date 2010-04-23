@@ -85,11 +85,11 @@ public:
 	};
 	#endif
 	virtual unistring toString(){ return explode(); };
-	virtual unistring debug(){ 
+	virtual unistring debug(){
 		if (getValue() == ' ') return "' ' ";
 		if (getValue() == '\n') return "'\\n' ";
 		if (getValue() == '\t') return "'\\t' ";
-		return "'" + explode() + "' "; 
+		return "'" + explode() + "' ";
 	};
 
 	CLASS_SYMBOL_CAST(RefAlphaBase);
@@ -122,7 +122,7 @@ public:
     ////CLASS_OBJECT_CAST(RefWordBase);
 	RefWordBase(Session *sess) : RefSymbolBase<RefWordBase, unistring>(sess) {};
     virtual ~RefWordBase(){};
-	virtual unistring debug(){ 
+	virtual unistring debug(){
 		std::stringstream result;
 		unistring str = getValue();
 		for (int i=0, ilen = str.length(); i<ilen; ++i){
@@ -136,7 +136,7 @@ public:
 				result << str.at(i);
 			}
 		}
-		return "\"" + result.str() + "\" "; 
+		return "\"" + result.str() + "\" ";
 
 	};
 
@@ -160,7 +160,7 @@ class RefAlpha : public RefAlphaBase {
     unichar value;
 public:
 	static std::map<unichar, RefAlphaBase*> alphamap;
-	static void RefAlpha::alphaMapDestroy();
+	static void alphaMapDestroy();
 
 	RefAlpha(Session *sess, unichar val) : RefAlphaBase(sess) { set_not_deleteble_by_gc_delete();	value = val; };
     virtual ~RefAlpha(){};
@@ -223,7 +223,7 @@ TResult  RefSymbolBase<TT, tt>::init(RefData **&tpl, Session* sess, RefData **&l
 	if (!r && sess->alt_r+1==sess->current_view_l()){
 		r = sess->alt_r;
 	}
-	
+
 	sess->MOVE_TO_next_term(r);
     if ( r && *r && (this==*r || *this == **r)) {
         sess->MOVE_TO_next_template(tpl);

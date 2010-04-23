@@ -32,7 +32,7 @@ RefProgram::RefProgram(int argc, char **argv){
 
 
 RefProgram::~RefProgram(){
-	std::list<std::pair <unistring, RefModuleBase*>>::iterator
+	std::list<std::pair <unistring, RefModuleBase*> >::iterator
 		iter = modules.begin(),
 		iend = modules.end();
 	while(iter != iend){
@@ -64,7 +64,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 };
 
 
-// с рекурсией. 
+// с рекурсией.
 RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
 		return chain; // new RefChain();
@@ -185,9 +185,9 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 		**iend  = chain->at_afterlast(),
 		**iter  = chain->at_first();
 	RefDataBracket *tmpbr;
-	size_t 
-		tmpsizet, 
-		br_index, 
+	size_t
+		tmpsizet,
+		br_index,
 		treelevel = 0; // текущая глубина обработки. При прыжке в скобку - увеличивается
 
 	RefSegment *segment = 0;
@@ -276,11 +276,12 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					*lnkiter = lnkbr + 1,
 					*lnknend = pastWay.getPoolLinkAfterLast();
 
-				RefDataBracket *bb = (RefDataBracket*)*(lnkbr->i2);
+				RefDataBracket **bb;
+				*bb = (RefDataBracket*)*(lnkbr->i2);
 				lnkbr->i1 = lnkbr->i2;
 
 				if (lnkiter==lnknend){ // скобка пуста
-					bb->chain = new RefChain(sess);
+					(*bb)->chain = new RefChain(sess);
 					//ref_assert(lnkbr->i1 == lnkbr->i2);
 					continue;
 				}
@@ -303,13 +304,13 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					dest += tmpsizet;
 					++lnkbr;
 				}
-				bb->chain = new RefChain(sess, arg, count);
+				(*bb)->chain = new RefChain(sess, arg, count);
 
 				pastWay.flushfrom(br_index);  // теперь скобка - последний терм в обработанной очереди
 
 				//std::cout << "\n()()\tready: " << bb->debug();
 
-				if (ref_dynamic_cast<RefExecBrackets>(bb)){  //  <F>
+				if (ref_dynamic_cast<RefExecBrackets>(*bb)){  //  <F>
 					//вычислить функцию
 					ref_assert(count>0);
 					//TODO: сделать привязку функциональных вызовов по именнованым областям
@@ -321,17 +322,18 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					RefChain *fresult;
 					if (count > 1){
 						//fresult = func->exec(arg+1, arg+count-1, bb->chain, sess);
-						fresult = func->exec(bb->chain->at(1), bb->chain->at_last() /*arg+count-1*/, bb->chain, sess);
+						fresult = func->exec((*bb)->chain->at(1), (*bb)->chain->at_last() /*arg+count-1*/, (*bb)->chain, sess);
 					} else {
 						ref_assert(count==1);
-						fresult = func->exec(0, 0, bb->chain, sess);
+						fresult = func->exec(0, 0, (*bb)->chain, sess);
 					}
 					pastWay.pop(); // не нужно хранить <>
 					iter = fresult->at_first();
 					iend = fresult->at_afterlast();
 				} else {  // (F)
 					pastWay.pop();
-					pastWay.put(reinterpret_cast<RefData**>(&bb), reinterpret_cast<RefData**>(&bb), bb);  // оптимизировать (на ~ setForTop)
+					RefChain *ccc = new RefChain(0, *bb);
+					pastWay.put(ccc->at_last(), ccc->at_last(), *bb);  // оптимизировать (на ~ setForTop)
 				}
 
 				continue;
@@ -346,7 +348,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			if (++iter != iend){
 				// откладываем обработку всего, что после сегмента
 				futurWay.put(iter, iend, treelevel);
-				// ниже закомментировано, поскольку не надо сохранять данные о прыжке в отрезок - достаточно указать 
+				// ниже закомментировано, поскольку не надо сохранять данные о прыжке в отрезок - достаточно указать
 				// что нужно обработать после отрезка и на каком это уровне treelevel
 				//brackets.put(0, 0); // кидаем в стек скобок признак того, что мы прыгнули в отрезок, а не в скобку
 			}
@@ -366,9 +368,11 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			treelevel++;
 
 			brackets.put(pastWay.getLength(), 1);      // 1 - чтобы не конфликтовать с отрезками, если эта скобка с индексом 0
-			RefData *tmp = tmpbr->getNewInstance(sess);
-			((RefDataBracket*)tmp)->chain = 0;//tmpbr->chain;
-			pastWay.put(0, &tmp, tmp);  // первый 0 - означает что второй - RefDataBracket
+			RefData **tmp;
+			*tmp = tmpbr->getNewInstance(sess);
+			((RefDataBracket*) *tmp)->chain = 0;//tmpbr->chain;
+			RefChain *ccc = new RefChain(0, *tmp);
+			pastWay.put(0, ccc->at_last(), *tmp);  // первый 0 - означает что второй - RefDataBracket
 
 			// прыгаем в скобку
 			iend = tmpbr->chain->at_afterlast();

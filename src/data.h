@@ -19,8 +19,9 @@
 #ifndef REF_DATA_H_INCLUDED
 #define REF_DATA_H_INCLUDED
 
-#include <string>
+#include <string.h>
 #include <set>
+#include <stdio.h>
 
 #include "config.h"
 #include "poolTuples.h"
@@ -303,12 +304,12 @@ public:
 	RefChain(Session *, RefData *);			// цпочка из одного терма
 	RefChain(Session *, size_t systemsize);	// пустая цепочка для systemsize элементов
     RefChain(Session *, RefChain *ownchain, RefData **from, RefData **to); // цепочка из подцепочки
-	RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){ 
-		co::chains++; 
-		sysize=leng=sz; 
-		/* todo: оптимизировать. без копирования сделать		
-		first=d; 
-		gc_label|=0x08; 
+	RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){
+		co::chains++;
+		sysize=leng=sz;
+		/* todo: оптимизировать. без копирования сделать
+		first=d;
+		gc_label|=0x08;
 		*/
 		first = (RefData**)malloc(sizeof(RefData*) * sysize);
 		if (!first) RUNTIMEERRORn("memory limit");
@@ -363,13 +364,13 @@ public:
 	RefLinkToVariable() : RefData(){};
 	TResult init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
     TResult back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
-	inline unistring explode(){ 
+	inline unistring explode(){
 		/*if(
 			lnk && lnk->getName()==""
 			){
 				std::cout << "";
 		};*/
-		return " @."+(lnk?lnk->getName():"$notinit$")+(path==EmptyUniString?"":"/"+path)+" "; 
+		return " @."+(lnk?lnk->getName():"$notinit$")+(path==EmptyUniString?"":"/"+path)+" ";
 	};
 
 	inline RefLinkToVariable(RefVariable *ln){ lnk=ln; path=EmptyUniString; };
@@ -416,7 +417,7 @@ public:
 	VarMap *the_namespace; // результат сопоставления ОВ
 
 	inline RefPoint(RefTemplateBase* thetype, RefData **ll, RefData **rr, RefChain *llrr_own, VarMap *tn, Session *sess) : RefData(sess){
-		l=ll;r=rr;lr_own=llrr_own; type=thetype;the_namespace=tn; 
+		l=ll;r=rr;lr_own=llrr_own; type=thetype;the_namespace=tn;
 	};
 
 	virtual unistring explode();
@@ -424,7 +425,7 @@ public:
 	virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn);
 
 	void set_gc_mark(Session *sess); // если в RefData не virtual, то вызвать явно в Session::gc_exclude
-	
+
 };
 
 // открытая переменная-указатель

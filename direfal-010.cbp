@@ -7,24 +7,26 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="Debug\direfal-010" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\" />
+				<Option output="Debug/direfal-010" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="-v f.ref" />
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-pg" />
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add option="-pg -lgmon" />
+					<Add option="-pg" />
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="Release\direfal-010" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj\" />
+				<Option output="Release/direfal-010" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="-v f.ref" />
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
@@ -37,37 +39,37 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-finline-functions" />
-			<Add directory="include" />
+			<Add directory="/usr/include" />
 		</Compiler>
 		<Linker>
 			<Add option="-lexpat" />
-			<Add directory="lib" />
+			<Add directory="/usr/lib" />
 		</Linker>
-		<Unit filename="src\SAXLoaderHeap.cpp" />
-		<Unit filename="src\SAXLoaderHeap.h" />
-		<Unit filename="src\SAXLoader_expat.cpp" />
-		<Unit filename="src\SAXLoader_expat.h" />
-		<Unit filename="src\config.h" />
-		<Unit filename="src\data.cpp" />
-		<Unit filename="src\data.h" />
-		<Unit filename="src\direfal.h" />
-		<Unit filename="src\function.cpp" />
-		<Unit filename="src\function.h" />
-		<Unit filename="src\main.cpp" />
-		<Unit filename="src\module_sdk.h" />
-		<Unit filename="src\optimize.h" />
-		<Unit filename="src\poolTuples.h" />
-		<Unit filename="src\program.cpp" />
-		<Unit filename="src\program.h" />
-		<Unit filename="src\session.cpp" />
-		<Unit filename="src\session.h" />
-		<Unit filename="src\stringutils.h" />
-		<Unit filename="src\symbols.cpp" />
-		<Unit filename="src\symbols.h" />
-		<Unit filename="src\system.cpp" />
-		<Unit filename="src\system.h" />
-		<Unit filename="src\variables.cpp" />
-		<Unit filename="src\variables.h" />
+		<Unit filename="src/SAXLoaderHeap.cpp" />
+		<Unit filename="src/SAXLoaderHeap.h" />
+		<Unit filename="src/SAXLoader_expat.cpp" />
+		<Unit filename="src/SAXLoader_expat.h" />
+		<Unit filename="src/config.h" />
+		<Unit filename="src/data.cpp" />
+		<Unit filename="src/data.h" />
+		<Unit filename="src/direfal.h" />
+		<Unit filename="src/function.cpp" />
+		<Unit filename="src/function.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/module_sdk.h" />
+		<Unit filename="src/optimize.h" />
+		<Unit filename="src/poolTuples.h" />
+		<Unit filename="src/program.cpp" />
+		<Unit filename="src/program.h" />
+		<Unit filename="src/session.cpp" />
+		<Unit filename="src/session.h" />
+		<Unit filename="src/stringutils.h" />
+		<Unit filename="src/symbols.cpp" />
+		<Unit filename="src/symbols.h" />
+		<Unit filename="src/system.cpp" />
+		<Unit filename="src/system.h" />
+		<Unit filename="src/variables.cpp" />
+		<Unit filename="src/variables.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

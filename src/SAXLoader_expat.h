@@ -24,4 +24,5 @@
 
 int loadModuleFromXmlFile(RefUserModule*, RefProgram*, const char* );
 
+
 #endif

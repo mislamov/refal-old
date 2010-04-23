@@ -29,9 +29,9 @@
 
 class RefModuleBase;
 
-class MODULE_LIST : public std::list<std::pair<unistring, RefModuleBase*>> {
+class MODULE_LIST : public std::list<std::pair<unistring, RefModuleBase*> > {
 public:
-	MODULE_LIST::iterator find(unistring key);	
+	MODULE_LIST::iterator find(unistring key);
 };
 
 // ןנמדנאללא

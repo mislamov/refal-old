@@ -16,7 +16,7 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include "DiRefal.h"
+#include "direfal.h"
 #include "SAXLoader_expat.h"
 
 #include "stringutils.h"
@@ -44,7 +44,7 @@ int main ( int argc, char **argv ) {
 	bool debug = false;
 
 	if (argc <= 1) {
-		help(argv[0]);		
+		help(argv[0]);
 		return 0;
 	}
 
@@ -83,13 +83,13 @@ int main ( int argc, char **argv ) {
 
 	// перенаправляем поток в файл
 	std::streambuf *stdbuf = 0;
-	std::ostream nullstream(0, false);
+	std::ostream nullstream(0);
 	if (!verbose){
 		stdbuf = std::cout.rdbuf(nullstream.rdbuf());
 	}
 
 	char *scanerxmlFile = "direfal_scaner.xml";
-	RefUserModule *parser = new RefUserModule(getModuleNameFromFileName(scanerxmlFile));	
+	RefUserModule *parser = new RefUserModule(getModuleNameFromFileName(scanerxmlFile));
 	RefProgram *program = new RefProgram( argc, argv );
 	Session *sess = new Session( program );
 
@@ -104,9 +104,9 @@ int main ( int argc, char **argv ) {
 	std::string go_function_name = "REFAL";
 	RefChain *executeline = new RefChain(sess, new RefWord (sess, go_function_name));
 	(*executeline) += text_to_chain(sess, prog);
-	RefChain *result = program->executeExpression( 
-		new RefChain(sess, new RefExecBrackets(sess, executeline)), 
-		sess 
+	RefChain *result = program->executeExpression(
+		new RefChain(sess, new RefExecBrackets(sess, executeline)),
+		sess
 		);
 	// теперь в result результат синт- и семант-ического анализа и оптимизации. При успехе - это термальное слово = имя созданного файла
 	if (!verbose){

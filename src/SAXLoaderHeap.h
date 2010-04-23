@@ -1,4 +1,4 @@
-#include "DiRefal.h"
+#include "direfal.h"
 
 class LoaderHeap {
         std::map<unistring, std::stack<RefObject*> > stackstags;
