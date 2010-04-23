@@ -78,6 +78,7 @@ class Session {
 	PooledStack<VarMap*>  varMapStack; // карты переменных
 	PooledTuple2<RefStructBrackets*, RefStructBrackets**> bracks; // сопоставленные со скобками
 	PooledStack<RefChain *> currentTemplates;
+
 	inline Session(){
 		gc_first = gc_last = new RefDataNull();
 	};

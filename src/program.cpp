@@ -46,11 +46,11 @@ RefProgram::~RefProgram(){
 }
 
 MODULE_LIST::iterator MODULE_LIST::find(unistring key){
-		MODULE_LIST::iterator iter = begin();
-		while (iter != end() && iter->first != key){
-			++iter;
-		}
-		return iter;
+	MODULE_LIST::iterator iter = begin();
+	while (iter != end() && iter->first != key){
+		++iter;
+	}
+	return iter;
 }
 
 
@@ -157,32 +157,14 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 };
 
 
-class RefChainDoubleLinkManager : public RefChain {
-	Session *session;
-public:
-	RefChainDoubleLinkManager(Session *sess) : RefChain(sess, 64){ session = sess; };
-	RefChain* save(RefData *ch, RefChainDoubleLinkManager *&chain) {
-		ref_assert(chain==this);
-		if (leng == sysize){
-			chain = new RefChainDoubleLinkManager(session);
-			chain->save(ch, chain);
-		} else {
-			*chain += ch;
-		}
-		return chain;
-	};
-
-
-	RefData **at_last(){ return ((RefChain*)this)->at_last(); };
-};
 
 
 
 
 inline void gcollect(Session *sess, RefData* gc_save_point, RefChain *result, size_t cc){
-		//sess->gc_prepare(gc_save_point); - отметка об удалении устоит у всех (ставится при создании и при каждой сборке)
-		sess->gc_exclude(result);
-		sess->gc_clean(gc_save_point);
+	//sess->gc_prepare(gc_save_point); - отметка об удалении устоит у всех (ставится при создании и при каждой сборке)
+	sess->gc_exclude(result);
+	sess->gc_clean(gc_save_point);
 }
 
 //--------- без рекурсии
@@ -194,7 +176,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 	std::cout << "\nRefProgram::executeExpression:\t" << chain->debug() << "\n" << std::flush;
 #endif
 
-	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
+	PooledTuple3<RefData**, RefData**, RefData*> pastWay; // <с, по, цепь>   - обработанное поле зрения
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля
 	PooledTuple2<size_t, size_t> brackets; // <индекс скобки в way, размер ее цепочки> - стек скобок, в которые прыгаем
 	PooledStack<RefSegment**> segments;
@@ -209,9 +191,6 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 		treelevel = 0; // текущая глубина обработки. При прыжке в скобку - увеличивается
 
 	RefSegment *segment = 0;
-
-	// склад для ссылок на [ ссылки для новых объектов ]
-	RefChainDoubleLinkManager *tmpForInstances = new RefChainDoubleLinkManager(sess);
 
 	while(true){
 		/*
@@ -244,7 +223,9 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				continue;
 			}
 
-			if (brackets.getLength()==0){  // вычисление цепочки для postWay закончено
+			if (brackets.getLength()==0){
+				// вычисление цепочки для postWay закончено
+
 				if (futurWay.getLength()==0){  // закончили вычисление всего аргумента. компилируем результат
 					ref_assert(treelevel==0);
 
@@ -254,7 +235,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 						return result;
 					}
 
-					PooledTuple2<RefData**,RefData**>::TUPLE2
+					PooledTuple3<RefData**,RefData**, RefData*>::TUPLE3
 						*lnk = pastWay.getPoolLinkForIndex(0),
 						*lnkiter = lnk,
 						*lnknend = pastWay.getPoolLinkAfterLast();
@@ -285,110 +266,76 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					ref_assert(tmpsizet==treelevel);
 					continue;
 				}
-			} else
-				// ниже закомментированно, поскольку выпрыгивание из отрезка делается автоматически при проверке
-				// на каком уровне мы находимся когда iter == iend (выше)
-				/*if (brackets.equalTop(0, 0)) { //мы в отрезке?
-					//// выпрыгиваем из отрезка;
-					brackets.pop();
-					futurWay.top_pop(iter, iend, tmpsizet); // теперь в tmpsizet - глубина запланированного для обработки поля
-#ifdef TESTCODE
-					if (tmpsizet!=treelevel){
-						if (!iter){
-							// пустая цепь
-							std::cout << "\n" << treelevel << ": -----";
-						} else {
-							std::cout << "\n" << treelevel << "\t" << ((iter == iend)?" -------":(*iter)->debug());
-						}
+			} else {
+				//// значит мы внутри скобки и обработали все ее содержимое
+				--treelevel;
+				size_t br_index;
+				brackets.top_pop(br_index, tmpsizet);
+				PooledTuple3<RefData**,RefData**,RefData*>::TUPLE3
+					*lnkbr = pastWay.getPoolLinkForIndex(br_index), // databracket
+					*lnkiter = lnkbr + 1,
+					*lnknend = pastWay.getPoolLinkAfterLast();
 
-						std::cout << "\n##########################\n";
-						for (size_t i=1; i<=pastWay.getLength(); ++i){
-							RefData **a, **b;
-							pastWay.getByIndex(i, a, b);
-							std::cout << i << ") " << the_explode(a, b) << "\n";
-						}
+				RefDataBracket *bb = (RefDataBracket*)*(lnkbr->i2);
+				lnkbr->i1 = lnkbr->i2;
 
-						for (size_t i=1; i<=futurWay.getLength(); ++i){
-							RefData **a, **b; size_t t;
-							futurWay.getByIndex(i, a, b, t);
-							std::cout << i << "] " << t << ":: " << the_explode(a, b-1) << "\n";
-						}
-					}
-#endif
-
-					ref_assert(tmpsizet==treelevel);
-					continue;
-				} else*/ {
-					//// значит мы внутри скобки и обработали все ее содержимое
-					--treelevel;
-					size_t br_index;
-					brackets.top_pop(br_index, tmpsizet);
-					PooledTuple2<RefData**,RefData**>::TUPLE2
-						*lnkbr = pastWay.getPoolLinkForIndex(br_index), // databracket
-						*lnkiter = lnkbr + 1,
-						*lnknend = pastWay.getPoolLinkAfterLast();
-
-					RefDataBracket *bb = (RefDataBracket*)*(lnkbr->i2);
-					lnkbr->i1 = lnkbr->i2;
-
-					if (lnkiter==lnknend){ // скобка пуста
-						bb->chain = new RefChain(sess);
-						//ref_assert(lnkbr->i1 == lnkbr->i2);
-						continue;
-					}
-
-					// строим тело скобки. сначала размер, затем копируем
-					size_t count = 0;
-					while(lnkiter != lnknend){
-						count += lnkiter->i2 - lnkiter->i1 + 1;
-						++lnkiter;
-					}
-					++lnkbr; // было на скобке
-					RefData
-						**arg = (RefData**)malloc(count * sizeof(RefData*)),
-						**dest = arg;
-					if (!arg) RUNTIMEERRORn("memory limit");
-					tmpsizet = 0;
-					while(lnkbr != lnknend){
-						tmpsizet = lnkbr->i2 - lnkbr->i1 + 1; // используем переменную для копирования
-						memcpy(dest, lnkbr->i1, sizeof(RefData*)*tmpsizet);
-						dest += tmpsizet;
-						++lnkbr;
-					}
-					bb->chain = new RefChain(sess, arg, count);
-
-					pastWay.flushfrom(br_index);  // теперь скобка - последний терм в обработанной очереди
-
-					//std::cout << "\n()()\tready: " << bb->debug();
-
-					if (ref_dynamic_cast<RefExecBrackets>(bb)){  //  <F>
-						//вычислить функцию
-						ref_assert(count>0);
-						//TODO: сделать привязку функциональных вызовов по именнованым областям
-						RefWordBase *fname = ref_dynamic_cast<RefWordBase>(*arg);
-						RefFunctionBase *func = 0;
-						if (!fname || !(func = this->findFunction(fname->getValue()))){
-							RUNTIMEERRORs(sess, "Function not found in program");
-						}
-						RefChain *fresult;
-						if (count > 1){
-							//fresult = func->exec(arg+1, arg+count-1, bb->chain, sess);
-							fresult = func->exec(bb->chain->at(1), bb->chain->at_last() /*arg+count-1*/, bb->chain, sess);
-						} else {
-							ref_assert(count==1);
-							fresult = func->exec(0, 0, bb->chain, sess);
-						}
-						pastWay.pop(); // не нужно хранить <>
-						iter = fresult->at_first();
-						iend = fresult->at_afterlast();
-					} else {  // (F)
-						pastWay.pop();
-						tmpForInstances->save(bb, tmpForInstances);
-						pastWay.put(tmpForInstances->at_last(), tmpForInstances->at_last());  // оптимизировать (на ~ setForTop)
-					}
-
+				if (lnkiter==lnknend){ // скобка пуста
+					bb->chain = new RefChain(sess);
+					//ref_assert(lnkbr->i1 == lnkbr->i2);
 					continue;
 				}
+
+				// строим тело скобки. сначала размер, затем копируем
+				size_t count = 0;
+				while(lnkiter != lnknend){
+					count += lnkiter->i2 - lnkiter->i1 + 1;
+					++lnkiter;
+				}
+				++lnkbr; // было на скобке
+				RefData
+					**arg = (RefData**)malloc(count * sizeof(RefData*)),
+					**dest = arg;
+				if (!arg) RUNTIMEERRORn("memory limit");
+				tmpsizet = 0;
+				while(lnkbr != lnknend){
+					tmpsizet = lnkbr->i2 - lnkbr->i1 + 1; // используем переменную для копирования
+					memcpy(dest, lnkbr->i1, sizeof(RefData*)*tmpsizet);
+					dest += tmpsizet;
+					++lnkbr;
+				}
+				bb->chain = new RefChain(sess, arg, count);
+
+				pastWay.flushfrom(br_index);  // теперь скобка - последний терм в обработанной очереди
+
+				//std::cout << "\n()()\tready: " << bb->debug();
+
+				if (ref_dynamic_cast<RefExecBrackets>(bb)){  //  <F>
+					//вычислить функцию
+					ref_assert(count>0);
+					//TODO: сделать привязку функциональных вызовов по именнованым областям
+					RefWordBase *fname = ref_dynamic_cast<RefWordBase>(*arg);
+					RefFunctionBase *func = 0;
+					if (!fname || !(func = this->findFunction(fname->getValue()))){
+						RUNTIMEERRORs(sess, "Function not found in program");
+					}
+					RefChain *fresult;
+					if (count > 1){
+						//fresult = func->exec(arg+1, arg+count-1, bb->chain, sess);
+						fresult = func->exec(bb->chain->at(1), bb->chain->at_last() /*arg+count-1*/, bb->chain, sess);
+					} else {
+						ref_assert(count==1);
+						fresult = func->exec(0, 0, bb->chain, sess);
+					}
+					pastWay.pop(); // не нужно хранить <>
+					iter = fresult->at_first();
+					iend = fresult->at_afterlast();
+				} else {  // (F)
+					pastWay.pop();
+					pastWay.put(reinterpret_cast<RefData**>(&bb), reinterpret_cast<RefData**>(&bb), bb);  // оптимизировать (на ~ setForTop)
+				}
+
+				continue;
+			}
 		} // end: if iter==end
 
 		// перед нами отрезок
@@ -421,8 +368,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			brackets.put(pastWay.getLength(), 1);      // 1 - чтобы не конфликтовать с отрезками, если эта скобка с индексом 0
 			RefData *tmp = tmpbr->getNewInstance(sess);
 			((RefDataBracket*)tmp)->chain = 0;//tmpbr->chain;
-			tmpForInstances->save(tmp, tmpForInstances);
-			pastWay.put(0, tmpForInstances->at_last());  // первый 0 - означает что второй - RefDataBracket
+			pastWay.put(0, &tmp, tmp);  // первый 0 - означает что второй - RefDataBracket
 
 			// прыгаем в скобку
 			iend = tmpbr->chain->at_afterlast();
@@ -439,14 +385,14 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				//std::cout << "\n\t\t\t" << (*iter)->debug();
 				++iter;
 			} while(iter != iend && (*iter)->isRefSymbol());
-			pastWay.put(ifrom, iter-1);
+			pastWay.put(ifrom, iter-1, 0);
 			continue;
 		}
 
 		// УКАЗАТЕЛЬ (терм, но не символ)
 		RefPoint *rpoint = ref_dynamic_cast<RefPoint>(*iter);
 		if (rpoint){
-			pastWay.put(iter, iter);
+			pastWay.put(iter, iter, 0);
 			++iter;
 			continue;
 		}

@@ -350,9 +350,9 @@ public:
 
 template <class T1, class T2, class T3>
 class PooledTuple3 {
-protected:
+public:
 	struct TUPLE3 {T1 i1; T2 i2; T3 i3;};
-
+protected:
 	TUPLE3* pool;		// нумераци€ с 1
 	size_t last_ind;	// индекс последнего в стеке элемента
 	size_t poolsize;
@@ -476,6 +476,29 @@ public:
 #endif
 		memset(pool, 0xff, sizeof(TUPLE3));
 	};
+
+
+	inline TUPLE3* getPoolLinkForIndex(size_t idx){
+		ref_assert( idx <= last_ind );
+		return pool + idx + 1;
+	};
+
+	inline TUPLE3* getPoolLinkAfterLast(){
+		return pool+last_ind+1;
+	};
+
+	inline void flushfrom(size_t idx){
+		ref_assert(idx <= last_ind);
+		#ifdef TESTCODE
+		while(last_ind > idx+1){
+			memset(pool+last_ind, 0xff, sizeof(TUPLE3));
+			last_ind--;
+		}
+		#else
+		last_ind = idx+1;
+		#endif
+	};
+
 
 };
 
