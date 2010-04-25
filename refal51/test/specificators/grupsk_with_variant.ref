@@ -1,0 +1,7 @@
+$ENTRY Go { = <Run 'abcdefghijklmnopqrstuvwxyz'>; }
+
+Run {
+	e.1 'd' { e. { 'A' | 'M' | 'l' | 'X' }  e. }.grsk s.4 s.5 'v' e.6 = <Prout '@grsk = ' @.grsk>;
+	e.e = <Prout 'bad group'>;
+}
+

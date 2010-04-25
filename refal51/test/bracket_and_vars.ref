@@ -1,0 +1,10 @@
+$ENTRY Go {
+	= <F ('code' ("text" 'AxBC')) 'abcdefgh' >;
+}
+
+F {
+	(E.code) e. 'x'  E.next  
+					=  <Prout 'first - error'>;
+
+	e.e = <Prout 'second - ok'>;
+}

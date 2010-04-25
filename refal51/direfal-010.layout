@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="src/SAXLoaderHeap.h" open="1" top="0" tabpos="1">
+		<Cursor position="13" topLine="0" />
+	</File>
+	<File name="src/SAXLoader_expat.h" open="0" top="0" tabpos="0">
+		<Cursor position="551" topLine="6" />
+	</File>
+	<File name="src/data.h" open="1" top="0" tabpos="2">
+		<Cursor position="954" topLine="13" />
+	</File>
+	<File name="src/main.cpp" open="1" top="1" tabpos="5">
+		<Cursor position="1712" topLine="42" />
+	</File>
+	<File name="src/program.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="15174" topLine="409" />
+	</File>
+	<File name="src/program.h" open="1" top="0" tabpos="3">
+		<Cursor position="1119" topLine="22" />
+	</File>
+	<File name="src/session.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="11231" topLine="308" />
+	</File>
+	<File name="src/symbols.h" open="1" top="0" tabpos="4">
+		<Cursor position="4737" topLine="153" />
+	</File>
+</CodeBlocks_layout_file>

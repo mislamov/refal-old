@@ -1,0 +1,33 @@
+$ENTRY  Go {
+	= <Prout <Do <Pair '(firstbr)outofbr(next first br(second br))'>>>;
+}
+
+
+Do {
+	(e.odin) = "error odin";
+	(e.odin)(e.dva) = "error dva";
+	(e.odin)e.nolnol(e.nolodin(e.dva)) = "success:" "second br=" e.dva;
+	e.nolnol = "error tri";
+};
+
+Pair{
+   e.X  =  <Pairodin (( ))( e.X)>
+   };
+
+Pairodin {
+   (e.L( e.odin ))( '('e.dva )e.R  =  <Pairodin (e.L( e.odin)( ))( e.dva )e.R>;
+   (e.L( e.odin)(e.dva ))( ')'e.tri )e.R  =  <Pairodin (e.L( e.odin(e.dva) ))( e.tri )e.R>;
+   (( e.odin ))( ')'e.tri )e.R  =  <Prout '*** ERROR: Unbalanced ")"'
+        'found by Pair:'>  <Prout '*** 'e.odin')'>;
+   (e.L( e.odin ))( s.dva e.tri )e.R  =  <Pairodin (e.L( e.odin s.dva ))( e.tri )e.R>;
+   (( e.odin ))( )  =  e.odin;
+   (e.L( e.odin ))( )  =  <Prout '*** ERROR: Unbalanced "(" '
+        'found by Pair:'> <Prlmb e.L>;
+   };
+
+/*  PRint Left MultiBracket */
+Prlmb {
+   (e.odin)e.dva  =  <Prout '*** 'e.odin'('> <Prlmb e.dva>;
+     =
+   }
+   
