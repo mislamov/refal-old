@@ -24,5 +24,42 @@
 #include "session.h"	// сопоставление
 #include "system.h"		// основной модуль
 
+#include "SAXLoader_expat.h"
+
+// перенаправляем поток в файл
+static	std::streambuf *stdbbuf = std::cout.rdbuf();
+static	std::streambuf *nullbuf = 0;
+static  bool verbose = false;
+inline void __verbose_off()  {  if (!verbose){ std::cout.rdbuf(nullbuf); };  }
+inline void __verbose_on()   {  if (!verbose){ std::cout.rdbuf(stdbbuf); };  }
+
+
+typedef enum {
+    XML, XMLCODE, REF
+} PROGRAMTYPE;
+
+
+class RefFunction {
+    RefProgram *program;
+    unistring   function;
+    bool success;
+public:
+    RefFunction(RefProgram *p, unistring fname){ success = false; program = p; function = fname; };
+    bool isSuccess(){ return success; };
+    void execute(RefChain *, unistring&, Session *sess=0);  // for compiled refal-chains
+    void execute(unistring,  unistring&);  // for chars
+};
+
+
+
+class RefalProgram {
+    RefProgram *program;
+    bool success;
+public:
+    RefalProgram (PROGRAMTYPE type, unistring fname,  int argc, char **argv);
+    RefFunction *getFunction(unistring fname);
+    bool isSuccess(){ return success; };
+    unistring getProgramName();
+};
 
 #endif

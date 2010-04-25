@@ -78,7 +78,6 @@ void XMLCALL startElement(void *data, const XML_Char *name, const XML_Char **att
     ref_assert(loader!=0);
 
     unistring theCommand = toWstring(name);
-	//std::cout << "\nSTART: " << theCommand << "\n";
     loader->activeTag.push(theCommand);
 
     loader->currentchars = _L("");  // поскольку чтение строк, содержащих перенос - разделено в этом SAX, то строки набираются накоплением (конкатенациями) и обнуляются для новых тегов
@@ -115,54 +114,54 @@ void XMLCALL startElement(void *data, const XML_Char *name, const XML_Char **att
                                         // ничего не делаем, так как при закрытии тега воспользуемся менеджером переменных и текущим тексом=описателем переменной
                                     } else
                                         if ( theCommand.compare(_L("POINT")) == 0) {  //
-											loader->createChainToStack();
-										} else
-                                        if ( theCommand.compare(_L("TEXT")) == 0) {  //
-                                            // ничего не делаем, так как при закрытии тега все сделаем
+                                            loader->createChainToStack();
                                         } else
-                                            if ( theCommand.compare(_L("BRACKET")) == 0 ) {
-                                                loader->createChainToStack();
+                                            if ( theCommand.compare(_L("TEXT")) == 0) {  //
+                                                // ничего не делаем, так как при закрытии тега все сделаем
                                             } else
-                                                if ( theCommand.compare(_L("GROUP")) == 0) {
-                                                    if (! attributes_value(attributes, "name")) SYSTEMERRORn("GROUP WITHOUT name-attribute");
-                                                    *(loader->getCurrChain()) += (new RefVarChains("", toWstring(attributes_value(attributes, "name"))));
+                                                if ( theCommand.compare(_L("BRACKET")) == 0 ) {
                                                     loader->createChainToStack();
                                                 } else
-                                                    if ( theCommand.compare(_L("VARIANTS")) == 0) {
-                                                        if (! attributes_value(attributes, "name")) {
-                                                            theCommand = EmptyUniString;
-                                                        } else {
-                                                            theCommand = toWstring(attributes_value(attributes, "name"));
-                                                        }
-                                                        *(loader->getCurrChain()) += (new RefVariantsChains(theCommand));
+                                                    if ( theCommand.compare(_L("GROUP")) == 0) {
+                                                        if (! attributes_value(attributes, "name")) SYSTEMERRORn("GROUP WITHOUT name-attribute");
+                                                        *(loader->getCurrChain()) += (new RefVarChains("", toWstring(attributes_value(attributes, "name"))));
                                                         loader->createChainToStack();
                                                     } else
-                                                        if ( theCommand.compare(_L("THE-VARIANT")) == 0) { //       | => x
-                                                            RefChain* varch = loader->extractCurrChainFromStack();
-                                                            RefVariantsChains *uv = reinterpret_cast<RefVariantsChains*>(* loader->getCurrChain()->at_last());
-                                                            #ifdef TESTCODE
-                                                            if (! varch) AchtungERRORn;
-                                                            if (! dynamic_cast<RefVariantsChains *>(uv)) AchtungERRORn;
-                                                            #endif
-                                                            uv->addTempl(varch);
+                                                        if ( theCommand.compare(_L("VARIANTS")) == 0) {
+                                                            if (! attributes_value(attributes, "name")) {
+                                                                theCommand = EmptyUniString;
+                                                            } else {
+                                                                theCommand = toWstring(attributes_value(attributes, "name"));
+                                                            }
+                                                            *(loader->getCurrChain()) += (new RefVariantsChains(theCommand));
                                                             loader->createChainToStack();
                                                         } else
-                                                            if ( theCommand.compare(_L("REPEAT")) == 0 ) {
-                                                                infint min = str2infint(toWstring(attributes_value(attributes, "from")));
-                                                                infint max = str2infint(toWstring(attributes_value(attributes, "to")));
-
-                                                                RefRepeaterChain *repeater = new RefRepeaterChain(min, max);
-                                                                loader->putValueToStack( "REPEAT" , repeater);
-                                                                loader->createPatternToStack();
+                                                            if ( theCommand.compare(_L("THE-VARIANT")) == 0) { //       | => x
+                                                                RefChain* varch = loader->extractCurrChainFromStack();
+                                                                RefVariantsChains *uv = reinterpret_cast<RefVariantsChains*>(* loader->getCurrChain()->at_last());
+                                                                #ifdef TESTCODE
+                                                                if (! varch) AchtungERRORn;
+                                                                if (! dynamic_cast<RefVariantsChains *>(uv)) AchtungERRORn;
+                                                                #endif
+                                                                uv->addTempl(varch);
+                                                                loader->createChainToStack();
                                                             } else
-                                                                if ( theCommand.compare(_L("CUTTER")) == 0 ) {
+                                                                if ( theCommand.compare(_L("REPEAT")) == 0 ) {
+                                                                    infint min = str2infint(toWstring(attributes_value(attributes, "from")));
+                                                                    infint max = str2infint(toWstring(attributes_value(attributes, "to")));
+
+                                                                    RefRepeaterChain *repeater = new RefRepeaterChain(min, max);
+                                                                    loader->putValueToStack( "REPEAT" , repeater);
+                                                                    loader->createPatternToStack();
                                                                 } else
-                                                                    if ( theCommand.compare(_L("IF")) == 0 ) {
-                                                                        bool isnot = (attributes[0] && toWstring(attributes_value(attributes, "not"))=="true");
-                                                                        loader->currentCondition = new RefUserCondition(isnot);
+                                                                    if ( theCommand.compare(_L("CUTTER")) == 0 ) {
                                                                     } else
-                                                                        if ( theCommand.compare(_L("ERROR")) == 0 ) {
-                                                                        }
+                                                                        if ( theCommand.compare(_L("IF")) == 0 ) {
+                                                                            bool isnot = (attributes[0] && toWstring(attributes_value(attributes, "not"))=="true");
+                                                                            loader->currentCondition = new RefUserCondition(isnot);
+                                                                        } else
+                                                                            if ( theCommand.compare(_L("ERROR")) == 0 ) {
+                                                                            }
 };
 
 
@@ -172,104 +171,104 @@ void XMLCALL  endElement(void *data, const XML_Char *name) {
 
     //RefObject *tmpobj = 0;
     unistring theCommand = toWstring(name);
-	//std::cout << "\nEND: " << theCommand << "\n";
+    //std::cout << "\nEND: " << theCommand << "\n";
     RefData* tmpvdata = 0;
 
-        if (! theCommand.compare(_L("ERROR"))) {
-            SYSTEMERRORn(loader->currentchars);
+    if (! theCommand.compare(_L("ERROR"))) {
+        SYSTEMERRORn(loader->currentchars);
+    } else
+        if (! theCommand.compare(_L("BEGIN"))) {
+            // модуль прочитан полностью
+            loader->currentModule->initilizeAll(loader->currentProgram);
         } else
-            if (! theCommand.compare(_L("BEGIN"))) {
-                // модуль прочитан полностью
-                loader->currentModule->initilizeAll(loader->currentProgram);
+            if ( theCommand.compare(_L("FUNCTION")) == 0) {
+                #ifdef TESTCODE
+                if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not RefUserFunction in FUNCTION-stack !!!");
+                #endif
+                RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
+                loader->currentModule->setFunctionByName(f->getName(), f);
             } else
-                if ( theCommand.compare(_L("FUNCTION")) == 0) {
+                if ( theCommand.compare(_L("TEMPLATE")) == 0) {
                     #ifdef TESTCODE
-                    if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not RefUserFunction in FUNCTION-stack !!!");
+                    if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERRORn("not TEMPLATE in TEMPLATE-stack !!!");
                     #endif
-                    RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
-                    loader->currentModule->setFunctionByName(f->getName(), f);
+                    //RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
+                    RefUserTemplate *t =  (RefUserTemplate*)( loader->extractValueFromStack("TEMPLATE") );
+                    //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
+                    //loader->getCurrChain()->dearoundByDots(); // шаблону доты не нужны
+                    t->setLeftPart( loader->extractCurrChainFromStack() );
+                    loader->currentModule->setTemplateByName( t->getName(), t);
                 } else
-                    if ( theCommand.compare(_L("TEMPLATE")) == 0) {
+                    if ( theCommand.compare(_L("SENTENCE")) == 0) {
                         #ifdef TESTCODE
-                        if (! dynamic_cast<RefUserTemplate *>(loader->getValueFromStack("TEMPLATE"))) SYSTEMERRORn("not TEMPLATE in TEMPLATE-stack !!!");
+                        if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
+                        if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not FUNCTION in FUNCTION-stack !!!");
                         #endif
-                        //RefUserTemplate *t =  dynamic_cast<RefUserTemplate*>( loader->extractValueFromStack("TEMPLATE") );
-                        RefUserTemplate *t =  (RefUserTemplate*)( loader->extractValueFromStack("TEMPLATE") );
-                        //std::cout << "\n\nlp: " << loader->getCurrChain()->toString() << "\n\n" << std::flush;
-                        //loader->getCurrChain()->dearoundByDots(); // шаблону доты не нужны
-                        t->setLeftPart( loader->extractCurrChainFromStack() );
-                        loader->currentModule->setTemplateByName( t->getName(), t);
+                        RefSentence     *sent =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
+                        RefChain *rch = loader->extractCurrChainFromStack();
+                        #ifdef TESTCODE
+                        if (! dynamic_cast<RefChain*>(rch)) SYSTEMERRORn("alarm xml construct");
+                        #endif
+                        sent->rightPart = (RefChain*)rch;
+                        sent->leftPart  = loader->extractCurrChainFromStack();
+                        RefUserFunction *f =  (RefUserFunction*)loader->getValueFromStack("FUNCTION");
+                        (f->body).push_back(sent);
                     } else
-                        if ( theCommand.compare(_L("SENTENCE")) == 0) {
-                            #ifdef TESTCODE
-                            if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
-                            if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not FUNCTION in FUNCTION-stack !!!");
-                            #endif
-                            RefSentence     *sent =  (RefSentence*)loader->extractValueFromStack("SENTENCE");
-                            RefChain *rch = loader->extractCurrChainFromStack();
-                            #ifdef TESTCODE
-                            if (! dynamic_cast<RefChain*>(rch)) SYSTEMERRORn("alarm xml construct");
-                            #endif
-                            sent->rightPart = (RefChain*)rch;
-                            sent->leftPart  = loader->extractCurrChainFromStack();
-                            RefUserFunction *f =  (RefUserFunction*)loader->getValueFromStack("FUNCTION");
-                            (f->body).push_back(sent);
-                        } else
-                            if ( theCommand.compare(_L("LEFT-PART")) == 0) {
-                                //loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
+                        if ( theCommand.compare(_L("LEFT-PART")) == 0) {
+                            //loader->getCurrChain()->aroundByDots(); // левые части - шаблоны - должны быть с дотами, чтоб сопоставлять в паралельных потоках не меня шаблон
 
+                            /*
+                                #ifdef TESTCODE
+                                if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
+                                #endif
+                                RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
+                                s->leftPart = loader->extractCurrChainFromStack();
+                            */
+                            #ifdef TESTCODE
+                            if (! dynamic_cast<RefChain*>(loader->getCurrChain()))  SYSTEMERRORn("alarm");
+                            #endif
+                            //std::cout << "\n\n\n" << loader->getCurrChain()->toString() << "\n\n\n";
+                        } else
+                            if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
                                 /*
                                     #ifdef TESTCODE
                                     if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
                                     #endif
                                     RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
-                                    s->leftPart = loader->extractCurrChainFromStack();
+                                    s->rightPart = loader->extractCurrChainFromStack();
                                 */
-                                #ifdef TESTCODE
-                                if (! dynamic_cast<RefChain*>(loader->getCurrChain()))  SYSTEMERRORn("alarm");
-                                #endif
-                                //std::cout << "\n\n\n" << loader->getCurrChain()->toString() << "\n\n\n";
                             } else
-                                if ( theCommand.compare(_L("RIGHT-PART")) == 0) {
-                                    /*
-                                        #ifdef TESTCODE
-                                        if (! dynamic_cast<RefSentence *>(loader->getValueFromStack("SENTENCE"))) SYSTEMERRORn("not SENTENCE in SENTENCE-stack !!!");
-                                        #endif
-                                        RefSentence  *s =  (RefSentence*)loader->getValueFromStack("SENTENCE");
-                                        s->rightPart = loader->extractCurrChainFromStack();
-                                    */
-                                } else
-                                    if ( theCommand.compare(_L("EXEC")) == 0) {  //     <
+                                if ( theCommand.compare(_L("EXEC")) == 0) {  //     <
 
-                                        RefChain* tmp = loader->extractCurrChainFromStack();
-                                        *(loader->getCurrChain()) += new RefExecBrackets(0, tmp);
+                                    RefChain* tmp = loader->extractCurrChainFromStack();
+                                    *(loader->getCurrChain()) += new RefExecBrackets(0, tmp);
+                                } else
+                                    if ( theCommand.compare(_L("VAR")) == 0) {  //
+                                        // берем по текущему тексту и получаем ссылку на переменную
+                                        unistring vardescr = loader->currentchars;
+                                        unistring vname = getVarName(vardescr); // теперь vname - имя vardescr - тип
+                                        *(loader->getCurrChain()) += loader->getVariableByTypename(vardescr, vname);
+                                        //std::cout << loader->getCurrChain()->second->toString();
                                     } else
-                                        if ( theCommand.compare(_L("VAR")) == 0) {  //
+                                        if ( theCommand.compare(_L("LNK")) == 0) {  //
                                             // берем по текущему тексту и получаем ссылку на переменную
-                                            unistring vardescr = loader->currentchars;
-                                            unistring vname = getVarName(vardescr); // теперь vname - имя vardescr - тип
-                                            *(loader->getCurrChain()) += loader->getVariableByTypename(vardescr, vname);
+                                            *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars);
                                             //std::cout << loader->getCurrChain()->second->toString();
                                         } else
-                                            if ( theCommand.compare(_L("LNK")) == 0) {  //
-                                                // берем по текущему тексту и получаем ссылку на переменную
-                                                *(loader->getCurrChain()) += new RefLinkToVariable(loader->currentchars);
-                                                //std::cout << loader->getCurrChain()->second->toString();
-                                            } else
                                             if ( theCommand.compare(_L("POINT")) == 0) {  //
-												RefChain *chn = loader->extractCurrChainFromStack();
-												ref_assert(chn->getLength()==1);
-												RefLinkToVariable *rltv = ref_dynamic_cast<RefLinkToVariable>(*(chn->at_first()));
-												RefVariable *rv = ref_dynamic_cast<RefVariable>(*(chn->at_first()));
-												if (rltv != 0){
-													*(loader->getCurrChain()) += new RefPointLink(rltv, 0);
-												} else
-												if (rv != 0){
-													*(loader->getCurrChain()) += new RefPointVariable(rv, 0);
-												} else {
-													SYSTEMERRORn("ref-POINT LOADER ERROR");
-												}
-												delete chn;
+                                                RefChain *chn = loader->extractCurrChainFromStack();
+                                                ref_assert(chn->getLength()==1);
+                                                RefLinkToVariable *rltv = ref_dynamic_cast<RefLinkToVariable>(*(chn->at_first()));
+                                                RefVariable *rv = ref_dynamic_cast<RefVariable>(*(chn->at_first()));
+                                                if (rltv != 0) {
+                                                    *(loader->getCurrChain()) += new RefPointLink(rltv, 0);
+                                                } else
+                                                    if (rv != 0) {
+                                                        *(loader->getCurrChain()) += new RefPointVariable(rv, 0);
+                                                    } else {
+                                                        SYSTEMERRORn("ref-POINT LOADER ERROR");
+                                                    }
+                                                delete chn;
                                             } else
                                                 if ( theCommand.compare(_L("TEXT")) == 0) {  //
                                                     unistring text = loader->currentchars;
@@ -369,7 +368,7 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlF
         }
         done = feof(ifile);
 
-		
+
 
         if (XML_Parse(p, Bufff, len, done) == XML_STATUS_ERROR) {
             fprintf(stderr, "Parse error at line %" XML_FMT_INT_MOD "u:\n%s\n",
@@ -381,6 +380,36 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlF
         if (done)
             break;
     }
+    XML_ParserFree(p);
+    return 0;
+
+
+};
+
+int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, const char* xmlCode, size_t len) {
+    XML_Parser p = XML_ParserCreate(NULL);
+    if (! p) {
+        fprintf(stderr, "Couldn't allocate memory for parser\n");
+        return 1;
+    }
+
+    LoaderHeap *loaderHeap = new LoaderHeap(mod, prog);;
+    XML_SetUserData(p, loaderHeap);
+    XML_SetElementHandler(p, startElement, endElement);
+    XML_SetCharacterDataHandler(p, charData );
+
+    bool done;
+    if (XML_Parse(p, xmlCode, len, done) == XML_STATUS_ERROR) {
+        fprintf(stderr, "Parse error at line %" XML_FMT_INT_MOD "u:\n%s\n",
+                XML_GetCurrentLineNumber(p),
+                XML_ErrorString(XML_GetErrorCode(p)));
+        return 3;
+    }
+   /*if (!done){
+        fprintf(stderr, "Parse error: done != true");
+        return 4;
+    }*/
+
     XML_ParserFree(p);
     return 0;
 

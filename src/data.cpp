@@ -188,8 +188,10 @@ RefChain* RefChain::operator+=(RefData *ch) {
 RefChain* RefChain::operator+=(RefChain *ch) {
 	ref_assert(!isMemoryProtected());
 
-	sysize += (ch->leng);
-	first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
+    if (sysize < leng + ch->leng){
+        sysize += (ch->leng);
+        first   =   (RefData**) realloc(first, sizeof(RefData*)*sysize );
+    }
 	//std::cout << "\n" << i1 << " " << ++i2 << " " << i3 << " " << i4 << " " << i5;
 	//LOG("realloc");
 	if (! first) RUNTIMEERRORn("memory limit");
@@ -246,7 +248,9 @@ unistring RefChain::explode(){
 
 	if (!this){
 		result = " $null ";
-	}else{
+	} else if (isEmpty()){
+	    result = " $empty ";
+	} else {
 		for (size_t i=0; i<leng; i++) {
 #ifdef TESTCODE
 			if (! first[i]) AchtungERRORn;
@@ -290,8 +294,8 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 		&& (sess->matching(
 		0,
 		this->chain,
-		(*(br->chain))[0],
-		(*(br->chain))[-1],
+		br->chain->at_first(),
+		br->chain->isEmpty() ? 0 : br->chain->at_last(),
 		br->chain,
 		false
 		)
@@ -310,7 +314,7 @@ TResult RefStructBrackets::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 	// if (br->chain == this->chain) BACK;  - проверить сильно оптимизирует ли. только в сочентании с частью в init!
 	RefStructBrackets** br = sess->restoreBracketsFromView(this);
 
-	if (sess->matching(0, this->chain, (*((*br)->chain))[0],  (*((*br)->chain))[0]?(*((*br)->chain))[-1]:0, (*br)->chain, true)){
+	if (sess->matching(0, this->chain, (*br)->chain->at_first(),  (*br)->chain->at_first()?(*br)->chain->at_last():0, (*br)->chain, true)){
 		sess->saveBracketsFromView(this, br);
 		sess->MOVE_TO_next_template(tpl);
 		r = (RefData**)br;
@@ -365,7 +369,7 @@ inline bool eq_not_empty(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br)
 inline bool eq(RefChain *ch1, RefChain *ch2){
 	if (ch1->leng != ch2->leng) return false; // не одинаковые по физической длине. Переделать когда будет монтирование
 	if (! ch1->leng) return true; // пустые
-	return eq_not_empty((*ch1)[0], (*ch1)[-1], (*ch2)[0], (*ch2)[-1]);
+	return eq_not_empty(ch1->at_first(), ch1->at_last(), ch2->at_first(), ch2->at_last());
 };
 
 inline bool eq(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br){
@@ -600,9 +604,9 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 				if (cond){
 					subchains.put(point+1, end);
 					if (! cond->getLeftPart()->isEmpty())
-						subchains.put(cond->getLeftPart()->operator [](0), cond->getLeftPart()->operator [](-1)+1);
+						subchains.put(cond->getLeftPart()->at_first(), cond->getLeftPart()->at_afterlast());
 					if (! cond->getRightPart()->isEmpty())
-						subchains.put(cond->getRightPart()->operator [](0), cond->getRightPart()->operator [](-1)+1);
+						subchains.put(cond->getRightPart()->at_first(), cond->getRightPart()->at_afterlast());
 					break;
 				}
 		}
@@ -881,7 +885,11 @@ TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 	sess->saveVar(this, l?0:l, l?l-1:r, lr_own, 0);
 	sess->putVarMap( vm );
 
-	tpl = templ->at_last();
+    if (templ->isEmpty()){
+        tpl = 0;
+    } else {
+        tpl = templ->at_last();
+    }
 	return BACK;
 };
 
@@ -1200,7 +1208,7 @@ unistring RefPoint::explode(){
 	}// else {
 		ss << chain_to_text(l, r);
 	//}
-	
+
 
 	ss << "]";
 	return ss.str();

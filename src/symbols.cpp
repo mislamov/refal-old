@@ -96,7 +96,7 @@ unistring the_debug_text(RefData **a, RefData **b){
 
 
 
-RefChain *text_to_chain(Session *sess, char *buffer){
+RefChain *text_to_chain(Session *sess, const char *buffer){
 	RefChain *result = new RefChain(sess, 1024);
 	while (*buffer){
 		(*result) += newRefAlpha(sess, *buffer);
@@ -104,7 +104,7 @@ RefChain *text_to_chain(Session *sess, char *buffer){
 	}
 	return result;
 }
-RefChain *text_to_chain(Session *sess, char *buffer, size_t length){
+RefChain *text_to_chain(Session *sess, const char *buffer, size_t length){
 	RefChain *result = new RefChain(sess, length);
 	for (size_t i=0; i<length; i++){
 		if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
@@ -146,7 +146,7 @@ void RefAlpha::alphaMapDestroy(){
 unistring RefWord::debug() {
 		std::ostringstream ss;
         ss << '"' << replace(value, "\n", "\\n") << "\" ";
-        return ss.str();	
+        return ss.str();
 };
 */
 

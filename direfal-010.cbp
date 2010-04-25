@@ -11,8 +11,9 @@
 				<Option object_output="obj/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-v f.ref" />
+				<Option parameters="-v f.ref 1 2 3" />
 				<Compiler>
+					<Add option="-O3" />
 					<Add option="-Wall" />
 					<Add option="-pg" />
 					<Add option="-g" />
@@ -26,7 +27,7 @@
 				<Option object_output="obj/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-v f.ref" />
+				<Option parameters="-v f.ref 1 2 3" />
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
 					<Add option="-O3" />
@@ -40,11 +41,14 @@
 			<Add option="-Wall" />
 			<Add option="-finline-functions" />
 			<Add directory="/usr/include" />
+			<Add directory="include" />
 		</Compiler>
 		<Linker>
 			<Add option="-lexpat" />
 			<Add directory="/usr/lib" />
+			<Add directory="lib" />
 		</Linker>
+		<Unit filename="fn.ref" />
 		<Unit filename="src/SAXLoaderHeap.cpp" />
 		<Unit filename="src/SAXLoaderHeap.h" />
 		<Unit filename="src/SAXLoader_expat.cpp" />
@@ -52,6 +56,7 @@
 		<Unit filename="src/config.h" />
 		<Unit filename="src/data.cpp" />
 		<Unit filename="src/data.h" />
+		<Unit filename="src/direfal.cpp" />
 		<Unit filename="src/direfal.h" />
 		<Unit filename="src/function.cpp" />
 		<Unit filename="src/function.h" />

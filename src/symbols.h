@@ -32,8 +32,8 @@ RefAlphaBase* newRefAlpha(Session *, unichar);
 unistring the_explode(RefData **a, RefData **b);
 unistring the_text(RefData **a, RefData **b);
 unistring the_debug_text(RefData **a, RefData **b);
-RefChain *text_to_chain(Session *sess, char *buffer);
-RefChain *text_to_chain(Session *sess, char *buffer, size_t length);
+RefChain *text_to_chain(Session *sess, const char *buffer);
+RefChain *text_to_chain(Session *sess, const char *buffer, size_t length);
 
 
 

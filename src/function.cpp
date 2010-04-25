@@ -23,15 +23,15 @@ RefChain* RefFunctionBase::exec(RefData** l, RefData** r, RefChain* lr_own, Sess
 
 
 void RefUserFunction::initilizeAll(RefProgram *program){
-            std::list<RefSentence *>::iterator 
+            std::list<RefSentence *>::iterator
 					sent = body.begin(), // перебор предложений функции
 					stopsent = body.end();
 			while (sent != stopsent){
 				//(*sent)->leftPart->compile( (*sent)->leftPart, program );  компиляция левой части делается строкой ниже вместе с правой частью
-				
+
 				//std::cout << "\n#######\n" << (*sent)->leftPart->debug() << "\n--------\n" << (*sent)->rightPart->debug() << "\n#######\n";
 				(*sent)->rightPart->compile( (*sent)->leftPart, program );
-				++sent;                
+				++sent;
             };  // std: body.end() - элемент после последнего
 
 };
@@ -77,7 +77,7 @@ unistring RefUserFunction::debug(){
 
 	for(std::list<RefSentence *>::iterator sent = body.begin(), send = body.end();
 		sent != send;
-		++sent) 
+		++sent)
 	{
 		result += (*sent)->leftPart->debug();
 		result += "  =  ";
@@ -105,7 +105,7 @@ TResult RefUserCondition::init(RefData **&tpl, Session* sess, RefData **&l, RefD
 	SessionStatePoint *sess_state = sess->getState();
 
 
-	if (sess->matching(this, leftPart, (*rp)[0], (*rp)[-1], rp, false) == !withnot){
+	if (sess->matching(this, leftPart, rp->at_first(), rp->at_last(), rp, false) == !withnot){
 		if (withnot){ sess->backToState(sess_state); };
 		sess->saveConditionArg(this, rp); // сохраняем аргумент условия для возможного отката
 		sess->MOVE_TO_next_template(tpl);
@@ -124,7 +124,7 @@ TResult RefUserCondition::back(RefData **&tpl, Session* sess, RefData **&l, RefD
 	RefChain *rp  =  sess->restoreConditionArg(this);
 
 	// отрицательные условия всегда пробрасывают откат, так как их открытые переменные запрещено использовать
-	if (!withnot && sess->matching(this, leftPart, (*rp)[0], (*rp)[-1], rp, true)){
+	if (!withnot && sess->matching(this, leftPart, rp->at_first(), rp->at_last(), rp, true)){
 		sess->saveConditionArg(this, rp); // возвращаем аргумент условия в хранилище
 		sess->MOVE_TO_next_template(tpl);
 		return GO;

@@ -17,7 +17,6 @@
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 #include "direfal.h"
-#include "SAXLoader_expat.h"
 
 #include "stringutils.h"
 
@@ -40,7 +39,9 @@ void help(char *pname){
 }
 
 int main ( int argc, char **argv ) {
-	bool verbose = false;
+    int ref_argc = 0;
+    char **ref_argv = 0;
+
 	bool debug = false;
 
 	if (argc <= 1) {
@@ -69,8 +70,8 @@ int main ( int argc, char **argv ) {
 
 		// имя файла программы и аргументы
 		prog = argv[i];
-		argc = argc - i;
-		argv = (argc-1)? &(argv[i]) : 0;
+		ref_argc = argc - i;
+		ref_argv = (argc-1)? &(argv[i]) : 0;
 		break;
 	}
 
@@ -80,78 +81,31 @@ int main ( int argc, char **argv ) {
 		return -1;
 	}
 
-
-	// перенаправляем поток в файл
-	std::streambuf *stdbuf = 0;
-	std::ostream nullstream(0);
-	if (!verbose){
-		stdbuf = std::cout.rdbuf(nullstream.rdbuf());
-	}
-
-	char *scanerxmlFile = "direfal_scaner.xml";
-	RefUserModule *parser = new RefUserModule(getModuleNameFromFileName(scanerxmlFile));
-	RefProgram *program = new RefProgram( argc, argv );
-	Session *sess = new Session( program );
-
-	// сначала сгенерируем xml запускаемой рефал-программы
-	program->regModule( parser );
-	int err = loadModuleFromXmlFile ( parser, program, scanerxmlFile);
-	if (err) return err;
-
-	//std::cout << parser->debug() << "\n";
-
-
-	std::string go_function_name = "REFAL";
-	RefChain *executeline = new RefChain(sess, new RefWord (sess, go_function_name));
-	(*executeline) += text_to_chain(sess, prog);
-	RefChain *result = program->executeExpression(
-		new RefChain(sess, new RefExecBrackets(sess, executeline)),
-		sess
-		);
-	// теперь в result результат синт- и семант-ического анализа и оптимизации. При успехе - это термальное слово = имя созданного файла
-	if (!verbose){
-		std::cout.rdbuf(stdbuf);
-	}
-
-
-
-	unistring rslname = "";
-	if (result->getLength()==1 && ref_dynamic_cast<RefWordBase>(*(result->at_first()))){
-		rslname = ((RefWordBase*)*(result->at_first()))->explode();
-	} else {
-		// найдены ошибки
-		return -1;
-	}
-
-	sess->gc_clean(); // полная очистка мусора
+__verbose_off();
 
 	// запуск выполняемой программы
-	RefUserModule *mod = new RefUserModule(getModuleNameFromFileName(rslname));
-	program->regModule(mod);
-	err = loadModuleFromXmlFile ( mod, program, rslname.c_str());
-	if (err) return err;
-	#ifdef DEBUG
-	std::cout << mod->debug() << "\n";
-	#endif
+    RefalProgram userprogram(REF, prog, ref_argc, ref_argv);
+    RefFunction *GO = userprogram.getFunction("Go");
+    if (!GO) return -1;
+    unistring result;
 
 	time_t starttime, stoptime;
 	time ( &starttime );
 	#ifdef TESTCODE
-
 	std::cout << "\n";
-	//<< stringtime(localtime (&starttime))
 	std::cout << "============================================\n" << std::flush;
 	std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
-	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
 	std::cout << "program-data-size: " << co::datas << "\n" << std::flush;
 	std::cout << "program-chain-size: " << co::chains << "\n" << std::flush;
 	std::cout << "program-brack-size: " << co::stbracks << "\n" << std::flush;
 	std::cout << "============================================\n" << std::flush;
 	#endif
 
-	RefChain *polez = new RefChain(sess, new RefExecBrackets(sess, new RefChain(sess, new RefWord (sess, "Go" ))));
-	result = program->executeExpression( polez, sess );
+__verbose_on();
 
+    GO->execute(0, result);
+
+__verbose_off();
 	std::cout << "============================================\nTime: " ;
 	//#ifdef TESTCODE
 	time ( &stoptime );
@@ -159,18 +113,8 @@ int main ( int argc, char **argv ) {
 		<< difftime(stoptime, starttime) << " sec.\n"
 		<< std::flush;
 	//#endif
-	std::cout << "Result: " << result->debug() << "\n";
-
-	//sess->gc_prepare(); - не нужно, так как отметка уже снята у всех (снимается при создании и при сборке)
-	sess->gc_clean();
-
-	//delete polez;
-	//delete result;
-
-	delete program;
-	RefAlpha::alphaMapDestroy();
-	delete[] RefAlpha128::alphatable;
-
+	std::cout << "Result: " << result << "\n";
+__verbose_on();
 	#ifdef TESTCODE
 	std::cout << "program-obj-size : " << co::objs  << "\n" << std::flush;
 	//std::cout << "program-var-size : " << co::vars  << "\n" << std::flush;
@@ -185,6 +129,7 @@ int main ( int argc, char **argv ) {
 
 
 }
+
 
 int main0 ( int argc, char **argv ) {
 	char *xmlFile;
@@ -279,7 +224,6 @@ int main0 ( int argc, char **argv ) {
 	*polez += new RefExecBrackets(sess, new RefChain(sess, new RefWord (sess, "Go" )));
 
 	RefChain *result = program->executeExpression( polez, sess );
-
 	std::cout << "============================================\nTime: " ;
 	//#ifdef TESTCODE
 	time ( &stoptime );

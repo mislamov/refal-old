@@ -48,7 +48,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 		// продолжаем ранее успешное сопоставление
 		if (thetmplate->isEmpty()) return false; // дематчинг пустых векторов - неудача
 		result_sost = BACK;
-		activeTemplate = (*thetmplate)[-1];
+		activeTemplate = thetmplate->at_last();
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r), lr_chain);
 	} else {
 		// начинаем новое сопоставление с argl..argr
@@ -56,7 +56,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 		result_sost = GO;
 		l = 0;
 		r = arg_l ? arg_l-1 : 0;
-		activeTemplate = (*thetmplate)[0];
+		activeTemplate = thetmplate->at_first();
 		current_view_borders.put(arg_l, (!arg_l ? 0 : arg_r), lr_chain);
 	}
 
@@ -122,7 +122,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 #endif
 #ifdef DEBUG
 					std::cout << "FAIL JUMP " << (* termChainsJumpPoints.top())->explode() << "\n";
-#endif
+#endif  //todo:  перенести нижние проверки в соотв. init и back
 					RefVarChains* var1 = ref_dynamic_cast<RefVarChains>(* termChainsJumpPoints.top());
 					if (var1){
 						result_sost = var1->failed(activeTemplate, this, l, r, lr_chain);
@@ -318,7 +318,7 @@ bool Session::gc_prepare(RefData *save_point){
 
 void Session::gc_exclude(RefChain *chain){
 	if (!chain) return;
-	Session::gc_exclude(chain->at_first(), chain->at_last(), chain);
+	Session::gc_exclude(chain->at_first(), chain->isEmpty() ? 0 : chain->at_last(), chain);
 };
 
 void Session::gc_exclude(RefData **l, RefData **r, RefChain *own){
@@ -532,10 +532,10 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			if (! findVar(pointlink->theLink->lnk, thel, ther, thechain, thevm)){
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for &link " + pointlink->explode());
-			}			
+			}
 			if (pointlink->theLink->path != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar, thevm)){ 
+				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar, thevm)){
 					RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->lnk->toString() << " : " << pointlink->theLink->path);
 				}
 			} else {

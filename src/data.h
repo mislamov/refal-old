@@ -321,14 +321,30 @@ public:
 	RefChain*  operator+=(RefData  *ch);
 	RefChain*  operator+=(RefChain *ch); // удаляет *ch
 	RefChain*  operator+=(RefChain  ch); // только копирует *ch
-	inline RefData**  operator[](signed long idx){
+/*	inline RefData**  operator[](signed long idx){
 		return leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
-	}
-	inline RefData**  at(signed long idx){ return (*this)[idx]; };
-	inline RefData**  at_first(){ return (*this)[0]; };
-	inline RefData**  at_last(){ return (*this)[-1]; };
-	inline RefData**  at_afterlast(){ return (*this)[-1]+1; };
-	inline RefData**  at_beforefirst(){ return (*this)[0]-1; };
+	}*/
+
+	inline RefData**  at(signed long idx){
+	    ref_assert(! (idx < 0 || leng==0 || first==0));
+	    return first+idx;
+	    };
+	inline RefData**  at_first(){ return first; };
+	inline RefData**  at_last(){
+        ref_assert(! (leng==0 || first==0));
+	    return first+leng-1;
+    };
+	inline RefData**  at_afterlast(){
+	    if (leng==0 || first==0){
+	        leng=leng*0;
+	    }
+	    ref_assert(! (leng==0 || first==0));
+	    return first+leng;
+    };
+	inline RefData**  at_beforefirst(){
+   	    ref_assert(! (leng==0 || first==0));
+   	    return first-1;
+    };
 
 	inline bool isEmpty(){ return (leng==0); }
 	inline size_t getLength(){ return leng; }
