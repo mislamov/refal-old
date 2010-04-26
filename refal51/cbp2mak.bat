@@ -1,1 +1,0 @@
-cbp2mak.exe -C . direfal-010.cbp Makefile
