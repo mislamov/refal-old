@@ -154,7 +154,7 @@ RefChain* Numb (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
     return new RefChain(sess, a);
 };
 
-
+// Сравнивает два терма (по перегруженному оператору > или ==)
 RefChain*  Compare(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     RefData *a = 0;
     if (beg+1 != end){
@@ -179,7 +179,7 @@ RefChain* Mount (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
       char *buffer;
 
       std::ifstream is;
-	  unistring filename = the_explode(beg, end);		  
+	  unistring filename = the_explode(beg, end);
 	  is.open ( filename.c_str(), std::ios::binary );
 
 	  if(! is.is_open()){
@@ -219,7 +219,7 @@ RefChain* File (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 	} else {
 		sess->MOVE_TO_next_term(beg);
 	}
-	
+
 
 	std::ofstream file;
 	file.open(fname.c_str());
@@ -244,7 +244,7 @@ RefChain* Args (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 	}
 
 	RefChain *res = new RefChain(0); // не для коллектора! Хранится всю программу
-	int argc = sess->getProgram()->argc; 
+	int argc = sess->getProgram()->argc;
 	char** argv = sess->getProgram()->argv;
 
 	/*if (argc > 1) (*res) += text_to_chain(sess, argv[2]);
@@ -257,7 +257,7 @@ RefChain* Args (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 	for (int i=2; i<argc; ++i){
 		(*res) += new RefWord(0, argv[i]);  // не для коллектора! Хранится всю программу
 	}
-	
+
 
 	sess->getProgram()->argchain = res;
 	return res;
@@ -374,8 +374,8 @@ RefChain* Exit (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 #define IS_DIGIT(ch)		(ch >= 48 && ch <= 57)
 #define IS_WHITE(ch)		(ch >= 00  && ch <= 32)
 
-inline unichar NEXT_CHAR(Session *sess, RefData **&symch){ 
-	sess->MOVE_TO_next_term(symch); 
+inline unichar NEXT_CHAR(Session *sess, RefData **&symch){
+	sess->MOVE_TO_next_term(symch);
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
@@ -384,8 +384,8 @@ inline unichar NEXT_CHAR(Session *sess, RefData **&symch){
 	return sym->getValue();
 }
 
-inline unichar AFTER_CHAR(Session *sess, RefData **symch){ 
-	symch = sess->GET_next_term(symch); 
+inline unichar AFTER_CHAR(Session *sess, RefData **symch){
+	symch = sess->GET_next_term(symch);
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
@@ -394,8 +394,8 @@ inline unichar AFTER_CHAR(Session *sess, RefData **symch){
 	return sym->getValue();
 }
 
-inline unichar BEFORE_CHAR(Session *sess, RefData **symch){ 
-	symch = sess->GET_pred_term(symch); 
+inline unichar BEFORE_CHAR(Session *sess, RefData **symch){
+	symch = sess->GET_pred_term(symch);
 	if (!symch) return 0;
 	RefAlphaBase *sym = ref_dynamic_cast<RefAlphaBase>(*symch);
 	if (!sym) {
@@ -434,8 +434,8 @@ RefChain* closeAllBrackets(Session *sess, RefChain *currChain, PooledTuple2<unic
 
 inline unichar ecran_char(unichar &ch){
 	switch(ch){
-		case 't': return '\t'; 
-		case 'n': return '\n'; 
+		case 't': return '\t';
+		case 'n': return '\n';
 		case '\\':
 				ch = 0; // чтобы не экранировать " если "\\"
 				return '\\';
@@ -464,8 +464,8 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 	RefChain *result = new RefChain(sess);
 	if (!beg) {
 		return result;
-	} 
-	
+	}
+
 	sess->save_current_view_borders(beg, end, sess->current_view_lr_own());  // устанавливаем границы для GET_next_term
 	RefData** symchar = beg;
 	RefAlphaBase* sym = ref_dynamic_cast<RefAlphaBase>(*symchar);
@@ -517,7 +517,7 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 			(*tmp) += new RefWord(sess, "int");
 			(*tmp) += new RefInteger(sess, str2infint(word));
 			(*result) += new RefStructBrackets(sess, tmp);
-			
+
 			continue;
 		}
 
@@ -561,25 +561,25 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 		}
 
 		// скобки
-		if (ch == '('){ 
+		if (ch == '('){
 			result_stack.put(')', result);
 			result = new RefChain(sess, new RefWord(sess, ch));
 			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
-		if (ch == '<'){ 
+		if (ch == '<'){
 			result_stack.put('>', result);
 			result = new RefChain(sess, new RefWord(sess, ch));
 			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
-		if (ch == '{'){ 
+		if (ch == '{'){
 			result_stack.put('}', result);
 			result = new RefChain(sess, new RefWord(sess, ch));
 			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
 			continue;
 		}
-		if (ch == '['){ 
+		if (ch == '['){
 			result_stack.put(']', result);
 			result = new RefChain(sess, new RefWord(sess, ch));
 			ch = NEXT_CHAR(sess, symchar); // уходим от закр. кавычки
@@ -596,13 +596,13 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 				result_stack.top(old_chr, old_chain);
 				if (old_chr == ch){
 					result_stack.pop();
-					if (ch==')') {  
+					if (ch==')') {
 						RefAlphaBase *ab = ref_dynamic_cast<RefAlphaBase>(*(old_chain->at_last()));
 						if (!ab || (ab->getValue() != ' ')){
-							(*old_chain) += newRefAlpha(sess, ' ');  
+							(*old_chain) += newRefAlpha(sess, ' ');
 						}
 						(*old_chain) += new RefStructBrackets(sess, result);
-						//(*old_chain) += newRefAlpha(sess, ' '); 
+						//(*old_chain) += newRefAlpha(sess, ' ');
 					} else {
 						(*old_chain) += new RefStructBrackets(sess, result);
 					};
@@ -625,7 +625,7 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 
 		if (
 			(ch=='/' && AFTER_CHAR(sess, symchar)=='*')
-		){ // коментарии   /* */   
+		){ // коментарии   /* */
 			ch = NEXT_CHAR(sess, symchar); // *
 			ch = NEXT_CHAR(sess, symchar);
 			RefChain* t_result = new RefChain(sess, new RefWord(sess, "comment"));
@@ -636,7 +636,7 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 			(*result) += new RefStructBrackets(sess, t_result);
 			if (symchar){
 				ch = NEXT_CHAR(sess, symchar);  //   /
-				ch = NEXT_CHAR(sess, symchar);  //   
+				ch = NEXT_CHAR(sess, symchar);  //
 				continue;
 			}
 		}
@@ -705,5 +705,23 @@ RefChain* PrintStackTrace  (RefData** beg, RefData** end, RefChain* begend_chain
 	sess->printExecTrace();
 	return new RefChain(sess);
 };
+
+
+
+
+
+RefChain* Mod  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Trunc(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Round(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Symb (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Chr (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess) { notrealisedERRORs(sess); };
+RefChain* Ord (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess) { notrealisedERRORs(sess); };
+RefChain* First (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Last (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Lower (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Upper (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* StdLog (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Time (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
+RefChain* Mu (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){ notrealisedERRORs(sess); };
 
 

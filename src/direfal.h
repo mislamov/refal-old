@@ -26,17 +26,22 @@
 
 #include "SAXLoader_expat.h"
 
-// перенаправляем поток в файл
-static	std::streambuf *stdbbuf = std::cout.rdbuf();
-static	std::streambuf *nullbuf = 0;
-static  bool verbose = false;
-inline void __verbose_off()  {  if (!verbose){ std::cout.rdbuf(nullbuf); };  }
-inline void __verbose_on()   {  if (!verbose){ std::cout.rdbuf(stdbbuf); };  }
-
-
 typedef enum {
     XML, XMLCODE, REF
 } PROGRAMTYPE;
+
+
+
+extern std::streambuf *stdbbuf;
+extern std::streambuf *nullbuf;
+extern std::ostream   *debugstream;
+extern bool verbose;
+
+
+
+
+inline void __verbose_off()  {  if (!verbose){ std::cout.rdbuf(nullbuf); };  }
+inline void __verbose_on()   {  if (!verbose){ std::cout.rdbuf(stdbbuf); };  }
 
 
 class RefFunction {

@@ -33,9 +33,25 @@ RefChain* Dec  (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 RefChain* Div  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Mul  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Sum  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
-RefChain* Numb (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+
+RefChain* Mod  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Trunc(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Round(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Symb (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Chr (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Ord (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* First (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Last (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Lower (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Upper (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* StdLog (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Time (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Mu (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+
+
+RefChain* Numb (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess); // строку в число
 RefChain* Lenw (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
-RefChain* Compare (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Compare (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess); // Сравнивает два терма (по перегруженному оператору > или ==)
 RefChain* Implode (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Explode (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* ExplodeAll (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
@@ -48,6 +64,7 @@ RefChain* Card  (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
 RefChain* Prout (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* ProutDebug (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* StdErr(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* StdLog(RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Print (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* Exit  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 
@@ -101,35 +118,60 @@ VAR_DEFINITIONS
 
 
 FUNCTION_DEFINITIONS
+// АРИФМЕТИКА
 		DEFINE_MODULE_FUNCTION(Sum);
 		DEFINE_MODULE_FUNCTION(Dec);
 		DEFINE_MODULE_FUNCTION(Div);
+		DEFINE_MODULE_FUNCTION(Mod);
 		DEFINE_MODULE_FUNCTION(Mul);
-		DEFINE_MODULE_FUNCTION(Numb);
-		DEFINE_MODULE_FUNCTION(Lenw);
-		DEFINE_MODULE_FUNCTION(Compare);
-		DEFINE_MODULE_FUNCTION(Implode);
-		DEFINE_MODULE_FUNCTION(Explode);
-		DEFINE_MODULE_FUNCTION(ExplodeAll);
-		DEFINE_MODULE_FUNCTION(Mount);
-		DEFINE_MODULE_FUNCTION(File);
-		DEFINE_MODULE_FUNCTION(Args);
-		DEFINE_MODULE_FUNCTION(Card);
-		DEFINE_MODULE_FUNCTION(Prout);
-		DEFINE_MODULE_FUNCTION(ProutDebug);
-		DEFINE_MODULE_FUNCTION(StdErr);		
-		DEFINE_MODULE_FUNCTION(Print);
-		DEFINE_MODULE_FUNCTION(Exit);
-
-		DEFINE_MODULE_FUNCTION(RandomIdName);
-
-		DEFINE_MODULE_FUNCTION(RefalTokens);
-		DEFINE_MODULE_FUNCTION(PrintStackTrace);
-
 		DEFINE_MODULE_FUNCTION_ALIAS(Add, Sum);
 		DEFINE_MODULE_FUNCTION_ALIAS(Sub, Dec);
 		DEFINE_MODULE_FUNCTION_ALIAS(+, Sum);
 		DEFINE_MODULE_FUNCTION_ALIAS(-, Dec);
+		DEFINE_MODULE_FUNCTION_ALIAS(*, Mul);
+		DEFINE_MODULE_FUNCTION(Trunc); // усекает real до int
+		DEFINE_MODULE_FUNCTION(Round);
+
+// СИМВОЛЫ И СТРОКИ
+		DEFINE_MODULE_FUNCTION(Numb);
+		DEFINE_MODULE_FUNCTION(Symb);
+		DEFINE_MODULE_FUNCTION(Implode);
+		DEFINE_MODULE_FUNCTION(Explode);
+		DEFINE_MODULE_FUNCTION(ExplodeAll);
+		DEFINE_MODULE_FUNCTION(Chr);
+		DEFINE_MODULE_FUNCTION(Ord);
+		DEFINE_MODULE_FUNCTION(First);  // число  термы
+		DEFINE_MODULE_FUNCTION(Last);   // число  термы
+		DEFINE_MODULE_FUNCTION(Lenw);
+		DEFINE_MODULE_FUNCTION(Lower);
+		DEFINE_MODULE_FUNCTION(Upper);
+
+// ЛЮБЫЕ ТЕРМЫ
+		DEFINE_MODULE_FUNCTION(Compare);
+
+// ВВОД-ВЫВОД
+		DEFINE_MODULE_FUNCTION(Mount);
+		DEFINE_MODULE_FUNCTION(File);
+		DEFINE_MODULE_FUNCTION(Card);
+		DEFINE_MODULE_FUNCTION(Prout);
+		DEFINE_MODULE_FUNCTION(ProutDebug);
+		DEFINE_MODULE_FUNCTION(StdErr);
+		DEFINE_MODULE_FUNCTION(StdLog);
+		DEFINE_MODULE_FUNCTION(Print);
+
+// СИСТЕМНЫЕ
+		DEFINE_MODULE_FUNCTION(Args);
+		DEFINE_MODULE_FUNCTION(Exit);
+		DEFINE_MODULE_FUNCTION(Time);
+		DEFINE_MODULE_FUNCTION(Mu);
+
+//  ПРОЧИЕ
+		DEFINE_MODULE_FUNCTION(RandomIdName);
+		DEFINE_MODULE_FUNCTION(RefalTokens);
+
+//  ОТЛАДКА
+		DEFINE_MODULE_FUNCTION(PrintStackTrace);
+
 
 END_DLL_MODULE
 

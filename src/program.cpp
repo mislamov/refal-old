@@ -18,6 +18,7 @@
 
 #include <sstream>
 
+#include "direfal.h"
 #include "program.h"
 #include "system.h"
 
@@ -178,7 +179,6 @@ public:
 
 
 
-
 inline void gcollect(Session *sess, RefData* gc_save_point, RefChain *result, size_t cc){
 		//sess->gc_prepare(gc_save_point); - отметка об удалении устоит у всех (ставится при создании и при каждой сборке)
 		sess->gc_exclude(result);
@@ -193,6 +193,9 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 #ifdef DEBUG
 	std::cout << "\nRefProgram::executeExpression:\t" << chain->debug() << "\n" << std::flush;
 #endif
+    if (debugstream){
+        (*debugstream) << "DEBUG: " << chain->debug() << "\n" << std::flush;
+    }
 
 	PooledTuple2<RefData**, RefData**> pastWay; // <с, по>   - обработанное поле зрения
 	PooledTuple3<RefData**, RefData**, size_t> futurWay;// <с, до, уровень> - запланированые для обработки поля

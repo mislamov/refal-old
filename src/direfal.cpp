@@ -3,6 +3,12 @@
 
 
 
+std::streambuf *stdbbuf = std::cout.rdbuf();
+std::streambuf *nullbuf = 0;
+std::ostream   *debugstream = 0;
+bool verbose = false;
+
+
 RefalProgram::RefalProgram(PROGRAMTYPE type, unistring str_arg,  int argc, char **argv) {
     success = false;
     program = new RefProgram(argc, argv);

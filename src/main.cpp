@@ -39,15 +39,16 @@ void help(char *pname){
 }
 
 int main ( int argc, char **argv ) {
+
     int ref_argc = 0;
     char **ref_argv = 0;
-
-	bool debug = false;
 
 	if (argc <= 1) {
 		help(argv[0]);
 		return 0;
 	}
+
+    bool debug = false;
 
 	char *prog = 0;
 	for (int i=1; i<argc; ++i){
@@ -60,7 +61,7 @@ int main ( int argc, char **argv ) {
 			continue;
 		}
 		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--debug")){
-			debug = true;
+		    debug = true;
 			continue;
 		}
 		if (argv[i] && argv[i][0]=='-'){
@@ -81,6 +82,11 @@ int main ( int argc, char **argv ) {
 		return -1;
 	}
 
+    if (debug){
+        std::stringstream ss;
+        ss << prog << ".debug";
+        debugstream = new std::ofstream(ss.str().c_str());
+    }
 __verbose_off();
 
 	// запуск выполняемой программы
@@ -101,12 +107,14 @@ __verbose_off();
 	std::cout << "============================================\n" << std::flush;
 	#endif
 
+	std::cout << "\n====================== begin ======================\n" << std::flush;
+
 __verbose_on();
 
     GO->execute(0, result);
 
 __verbose_off();
-	std::cout << "============================================\nTime: " ;
+	std::cout <<   "======================  end  ======================\nTime: " ;
 	//#ifdef TESTCODE
 	time ( &stoptime );
 	std::cout

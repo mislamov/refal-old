@@ -26,6 +26,7 @@
 #include "config.h"
 #include "poolTuples.h"
 
+
 class RefChain;
 class RefDataBracket;
 class RefProgram;
@@ -110,7 +111,7 @@ public:
 
 	RefSegment(Session *s, RefChain *o, RefData **f, RefData **t);
 	virtual ~RefSegment();
-	virtual unistring explode(){ return "[segment]";};
+	virtual unistring explode();
 	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot){unexpectedERRORn;};
 	virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot){unexpectedERRORn;};
 };

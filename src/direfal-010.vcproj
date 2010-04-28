@@ -178,6 +178,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\direfal.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\function.cpp"
 				>
 			</File>

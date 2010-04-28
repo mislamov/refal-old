@@ -29,8 +29,8 @@
 #include <stack>
 #include <set>
 
-size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
 
+size_t RefChain::alloc_portion = CHAIN_SYSTEM_PORTION_SIZE_INIT;
 
 namespace co {
 	size_t objs = 0;
@@ -1229,3 +1229,8 @@ void RefPoint::set_gc_mark(Session *sess){
 };
 
 
+#ifdef TESTCODE
+unistring RefSegment::explode(){ return "[segment]";};
+#else
+unistring  RefSegment::explode(){ return chain_to_text(own->at(from), own->at(to));};
+#endif
