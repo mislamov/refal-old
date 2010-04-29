@@ -398,7 +398,7 @@ int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, const char* xmlC
     XML_SetElementHandler(p, startElement, endElement);
     XML_SetCharacterDataHandler(p, charData );
 
-    bool done;
+    bool done = true;
     if (XML_Parse(p, xmlCode, len, done) == XML_STATUS_ERROR) {
         fprintf(stderr, "Parse error at line %" XML_FMT_INT_MOD "u:\n%s\n",
                 XML_GetCurrentLineNumber(p),

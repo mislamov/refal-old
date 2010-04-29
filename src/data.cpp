@@ -16,10 +16,10 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#include "data.h"
-//#include "symbols.h"
+//#include "data.h"
+#include "symbols.h"
 //#include "sentence.h"
-#include "session.h"
+//#include "session.h"
 #include "program.h"
 
 #include <stdlib.h>
@@ -222,22 +222,50 @@ RefData** RefChain::operator[](signed long idx) {
 };
 */
 
+unistring chain_to_text(RefData** from, RefData** to, int showleng){
+	if (!from || !*from) return "#empty";
+	if (!to || (to-from)<0) return "[error string]";
+	unistring result = "";
+	int i = 0;
+	while(from+i <= to && (showleng<=0 || i<showleng)){
+
+		RefAlphaBase *alp = ref_dynamic_cast<RefAlphaBase>(from[i]);
+		if (alp){
+			result += " '";
+			while(from+i <= to && (showleng<=0 || i<showleng) && (alp = ref_dynamic_cast<RefAlphaBase>(from[i]))){
+				result += alp->getValue();
+				++i;
+			}
+			result += "' ";
+			if (!(from+i <= to && (showleng<=0 || i<showleng))) break;
+		}
+
+
+		if(from[i]) result += from[i]->debug();
+		++i;
+	}
+	if (i==showleng) result += "... ";
+	return result;
+};
 
 
 
 unistring RefChain::debug(){
-	unistring result = "";/*
-						  result += "[";
-						  result += "l";
-						  char tmp[256];
-						  result += ltoa( leng, tmp, 10);
-						  result += "s";
-						  result += ltoa( sysize, tmp, 10);
-						  //result += " ";
-						  //result += ltoa( RefChain::alloc_portion, tmp, 10);
-						  result += "] ";*/
+	unistring result = "";
 
 	for (size_t i=0; i<leng; i++) {
+		RefAlphaBase *alp = ref_dynamic_cast<RefAlphaBase>(first[i]);
+		if (alp){
+			result += " '";
+			while(i<leng && (alp = ref_dynamic_cast<RefAlphaBase>(first[i]))){
+				result += alp->getValue();
+				++i;
+			}
+			result += "' ";
+			if (i>=leng) return result;
+		}
+
+
 		result += (first[i] ? first[i]->debug() : " \x0000 ");
 	}
 	return result;

@@ -34,8 +34,8 @@ void help(char *pname){
 	std::cout << REFVERSION << "\n" << std::flush;
 	std::cout << "Usage: "<< pname <<" [-h|--help] [-v|--verbose] [-d|--debug] filename [arg1 arg2 ... argN]\n" << std::flush;
 	std::cout << "\t-h (or --help) to see this message\n" << std::flush;
-	std::cout << "\t-v (or --verbose) to see more information when program execution\n" << std::flush;
-	std::cout << "\t-d (or --debug) to see debug information when program execution\n" << std::flush;
+	std::cout << "\t-v (or --verbose) to see more information about program execution\n" << std::flush;
+	std::cout << "\t-d (or --debug) to loging debug information into *.debug file\n" << std::flush;
 }
 
 int main ( int argc, char **argv ) {
@@ -82,11 +82,6 @@ int main ( int argc, char **argv ) {
 		return -1;
 	}
 
-    if (debug){
-        std::stringstream ss;
-        ss << prog << ".debug";
-        debugstream = new std::ofstream(ss.str().c_str());
-    }
 __verbose_off();
 
 	// запуск выполняемой программы
@@ -110,6 +105,12 @@ __verbose_off();
 	std::cout << "\n====================== begin ======================\n" << std::flush;
 
 __verbose_on();
+    if (debug){
+        std::stringstream ss;
+        ss << prog << ".debug";
+        debugstream = new std::ofstream(ss.str().c_str());
+    }
+
 
     GO->execute(0, result);
 
