@@ -72,6 +72,7 @@ RefChain* RandomIdName(RefData** beg, RefData** end, RefChain* begend_chain, Ses
 
 RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 RefChain* PrintStackTrace   (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
+RefChain* Eval  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess);
 
 
 
@@ -168,6 +169,7 @@ FUNCTION_DEFINITIONS
 //  œ–Œ◊»≈
 		DEFINE_MODULE_FUNCTION(RandomIdName);
 		DEFINE_MODULE_FUNCTION(RefalTokens);
+		DEFINE_MODULE_FUNCTION(Eval);
 
 //  Œ“À¿ƒ ¿
 		DEFINE_MODULE_FUNCTION(PrintStackTrace);

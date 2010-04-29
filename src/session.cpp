@@ -1,4 +1,5 @@
 #include "session.h"
+#include "symbols.h"
 
 #include "function.h"
 #include "program.h"
@@ -578,7 +579,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 void Session::printExecTrace(){
 	unistring tab = "";
 	while (execTrace.getLength()){
-		std::cout << tab  << "'--- <" << execTrace.top1()->getName() << " " << chain_to_text(execTrace.top2(), execTrace.top3()) << " >\n";
+		std::cerr << tab  << "'--- <" << execTrace.top1()->getName() << " " << the_debug_text(execTrace.top2(), execTrace.top3(), 128) << " >\n";
 		execTrace.pop();
 		tab += "   ";
 	}

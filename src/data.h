@@ -332,15 +332,10 @@ public:
 	    };
 	inline RefData**  at_first(){ return first; };
 	inline RefData**  at_last(){
-        ref_assert(! (leng==0 || first==0));
-	    return first+leng-1;
+	    return first&&leng?first+leng-1:0;
     };
 	inline RefData**  at_afterlast(){
-	    if (leng==0 || first==0){
-	        leng=leng*0;
-	    }
-	    ref_assert(! (leng==0 || first==0));
-	    return first+leng;
+	    return first ? first+leng : 0;
     };
 	inline RefData**  at_beforefirst(){
    	    ref_assert(! (leng==0 || first==0));
@@ -397,8 +392,6 @@ public:
 	};
 };
 
-
-unistring chain_to_text(RefData** from, RefData** to, int showleng = 356);
 
 
 class RefMatchingCutter : public RefData {

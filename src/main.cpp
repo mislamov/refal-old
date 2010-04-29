@@ -85,7 +85,8 @@ int main ( int argc, char **argv ) {
 __verbose_off();
 
 	// запуск выполняемой программы
-    RefalProgram userprogram(REF, prog, ref_argc, ref_argv);
+    RefalProgram userprogram(REF, ref_argc, ref_argv);
+    userprogram.loadModule(REF, prog, "global");
     RefFunction *GO = userprogram.getFunction("Go");
     if (!GO) return -1;
     unistring result;

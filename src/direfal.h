@@ -61,10 +61,12 @@ class RefalProgram {
     RefProgram *program;
     bool success;
 public:
-    RefalProgram (PROGRAMTYPE type, unistring fname,  int argc, char **argv);
+    RefalProgram (PROGRAMTYPE type, int argc, char **argv);
     RefFunction *getFunction(unistring fname);
     bool isSuccess(){ return success; };
     unistring getProgramName();
+    bool loadModule(PROGRAMTYPE type, unistring file, unistring name);
+
 };
 
 #endif

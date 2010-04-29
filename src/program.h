@@ -38,6 +38,7 @@ public:
 class RefProgram {
 	MODULE_LIST modules;
 public:
+
 	int argc; char **argv ;
 	long long step;
 	RefChain *argchain;
@@ -49,6 +50,7 @@ public:
     RefChain*  executeExpression2 (RefChain*, Session*); // вычисляет цепочку
 	RefFunctionBase *findFunction(unistring  ); // ищет функцию в модулях по id
 	RefTemplateBase *findTemplate(unistring  ); // ищет шаблон в модулях по id
+	inline RefModuleBase *findModule(unistring name){ return modules.find(name)->second; };
 
 	RefData* createSymbolByCode(unistring code, unistring value);
 	RefData* createVariableByTypename(unistring code, unistring value);

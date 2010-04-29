@@ -24,104 +24,152 @@ RefAlpha128* RefAlpha128::alphatable = new RefAlpha128[128];
 
 std::map<unichar, RefAlphaBase*> RefAlpha::alphamap;
 
-RefAlphaBase* newRefAlpha(Session *sess, unichar value){
-	unsigned char val = value;
-		if (val < 128){
-			return RefAlpha128::alphatable + val;
-		} else {
-			std::map<unichar, RefAlphaBase*>::iterator it = RefAlpha::alphamap.find(val);
-			if (it == RefAlpha::alphamap.end()){
-				return (RefAlpha::alphamap[val] = new RefAlpha(0, val));
+RefAlphaBase* newRefAlpha(Session *sess, unichar value) {
+    unsigned char val = value;
+    if (val < 128) {
+        return RefAlpha128::alphatable + val;
+    } else {
+        std::map<unichar, RefAlphaBase*>::iterator it = RefAlpha::alphamap.find(val);
+        if (it == RefAlpha::alphamap.end()) {
+            return (RefAlpha::alphamap[val] = new RefAlpha(0, val));
+        }
+        return it->second;
+    }
+};
+
+
+unistring the_explode(RefData **a, RefData **b) {
+    ref_assert(b || !a);
+    #ifdef DEBUG
+    if (!a && b) {
+        return "$null, " + (*b)->debug();
+    }
+    #endif
+    if (!a) {
+        return "";
+    }
+    size_t leng = b-a;
+    if (!a || !b || leng<0) RUNTIMEERRORn("the_explode(**, **) : error arguments");
+    unistring result = "";
+    for (size_t i=0; i<=leng; i++) {
+        #ifdef TESTCODE
+        if (! a[i]) AchtungERRORn;
+        #endif
+        result += a[i]->explode();
+    }
+    return result;
+};
+
+
+unistring chain_to_text(RefData **a, RefData **b) {
+    if (!a) {
+        return "";
+    }
+    size_t leng = b-a;
+    if (!a || !b || leng<0) RUNTIMEERRORn("the_text(**, **) : error arguments");
+    unistring result = "";
+    for (size_t i=0; i<=leng; i++) {
+        #ifdef TESTCODE
+        if (! a[i]) AchtungERRORn;
+        #endif
+        result += a[i]->toString();
+    }
+    return result;
+};
+
+
+unistring the_debug_text(RefData **a, RefData **b, int maxlen) {
+    if (!a) {
+        return "";
+    }
+    size_t leng = b-a;
+    if (maxlen && leng > maxlen){
+        leng = maxlen;
+    }
+    if (!a || !b || leng<0) RUNTIMEERRORn("the_debug_text(**, **) : error arguments");
+    std::stringstream result;
+
+    for (size_t i=0; i<=leng; i++) {
+        ref_assert(a[i]);
+
+        RefAlphaBase *alp = ref_dynamic_cast<RefAlphaBase>(a[i]);
+        if (alp) {
+            result << " '";
+            while (i<=leng && (alp = ref_dynamic_cast<RefAlphaBase>(a[i]))) {
+                if (alp->getValue() < 20) {
+                    result << "#" << (int) alp->getValue();
+                } else {
+                    result << alp->getValue();
+                }
+                ++i;
+            }
+            result << "' ";
+            if (i>leng) break;
+        }
+
+        result << a[i]->debug();
+    }
+    return result.str();
+};
+
+/*
+unistring chain_to_text(RefData** from, RefData** to, int showleng){
+	if (!from || !*from) return "#empty";
+	if (!to || (to-from)<0) return "[error string]";
+	std::stringstream result;
+	int i = 0;
+	while(from+i <= to && (showleng<=0 || i<showleng)){
+
+		RefAlphaBase *alp = ref_dynamic_cast<RefAlphaBase>(from[i]);
+		if (alp){
+			result << " '";
+			while(from+i <= to && (showleng<=0 || i<showleng) && (alp = ref_dynamic_cast<RefAlphaBase>(from[i]))){
+				if (alp->getValue() < 20){
+                    result << "#" << (int) alp->getValue();
+                } else {
+				    result << alp->getValue();
+				}
+				++i;
 			}
-			return it->second;
+			result << "' ";
+			if (!(from+i <= to && (showleng<=0 || i<showleng))) break;
 		}
+
+
+		if(from[i]) result << from[i]->debug();
+		++i;
+	}
+	if (i==showleng) result << "... ";
+	return result.str();
 };
+*/
 
-
-unistring the_explode(RefData **a, RefData **b){
-	ref_assert(b || !a);
-#ifdef DEBUG
-	if (!a && b) {
-		return "$null, " + (*b)->debug();
-	}
-#endif
-	if (!a) {
-		return "";
-	}
-	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERRORn("the_explode(**, **) : error arguments");
-	unistring result = "";
-    for (size_t i=0; i<=leng; i++) {
-		#ifdef TESTCODE
-		if (! a[i]) AchtungERRORn;
-		#endif
-		result += a[i]->explode();
+RefChain *text_to_chain(Session *sess, const char *buffer) {
+    RefChain *result = new RefChain(sess, 1024);
+    while (*buffer) {
+        (*result) += newRefAlpha(sess, *buffer);
+        buffer++;
     }
-	return result;
-};
-
-
-unistring the_text(RefData **a, RefData **b){
-	if (!a) {
-		return "";
-	}
-	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERRORn("the_text(**, **) : error arguments");
-	unistring result = "";
-    for (size_t i=0; i<=leng; i++) {
-		#ifdef TESTCODE
-		if (! a[i]) AchtungERRORn;
-		#endif
-		result += a[i]->toString();
-    }
-	return result;
-};
-
-
-unistring the_debug_text(RefData **a, RefData **b){
-	if (!a) {
-		return "";
-	}
-	size_t leng = b-a;
-	if (!a || !b || leng<0) RUNTIMEERRORn("the_debug_text(**, **) : error arguments");
-	unistring result = "";
-    for (size_t i=0; i<=leng; i++) {
-		#ifdef TESTCODE
-		if (! a[i]) AchtungERRORn;
-		#endif
-		result += a[i]->debug();
-    }
-	return result;
-};
-
-
-
-RefChain *text_to_chain(Session *sess, const char *buffer){
-	RefChain *result = new RefChain(sess, 1024);
-	while (*buffer){
-		(*result) += newRefAlpha(sess, *buffer);
-		buffer++;
-	}
-	return result;
+    return result;
 }
-RefChain *text_to_chain(Session *sess, const char *buffer, size_t length){
-	RefChain *result = new RefChain(sess, length);
-	for (size_t i=0; i<length; i++){
-		if (buffer[i] != '\r'){   /// todo: правильно обрабатывать
-			(*result) += newRefAlpha(sess, buffer[i]);
-		}
-	}
-	return result;
+RefChain *text_to_chain(Session *sess, const char *buffer, size_t length) {
+    RefChain *result = new RefChain(sess, length);
+    for (size_t i=0; i<length; i++) {
+        if (buffer[i] != '\r') {  /// todo: правильно обрабатывать
+            (*result) += newRefAlpha(sess, buffer[i]);
+        }
+    }
+    return result;
 }
 
 
-void RefAlpha::alphaMapDestroy(){
-	std::map<unichar, RefAlphaBase*>::iterator it;
-	while(alphamap.size()){
-		it = alphamap.begin();
-		delete it->second;
-		alphamap.erase(it);
-	}
+void RefAlpha::alphaMapDestroy() {
+    std::map<unichar, RefAlphaBase*>::iterator it;
+    while (alphamap.size()) {
+        it = alphamap.begin();
+        delete it->second;
+        alphamap.erase(it);
+    }
 };
 
 

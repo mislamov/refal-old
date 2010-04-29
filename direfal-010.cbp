@@ -11,14 +11,14 @@
 				<Option object_output="obj\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-v -d f.ref 1 2 3" />
+				<Option parameters="-v f.ref" />
 				<Compiler>
-					<Add option="-O3" />
 					<Add option="-Wall" />
 					<Add option="-pg" />
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
+					<Add option="-pg -lgmon" />
 					<Add option="-pg" />
 				</Linker>
 			</Target>
@@ -30,6 +30,7 @@
 				<Option parameters="-v -d f.ref 1 2 3" />
 				<Compiler>
 					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
 					<Add option="-O3" />
 				</Compiler>
 				<Linker>

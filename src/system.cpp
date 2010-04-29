@@ -25,6 +25,7 @@
 #include "function.h"
 #include "symbols.h"
 
+#include "SAXLoader_expat.h"
 
 RefChain *StrToChain(Session *sess, unistring text){
 	size_t leng = text.length();
@@ -278,7 +279,7 @@ RefChain* Card (RefData** beg, RefData** end, RefChain* begend_chain, Session* s
 
     //for (size_t i=0; i<text.length(); i++){
     for (size_t i=0; i<tlen; i++){
-		if (text[i] < 128){
+		if ((unsigned int)text[i] < 128){
 			*rch += RefAlpha128::alphatable+text[i];
 		}else{
 			*rch += newRefAlpha(sess, text[i]);
@@ -329,7 +330,7 @@ RefChain* Prout (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
 			<< the_debug_text(beg, end) << "\n"
             << "\n######################################################################\n"
 #else
-			<< the_text(beg, end) << "\n"
+			<< chain_to_text(beg, end) << "\n"
 #endif
             ;
 	//std::cout << sess->debug() << "\n" << std::flush;
@@ -339,18 +340,18 @@ RefChain* Prout (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
 };
 
 RefChain* ProutDebug (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
-    std::cout
+    std::cerr
 			<< the_debug_text(beg, end) << "\n";
     return new RefChain(sess);
 };
 
 RefChain* StdErr (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
-	std::cerr << the_text(beg, end) << "\n";
+	std::cerr << chain_to_text(beg, end) << "\n";
     return new RefChain(sess);
 };
 
 RefChain* Print (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
-	unistring thetext = the_text(beg, end);
+	unistring thetext = chain_to_text(beg, end);
     std::cout
     #ifdef DEBUG
             << "\n############################### STDOUT ###############################\n"
@@ -616,7 +617,7 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 					(*t_result) += new RefStructBrackets(sess, closeAllBrackets(sess, result, &result_stack));
 					(*t_result) += new RefStructBrackets(sess, new RefChain(sess, symchar, end-symchar+1));
 					return t_result;*/
-					RefChain* t_result = new RefChain(sess, new RefWord(sess, "error"));
+					RefChain* t_result = new RefChain(sess, new RefWord(sess, "$error"));
 					(*t_result) += (symchar ? new RefChain(sess, symchar, end-symchar+1) : new RefChain(sess));
 					(*result)   += new RefStructBrackets(sess, t_result);
 					return closeAllBrackets(sess, result, &result_stack);
@@ -686,7 +687,7 @@ RefChain* RefalTokens  (RefData** beg, RefData** end, RefChain* begend_chain, Se
 		//std::cout << "\n\n" << t_result->debug() << "\n\n";
 		return t_result;*/
 
-		RefChain* t_result = new RefChain(sess, new RefWord(sess, "error"));
+		RefChain* t_result = new RefChain(sess, new RefWord(sess, "$error"));
 		(*t_result) += (symchar ? new RefChain(sess, symchar, end-symchar+1) : new RefChain(sess));
 		(*result)   += new RefStructBrackets(sess, t_result);
 		return closeAllBrackets(sess, result, &result_stack);
@@ -706,6 +707,21 @@ RefChain* PrintStackTrace  (RefData** beg, RefData** end, RefChain* begend_chain
 	return new RefChain(sess);
 };
 
+RefChain* Eval  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
+
+    //std::cout << "\nEVAL: " << chain_to_text(beg, end) << "\n";
+
+    RefChain *exch = new RefChain(sess, 1);
+    (*exch) += new RefWord(sess, "REFAL2XML");
+    (*exch) += new RefChain(sess, begend_chain, beg, end);
+    RefChain *xmlcode = sess->getProgram()->executeExpression( new RefChain(sess, new RefExecBrackets(sess, exch)), sess );
+    RefUserModule *global = (RefUserModule*)sess->getProgram()->findModule("global");
+    if (!global) SYSTEMERRORs(sess, "module GLOBAL not found");
+    unistring xml = xmlcode->explode();
+    int err = loadModuleFromXmlCode(global, sess->getProgram(), xml.c_str(), xml.length());
+    if (err) return 0;
+    return new RefChain(sess);
+};
 
 
 

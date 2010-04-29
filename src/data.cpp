@@ -222,53 +222,35 @@ RefData** RefChain::operator[](signed long idx) {
 };
 */
 
-unistring chain_to_text(RefData** from, RefData** to, int showleng){
-	if (!from || !*from) return "#empty";
-	if (!to || (to-from)<0) return "[error string]";
-	unistring result = "";
-	int i = 0;
-	while(from+i <= to && (showleng<=0 || i<showleng)){
 
-		RefAlphaBase *alp = ref_dynamic_cast<RefAlphaBase>(from[i]);
-		if (alp){
-			result += " '";
-			while(from+i <= to && (showleng<=0 || i<showleng) && (alp = ref_dynamic_cast<RefAlphaBase>(from[i]))){
-				result += alp->getValue();
-				++i;
-			}
-			result += "' ";
-			if (!(from+i <= to && (showleng<=0 || i<showleng))) break;
-		}
-
-
-		if(from[i]) result += from[i]->debug();
-		++i;
-	}
-	if (i==showleng) result += "... ";
-	return result;
-};
 
 
 
 unistring RefChain::debug(){
-	unistring result = "";
+	std::stringstream result;
 
-	for (size_t i=0; i<leng; i++) {
+	/*for (size_t i=0; i<leng; i++) {
 		RefAlphaBase *alp = ref_dynamic_cast<RefAlphaBase>(first[i]);
 		if (alp){
-			result += " '";
+			result << " '";
 			while(i<leng && (alp = ref_dynamic_cast<RefAlphaBase>(first[i]))){
-				result += alp->getValue();
+			    if (alp->getValue() < 20){
+			        result << "#" << (int)alp->getValue();
+			    }else {
+			        result << alp->getValue();
+			    }
 				++i;
 			}
-			result += "' ";
-			if (i>=leng) return result;
+			result << "' ";
+			if (i>=leng) return result.str();
 		}
 
 
-		result += (first[i] ? first[i]->debug() : " \x0000 ");
+		result << (first[i] ? first[i]->debug() : " \x0000 ");
 	}
-	return result;
+	return result.str();*/
+
+	return isEmpty() ? " $empty " : the_debug_text(at_first(), at_last());
 };
 
 unistring RefChain::explode(){

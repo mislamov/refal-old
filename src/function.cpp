@@ -1,3 +1,4 @@
+#include "symbols.h"
 #include "program.h"
 #include "function.h"
 #include "session.h"
@@ -55,7 +56,7 @@ RefChain* RefUserFunction::eval(RefData **l, RefData **r, RefChain *lr_own, Sess
 					//delete sess->poptopVarMap(); - only by g-collector
 					sess->poptopVarMap();
 			}
-			RUNTIMEERRORs(sess, this->getName() << " FAIL");
+			RUNTIMEERRORs(sess, "Function " << this->getName() << " FAIL");
 };
 
 void RefUserTemplate::initilizeAll(RefProgram *program){

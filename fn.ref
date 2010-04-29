@@ -9,9 +9,7 @@ REFAL2XML {
     e.code  =
         <ExplodeAll
             "<BEGIN>" <PROGRAM
-                    <Prout 'Delete comments...'>
-                    <DelComments <RefalTokens @.code>>
-					<Prout '...done'>>
+		    <DelComments <RefalTokens @.code>>>
             "</BEGIN>" >;
 
 };
@@ -141,7 +139,7 @@ PROGRAM {
 	e.error { TEMPLATE. ";" | FUNCTION.}.fnd E.next = <PROGRAM e.error> <PROGRAM @.fnd @.next>;
 	//e.A TEMPLATE.tm  ";" E.next = <PROGRAM e.A> &TEMPLATE.tm <PROGRAM @.next>;
 	//e.A FUNCTION.f   {";"|} E.next = <PROGRAM e.A> &FUNCTION.f <PROGRAM @.next>;
-	e.else = <ProutError 'Error Function or Template definition: [' e.else ']'><Exit 9>;
+	e.else = <ProutError 'Error Function or Template definition:\n\n' e.else '\n\n'><Exit 9>;
 };
 
 // Семантический анализ
@@ -184,12 +182,14 @@ Sentences {
 
 
 	e.sent ";" E.else =
-			<ProutError 'SENTENCE: ' @.sent>
+			<ProutError 'bad sentence: ' @.sent>
 			<ProutError <FindErrorInSentence e.sent>>
 			<Exit 9>
 			<Sentences @.else>;
 
 	SENTENCE.sent = <Sentences  @.sent ";">;
+	
+	e.else = <ProutError 'bad sentence: ' @.else><Exit 9>;
 };
 
 
@@ -211,7 +211,7 @@ SubstitutAnalise {
 
 	(e.vars) (e.result) VAR.lnk e.otherpart
 		=	//<ProutError  'Unexpected opened-variable in substitution: ' VAR.lnk '. Expected closed variables: '<UnPoint e.vars>>
-			<SubstitutAnalise (e.vars)(e.result "$ERROR" 'Unexpected opened-variable in substitution: ' VAR.lnk '. Expected closed variables: '<UnPoint e.vars>) e.otherpart>;
+			<SubstitutAnalise (e.vars)(e.result "$ERROR" 'Unexpected opened-variable in substitution: ' VAR.lnk '. Expected closed variables: '<UnPoint e.vars>) e.otherpart ' .'>;
 
 	(e.vars)(e.result) ({"<"|"("}.sig SUBSTIT.subs ) e.otherpart,
 		<SubstitutAnalise (e.vars)() SUBSTIT.subs> : (e.vars1)(e.res1)
@@ -224,7 +224,7 @@ SubstitutAnalise {
 	(e.vars) (e.result)			=	(e.vars) (e.result);
 	(e.vars) (e.result) e.else		=
 							//<ProutError  'Unknown item for SubstitutAnalise: \n\t' e.else >
-							(e.vars)(e.result "$ERROR"  'Unknown item for SubstitutAnalise: \n\t' e.else);
+							(e.vars)(e.result "$ERROR"  'Unknown item for substitution expression here: \t' e.else);
 
 }
 
@@ -273,7 +273,7 @@ PatternAnalise {
 	(e.vars) (e.result) "!" e.next		=	<PatternAnalise (e.vars) (e.result "$cutter") e.next>;
 	(e.vars) (e.result) e.else		=
 							//<ProutError 'Unknown item for PatternAnalise: [' e.else ']'>
-							(e.vars) (e.result "$ERROR" 'Unknown item for PatternAnalise: [' e.else ']');
+							(e.vars) (e.result "$ERROR" 'Unknown item for pattern here: \t' e.else);
 }
 
 
@@ -317,7 +317,7 @@ PatternAnaliseVar {
 
 	e.else
 		=
-			<ProutError '####ERROR PatternAnaliseVar: ' e.else>
+			<ProutError '[SYSTEMERROR] PatternAnaliseVar bad argument: ' e.else>
 			<Exit 9>;
 }
 
@@ -359,7 +359,7 @@ IF {
 	equal (e.A)(e.A) THEN e.result ELSE e.	=	e.result;
 
 	e. THEN e. ELSE e.result	=	e.result;
-	E.else = <ProutError 'IF-function syntax error: <IF ' @.else '>'><Exit 9>;
+	E.else = <ProutError '[SYSTEMERROR] IF-function syntax error: <IF ' @.else '>'><Exit 9>;
 }
 
 
@@ -367,7 +367,7 @@ ErrorIfNotEqualType {
 	(e.1)(e.1)(e.error) = $empty;
 	({"@"|"&"|} e.1)({"@"|"&"|} e.1)(e.error) = $empty;
 	e. ("@") e. (e.error) = $empty;
-	(e.1)(e.2)(e.error) = <ProutError '#### PARSER_ERROR: ' e.error>;
+	(e.1)(e.2)(e.error) = <ProutError '[SYSTEMERROR] ErrorIfNotEqualType: ' e.error>;
 }
 
 GetArgName {
@@ -541,7 +541,7 @@ OPENVAR2XML {
 
 	E.else	=
 			//<ProutDebug @.else>
-			<ProutError 'Unrealised OPENVAR2XML for variable: ' E.else >
+			<ProutError '[SYSTEMERROR] Unrealised OPENVAR2XML for variable: ' E.else >
 			'<ERROR>Unrealised OPENVAR2XML for variable: ' E.else '</ERROR>';
 }
 
@@ -557,7 +557,7 @@ SPECS2XML {
 				e.datacode
 			'</REPEAT>';
 
-	E.else = <ProutError 'SPECS2XML not realised for specificator: ' @.else>;
+	E.else = <ProutError '[SYSTEMERROR] SPECS2XML not realised for specificator: ' @.else>;
 }
 
 
@@ -570,9 +570,11 @@ TEXT2XML {
 }
 
 ProutError {
-	e.e = <StdErr '\n\n#### ERROR: ' <META2TEXT e.e>>;
+	e.e = <StdErr '#### ERROR: ' <META2TEXT e.e>>;
+	//e.e = <ProutDebug '\n#### ERROR: ' <META2TEXT e.e>>;
 }
 
+META2TEXT_ { e.e = <ProutDebug '<META2TEXT ' e.e> <META2TEXT_ e.e>; }
 META2TEXT {
 	(word e.w)"."(word e.ww) e.e 		= 	<ExplodeAll @.w>'.'<ExplodeAll @.ww> <META2TEXT e.e>;
 	(word e.w) e.e 		= 	'"' <ExplodeAll @.w>'"'  <META2TEXT e.e>;
@@ -585,6 +587,7 @@ META2TEXT {
 				=	<Explode @.br> <META2TEXT @.w> <Explode @.clbr> <META2TEXT e.e>;
 	word.t e.e		=	<ExplodeAll @.t> <META2TEXT e.e>;
 	s.s e.e			=	s.s <META2TEXT e.e>;
+	("$error" e.data)	=	<META2TEXT e.data>; // ошибка из RefalTockens
 	=;
 }
 
@@ -606,5 +609,5 @@ FindErrorInSentence {
 		<PatternAnalise     ( )( )         @.left_part>    : (e.) (e. "$ERROR" e.error) = e.error;
 
 	e.lp "=" e.rp = 'left part and right part error: ' e.lp "=" e.rp;
-	e. = '= - separator not found';
+	e. = '"=" - separator not found';
 }
