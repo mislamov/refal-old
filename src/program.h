@@ -69,8 +69,8 @@ public:
 	RefFunctionBase* getFunctionByName(unistring nm, Session *s=0);
 	RefTemplateBase* getTemplateByName(unistring nm, Session *s=0);
 
-	void setFunctionByName(unistring name, RefFunctionBase* o);
-    void setTemplateByName(unistring name, RefTemplateBase* o);
+	void setFunctionByName(unistring name, RefFunctionBase* o, bool redefine = false);
+    void setTemplateByName(unistring name, RefTemplateBase* o, bool redefine = false);
     virtual unistring getName() =0;
 };
 

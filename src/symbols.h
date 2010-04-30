@@ -49,7 +49,11 @@ public:
     bool operator ==(RefData &rd) {
         return ref_dynamic_cast<T>(&rd) && ((T*)&rd)->getValue()==this->getValue();
     };
-	bool operator >(RefData &rd){ notrealisedERRORn; };
+
+    bool operator >(RefData &rd){
+        return ref_dynamic_cast<T>(&rd) && this->getValue() > ((T*)&rd)->getValue();
+    };
+
 
     TResult init(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
     TResult back(RefData**&, Session*, RefData**&, RefData**&, RefChain *&);
@@ -97,11 +101,14 @@ public:
 	virtual bool operator ==(RefData &rd) { return this==&rd; };
 };
 
+
 class RefIntegerBase : public RefSymbolBase<RefIntegerBase, infint> {
 public:
     ////CLASS_OBJECT_CAST(RefIntegerBase);
 	RefIntegerBase(Session *sess) : RefSymbolBase<RefIntegerBase, infint>(sess) {};
     virtual ~RefIntegerBase(){};
+
+    bool operator >(RefData &rd);
 
 	CLASS_SYMBOL_CAST(RefIntegerBase);
 };
@@ -112,6 +119,7 @@ public:
     ////CLASS_OBJECT_CAST(RefRealBase);
 	RefRealBase(Session *sess) : RefSymbolBase<RefRealBase, infreal>(sess) {};
     virtual ~RefRealBase(){};
+    bool operator >(RefData &rd);
 
 	CLASS_SYMBOL_CAST(RefRealBase);
 };

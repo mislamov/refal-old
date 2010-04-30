@@ -1,3 +1,14 @@
-Go {
-	= <Eval ' F { s.1 s.2 e.3 = <Prout s.2>; }  '><Prout 'line: '><F <Card >>;
+$ENTRY Go {
+	= <Run 'asd<tag id="xyz">test<tag id="12">ttttt</tag>sdf</tag>asd'>;
+}
+
+Template Word ::= e. ;
+
+Template Tag ::= 
+		'<tag id="' Word.id '"' ! '>' e.some  '</tag>', 
+			e.some : 'tt' e.;
+
+Run {
+	e. Tag.tt END. = <Prout @.tt>;
+	END. = <Prout 'error'>;
 }

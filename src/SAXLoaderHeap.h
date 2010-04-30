@@ -4,6 +4,7 @@ class LoaderHeap {
         std::map<unistring, std::stack<RefObject*> > stackstags;
 
     public:
+        bool redefine;
         std::stack<RefChain *>  stckChains;
 
 		RefUserModule *currentModule;
@@ -88,8 +89,9 @@ class LoaderHeap {
         RefVariable *getVariableByTypename(unistring vtype, unistring vname);
 
 
-        LoaderHeap(RefUserModule *m, RefProgram *p){
+        LoaderHeap(RefUserModule *m, RefProgram *p, bool redefine){
             currentModule  = m;
 			currentProgram = p;
+			this->redefine = redefine;
         };
 };

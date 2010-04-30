@@ -186,7 +186,7 @@ void XMLCALL  endElement(void *data, const XML_Char *name) {
                 if (! dynamic_cast<RefUserFunction *>(loader->getValueFromStack("FUNCTION"))) SYSTEMERRORn("not RefUserFunction in FUNCTION-stack !!!");
                 #endif
                 RefUserFunction *f =  (RefUserFunction*)loader->extractValueFromStack("FUNCTION");
-                loader->currentModule->setFunctionByName(f->getName(), f);
+                loader->currentModule->setFunctionByName(f->getName(), f, loader->redefine);
             } else
                 if ( theCommand.compare(_L("TEMPLATE")) == 0) {
                     #ifdef TESTCODE
@@ -339,14 +339,14 @@ void XMLCALL  endElement(void *data, const XML_Char *name) {
 char Bufff[BUFFSIZE];
 
 
-int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlFile) {
+int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlFile, bool redefine) {
     XML_Parser p = XML_ParserCreate(NULL);
     if (! p) {
         fprintf(stderr, "Couldn't allocate memory for parser\n");
         return 1;
     }
 
-    LoaderHeap *loaderHeap = new LoaderHeap(mod, prog);;
+    LoaderHeap *loaderHeap = new LoaderHeap(mod, prog, redefine);
     XML_SetUserData(p, loaderHeap);
     XML_SetElementHandler(p, startElement, endElement);
     XML_SetCharacterDataHandler(p, charData );
@@ -386,14 +386,14 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlF
 
 };
 
-int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, const char* xmlCode, size_t len) {
+int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, const char* xmlCode, size_t len, bool redefine) {
     XML_Parser p = XML_ParserCreate(NULL);
     if (! p) {
         fprintf(stderr, "Couldn't allocate memory for parser\n");
         return 1;
     }
 
-    LoaderHeap *loaderHeap = new LoaderHeap(mod, prog);;
+    LoaderHeap *loaderHeap = new LoaderHeap(mod, prog, redefine);
     XML_SetUserData(p, loaderHeap);
     XML_SetElementHandler(p, startElement, endElement);
     XML_SetCharacterDataHandler(p, charData );

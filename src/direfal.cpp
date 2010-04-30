@@ -32,7 +32,7 @@ bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name){
     if (type==XML) {
         RefUserModule *ref = new RefUserModule(name);
         program->regModule(ref);
-        int err = loadModuleFromXmlFile (ref, program, result.c_str());
+        int err = loadModuleFromXmlFile (ref, program, result.c_str(), false);
         if (err) return false;
         success = true;
     }
@@ -41,7 +41,7 @@ bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name){
         RefUserModule *ref = new RefUserModule(name);
         program->regModule(ref);
         //std::cout << result.c_str() << " " << result.length();
-        int err = loadModuleFromXmlCode (ref, program, result.c_str(), result.length());
+        int err = loadModuleFromXmlCode (ref, program, result.c_str(), result.length(), false);
         if (err) return false;
         success = true;
     }

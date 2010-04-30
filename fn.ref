@@ -375,8 +375,10 @@ GetArgName {
 	= <Prout '#### Bad .ref filename: '<Args>>;
 }
 
-Go {=<REFALCOMPILE <GetArgName>'.ref'>;};
-
+Go {
+	$empty, <GetArgName> : e.fname		=	<REFALCOMPILE @.fname '.ref'><File <Implode @.fname '.xml'>>;
+	
+}
 
 DelComments_ {
 	e.e = <Prout 'del: 'e.e><DelComments_ e.e>;
@@ -420,7 +422,16 @@ META2XML {
 				<META2XML E.next>;
 
 
-	( {"SENTENCE" | "LEFT-PART" | "RIGHT-PART" }.type  E.body) E.next
+	("SENTENCE" E.body) E.next
+				=
+				'\n\t''<SENTENCE>'
+					<Prout 'optimize: ' @.body>
+					<META2XML <OPTIMIZE_CHAIN () E.body>>
+					
+				'</SENTENCE>'
+				<META2XML E.next>;
+
+	( {"LEFT-PART" | "RIGHT-PART" }.type  E.body) E.next
 				=
 				'\n\t''<'  @.type '>'
 					<META2XML E.body>
@@ -479,6 +490,44 @@ META2XML {
 					'<ERROR>' @.text '</ERROR>'
 					<ProutError e.text><Exit 9>;
 }
+
+
+Template META_IF ::= ("IF" e.rp ":" e.lp);
+
+
+// оптимизирует left_part и right_part в метакоде
+// <OPTIMIZE_CHAIN (информация_для_оптимизации) хвост_оптимизируемой цепочки>
+OPTIMIZE_CHAIN_ { e.e, <OPTIMIZE_CHAIN_ e.e> : e.res = e.res <Prout '<OPTIMIZE_CHAIN ' e.e '>  -->  ' e.res>; }
+OPTIMIZE_CHAIN {
+	(E.info) ({"("|"{"|"|"}.br E.a) E.next	
+		=	(@.br  <OPTIMIZE_CHAIN (@.info) @.a>) <OPTIMIZE_CHAIN (@.info) @.next>;
+		
+	(E.info) SYMBOL.s E.next		
+		=	@.s <OPTIMIZE_CHAIN (@.info) @.next>;
+		
+	(E.info) &VAR.var E.next,
+		@.var::type : ("{" E.grup),
+		("{" <OPTIMIZE_CHAIN (@.info) @.grup>) @.var::specs @.var::dot @.var::name: VAR.endvar
+		=	&VAR.endvar <OPTIMIZE_CHAIN (@.info) @.next>;
+		
+	(E.info) META_IF.if  E.next
+		=	("IF" <OPTIMIZE_CHAIN (@.info) @.if::rp> ":" <OPTIMIZE_CHAIN (@.info) @.if::lp>) <OPTIMIZE_CHAIN (@.info) @.next>;
+		
+	(E.info) &VAR.var,
+		@.var::type : ("word" {"e"|"E"}),
+		("word" "END") @.var::specs @.var::dot @.var::name: VAR.endvar
+		=	&VAR.endvar;
+		
+	(E.info) =;	
+	
+	(E.info) t.t E.next 
+		=	
+			t.t <OPTIMIZE_CHAIN (@.info) @.next>;
+	
+	//E.else = @.else;
+}
+
+
 
 PATH2XML {
 	= ;
@@ -611,3 +660,6 @@ FindErrorInSentence {
 	e.lp "=" e.rp = 'left part and right part error: ' e.lp "=" e.rp;
 	e. = '"=" - separator not found';
 }
+
+
+

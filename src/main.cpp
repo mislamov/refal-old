@@ -205,7 +205,7 @@ int main0 ( int argc, char **argv ) {
 
 	mod = new RefUserModule(getModuleNameFromFileName(xmlFile));
 	program->regModule(mod);
-	err = loadModuleFromXmlFile ( mod, program, xmlFile );
+	err = loadModuleFromXmlFile ( mod, program, xmlFile, false);
 	if (err) return err;
 #ifdef DEBUG
 	std::cout << mod->debug() << "\n";

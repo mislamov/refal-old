@@ -77,7 +77,9 @@ public:
 	virtual TResult init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot)=0; //  --> operator==() => [return GO] else [return BACK]
     virtual TResult back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&ownerOfCurrentDot)=0;
 
-	virtual bool operator >(RefData &rd)  { RUNTIMEERRORn("Not comparable for" << explode() << " and " << rd.explode()); };
+	virtual bool operator >(RefData &rd)  {
+	    RUNTIMEERRORn("Not comparable for" << explode() << " and " << rd.explode());
+    };
 	virtual bool operator ==(RefData &rd) { notrealisedERRORn; };
 
 	virtual unistring debug(){ return explode()+" "; };

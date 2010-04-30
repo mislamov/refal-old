@@ -604,15 +604,27 @@ unistring RefUserModule::debug(){
 
 
 
-void RefModuleBase::setFunctionByName(unistring name, RefFunctionBase* o){
+void RefModuleBase::setFunctionByName(unistring name, RefFunctionBase* o, bool redefine){
 	std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(name);
-	if (iter != functions.end()) { COMPILETIMEERRORn("function multi-definition: " << iter->first); }
+	if (iter != functions.end()) {
+	    if (redefine){
+            std::clog << "#### WARN: function re-definition: " << name << "\n" << std::flush;
+	    } else {
+            COMPILETIMEERRORn("function multi-definition: " << iter->first);
+	    }
+    }
 	functions[name] = o;
 };
 
-void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o){
+void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o, bool redefine){
 	std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(name);
-	if (iter != templates.end()) { COMPILETIMEERRORn("template multi-definition" << iter->first); }
+	if (iter != templates.end()) {
+	    if (redefine){
+            std::clog << "#### WARN: template re-definition: " << name << "\n" << std::flush;
+	    } else {
+            COMPILETIMEERRORn("template multi-definition" << iter->first);
+	    }
+    }
 	templates[name] = o;
 };
 

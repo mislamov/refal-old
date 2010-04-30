@@ -578,9 +578,20 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 
 void Session::printExecTrace(){
 	unistring tab = "";
-	while (execTrace.getLength()){
+
+	for (int i=1, maxi=execTrace.getLength(); i<=maxi; ++i){
+	    RefFunctionBase* tr_func;
+	    RefData** tr_a; RefData** tr_b; RefChain* tr_chown;
+
+	    execTrace.getByIndex(i, tr_func, tr_a, tr_b, tr_chown);
+		std::cerr << tab  << "'--- <" << tr_func->getName() << " " << the_debug_text(tr_a, tr_b, 128) << " >\n";
+		tab += "   ";
+	}
+
+/*	while (execTrace.getLength()){
 		std::cerr << tab  << "'--- <" << execTrace.top1()->getName() << " " << the_debug_text(execTrace.top2(), execTrace.top3(), 128) << " >\n";
 		execTrace.pop();
 		tab += "   ";
 	}
+*/
 }

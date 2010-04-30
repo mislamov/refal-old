@@ -94,6 +94,7 @@ RefChain* Div (RefData** beg, RefData** end, RefChain* begend_chain, Session* se
 RefChain* Sum (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     infint thesum = 0;
     RefIntegerBase *a;
+    if (!beg) RUNTIMEERRORs(sess, "error arguments");
     //std::cout << "\n\nSum: ";
     while(beg != end+1){
 		a = ref_dynamic_cast<RefIntegerBase >(*beg);
@@ -115,6 +116,7 @@ RefChain* Sum (RefData** beg, RefData** end, RefChain* begend_chain, Session* se
 RefChain* Mul (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
     infint thesum = 1;
     RefIntegerBase *a;
+    if (!beg) RUNTIMEERRORs(sess, "error arguments");
     //std::cout << "\n\nMul: ";
     while(beg != end+1){
 		a = ref_dynamic_cast<RefIntegerBase >(*beg);
@@ -708,17 +710,17 @@ RefChain* PrintStackTrace  (RefData** beg, RefData** end, RefChain* begend_chain
 };
 
 RefChain* Eval  (RefData** beg, RefData** end, RefChain* begend_chain, Session* sess){
-
     //std::cout << "\nEVAL: " << chain_to_text(beg, end) << "\n";
-
     RefChain *exch = new RefChain(sess, 1);
     (*exch) += new RefWord(sess, "REFAL2XML");
     (*exch) += new RefChain(sess, begend_chain, beg, end);
     RefChain *xmlcode = sess->getProgram()->executeExpression( new RefChain(sess, new RefExecBrackets(sess, exch)), sess );
     RefUserModule *global = (RefUserModule*)sess->getProgram()->findModule("global");
-    if (!global) SYSTEMERRORs(sess, "module GLOBAL not found");
+    if (!global){
+        SYSTEMERRORs(sess, "module GLOBAL not found");
+    }
     unistring xml = xmlcode->explode();
-    int err = loadModuleFromXmlCode(global, sess->getProgram(), xml.c_str(), xml.length());
+    int err = loadModuleFromXmlCode(global, sess->getProgram(), xml.c_str(), xml.length(), true);
     if (err) return 0;
     return new RefChain(sess);
 };

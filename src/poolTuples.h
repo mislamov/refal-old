@@ -41,7 +41,7 @@ public:
 
 	inline T top_pop(){
 #ifdef TESTCODE
-		if (!idx) 
+		if (!idx)
 			SYSTEMERRORn("link-stack is empty!");
 #endif
 		return pool[--idx];
@@ -50,7 +50,7 @@ public:
 
 	inline void pop(){
 #ifdef TESTCODE
-		if (!idx) 
+		if (!idx)
 			SYSTEMERRORn("link-stack is empty!");
 #endif
 		--idx;
@@ -58,7 +58,7 @@ public:
 
 	inline T top(){
 #ifdef TESTCODE
-		if (idx<=0) 
+		if (idx<=0)
 			SYSTEMERRORn("link-stack is empty!");
 #endif
 		return pool[idx-1];
@@ -66,7 +66,7 @@ public:
 
 	inline T pretop(){
 #ifdef TESTCODE
-		if (idx<=1) 
+		if (idx<=1)
 			SYSTEMERRORn("link-stack is not anouth!");
 #endif
 		return pool[idx-2];
@@ -74,7 +74,7 @@ public:
 
 	inline void settop(T t){
 #ifdef TESTCODE
-		if (idx<=0) 
+		if (idx<=0)
 			SYSTEMERRORn("link-stack is empty!");
 #endif
 		pool[idx-1] = t;
@@ -199,7 +199,7 @@ public:
 #ifdef TESTCODE
 		//std::cout << "\n\nsizeof(TUPLE2) = " << sizeof(TUPLE2) << "\n";
 		//std::cout << "sizeof(T1) = " << sizeof(T1) << "   "<< "sizeof(T2) = " << sizeof(T2) << "   " << "\n\n";
-		if (sizeof(TUPLE2) < sizeof(T1)+sizeof(T2)) 
+		if (sizeof(TUPLE2) < sizeof(T1)+sizeof(T2))
 			SYSTEMERRORn("Platform depend collision! sizeof(TUPLE2) < sizeof( struct{T1 T2} ).");
 #endif
 
@@ -614,7 +614,9 @@ public:
 
 	bool getByIndex(size_t index, T1 &i1, T2 &i2, T3 &i3, T4 &i4){
 		if (index<=0 || index>last_ind) {
-			i1 = i2 = i3 = i4 = 0;
+			i1 = 0;
+			i2 = i3 = 0;
+			i4 = 0;
 			return false;
 		}
 		TUPLE4* pool_index = pool + index;

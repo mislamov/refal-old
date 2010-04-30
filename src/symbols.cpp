@@ -80,7 +80,7 @@ unistring chain_to_text(RefData **a, RefData **b) {
 
 unistring the_debug_text(RefData **a, RefData **b, int maxlen) {
     if (!a) {
-        return "";
+        return " ";
     }
     size_t leng = b-a;
     if (maxlen && leng > maxlen){
@@ -198,6 +198,20 @@ unistring RefWord::debug() {
 };
 */
 
+bool RefIntegerBase::operator >(RefData &rd){
+        return
+            (ref_dynamic_cast<RefIntegerBase>(&rd) && this->getValue() > ((RefIntegerBase*)&rd)->getValue()) ||
+            (ref_dynamic_cast<RefRealBase>(&rd) && this->getValue() > ((RefRealBase*)&rd)->getValue())
+            ;
+};
+
+
+bool RefRealBase::operator >(RefData &rd){
+        return
+            (ref_dynamic_cast<RefIntegerBase>(&rd) && this->getValue() > ((RefIntegerBase*)&rd)->getValue()) ||
+            (ref_dynamic_cast<RefRealBase>(&rd) && this->getValue() > ((RefRealBase*)&rd)->getValue())
+            ;
+};
 
 
 
