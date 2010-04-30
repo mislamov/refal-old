@@ -422,11 +422,12 @@ META2XML {
 				<META2XML E.next>;
 
 
-	("SENTENCE" E.body) E.next
+	("SENTENCE" E.body) E.next,
+		<OPTIMIZE_CHAIN () E.body> : e.opted
 				=
 				'\n\t''<SENTENCE>'
-					<Prout 'optimize: ' @.body>
-					<META2XML <OPTIMIZE_CHAIN () E.body>>
+					<Prout 'optimize: ' @.body '  -->  ' @.opted>
+					<META2XML @.opted>
 					
 				'</SENTENCE>'
 				<META2XML E.next>;
