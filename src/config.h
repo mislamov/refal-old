@@ -63,9 +63,14 @@ namespace co {
 #ifdef UNICODE
 	typedef wchar  unichar;
 	typedef std::wstring    unistring;
+	#define ref_def_codepage "UTF-8"
 #else
 	typedef char  unichar;
 	typedef std::string    unistring;
+	//#define ref_def_codepage NULL
+	//#define ref_def_codepage "UTF-8"
+	#define ref_def_codepage "ISO-8859-1"
+	//#define ref_def_codepage "US-ASCII"
 #endif
 
 //#define _L(quote) L##quote

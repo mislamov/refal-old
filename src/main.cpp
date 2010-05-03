@@ -86,7 +86,7 @@ __verbose_off();
 
 	// запуск выполняемой программы
     RefalProgram userprogram(REF, ref_argc, ref_argv);
-    userprogram.loadModule(REF, prog, "global");
+    userprogram.loadModule(REF, prog, "global", ref_def_codepage);
     RefFunction *GO = userprogram.getFunction("Go");
     if (!GO) return -1;
     unistring result;
@@ -140,7 +140,7 @@ __verbose_on();
 
 }
 
-
+/*
 int main0 ( int argc, char **argv ) {
 	char *xmlFile;
 	RefUserModule *mod;
@@ -174,7 +174,7 @@ int main0 ( int argc, char **argv ) {
 	int err = 0;
 	if (! strstr(pname, ".xml")) {
 		ss0 << ".\\refgo.exe -e "  << "DiRefal_scaner " << pname << "\n";
-		ss1 << refal_dir << "refgo -e " /*<< refal_dir*/ << "DiRefal_scaner " << pname << "\n";
+		ss1 << refal_dir << "refgo -e "  << "DiRefal_scaner " << pname << "\n";
 		ss2 << pname << ".xml";
 	} else {
 		ss2 << pname;
@@ -267,3 +267,5 @@ int main0 ( int argc, char **argv ) {
 	return 0;
 
 }
+*/
+

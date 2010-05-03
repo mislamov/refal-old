@@ -19,7 +19,8 @@ RefalProgram::RefalProgram(PROGRAMTYPE type, int argc, char **argv) {
 }
 
 
-bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name){
+
+bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name, const char* codepage){
     unistring result = file;
     if (type==REF) {
         RefFunction *REFALCOMPILE = this->getFunction("REFALCOMPILE"); // получаем функцию  рефал-кода
@@ -27,12 +28,13 @@ bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name){
         //std::cout << result.c_str() << " " << result.length();
         // теперь в result результат синт- и семант-ического анализа и оптимизации prog.
         type = XMLCODE;
+        //std::cout << "\n\n\n" << result << "\n\n\n" << std::flush;
     }
 
     if (type==XML) {
         RefUserModule *ref = new RefUserModule(name);
         program->regModule(ref);
-        int err = loadModuleFromXmlFile (ref, program, result.c_str(), false);
+        int err = loadModuleFromXmlFile (ref, program, result.c_str(), false, codepage);
         if (err) return false;
         success = true;
     }
@@ -40,8 +42,8 @@ bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name){
     if (type==XMLCODE) {
         RefUserModule *ref = new RefUserModule(name);
         program->regModule(ref);
-        //std::cout << result.c_str() << " " << result.length();
-        int err = loadModuleFromXmlCode (ref, program, result.c_str(), result.length(), false);
+        //result = string2xml(result);
+        int err = loadModuleFromXmlCode (ref, program, result, false, codepage);
         if (err) return false;
         success = true;
     }

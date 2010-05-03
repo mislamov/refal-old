@@ -17,12 +17,13 @@
 
 #include "SAXLoader_expat.h"
 #include "SAXLoaderHeap.h"
+#include "utf8tolatin1.h"
 
-unistring toWstring(const unichar *str, int len) {
+unistring toWstring(const XML_Char *str, int len) {
     unistring result(str, len);
     return result;
 }
-unistring toWstring(const unichar *str) {
+unistring toWstring(const XML_Char *str) {
     return str ? unistring(str) : 0;
 }
 
@@ -67,9 +68,14 @@ unistring getVarName(unistring &str) {
 }
 
 void charData (void *data, const XML_Char *chars, int length) {
+    //std::cout << "\n[ " << (char*)chars << " ]\n" << std::flush;
     LoaderHeap *loader = (LoaderHeap *)data;
     ref_assert(loader!=0);
+    #ifdef UNICODE
     loader->currentchars += toWstring(chars, length);
+    #else
+    loader->currentchars += utf8tolatin1(toWstring(chars, length));
+    #endif
 }
 
 
@@ -339,8 +345,8 @@ void XMLCALL  endElement(void *data, const XML_Char *name) {
 char Bufff[BUFFSIZE];
 
 
-int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlFile, bool redefine) {
-    XML_Parser p = XML_ParserCreate(NULL);
+int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlFile, bool redefine, const char* codepage) {
+    XML_Parser p = XML_ParserCreate(codepage);
     if (! p) {
         fprintf(stderr, "Couldn't allocate memory for parser\n");
         return 1;
@@ -386,8 +392,8 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlF
 
 };
 
-int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, const char* xmlCode, size_t len, bool redefine) {
-    XML_Parser p = XML_ParserCreate(NULL);
+int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, std::string xmlCode, bool redefine, const char* codepage) {
+    XML_Parser p = XML_ParserCreate(codepage);
     if (! p) {
         fprintf(stderr, "Couldn't allocate memory for parser\n");
         return 1;
@@ -398,8 +404,9 @@ int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, const char* xmlC
     XML_SetElementHandler(p, startElement, endElement);
     XML_SetCharacterDataHandler(p, charData );
 
-    bool done = true;
-    if (XML_Parse(p, xmlCode, len, done) == XML_STATUS_ERROR) {
+    bool done = false;
+
+    if (XML_Parse(p, xmlCode.c_str(), xmlCode.length(), done) == XML_STATUS_ERROR) {
         fprintf(stderr, "Parse error at line %" XML_FMT_INT_MOD "u:\n%s\n",
                 XML_GetCurrentLineNumber(p),
                 XML_ErrorString(XML_GetErrorCode(p)));

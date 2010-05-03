@@ -720,7 +720,7 @@ RefChain* Eval  (RefData** beg, RefData** end, RefChain* begend_chain, Session* 
         SYSTEMERRORs(sess, "module GLOBAL not found");
     }
     unistring xml = xmlcode->explode();
-    int err = loadModuleFromXmlCode(global, sess->getProgram(), xml.c_str(), xml.length(), true);
+    int err = loadModuleFromXmlCode(global, sess->getProgram(), xml, true);
     if (err) return 0;
     return new RefChain(sess);
 };

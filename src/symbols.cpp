@@ -78,7 +78,7 @@ unistring chain_to_text(RefData **a, RefData **b) {
 };
 
 
-unistring the_debug_text(RefData **a, RefData **b, int maxlen) {
+unistring the_debug_text(RefData **a, RefData **b, size_t maxlen) {
     if (!a) {
         return " ";
     }
@@ -96,7 +96,7 @@ unistring the_debug_text(RefData **a, RefData **b, int maxlen) {
         if (alp) {
             result << " '";
             while (i<=leng && (alp = ref_dynamic_cast<RefAlphaBase>(a[i]))) {
-                if (alp->getValue() < 20) {
+                if ((unsigned long)alp->getValue() < 20) {
                     result << "#" << (int) alp->getValue();
                 } else {
                     result << alp->getValue();

@@ -65,7 +65,7 @@ public:
     RefFunction *getFunction(unistring fname);
     bool isSuccess(){ return success; };
     unistring getProgramName();
-    bool loadModule(PROGRAMTYPE type, unistring file, unistring name);
+    bool loadModule(PROGRAMTYPE type, unistring file, unistring name, const char* codepage = 0);
 
 };
 
