@@ -334,7 +334,7 @@ ForEachInBody_PatternAnalise {
 }
 
 VariantToGroup {
-	(e.var)("|" e.body) = (e.var)(e.body); // один вариант - это группа
+	(e.var)("|" e.body) = (e.var) e.body; // один вариант - это группа
 	e.e = e.e;
 }
 
@@ -349,8 +349,8 @@ ConditionsAnalise  {
 		<SubstitutAnalise (e.vars )( ) IF.cond::substitution> : (e.vars1)(e.subst1),
 		<PatternAnalise   (e.vars1)( ) IF.cond::pattern     > : (e.vars2)(e.pattn2),
 		<IF equal ( $empty )( IF.cond::isnot )  /* если нет отрицания условия */
-			THEN  (e.vars2)(e.result ("IF"  e.subst1 ":" e.pattn2))
-			ELSE  (e.vars )(e.result ("IF-" e.subst1 ":" e.pattn2))
+			THEN  (e.vars2)(e.result ("IF" ("RIGHT-PART" e.subst1) ("LEFT-PART" e.pattn2)))
+			ELSE  (e.vars )(e.result ("IF-"("RIGHT-PART" e.subst1) ("LEFT-PART" e.pattn2)))
 		> : e.newarg
 			=	<ConditionsAnalise e.newarg e.ifs>;
 }
@@ -426,7 +426,7 @@ META2XML {
 		<OPTIMIZE_CHAIN () E.body> : e.opted
 				=
 				'\n\t''<SENTENCE>'
-					<Prout 'optimize: ' @.body '  -->  ' @.opted>
+					//<Prout 'optimize: ' @.body '  -->  ' @.opted>
 					<META2XML @.opted>
 					
 				'</SENTENCE>'
@@ -470,14 +470,14 @@ META2XML {
 				<OPENVAR2XML @.var>
 				<META2XML E.next>;
 
-	("IF" e.lp ":" E.rp) E.next		=
+	("IF" ("RIGHT-PART" e.lp)("LEFT-PART" E.rp)) E.next		=
 				'<IF><RIGHT-PART>'
 					<META2XML @.lp>
 				'</RIGHT-PART><LEFT-PART>'
 					<META2XML @.rp>
 				'</LEFT-PART></IF>'
 				<META2XML E.next>;
-	("IF-" e.lp ":" E.rp) E.next		=
+	("IF-" ("RIGHT-PART" e.lp)("LEFT-PART" E.rp)) E.next		=
 				'<IF not="true"><RIGHT-PART>'
 					<META2XML @.lp>
 				'</RIGHT-PART><LEFT-PART>'
@@ -493,38 +493,64 @@ META2XML {
 }
 
 
-Template META_IF ::= ("IF" e.rp ":" e.lp);
+Template META_IF ::= ({"IF"|"IF-"}.tag {("RIGHT-PART" e.)}.rp {("LEFT-PART" e.)}.lp );
 
 
 // оптимизирует left_part и right_part в метакоде
 // <OPTIMIZE_CHAIN (информация_для_оптимизации) хвост_оптимизируемой цепочки>
 OPTIMIZE_CHAIN_ { e.e, <OPTIMIZE_CHAIN_ e.e> : e.res = e.res <Prout '<OPTIMIZE_CHAIN ' e.e '>  -->  ' e.res>; }
 OPTIMIZE_CHAIN {
-	(E.info) ({"("|"{"|"|"}.br E.a) E.next	
+	(E.info) ({"("|"|"|"SENTENCE"}.br E.a) E.next	
 		=	(@.br  <OPTIMIZE_CHAIN (@.info) @.a>) <OPTIMIZE_CHAIN (@.info) @.next>;
 		
 	(E.info) SYMBOL.s E.next		
 		=	@.s <OPTIMIZE_CHAIN (@.info) @.next>;
 		
-	(E.info) &VAR.var E.next,
-		@.var::type : ("{" E.grup),
-		("{" <OPTIMIZE_CHAIN (@.info) @.grup>) @.var::specs @.var::dot @.var::name: VAR.endvar
-		=	&VAR.endvar <OPTIMIZE_CHAIN (@.info) @.next>;
-		
+	// оптимизация условий
 	(E.info) META_IF.if  E.next
-		=	("IF" <OPTIMIZE_CHAIN (@.info) @.if::rp> ":" <OPTIMIZE_CHAIN (@.info) @.if::lp>) <OPTIMIZE_CHAIN (@.info) @.next>;
+		=	(@.if::tag @.if::rp <OPTIMIZE_CHAIN (@.info) @.if::lp>) <OPTIMIZE_CHAIN (@.info) @.next>;
 		
+	// оптимизация последних еЕ-переменных
 	(E.info) &VAR.var,
 		@.var::type : ("word" {"e"|"E"}),
 		("word" "END") @.var::specs @.var::dot @.var::name: VAR.endvar
 		=	&VAR.endvar;
 		
-	(E.info) =;	
+	// оптимизация, когда в паттерне последним идет группа или вариант с e-переменной в конце варианта
+	(E.info) &VAR.var,
+		@.var::type : GROUP_OR_VARIANT.gr ,
+		("{"  <OPTIMIZE_CHAIN (@.info) @.gr::body>) @.var::specs @.var::dot @.var::name: VAR.endvar
+		=	&VAR.endvar;
+
+	/*(E.info) &VAR.var E.next,
+		@.var::type : ("{" E.grup),
+		("{" <OPTIMIZE_CHAIN (@.info) @.grup>) @.var::specs @.var::dot @.var::name: VAR.endvar
+		=	&VAR.endvar <OPTIMIZE_CHAIN (@.info) @.next>;*/		
+		
+		
+	// прочие (последние) переменные не оптимизируются
+	(E.info) &VAR.var E.next = &VAR.var <OPTIMIZE_CHAIN (@.info) @.next>;
+	(E.info) &LNK.var E.next = &LNK.var <OPTIMIZE_CHAIN (@.info) @.next>;
+	(E.info) &SYMBOL.item E.next = &SYMBOL.item <OPTIMIZE_CHAIN (@.info) @.next>;
 	
-	(E.info) t.t E.next 
+	(E.info) =;
+	
+	(E.info) ("LEFT-PART" e.lp) E.next,
+		@.lp : e.pattern { META_IF. E. }.ifs
+		=	("LEFT-PART" <OPTIMIZE_CHAIN (@.info) @.pattern> <OPTIMIZE_CHAIN (@.info) @.ifs> )
+			<OPTIMIZE_CHAIN (@.info) @.next> ;
+
+	(E.info) ("LEFT-PART" e.pattern) E.next
+		=	("LEFT-PART" <OPTIMIZE_CHAIN (@.info) @.pattern> )
+			<OPTIMIZE_CHAIN (@.info) @.next> ;
+	
+	(E.info) ("RIGHT-PART" E.rp) E.next
+		=	 ("RIGHT-PART" @.rp) <OPTIMIZE_CHAIN (@.info) @.next> ;
+	
+/*	(E.info) t.t E.next 
 		=	
 			t.t <OPTIMIZE_CHAIN (@.info) @.next>;
-	
+*/	
 	//E.else = @.else;
 }
 
@@ -555,8 +581,8 @@ OPENVAR2XML {
 	("{" ("|" E.variant) E.variants)"."({word|int} E.name)	=	'<VARIANTS name="' E.name '">' <META2XML E.variant>  <OPENVAR2XML E.variants> ;
 	("|" E.body)		=	'<THE-VARIANT/>' <META2XML E.body> '</VARIANTS>';
 	("|" E.body) E.next	=	'<THE-VARIANT/>' <META2XML E.body> <OPENVAR2XML E.next>;
-	("{" (E.body))		=	'<GROUP name="">' <META2XML E.body> '</GROUP>';
-	("{" (E.body))"."({word|int} E.name)		=	'<GROUP name="' E.name '">' <META2XML E.body> '</GROUP>';
+	("{" E.body)		=	'<GROUP name="">' <META2XML E.body> '</GROUP>';
+	("{" E.body)"."({word|int} E.name)		=	'<GROUP name="' E.name '">' <META2XML E.body> '</GROUP>';
 	"&" e.var = '<POINT>' <OPENVAR2XML @.var> '</POINT>';
 
 	/*

@@ -1,6 +1,8 @@
 #include "direfal.h"
 #include "SAXLoader_expat.h"
 
+#include <iostream>
+#include <fstream>
 
 
 std::streambuf *stdbbuf = std::cout.rdbuf();
@@ -20,15 +22,32 @@ RefalProgram::RefalProgram(PROGRAMTYPE type, int argc, char **argv) {
 
 
 
-bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name, const char* codepage){
+bool RefalProgram::loadModule(PROGRAMTYPE type, unistring file, unistring name, const char* codepage, bool createxml){
     unistring result = file;
     if (type==REF) {
         RefFunction *REFALCOMPILE = this->getFunction("REFALCOMPILE"); // получаем функцию  рефал-кода
+
+        time_t starttime, stoptime;
+        time ( &starttime );
+
         REFALCOMPILE->execute(file, result); // применяем функцию к  пользователя. Итог - xml код  программы
+
+        time ( &stoptime );
+__verbose_off();
+        std::cout << "compiled time: "
+            << difftime(stoptime, starttime) << " sec.\n"
+            << std::flush;
+__verbose_on();
         //std::cout << result.c_str() << " " << result.length();
         // теперь в result результат синт- и семант-ического анализа и оптимизации prog.
         type = XMLCODE;
         //std::cout << "\n\n\n" << result << "\n\n\n" << std::flush;
+        if (createxml){
+            unistring xmlname = file + ".xml";
+            std::ofstream xmlout(xmlname.c_str());
+            xmlout << result;
+            xmlout.close();
+        }
     }
 
     if (type==XML) {

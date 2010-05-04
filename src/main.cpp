@@ -36,6 +36,7 @@ void help(char *pname){
 	std::cout << "\t-h (or --help) to see this message\n" << std::flush;
 	std::cout << "\t-v (or --verbose) to see more information about program execution\n" << std::flush;
 	std::cout << "\t-d (or --debug) to loging debug information into *.debug file\n" << std::flush;
+	std::cout << "\t--createxml to create compiled *.xml file of program\n" << std::flush;
 }
 
 int main ( int argc, char **argv ) {
@@ -49,6 +50,7 @@ int main ( int argc, char **argv ) {
 	}
 
     bool debug = false;
+    bool createxml = false;
 
 	char *prog = 0;
 	for (int i=1; i<argc; ++i){
@@ -62,6 +64,10 @@ int main ( int argc, char **argv ) {
 		}
 		if (!strcmp(argv[i], "-d") || !strcmp(argv[i], "--debug")){
 		    debug = true;
+			continue;
+		}
+		if (!strcmp(argv[i], "--createxml")){
+		    createxml = true;
 			continue;
 		}
 		if (argv[i] && argv[i][0]=='-'){
@@ -86,7 +92,7 @@ __verbose_off();
 
 	// запуск выполняемой программы
     RefalProgram userprogram(REF, ref_argc, ref_argv);
-    userprogram.loadModule(REF, prog, "global", ref_def_codepage);
+    userprogram.loadModule(REF, prog, "global", ref_def_codepage, createxml);
     RefFunction *GO = userprogram.getFunction("Go");
     if (!GO) return -1;
     unistring result;
