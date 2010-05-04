@@ -21,6 +21,7 @@
 #include "direfal.h"
 #include "program.h"
 #include "system.h"
+#include "gc.h"
 
 
 RefProgram::RefProgram(int argc, char **argv){
@@ -64,7 +65,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 	//modules[module->getName()] = module;
 };
 
-
+/*
 // с рекурсией.
 RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // вычисляет цепочку
 	if (!chain || chain->isEmpty()) {
@@ -82,6 +83,8 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 	RefData
 		**iter=chain->at_first(),       // поле зрения
 		**iend = chain->at_afterlast(); // конец активной части поля зрения
+
+	//std::cout << "iter: " << (*iter)->debug() << std::flush;
 
 	for (; iter < iend; ++iter){
 
@@ -107,7 +110,8 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 				}
 				RefChain *fresult;
 				if (arg->getLength() > 1){
-					fresult = func->exec(arg->at(1), arg->at_afterlast(), arg, sess);
+					//fresult = func->exec(arg->at(1), arg->at_afterlast(), arg, sess);
+					fresult = func->exec(arg->at(1), arg->at_last(), arg, sess);
 				} else {
 #ifdef TESTCODE
 					if (arg->getLength() != 1) AchtungERRORs(sess);
@@ -131,7 +135,6 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 					iend = fresult->at_afterlast();
 					chain = fresult;
 					//std :: cout << "\n\n\n" << fresult->debug() << "\n";
-					(*(iend-1))->debug();
 				} else {
 					// если результат был пуст, то двигаемся дальше
 				}
@@ -158,6 +161,8 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 };
 
 
+*/
+
 class RefChainDoubleLinkManager : public RefChain {
 	Session *session;
 public:
@@ -179,11 +184,6 @@ public:
 
 
 
-inline void gcollect(Session *sess, RefData* gc_save_point, RefChain *result, size_t cc){
-		//sess->gc_prepare(gc_save_point); - отметка об удалении устоит у всех (ставится при создании и при каждой сборке)
-		sess->gc_exclude(result);
-		sess->gc_clean(gc_save_point);
-}
 
 //--------- без рекурсии
 RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вычисляет цепочку
@@ -217,28 +217,6 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 	RefChainDoubleLinkManager *tmpForInstances = new RefChainDoubleLinkManager(sess);
 
 	while(true){
-		/*
-		if (!iter){
-		// пустая цепь
-		std::cout << "\n" << treelevel << ": -----";
-		} else {
-		std::cout << "\n" << treelevel << "\t" << ((iter == iend)?" -------":(*iter)->debug());
-		}
-
-		std::cout << "\n##########################\n";
-		for (size_t i=1; i<=pastWay.getLength(); ++i){
-		RefData **a, **b;
-		pastWay.getByIndex(i, a, b);
-		std::cout << i << ") " << the_explode(a, b) << "\n";
-		}
-
-		for (size_t i=1; i<=futurWay.getLength(); ++i){
-		RefData **a, **b; size_t t;
-		futurWay.getByIndex(i, a, b, t);
-		std::cout << i << "] " << t << ":: " << the_explode(a, b-1) << "\n";
-		}
-
-		//*/
 
 		if (!iter || (iter == iend)){  //// закончили гулять внутри подцепочки
 
@@ -250,11 +228,10 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			if (brackets.getLength()==0){  // вычисление цепочки для postWay закончено
 				if (futurWay.getLength()==0){  // закончили вычисление всего аргумента. компилируем результат
 					ref_assert(treelevel==0);
-
-					RefChain *result = new RefChain(sess);
+					
 					if (pastWay.getLength()==0){
-						gcollect(sess, gc_save_point, result, gc_save_count);
-						return result;
+//						gcollect(sess, gc_save_point, result, gc_save_count);
+						return new RefChain(sess);
 					}
 
 					PooledTuple2<RefData**,RefData**>::TUPLE2
@@ -266,62 +243,27 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					while(lnkiter != lnknend){
 						count += ((lnkiter->i2 - lnkiter->i1) + 1);
 						++lnkiter;
-					}
+					}					
 					RefData
 						**dt = (RefData**)malloc(sizeof(RefData*)*count),
 						**dest = dt;
-					if (!dt) RUNTIMEERRORn("memory limit");
+					if (!dt){
+						RUNTIMEERRORn("memory limit");
+					}
 					while (lnk != lnknend){
 						br_index = lnk->i2 - lnk->i1 + 1; // используем переменную для копирования
 						memcpy(dest, lnk->i1, sizeof(RefData*)*br_index);
 						dest += br_index;
 						++lnk;
 					}
-
-					result->first = dt;
-					result->leng  = count;
-					gcollect(sess, gc_save_point, result, gc_save_count);
-					return result;
+					return new RefChain(sess, dt, count);
 				} else {
 					// активируем верхнюю отложенную подцепочку
 					futurWay.top_pop(iter, iend, tmpsizet);
 					ref_assert(tmpsizet==treelevel);
 					continue;
 				}
-			} else
-				// ниже закомментированно, поскольку выпрыгивание из отрезка делается автоматически при проверке
-				// на каком уровне мы находимся когда iter == iend (выше)
-				/*if (brackets.equalTop(0, 0)) { //мы в отрезке?
-					//// выпрыгиваем из отрезка;
-					brackets.pop();
-					futurWay.top_pop(iter, iend, tmpsizet); // теперь в tmpsizet - глубина запланированного для обработки поля
-#ifdef TESTCODE
-					if (tmpsizet!=treelevel){
-						if (!iter){
-							// пустая цепь
-							std::cout << "\n" << treelevel << ": -----";
-						} else {
-							std::cout << "\n" << treelevel << "\t" << ((iter == iend)?" -------":(*iter)->debug());
-						}
-
-						std::cout << "\n##########################\n";
-						for (size_t i=1; i<=pastWay.getLength(); ++i){
-							RefData **a, **b;
-							pastWay.getByIndex(i, a, b);
-							std::cout << i << ") " << the_explode(a, b) << "\n";
-						}
-
-						for (size_t i=1; i<=futurWay.getLength(); ++i){
-							RefData **a, **b; size_t t;
-							futurWay.getByIndex(i, a, b, t);
-							std::cout << i << "] " << t << ":: " << the_explode(a, b-1) << "\n";
-						}
-					}
-#endif
-
-					ref_assert(tmpsizet==treelevel);
-					continue;
-				} else*/ {
+			} else {
 					//// значит мы внутри скобки и обработали все ее содержимое
 					--treelevel;
 					size_t br_index;
@@ -350,7 +292,9 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 					RefData
 						**arg = (RefData**)malloc(count * sizeof(RefData*)),
 						**dest = arg;
-					if (!arg) RUNTIMEERRORn("memory limit");
+					if (!arg){
+						RUNTIMEERRORn("memory limit");
+					}
 					tmpsizet = 0;
 					while(lnkbr != lnknend){
 						tmpsizet = lnkbr->i2 - lnkbr->i1 + 1; // используем переменную для копирования
@@ -383,7 +327,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 						}
 						pastWay.pop(); // не нужно хранить <>
 						iter = fresult->at_first();
-						iend = fresult->first ? fresult->at_afterlast() : 0;
+						iend = iter ? fresult->at_afterlast() : 0;
 					} else {  // (F)
 						pastWay.pop();
 						tmpForInstances->save(bb, tmpForInstances);
@@ -408,8 +352,8 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 			}
 
 			// прыгаем в сегмент
-			iend = segment->own->first + segment->to + 1;
-			iter = segment->own->first + segment->from;
+			iend = segment->own->at(segment->to + 1);
+			iter = segment->own->at(segment->from);
 			continue;
 		}
 

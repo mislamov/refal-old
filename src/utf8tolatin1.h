@@ -147,7 +147,7 @@ unistring utf8tolatin1(unistring src)
 				break;
 			}
 			if (ucs4 != 0xffffffff) {
-			    result += ucs4;
+			    result += (char)ucs4;
 				//printf("%c", (int)ucs4);
 			}
 		}

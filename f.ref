@@ -1,3 +1,6 @@
-$ENTRY Go {= <Full 'марацкий'>;}
+//Mount { "F" e.e 0 = e.e; "F" e.e = e.e <Mount "F" <Get 1>> ;	e.fname, <Open 'r' 1 e.fname>: = <Mount "F" <Get 1>>;}
+
+$ENTRY Go {= <Full <Mount 'direfal_scaner.xml'>>;}
 Full {=;
-      e.all = <Prout e.all> <Prout "in="><Full <Card>>;}
+      t.a e.b = <Print t.a> <Full e.b>;
+}

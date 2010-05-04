@@ -22,7 +22,7 @@
 #define REFVERSION "D-Refal 0.1.2 alpha  Copyright (c) 2008-2010 Marat Islamov"
 //#define TESTCODE
 //#define DEBUG
-//#define xDEBUG  // garbage collector
+#define xDEBUG  // garbage collector
 //#define UNICODE
 /****************************************************************************************
 * CORE - сердцевина рефал-машины
@@ -39,6 +39,7 @@ namespace co {
 	extern size_t vars;
 	extern size_t chains;
 	extern size_t stbracks;
+	extern bool go;
 }
 
 #include <iostream>

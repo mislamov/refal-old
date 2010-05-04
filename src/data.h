@@ -58,7 +58,7 @@ public:
 	ЗАПРЕЩЕНО удалять коллекционируемые элементы не сборщиком мусора!
 	*/
 class RefData : public RefObject {
-	friend class Session;
+	friend class Session; // сборка мусора
 
 protected:
 	inline void set_not_deleteble_by_gc_delete(){ gc_label |= 2; };
@@ -146,7 +146,7 @@ class RefUserTemplate;
 
 // usertype-переменная, группа
 class RefVarChains : public RefVariable {
-	friend class RefChain;
+	friend class RefChain; // компиляция
 
 	unistring typeString;
 	//RefTemplateBase *templInstant;
@@ -181,7 +181,7 @@ public:
 // вариант
 // TODO: совместить с RefVarChains
 class RefVariantsChains : public RefVariable {
-	friend class RefChain;
+	friend class RefChain; // компилция
 
 	PooledStack<RefChain *> templs;
 public:
@@ -201,7 +201,7 @@ public:
 
 // [ .. ]
 class RefRepeaterChain : public RefData {
-	friend class RefChain;
+	friend class RefChain; // компиляция
 
 	RefChain *templ;
 
@@ -287,8 +287,6 @@ char* c_str(std::string str);
 */
 class RefChain : public RefData {
 	friend bool eq(RefChain *, RefChain *);
-	friend class Session;
-	friend class RefProgram;
 
 #ifdef TESTCODE
 public:
@@ -324,26 +322,20 @@ public:
 	RefChain*  operator+=(RefData  *ch);
 	RefChain*  operator+=(RefChain *ch); // удаляет *ch
 	RefChain*  operator+=(RefChain  ch); // только копирует *ch
-/*	inline RefData**  operator[](signed long idx){
-		return leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
-	}*/
 
 	inline RefData**  at(signed long idx){
 	    ref_assert(! (idx < 0 || leng==0 || first==0));
 	    return first+idx;
 	    };
-	inline RefData**  at_first(){ return first; };
+	inline RefData**  at_first(){ 
+		return isEmpty()?0:first; 
+	};
 	inline RefData**  at_last(){
-	    return first&&leng?first+leng-1:0;
+	    return (first&&leng)?(first+leng-1):0;
     };
 	inline RefData**  at_afterlast(){
-	    return first ? first+leng : 0;
+	    return first ? (first+leng) : 0;
     };
-	inline RefData**  at_beforefirst(){
-   	    ref_assert(! (leng==0 || first==0));
-   	    return first-1;
-    };
-
 	inline bool isEmpty(){ return (leng==0); }
 	inline size_t getLength(){ return leng; }
 
@@ -369,29 +361,23 @@ public:
 
 
 class RefLinkToVariable : public RefData {
-	friend class RefChain;
 	friend class RefPointLink;
-	friend class Session;
 	RefVariable *lnk;
 	unistring path;
 public:
 	RefLinkToVariable() : RefData(){};
 	TResult init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
     TResult back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own);
-	inline unistring explode(){
-		/*if(
-			lnk && lnk->getName()==""
-			){
-				std::cout << "";
-		};*/
-		return " @."+(lnk?lnk->getName():"$notinit$")+(path==EmptyUniString?"":"/"+path)+" ";
-	};
+	inline unistring explode(){		return " @."+(lnk?lnk->getName():"$notinit$")+(path==EmptyUniString?"":"/"+path)+" ";	};
 
 	inline RefLinkToVariable(RefVariable *ln){ lnk=ln; path=EmptyUniString; };
-	inline RefLinkToVariable(unistring varName){
-		path = varName;
-		lnk=0;
-	};
+	inline RefLinkToVariable(unistring varName){ path = varName; lnk=0;	};
+
+	inline void setLnk(RefVariable *l){ lnk = l; };
+	inline RefVariable *getLnk(){ return lnk; };
+	inline bool hasLnk(){ return lnk?true:false; };
+	inline unistring getPath(){ return path; };
+	inline void setPath(unistring pt){ path = pt; };
 };
 
 

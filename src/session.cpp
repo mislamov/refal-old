@@ -245,9 +245,6 @@ void Session::gc_clean(RefData* save_point){
 		//varMapStack.getByIndex(theindex)->debug();
 	}
 
-
-
-
 	RefData *tmp=0, *pre=0, *iend=0;
 
 	//		std::cout << "GC START! " << co::objs << "\n";
@@ -475,14 +472,14 @@ unistring VarMap::debug(){
 
 // TODO: оптимизировать!
 RefChain*  Session::substituteExpression(RefChain *chain){
-	if (! chain->leng) {
+	if (chain->isEmpty()) {
 		return new RefChain(this);
 		//return chain; // в зависимости от того как сделана будет сборка мусора - раскомментировать строку выше
 	}
 
 	//std::cout << "\n" << chain->debug() << "\n\n" << std::flush;
 
-	RefChain *result = new RefChain(this, chain->leng);
+	RefChain *result = new RefChain(this, chain->getLength());
 	RefVariable *tmpvar = 0;
 	RefLinkToVariable *link = 0;
 	RefDataBracket   *brack = 0;
@@ -496,14 +493,14 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			RefData **endi, **i;
 			RefChain *i_chain;
 			VarMap* vm = 0;
-			if (! findVar(link->lnk, i, endi, i_chain, vm)){
+			if (! findVar(link->getLnk(), i, endi, i_chain, vm)){
 				//std::cout << link->explode() << std::flush;
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for link " + link->explode());
 			}
-			if (link->path != EmptyUniString){
+			if (link->getPath() != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! vm->folowByWay(link->path, i, endi, i_chain, tmpvar, vm)) RUNTIMEERRORs(this, "Wrong way for variable " << link->lnk->toString() << " : " << link->path);
+				if (! vm->folowByWay(link->getPath(), i, endi, i_chain, tmpvar, vm)) RUNTIMEERRORs(this, "Wrong way for variable " << link->getLnk()->toString() << " : " << link->getPath());
 			}
 			if (i){
 				//*result += new RefChain(this, 0, i, endi);
@@ -530,17 +527,17 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 			ref_assert(ref_dynamic_cast<RefVarChains>(pointlink->theLink->lnk));
 
 			RefData **ther=0, **thel=0;  RefChain *thechain=0;  VarMap* thevm = 0;
-			if (! findVar(pointlink->theLink->lnk, thel, ther, thechain, thevm)){
+			if (! findVar(pointlink->theLink->getLnk(), thel, ther, thechain, thevm)){
 				std::cout << "\n\n" << this->debug() << "\n\n" << std::flush;
 				SYSTEMERRORs(this, "Variable not found for &link " + pointlink->explode());
 			}
-			if (pointlink->theLink->path != EmptyUniString){
+			if (pointlink->theLink->getPath() != EmptyUniString){
 				// заглядывание в пользовательскую переменную
-				if (! thevm->folowByWay(pointlink->theLink->path, thel, ther, thechain, tmpvar, thevm)){
-					RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->lnk->toString() << " : " << pointlink->theLink->path);
+				if (! thevm->folowByWay(pointlink->theLink->getPath(), thel, ther, thechain, tmpvar, thevm)){
+					RUNTIMEERRORs(this, "Wrong way for variable " << pointlink->theLink->getLnk()->toString() << " : " << pointlink->theLink->getPath());
 				}
 			} else {
-				tmpvar = pointlink->theLink->lnk;
+				tmpvar = pointlink->theLink->getLnk();
 			}
 
 			/**

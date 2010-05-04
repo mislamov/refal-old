@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include <ctime>
 
 std::streambuf *stdbbuf = std::cout.rdbuf();
 std::streambuf *nullbuf = 0;

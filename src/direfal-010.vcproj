@@ -248,6 +248,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\gc.h"
+				>
+			</File>
+			<File
 				RelativePath=".\module_sdk.h"
 				>
 			</File>

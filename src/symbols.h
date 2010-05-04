@@ -37,7 +37,6 @@ RefChain *text_to_chain(Session *sess, const char *buffer);
 RefChain *text_to_chain(Session *sess, const char *buffer, size_t length);
 
 
-
 template <class T, class t>
 class RefSymbolBase : public RefData {
 public:

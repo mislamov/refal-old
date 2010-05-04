@@ -2,6 +2,10 @@
 #include "program.h"
 #include "function.h"
 #include "session.h"
+#include "gc.h"
+
+
+
 
 
 RefChain* RefFunctionBase::exec(RefData** l, RefData** r, RefChain* lr_own, Session* sess){
@@ -11,9 +15,16 @@ RefChain* RefFunctionBase::exec(RefData** l, RefData** r, RefChain* lr_own, Sess
 		std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >\n";
 		#endif
 
+		RefData* gc_save_point = sess->gc_last;
+		size_t gc_save_count = co::datas;
+
+
 		sess->execTrace.put(this, l, r, lr_own);
 		RefChain* res = eval(l, r, lr_own, sess);
 		sess->execTrace.top_pop(tmp, l, r, lr_own); // ?
+
+		gcollect(sess, gc_save_point, res, gc_save_count);
+
 
 		#ifdef DEBUG
 		std::cout << "EXEC : <" << getName() << "  " << chain_to_text(l, r) << " >  ==>>  " << res->debug() << "\n";

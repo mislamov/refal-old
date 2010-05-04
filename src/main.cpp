@@ -118,7 +118,7 @@ __verbose_on();
         debugstream = new std::ofstream(ss.str().c_str());
     }
 
-
+	co::go = true;
     GO->execute(0, result);
 
 __verbose_off();

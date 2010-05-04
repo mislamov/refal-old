@@ -38,6 +38,7 @@ namespace co {
 	size_t vars = 0;
 	size_t chains = 0;
 	size_t stbracks = 0;
+	bool go = false;
 }
 
 char* c_str(std::string str){
@@ -598,7 +599,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 
 				link = ref_dynamic_cast<RefLinkToVariable>(*point);  // ССЫЛКА
-				if (link && (! link->lnk)){ // запоминаем ссылку
+				if (link && (! link->hasLnk())){ // запоминаем ссылку
 					lnks.push(point);
 					continue;
 				}
@@ -632,11 +633,11 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 
 		ref_assert((*tmp)->lnk || (*tmp)->path!="");
 
-		if (! (*tmp)->lnk){
-			size_t i = (*tmp)->path.find( varPathSeparator );
+		if (! (*tmp)->hasLnk()){
+			size_t i = (*tmp)->getPath().find( varPathSeparator );
 			// ссылка на часть внешней переменной
-			unistring name = (*tmp)->path.substr(0, i);
-			(*tmp)->path = (i!=unistring::npos) ? (*tmp)->path.substr(i+1) : EmptyUniString;
+			unistring name = (*tmp)->getPath().substr(0, i);
+			(*tmp)->setPath( (i!=unistring::npos) ? (*tmp)->getPath().substr(i+1) : EmptyUniString );
 
 #ifdef TESTCODE
 			if (vars.find(name)==vars.end()){
@@ -645,7 +646,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 #endif
 			ref_assert(vars.find(name)!=vars.end());
 
-			(*tmp)->lnk = vars[name];
+			(*tmp)->setLnk(vars[name]);
 		}
 		lnks.pop();
 	}
