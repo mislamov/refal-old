@@ -299,23 +299,20 @@ protected:
 	size_t sysize;
 
 	static size_t alloc_portion;
+	size_t firstBracket; // индекс+1 первой скобки (0 если нет)
+
 public:
 
-	RefChain(Session *sess) : RefData(sess) { sysize=leng=0; first=0; co::chains++; };
+	RefChain(Session *sess) : RefData(sess) { sysize=leng=0; first=0; co::chains++; firstBracket=0; };
 	RefChain(Session *, RefData *);			// цпочка из одного терма
 	RefChain(Session *, size_t systemsize);	// пустая цепочка для systemsize элементов
     RefChain(Session *, RefChain *ownchain, RefData **from, RefData **to); // цепочка из подцепочки
-	RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){
-		co::chains++;
-		sysize=leng=sz;
-		/* todo: оптимизировать. без копирования сделать
-		first=d;
-		gc_label|=0x08;
-		*/
-		first = (RefData**)malloc(sizeof(RefData*) * sysize);
-		if (!first) RUNTIMEERRORn("memory limit");
-		memcpy(first, d, sizeof(RefData*)*sz);
-	}
+	RefChain(Session *sess, RefData** d, size_t sz);
+
+	inline void setFirstBracketIdx(size_t idx){ firstBracket=idx+1; };
+	inline RefData** getFirstBracket(){ return firstBracket? at(firstBracket-1) : 0; };
+	inline void setFirstBracket(RefData** br){ setFirstBracketIdx(br-first); };
+
 	virtual ~RefChain();
 	inline bool isMemoryProtected(){ return (gc_label&0x08)!=0; };
 

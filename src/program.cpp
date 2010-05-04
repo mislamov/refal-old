@@ -326,8 +326,21 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 							fresult = func->exec(0, 0, bb->chain, sess);
 						}
 						pastWay.pop(); // не нужно хранить <>
+						RefData **fbr = fresult->getFirstBracket();
 						iter = fresult->at_first();
 						iend = iter ? fresult->at_afterlast() : 0;
+
+						//if (fbr) std::cout << "\nfbr = " << (*fbr)->debug();
+						/*if (!fbr){
+							// нет скобок в результате
+							pastWay.put(fresult->at_first(), fresult->at_last());
+							iter = iend = 0;
+						}*/
+						/*else if (iter && fbr!=iter){
+							std::cout << "\niter=" << iter << "  
+							pastWay.put(iter, fbr-1);
+							iter = fbr;
+						}*/
 					} else {  // (F)
 						pastWay.pop();
 						tmpForInstances->save(bb, tmpForInstances);
@@ -340,9 +353,6 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 
 		// перед нами отрезок
 		if (segment = ref_dynamic_cast<RefSegment>(*iter)){
-			//std::cout << iend << "\n" << std::flush;
-			//std::cout << "\t" << *iend << "\n" << std::flush;
-			//if (*(++iter) != *iend){
 			if (++iter != iend){
 				// откладываем обработку всего, что после сегмента
 				futurWay.put(iter, iend, treelevel);
@@ -351,9 +361,15 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 				//brackets.put(0, 0); // кидаем в стек скобок признак того, что мы прыгнули в отрезок, а не в скобку
 			}
 
-			// прыгаем в сегмент
-			iend = segment->own->at(segment->to + 1);
-			iter = segment->own->at(segment->from);
+			// прыгаем в сегмент, если надо
+			RefData **fbr = 0;
+			if (fbr = segment->own->getFirstBracket()){
+				iend = segment->own->at(segment->to + 1);
+				iter = segment->own->at(segment->from);
+			} else {
+				pastWay.put(segment->own->at(segment->from), segment->own->at(segment->to));
+				iter = iend = 0;
+			}
 			continue;
 		}
 

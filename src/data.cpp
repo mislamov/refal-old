@@ -41,12 +41,13 @@ namespace co {
 	bool go = false;
 }
 
+/*
 char* c_str(std::string str){
 	size_t l = str.length();
 	char *ch = new char[l];
 	strncpy(ch, str.c_str(), l);
 	return ch;
-};
+};*/
 
 RefData::RefData(Session *sess) : RefObject(){
 	if (sess){
@@ -76,16 +77,19 @@ TResult RefDataNull::back(RefData **&activeTemplate, Session* sess, RefData **&c
 
 
 RefChain::RefChain(Session *sess, RefData* d) : RefData(sess){
-
+	firstBracket = 0;
 	sysize = leng = 1;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	if (!first) RUNTIMEERRORn("memory limit");
 	first[0] = d;
+	if (d->isDataBracket()){
+		setFirstBracket(first);
+	}
 	co::chains++;
 };
 
 RefChain::RefChain(Session *sess, size_t size) : RefData(sess) { // size is not lenght
-
+	firstBracket = 0;
 	sysize = size;
 	first = (RefData**)malloc(sizeof(RefData*) * sysize);
 	if (!first) RUNTIMEERRORn("memory limit");
@@ -96,6 +100,7 @@ RefChain::RefChain(Session *sess, size_t size) : RefData(sess) { // size is not 
 
 
 RefChain::RefChain(Session *sess, RefChain *ownchain, RefData **from, RefData **to) : RefData(sess) { // size is not lenght
+	firstBracket = 0;
 	first = 0;
 	leng = sysize = 0;
 	if ((ownchain && ownchain->isEmpty()) || !from) return;  // если родитель имеется и он пуст - ничего не добавляем
@@ -109,6 +114,40 @@ RefChain::RefChain(Session *sess, RefChain *ownchain, RefData **from, RefData **
 	if (!first) RUNTIMEERRORn("memory limit");
 	memcpy(first, from, sizeof(RefData*)*leng);
 	co::chains++;
+
+	RefData **fbr = ownchain->getFirstBracket();
+	if (fbr && fbr <= to){
+		if (fbr>=from){
+			setFirstBracketIdx(fbr-from);
+		} else {
+			size_t i = 0;
+			for (i=0; i<leng && !(*at(i))->isDataBracket(); ++i);
+			if (i<leng){
+				setFirstBracketIdx(i);
+			}
+		}
+	}
+};
+
+
+RefChain::RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){
+		firstBracket = 0;
+		co::chains++;
+		sysize=leng=sz;
+		firstBracket = 0;
+		/* todo: оптимизировать. без копирования сделать
+		first=d;
+		gc_label|=0x08;
+		*/
+		first = (RefData**)malloc(sizeof(RefData*) * sysize);
+		if (!first) RUNTIMEERRORn("memory limit");
+		memcpy(first, d, sizeof(RefData*)*sz);
+		size_t i = 0;
+		for (i=0; i<sz && !(*at(i))->isDataBracket(); ++i);
+		if (i<sz){
+			setFirstBracketIdx(i);
+		}
+		
 };
 
 
@@ -182,12 +221,17 @@ RefChain* RefChain::operator+=(RefData *ch) {
 	first[leng] = ch;
 	++leng;
 
+	if (!firstBracket && ch->isDataBracket()){
+		setFirstBracket(at_last());
+	}
+
 	return this;
 };
 
 // после - ch не существует!
 RefChain* RefChain::operator+=(RefChain *ch) {
 	ref_assert(!isMemoryProtected());
+	if (ch->isEmpty()) return this;
 
     if (sysize < leng + ch->leng){
         sysize += (ch->leng);
@@ -198,6 +242,12 @@ RefChain* RefChain::operator+=(RefChain *ch) {
 	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch->first, sizeof(RefData*)*(ch->leng));
 	leng += ch->leng;
+
+	RefData** rfb = 0;
+	if (!firstBracket && (rfb = ch->getFirstBracket())){
+		setFirstBracketIdx(leng - (ch->at_last() - rfb));
+	}
+
 	//delete ch;
 	ch = 0;
 	return this;
@@ -213,6 +263,11 @@ RefChain* RefChain::operator+=(RefChain ch) {
 	if (! first) RUNTIMEERRORn("memory limit");
 	memcpy(first+leng, ch.first, sizeof(RefData*)*(ch.leng));
 	leng += ch.leng;
+
+	RefData** rfb = 0;
+	if (!firstBracket && (rfb = ch.getFirstBracket())){
+		setFirstBracketIdx(leng - (ch.at_last() - rfb));
+	}
 	return this;
 };
 
