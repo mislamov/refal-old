@@ -60,9 +60,9 @@
 		<Unit filename="src\direfal.h" />
 		<Unit filename="src\function.cpp" />
 		<Unit filename="src\function.h" />
+		<Unit filename="src\gc.h" />
 		<Unit filename="src\main.cpp" />
 		<Unit filename="src\module_sdk.h" />
-		<Unit filename="src\optimize.h" />
 		<Unit filename="src\poolTuples.h" />
 		<Unit filename="src\program.cpp" />
 		<Unit filename="src\program.h" />
