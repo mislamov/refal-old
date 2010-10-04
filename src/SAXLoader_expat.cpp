@@ -168,7 +168,7 @@ void XMLCALL startElement(void *data, const XML_Char *name, const XML_Char **att
                                                                         } else
                                                                             if ( theCommand.compare(_L("ERROR")) == 0 ) {
                                                                             }
-};
+}
 
 
 void XMLCALL  endElement(void *data, const XML_Char *name) {
@@ -390,7 +390,7 @@ int loadModuleFromXmlFile(RefUserModule *mod, RefProgram *prog, const char* xmlF
     return 0;
 
 
-};
+}
 
 int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, std::string xmlCode, bool redefine, const char* codepage) {
     XML_Parser p = XML_ParserCreate(codepage);
@@ -421,4 +421,4 @@ int loadModuleFromXmlCode(RefUserModule *mod, RefProgram *prog, std::string xmlC
     return 0;
 
 
-};
+}

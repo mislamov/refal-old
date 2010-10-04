@@ -35,7 +35,7 @@ RefAlphaBase* newRefAlpha(Session *sess, unichar value) {
         }
         return it->second;
     }
-};
+}
 
 
 unistring the_explode(RefData **a, RefData **b) {
@@ -58,7 +58,7 @@ unistring the_explode(RefData **a, RefData **b) {
         result += a[i]->explode();
     }
     return result;
-};
+}
 
 
 unistring chain_to_text(RefData **a, RefData **b) {
@@ -75,7 +75,7 @@ unistring chain_to_text(RefData **a, RefData **b) {
         result += a[i]->toString();
     }
     return result;
-};
+}
 
 
 unistring the_debug_text(RefData **a, RefData **b, size_t maxlen) {
@@ -110,7 +110,7 @@ unistring the_debug_text(RefData **a, RefData **b, size_t maxlen) {
         result << a[i]->debug();
     }
     return result.str();
-};
+}
 
 /*
 unistring chain_to_text(RefData** from, RefData** to, int showleng){
@@ -141,7 +141,7 @@ unistring chain_to_text(RefData** from, RefData** to, int showleng){
 	}
 	if (i==showleng) result << "... ";
 	return result.str();
-};
+}
 */
 
 RefChain *text_to_chain(Session *sess, const char *buffer) {
@@ -170,7 +170,7 @@ void RefAlpha::alphaMapDestroy() {
         delete it->second;
         alphamap.erase(it);
     }
-};
+}
 
 
 
@@ -187,7 +187,7 @@ void RefAlpha::alphaMapDestroy() {
 	RefAlphaBase *ab = new RefAlpha(s, val);
 	alphamap[val] = ab;
 	return ab;
-};*/
+}*/
 
 
 /*
@@ -195,7 +195,7 @@ unistring RefWord::debug() {
 		std::ostringstream ss;
         ss << '"' << replace(value, "\n", "\\n") << "\" ";
         return ss.str();
-};
+}
 */
 
 bool RefIntegerBase::operator >(RefData &rd){
@@ -203,7 +203,7 @@ bool RefIntegerBase::operator >(RefData &rd){
             (ref_dynamic_cast<RefIntegerBase>(&rd) && this->getValue() > ((RefIntegerBase*)&rd)->getValue()) ||
             (ref_dynamic_cast<RefRealBase>(&rd) && this->getValue() > ((RefRealBase*)&rd)->getValue())
             ;
-};
+}
 
 
 bool RefRealBase::operator >(RefData &rd){
@@ -211,7 +211,7 @@ bool RefRealBase::operator >(RefData &rd){
             (ref_dynamic_cast<RefIntegerBase>(&rd) && this->getValue() > ((RefIntegerBase*)&rd)->getValue()) ||
             (ref_dynamic_cast<RefRealBase>(&rd) && this->getValue() > ((RefRealBase*)&rd)->getValue())
             ;
-};
+}
 
 
 

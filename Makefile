@@ -2,123 +2,56 @@
 # -----------------------------------------
 # project direfal-010
 
-
-export PATH := c:/tools/svn/bin;$(PATH)
-
-_WX = c:/cfiles/editors/cb/wxWidgets-2.8.9
-_WX.LIB = $(_WX)/lib
-_WX.INCLUDE = $(_WX)/include
-
-_CB = c:/cfiles/editors/cb/src
-_CB.INCLUDE = $(_CB)/include
-_CB.LIB = $(_CB)/devel
-
-WX_SUFFIX = u
+CC = g++
+BIN = refal51
+OP = ./src#  #Object path
+SP = ./src#  #Source path
+OBJ = $(OP)/SAXLoaderHeap.o $(OP)/direfal.o $(OP)/SAXLoader_expat.o $(OP)/data.o $(OP)/function.o $(OP)/main.o $(OP)/program.o $(OP)/session.o $(OP)/symbols.o $(OP)/system.o $(OP)/variables.o 
+SRC = $(SP)/SAXLoaderHeap.cpp $(OP)/direfal.cpp $(SP)/SAXLoader_expat.cpp $(SP)/data.cpp $(SP)/function.cpp $(SP)/main.cpp $(SP)/program.cpp $(SP)/session.cpp $(SP)/symbols.cpp $(SP)/system.cpp $(SP)/variables.cpp 
+LNK = -lexpat # --allow-multiply-definitions
+#INCLUDE += -I./include
+AC = -g -Wall# --pedantic
 
 
+$(BIN): $(OBJ)
+	$(CC) $(AC) $(INCLUDE) $(OBJ)  -o $(BIN) $(LNK)
+all: $(BIN)
 
-CFLAGS_C = $(CFLAGS)
-
-SHELL = cmd
-CREATE_DEF = -Wl,--output-def,$*.def
-CREATE_LIB = -Wl,--out-implib,$(dir $@)lib$(notdir $(basename $@)).a
-MKDIR = if not exist $(subst /,\,$1) mkdir $(subst /,\,$1)
-
-# -----------------------------------------
-
-# MAKE_DEP = -MMD -MT $@ -MF $(@:.o=.d)
-
-CFLAGS = -Wall 
-INCLUDES = -Iinclude 
-LDFLAGS = -lexpat -Llib  -s -Wl,--allow-multiple-definition
-RCFLAGS = 
-LDLIBS = $(T_LDLIBS)  -lstdc++
-
-LINK_exe = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS) -mwindows
-LINK_con = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS)
-LINK_dll = gcc -o $@ $^ $(LDFLAGS) $(LDLIBS) -mwindows -shared
-LINK_lib = rm -f $@ && ar rcs $@ $^
-COMPILE_c = gcc $(CFLAGS_C) -o $@ -c $< $(MAKEDEP) $(INCLUDES)
-COMPILE_cpp = g++ $(CFLAGS) -o $@ -c $< $(MAKEDEP) $(INCLUDES)
-COMPILE_rc = windres $(RCFLAGS) -J rc -O coff -i $< -o $@ -I$(dir $<)
-
-%.o : %.c ; $(COMPILE_c)
-%.o : %.cpp ; $(COMPILE_cpp)
-%.o : %.cxx ; $(COMPILE_cpp)
-%.o : %.rc ; $(COMPILE_rc)
-.SUFFIXES: .o .d .c .cpp .cxx .rc
-
-all: all.before all.targets all.after
-
-all.before :
-	-
-all.after : $(FIRST_TARGET)
+$(OP)/variables.o: $(SP)/variables.cpp
+	$(CC) $(AC) -c $(SP)/variables.cpp -o $(OP)/variables.o
 	
-all.targets : Debug_target Release_target 
-
-clean :
-	rm -fv $(clean.OBJ)
-	rm -fv $(DEP_FILES)
-
-.PHONY: all clean distclean
-
-# -----------------------------------------
-# Debug_target
-
-Debug_target.BIN = Debug\direfal-010.exe
-Debug_target.OBJ = src\SAXLoaderHeap.o src\SAXLoader_expat.o src\data.o src\function.o src\main.o src\program.o src\session.o src\symbols.o src\system.o src\variables.o 
-DEP_FILES += src\SAXLoaderHeap.d src\SAXLoader_expat.d src\data.d src\function.d src\main.d src\program.d src\session.d src\symbols.d src\system.d src\variables.d 
-clean.OBJ += $(Debug_target.BIN) $(Debug_target.OBJ)
-
-Debug_target : Debug_target.before $(Debug_target.BIN) Debug_target.after_always
-Debug_target : CFLAGS += -O2 -Wall -pg -g  -Os
-Debug_target : INCLUDES += 
-Debug_target : RCFLAGS += 
-Debug_target : LDFLAGS += -pg -lgmon   
-Debug_target : T_LDLIBS = 
-ifdef LMAKE
-Debug_target : CFLAGS -= -O1 -O2 -g -pipe
-endif
-
-Debug_target.before :
+$(OP)/system.o: $(SP)/system.cpp
+	$(CC) $(AC) $(INCLUDE) -c $(SP)/system.cpp -o $(OP)/system.o
 	
+$(OP)/symbols.o: $(SP)/symbols.cpp
+	$(CC) $(AC) -c $(SP)/symbols.cpp -o $(OP)/symbols.o
 	
-Debug_target.after_always : $(Debug_target.BIN)
+$(OP)/session.o: $(SP)/session.cpp
+	$(CC) $(AC) -c $(SP)/session.cpp -o $(OP)/session.o
 	
-$(Debug_target.BIN) : $(Debug_target.OBJ)
-	$(call MKDIR,$(dir $@))
-	$(LINK_con)
+$(OP)/program.o: $(SP)/program.cpp
+	$(CC) $(AC) $(INCLUDE) -c $(SP)/program.cpp -o $(OP)/program.o
 	
+$(OP)/main.o: $(SP)/main.cpp
+	$(CC) $(AC) $(INCLUDE) -c $(SP)/main.cpp -o $(OP)/main.o
+	
+$(OP)/function.o: $(SP)/function.cpp
+	$(CC) $(AC) -c $(SP)/function.cpp -o $(OP)/function.o
+	
+$(OP)/direfal.o: $(SP)/direfal.cpp
+	$(CC) $(AC) $(INCLUDE) -c $(SP)/direfal.cpp -o $(OP)/direfal.o
+$(OP)/data.o: $(SP)/data.cpp
+	$(CC) $(AC) -c $(SP)/data.cpp -o $(OP)/data.o
 
-# -----------------------------------------
-# Release_target
+$(OP)/SAXLoader_expat.o: $(SP)/SAXLoader_expat.cpp
+	$(CC) $(AC) $(INCLUDE) -c $(SP)/SAXLoader_expat.cpp -o $(OP)/SAXLoader_expat.o
 
-Release_target.BIN = Release\direfal-010.exe
-Release_target.OBJ = src\SAXLoaderHeap.o src\SAXLoader_expat.o src\data.o src\function.o src\main.o src\program.o src\session.o src\symbols.o src\system.o src\variables.o 
-DEP_FILES += src\SAXLoaderHeap.d src\SAXLoader_expat.d src\data.d src\function.d src\main.d src\program.d src\session.d src\symbols.d src\system.d src\variables.d 
-clean.OBJ += $(Release_target.BIN) $(Release_target.OBJ)
+$(OP)/SAXLoaderHeap.o: $(SP)/SAXLoaderHeap.cpp
+	$(CC) $(AC) $(INCLUDE) -c $(SP)/SAXLoaderHeap.cpp -o $(OP)/SAXLoaderHeap.o
 
-Release_target : Release_target.before $(Release_target.BIN) Release_target.after_always
-Release_target : CFLAGS += -fexpensive-optimizations -O3  -Os
-Release_target : INCLUDES += 
-Release_target : RCFLAGS += 
-Release_target : LDFLAGS += -s   
-Release_target : T_LDLIBS = 
-ifdef LMAKE
-Release_target : CFLAGS -= -O1 -O2 -g -pipe
-endif
+clean:
+	rm -f $(BIN)
+	rm -f $(OBJ)
 
-Release_target.before :
-	
-	
-Release_target.after_always : $(Release_target.BIN)
-	
-$(Release_target.BIN) : $(Release_target.OBJ)
-	$(call MKDIR,$(dir $@))
-	$(LINK_con)
-	
 
-# -----------------------------------------
-ifdef MAKE_DEP
--include $(DEP_FILES)
-endif
+

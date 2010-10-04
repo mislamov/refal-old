@@ -47,7 +47,7 @@ char* c_str(std::string str){
 	char *ch = new char[l];
 	strncpy(ch, str.c_str(), l);
 	return ch;
-};*/
+}*/
 
 RefData::RefData(Session *sess) : RefObject(){
 	if (sess){
@@ -60,7 +60,7 @@ RefData::RefData(Session *sess) : RefObject(){
 	//gc_label = sess->gc_currentlabel;
 	co::datas++;
 	this->gc_next = 0;
-};
+}
 
 RefSegment::~RefSegment(){
 }
@@ -72,8 +72,8 @@ RefSegment::RefSegment(Session *s, RefChain *o, RefData **f, RefData **t) : RefD
 }
 
 
-TResult RefDataNull::init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); };
-TResult RefDataNull::back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); };
+TResult RefDataNull::init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); }
+TResult RefDataNull::back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){ unexpectedERRORs(sess); }
 
 
 RefChain::RefChain(Session *sess, RefData* d) : RefData(sess){
@@ -86,7 +86,7 @@ RefChain::RefChain(Session *sess, RefData* d) : RefData(sess){
 		setFirstBracket(first);
 	}
 	co::chains++;
-};
+}
 
 RefChain::RefChain(Session *sess, size_t size) : RefData(sess) { // size is not lenght
 	firstBracket = 0;
@@ -96,7 +96,7 @@ RefChain::RefChain(Session *sess, size_t size) : RefData(sess) { // size is not 
 	leng = 0;
 	*first = 0;
 	co::chains++;
-};
+}
 
 
 RefChain::RefChain(Session *sess, RefChain *ownchain, RefData **from, RefData **to) : RefData(sess) { // size is not lenght
@@ -127,7 +127,7 @@ RefChain::RefChain(Session *sess, RefChain *ownchain, RefData **from, RefData **
 			}
 		}
 	}
-};
+}
 
 
 RefChain::RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){
@@ -148,7 +148,7 @@ RefChain::RefChain(Session *sess, RefData** d, size_t sz) : RefData(sess){
 			setFirstBracketIdx(i);
 		}
 		
-};
+}
 
 
 
@@ -157,7 +157,7 @@ RefChain::~RefChain(){
 	if (sysize && !isMemoryProtected()) {
 		free(first);
 	}
-};
+}
 
 /*
 static int a1 = 0;
@@ -226,7 +226,7 @@ RefChain* RefChain::operator+=(RefData *ch) {
 	}
 
 	return this;
-};
+}
 
 // после - ch не существует!
 RefChain* RefChain::operator+=(RefChain *ch) {
@@ -251,7 +251,7 @@ RefChain* RefChain::operator+=(RefChain *ch) {
 	//delete ch;
 	ch = 0;
 	return this;
-};
+}
 
 RefChain* RefChain::operator+=(RefChain ch) {
 	ref_assert(!isMemoryProtected());
@@ -269,13 +269,13 @@ RefChain* RefChain::operator+=(RefChain ch) {
 		setFirstBracketIdx(leng - (ch.at_last() - rfb));
 	}
 	return this;
-};
+}
 
 
 /*
 RefData** RefChain::operator[](signed long idx) {
 	return	leng? ((idx<0) ? first+leng+idx : first+idx) : 0;
-};
+}
 */
 
 
@@ -307,7 +307,7 @@ unistring RefChain::debug(){
 	return result.str();*/
 
 	return isEmpty() ? " $empty " : the_debug_text(at_first(), at_last());
-};
+}
 
 unistring RefChain::explode(){
 	unistring result = "";
@@ -325,7 +325,7 @@ unistring RefChain::explode(){
 		}
 	}
 	return result;
-};
+}
 
 
 
@@ -336,16 +336,16 @@ unistring RefChain::toString(){
 		result += (first[i] ? first[i]->toString() : "");
 	}
 	return result;
-};
+}
 
 
 
-unistring RefStructBrackets::explode(){		return "(" + chain->explode() + ") ";	};
-unistring RefExecBrackets::explode(){	return "<" + chain->explode() + "> ";	};
-unistring RefStructBrackets::toString(){		return "(" + chain->toString() + ") ";	};
-unistring RefExecBrackets::toString(){	return "<" + chain->toString() + "> ";	};
-unistring RefStructBrackets::debug(){		return "(" + (chain?chain->debug():"$null") + ") ";	};
-unistring RefExecBrackets::debug(){	return "<" + (chain?chain->debug():"$null") + "> ";	};
+unistring RefStructBrackets::explode(){		return "(" + chain->explode() + ") ";	}
+unistring RefExecBrackets::explode(){	return "<" + chain->explode() + "> ";	}
+unistring RefStructBrackets::toString(){		return "(" + chain->toString() + ") ";	}
+unistring RefExecBrackets::toString(){	return "<" + chain->toString() + "> ";	}
+unistring RefStructBrackets::debug(){		return "(" + (chain?chain->debug():"$null") + ") ";	}
+unistring RefExecBrackets::debug(){	return "<" + (chain?chain->debug():"$null") + "> ";	}
 
 
 TResult RefStructBrackets::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
@@ -375,7 +375,7 @@ TResult RefStructBrackets::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 	return BACK;
 
 
-};
+}
 TResult RefStructBrackets::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	// if (br->chain == this->chain) BACK;  - проверить сильно оптимизирует ли. только в сочентании с частью в init!
 	RefStructBrackets** br = sess->restoreBracketsFromView(this);
@@ -388,15 +388,15 @@ TResult RefStructBrackets::back(RefData **&tpl, Session* sess, RefData **&l, Ref
 	}
 	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
-};
+}
 
 
 TResult RefExecBrackets::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	AchtungERRORs(sess);
-};
+}
 TResult RefExecBrackets::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	AchtungERRORs(sess);
-};
+}
 
 /*
 RefVariable** RefChain::findVariable(unistring vname){
@@ -412,7 +412,7 @@ return tvar;
 }
 }
 return 0;
-};
+}
 */
 
 
@@ -430,19 +430,19 @@ inline bool eq_not_empty(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br)
 		++Bl;
 	}
 	return true;
-};
+}
 
 inline bool eq(RefChain *ch1, RefChain *ch2){
 	if (ch1->leng != ch2->leng) return false; // не одинаковые по физической длине. Переделать когда будет монтирование
 	if (! ch1->leng) return true; // пустые
 	return eq_not_empty(ch1->at_first(), ch1->at_last(), ch2->at_first(), ch2->at_last());
-};
+}
 
 inline bool eq(RefData **Al, RefData **Ar, RefData **Bl, RefData **Br){
 	if (!Al) return !Bl;
 	if (!Bl) return !Al;
 	return eq_not_empty(Al, Ar, Bl, Br);
-};
+}
 
 
 
@@ -503,19 +503,19 @@ TResult RefLinkToVariable::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 
 	sess->MOVE_TO_next_template(tpl);
 	return GO; // ссылка на пустой отрезок - верна
-};
+}
 
 
 TResult RefLinkToVariable::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
-};
+}
 
 
 void RefVarChains::setUserType(RefUserTemplate *ntempli){
 	templInstant = ntempli;
 	templ = ntempli->getLeftPart();
-};
+}
 
 
 size_t comp = 0;
@@ -581,7 +581,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 					if(uservar->getName()!=EmptyUniString && vars.find(uservar->getName())!=vars.end()){
 						std::cout << "compile: " << chain_to_text(point, end-1) << "\n";
 						std::cout << "WARN. Several same-name-variables in one compiling chain: ?." << uservar->getName() << "\n";
-					};
+					}
 #endif
 
 					vars[uservar->getName()] = uservar; // todo: переделать на ссылки - так как есть безымянные переменные
@@ -591,7 +591,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 						subchains.put(point+1, end);
 						if(! uservar->templ->isEmpty()) {
 							subchains.put(uservar->templ->at_first(), uservar->templ->at_afterlast());
-						};
+						}
 						break;
 					}
 					continue;
@@ -617,7 +617,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 #ifdef TESTCODE
 						if (vars.find(uservarich->getName())!=vars.end()){
 							std::cout << "\nWARN: several same-name-variables in one part. Error, if not a VARIANTS. Var: " << uservarich->getName() << "\n" << std::flush;
-						};
+						}
 #endif
 						vars[uservarich->getName()] = uservarich;
 					}
@@ -712,7 +712,7 @@ void RefChain::compile(RefChain *ownchain, RefProgram *program){
 	std::cout << "compile-reult: " << this->explode() << "\n" << std::flush ;
 #endif
 
-};
+}
 
 // вызывается сразу после удачного сопоставления (вместо init правой границы)
 TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
@@ -746,7 +746,7 @@ TResult RefVarChains::success(RefData **&tpl, Session* sess, RefData **&l, RefDa
 
 	sess->MOVE_TO_next_template(tpl); // двигаемся дальше
 	return GO;
-};
+}
 
 // вызывается сразу после НЕудачного сопоставления (вместо back левой границы)
 TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
@@ -772,7 +772,7 @@ TResult RefVarChains::failed (RefData **&tpl, Session* sess, RefData **&l, RefDa
 
 	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
-};
+}
 
 TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	//std::cout << "RefVarChains::init\n";
@@ -792,7 +792,7 @@ TResult RefVarChains::init(RefData **&tpl, Session* sess, RefData **&l, RefData 
 	sess->setTmplate(templ);
 	tpl = templ->at_first();
 	return GO;
-};
+}
 
 // вызывается только после ранее удачного сопоставления
 TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
@@ -812,7 +812,7 @@ TResult RefVarChains::back(RefData **&tpl, Session* sess, RefData **&l, RefData 
 
 	tpl = templ->at_last();
 	return BACK;
-};
+}
 
 
 unistring RefVarChains::explode() {
@@ -827,7 +827,7 @@ unistring RefVarChains::explode() {
 
 #endif
 	return " " + (templInstant?templInstant->getName():("{ "+templ->explode()+" }")) + "." + getName();
-};
+}
 
 
 
@@ -852,7 +852,7 @@ TResult RefVariantsChains::init(RefData **&tpl, Session* sess, RefData **&l, Ref
 
 	sess->variants_idxs.push(0); // добавляем индекс для варианта
 	return GO;
-};
+}
 
 
 // вызывается сразу после удачного сопоставления (вместо init правой границы)
@@ -886,7 +886,7 @@ TResult RefVariantsChains::success(RefData **&tpl, Session* sess, RefData **&l, 
 	sess->MOVE_TO_next_template(tpl); // двигаемся дальше
 	sess->variants_idxs_done.push(sess->variants_idxs.top_pop());
 	return GO;
-};
+}
 
 
 // вызывается сразу после НЕудачного сопоставления (вместо back левой границы)
@@ -925,7 +925,7 @@ TResult RefVariantsChains::failed (RefData **&tpl, Session* sess, RefData **&l, 
 
 	r = sess->preCurrentMapStack()->top3();
 	return GO;
-};
+}
 
 
 // вызывается только после ранее удачного сопоставления
@@ -957,7 +957,7 @@ TResult RefVariantsChains::back(RefData **&tpl, Session* sess, RefData **&l, Ref
         tpl = templ->at_last();
     }
 	return BACK;
-};
+}
 
 unistring RefVariantsChains::explode(){
 	size_t idx = templs.getCount();
@@ -967,14 +967,14 @@ unistring RefVariantsChains::explode(){
 	}
 	res = "{ " + res;
 	return res;
-};
+}
 
 
 unistring RefRepeaterChain::explode(){
 	std::ostringstream ss;
 	ss << "[ " << templ->explode() << "][" << min << ".." << max << "]";
 	return ss.str();
-};
+}
 
 
 TResult RefRepeaterChain::init   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
@@ -991,7 +991,7 @@ TResult RefRepeaterChain::init   (RefData **&tpl, Session* sess, RefData **&l, R
 	sess->setTmplate(templ);
 	tpl = templ->at_first();
 	return GO;
-};
+}
 
 TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	///   ]
@@ -1010,7 +1010,7 @@ TResult RefRepeaterChain::back   (RefData **&tpl, Session* sess, RefData **&l, R
 	sess->setTmplate(templ);
 	tpl = templ->at_last();
 	return BACK;
-};
+}
 
 TResult RefRepeaterChain::success(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
@@ -1031,7 +1031,7 @@ TResult RefRepeaterChain::success(RefData **&tpl, Session* sess, RefData **&l, R
 	sess->MOVE_TO_next_template(tpl); // уходим из варианта
 	sess->repeats_idxs_done.push(currentStep);
 	return GO;
-};
+}
 
 TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 #ifdef TESTCODE
@@ -1051,21 +1051,21 @@ TResult RefRepeaterChain::failed (RefData **&tpl, Session* sess, RefData **&l, R
 	sess->MOVE_TO_pred_template(tpl); // выходим из варианта
 	return BACK;
 
-};
+}
 
 
 
 TResult RefMatchingCutter::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	sess->MOVE_TO_next_template(tpl);
 	return GO;
-};
+}
 TResult RefMatchingCutter::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	// если отсекается пользовательская переменная
 	// если отсекается текущая цепочка
 	tpl=0;
 	return BACK;
 	//return FAIL;
-};
+}
 
 /*
 void RefChain::killall(){
@@ -1087,7 +1087,7 @@ br->chain = 0;
 *iter = 0;
 }
 }
-};
+}
 */
 void RefChain::killalldata(){
 
@@ -1109,12 +1109,12 @@ void RefChain::killalldata(){
 		(*iter)->gc_delete();
 		*iter = 0;
 	}
-};
+}
 
 RefDataBracket::~RefDataBracket(){
 	--co::stbracks;
 	//if (chain) delete chain; - нельзя удалять, так как две скобки могут смотреть на одну цепочку
-};
+}
 
 
 RefVarChains::~RefVarChains(){
@@ -1123,7 +1123,7 @@ RefVarChains::~RefVarChains(){
 		templ->killalldata();
 		templ->gc_delete();
 	}
-};
+}
 
 RefVariantsChains::~RefVariantsChains(){
 	RefChain *tmp = 0;
@@ -1133,12 +1133,12 @@ RefVariantsChains::~RefVariantsChains(){
 		tmp->gc_delete();
 	}
 
-};
+}
 
 RefRepeaterChain::~RefRepeaterChain(){
 	templ->killalldata();
 	templ->gc_delete();
-};
+}
 
 
 
@@ -1158,17 +1158,17 @@ TResult RefPointVariable::init(RefData **&activeTemplate, Session* sess, RefData
 	sess->MOVE_TO_pred_template(activeTemplate);
 	return BACK;
 
-};
+}
 TResult RefPointVariable::back(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	sess->forgotVar(this->theVar);
 	//RefData **ll, **rr; RefChain *llrr_own; VarMap *vm=0;
 	//sess->restoreVar(this->theVar, ll, rr, llrr_own, vm);
 	sess->MOVE_TO_pred_template(activeTemplate);
 	return BACK;
-};
+}
 
 
-unistring RefPointLink::explode() { return "&@[" + theLink->explode() + "]"; };
+unistring RefPointLink::explode() { return "&@[" + theLink->explode() + "]"; }
 
 TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	// закрытая переменная-указатель сопоставима только с указателем того же типа и equal-содержимого
@@ -1256,12 +1256,12 @@ TResult RefPointLink::init(RefData **&activeTemplate, Session* sess, RefData **&
 		sess->MOVE_TO_pred_template(activeTemplate);
 	}
 	return result;
-};
+}
 
 TResult RefPointLink::back(RefData **&activeTemplate, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
 	sess->MOVE_TO_pred_template(activeTemplate);
 	return BACK;
-};
+}
 
 unistring RefPoint::explode(){
 	std::stringstream ss;
@@ -1278,25 +1278,25 @@ unistring RefPoint::explode(){
 
 	ss << "]";
 	return ss.str();
-};
+}
 
 TResult RefPoint::init(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){
 	unexpectedERRORs(sess);
-};
+}
 
 TResult RefPoint::back(RefData **&activeTemplate, Session* sess, RefData **&currentRight, RefData **&currentLeft, RefChain *&currentBorderOwn){
 	unexpectedERRORs(sess);
-};
+}
 
 void RefPoint::set_gc_mark(Session *sess){
 	sess->gc_exclude(this->l, this->r, this->lr_own);
 	the_namespace->set_gc_mark();
 	the_namespace->mrk_collect();
-};
+}
 
 
 #ifdef TESTCODE
-unistring RefSegment::explode(){ return "[segment]";};
+unistring RefSegment::explode(){ return "[segment]";}
 #else
-unistring  RefSegment::explode(){ return chain_to_text(own->at(from), own->at(to));};
+unistring  RefSegment::explode(){ return chain_to_text(own->at(from), own->at(to));}
 #endif

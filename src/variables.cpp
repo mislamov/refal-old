@@ -50,7 +50,7 @@ TResult  RefVariable_e::init(RefData **&tpl, Session* sess, RefData **&l, RefDat
     sess->saveVar((RefVariable*)*tpl, l, r, lr_own);
     sess->MOVE_TO_next_template(tpl);
     return GO;
-};
+}
 
 
 
@@ -94,9 +94,9 @@ TResult  RefVariable_e::back(RefData **&tpl, Session* sess, RefData **&l, RefDat
 	sess->saveVar((RefVariable*)*tpl, l, r, lr_own);
     sess->MOVE_TO_next_template(tpl);
     return GO;
-};
+}
 
-bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_e >(&rd)?true:false; };
+bool    RefVariable_e::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_e >(&rd)?true:false; }
 
 
 
@@ -125,7 +125,7 @@ TResult  RefVariable_E::init(RefData**&tpl, Session *sess, RefData **&l, RefData
 	sess->MOVE_TO_next_template(tpl);
     return GO;
 
-};
+}
 
 //todo: оптимизацию как в е!
 TResult  RefVariable_E::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own) {
@@ -156,9 +156,9 @@ TResult  RefVariable_E::back(RefData **&tpl, Session* sess, RefData **&l, RefDat
 
 
 	return GO;
-};
+}
 
-bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd)?true:false; };
+bool    RefVariable_E::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_E >(&rd)?true:false; }
 
 TResult  RefVariable_END::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own) {
 	sess->restoreVar(this, l, r, lr_own);
@@ -177,14 +177,14 @@ TResult  RefVariable_s::init(RefData **&tpl, Session* sess, RefData **&l, RefDat
 
     sess->MOVE_TO_pred_template(tpl);
     return BACK;
-};
+}
 
 TResult  RefVariable_s::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own) {
 	sess->restoreVar((RefVariable*)*tpl, l, r, lr_own); /// todo: оптимизация. заменить на DROP_STATE
     sess->MOVE_TO_pred_template(tpl);
     return BACK;
-};
-bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_s >(&rd)?true:false; };
+}
+bool    RefVariable_s::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_s >(&rd)?true:false; }
 
 
 
@@ -199,11 +199,11 @@ TResult  RefVariable_t::init(RefData **&tpl, Session* sess, RefData **&l, RefDat
 
     sess->MOVE_TO_pred_template(tpl);
     return BACK;
-};
+}
 
 TResult  RefVariable_t::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own) {
     sess->restoreVar((RefVariable*)*tpl, l, r, lr_own);
     sess->MOVE_TO_pred_template(tpl);
     return BACK;
-};
-bool    RefVariable_t::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_t >(&rd)?true:false; };
+}
+bool    RefVariable_t::operator==(RefData &rd) {    return ref_dynamic_cast<RefVariable_t >(&rd)?true:false; }

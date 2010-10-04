@@ -34,7 +34,7 @@ RefVariable* LoaderHeap::getVariableByTypename(unistring nametype, unistring vn)
     v->setName(vn);
     v->setTypeString(nametype);
     return v;
-};
+}
 
 /*
 // возвращает рефал-символ

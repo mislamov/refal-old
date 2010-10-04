@@ -4,10 +4,10 @@
 #include "direfal.h"
 
 #include <stdio.h>
-#include <expat/expat.h>
+#include <expat.h>
 
 	#if defined(__amigaos__) && defined(__USE_INLINE__)
-	#include <expat/proto/expat.h>
+	#include <proto/expat.h>
 	#endif
 
 	#ifdef XML_LARGE_SIZE

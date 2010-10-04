@@ -63,7 +63,7 @@ void RefProgram::regModule(RefModuleBase *module){ // регистрация модуля в прогр
 		SYSTEMERRORn("Several loads of module [" << module->getName() << "] ");
 	modules.push_front( std::pair<unistring, RefModuleBase*>(module->getName(), module) );
 	//modules[module->getName()] = module;
-};
+}
 
 /*
 // с рекурсией.
@@ -158,7 +158,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 
 	//std::cout << "executeExpression: " << result->debug() << "\n";
 	return result;
-};
+}
 
 
 */
@@ -166,7 +166,7 @@ RefChain*  RefProgram::executeExpression2 (RefChain *chain, Session *sess){ // в
 class RefChainDoubleLinkManager : public RefChain {
 	Session *session;
 public:
-	RefChainDoubleLinkManager(Session *sess) : RefChain(sess, 64){ session = sess; };
+	RefChainDoubleLinkManager(Session *sess) : RefChain(sess, 64){ session = sess; }
 	RefChain* save(RefData *ch, RefChainDoubleLinkManager *&chain) {
 		ref_assert(chain==this);
 		if (leng == sysize){
@@ -176,10 +176,10 @@ public:
 			*chain += ch;
 		}
 		return chain;
-	};
+	}
 
 
-	RefData **at_last(){ return ((RefChain*)this)->at_last(); };
+	RefData **at_last(){ return ((RefChain*)this)->at_last(); }
 };
 
 
@@ -432,7 +432,7 @@ RefChain*  RefProgram::executeExpression (RefChain *chain, Session *sess){ // вы
 		//++iter; // именно ++, а не next_term, так как отрезки отлавливаются здесь
 	}
 
-};
+}
 
 
 RefFunctionBase* RefProgram::findFunction(unistring id){
@@ -447,10 +447,10 @@ RefFunctionBase* RefProgram::findFunction(unistring id){
 			return obj;
 		}
 		++modit;
-	};
+	}
 	RUNTIMEERRORn("function " << id << " not found in program");
 	return 0;
-};
+}
 
 
 RefTemplateBase* RefProgram::findTemplate(unistring id){
@@ -465,10 +465,10 @@ RefTemplateBase* RefProgram::findTemplate(unistring id){
 			return obj;
 		}
 		++modit;
-	};
+	}
 	RUNTIMEERRORn("template [" << id << "] not found in program");
 	return 0;
-};
+}
 
 
 
@@ -487,7 +487,7 @@ RefData* RefProgram::createSymbolByCode(unistring code, unistring value){
 	}
 
 	COMPILETIMEERRORn("Definition for " << code << " not found in loaded modules");
-};
+}
 
 
 
@@ -526,7 +526,7 @@ RefData* RefProgram::createVariableByTypename(unistring code, unistring value){
 	}
 
 	return 0;
-};
+}
 
 void RefUserModule::initilizeAll(RefProgram* program){
 	std::map<unistring, RefFunctionBase*>::iterator funit = functions.begin(), fend = functions.end();
@@ -542,7 +542,7 @@ void RefUserModule::initilizeAll(RefProgram* program){
 		++funit;
 	}
 
-};
+}
 
 unistring RefUserModule::debug(){
 	unistring result = "\n@UserModule " + getName() + "\n";
@@ -560,7 +560,7 @@ unistring RefUserModule::debug(){
 		++funit;
 	}
 	return result;
-};
+}
 
 
 
@@ -574,7 +574,7 @@ void RefModuleBase::setFunctionByName(unistring name, RefFunctionBase* o, bool r
 	    }
     }
 	functions[name] = o;
-};
+}
 
 void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o, bool redefine){
 	std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(name);
@@ -586,21 +586,21 @@ void RefModuleBase::setTemplateByName(unistring name, RefTemplateBase* o, bool r
 	    }
     }
 	templates[name] = o;
-};
+}
 
 
 RefData* RefDllModule::constructSymbol(unistring typecode, unistring value){
 	std::map<unistring, RefData*(*)(unistring)>::iterator iter = dataConstructors.find(typecode);
 	if (iter==dataConstructors.end()) return 0;
 	return (*iter->second)(value);
-};
+}
 
 
 RefData* RefDllModule::constructVariable(unistring typecode, unistring value){
 	std::map<unistring, RefData*(*)(unistring)>::iterator iter = varConstructors.find(typecode);
 	if (iter==varConstructors.end()) return 0;
 	return (*iter->second)(value);
-};
+}
 
 
 
@@ -631,15 +631,15 @@ RefModuleBase::~RefModuleBase(){
 		itt->second = 0;
 		++itt;
 	}
-};
+}
 RefFunctionBase* RefModuleBase::getFunctionByName(unistring nm, Session *sess){
 	std::map<unistring, RefFunctionBase*>::iterator iter = functions.find(nm);
 	if (iter != functions.end()) return iter->second;
 	return 0;
-};
+}
 RefTemplateBase* RefModuleBase::getTemplateByName(unistring nm, Session *sess){
 	std::map<unistring, RefTemplateBase*>::iterator iter = templates.find(nm);
 	if (iter != templates.end()) return iter->second;
 	return 0;
 
-};
+}

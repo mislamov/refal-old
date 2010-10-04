@@ -67,14 +67,14 @@ __verbose_on();
         success = true;
     }
     return true;
-};
+}
 
 
 
 RefFunction *RefalProgram::getFunction(unistring fname) {
     if (this->program->findFunction(fname) == 0) return 0;
     return new RefFunction(this->program, fname);
-};
+}
 
 
 void RefFunction::execute(RefChain *arg, unistring &result, Session *sess) {
@@ -83,7 +83,7 @@ void RefFunction::execute(RefChain *arg, unistring &result, Session *sess) {
     (*tmp) += new RefWord(sess, function);
     if (arg) {
         (*tmp) += arg;
-    };
+    }
 
     RefChain *chain = new RefChain(sess, new RefExecBrackets(sess, tmp));
     chain = program->executeExpression(chain, sess);
@@ -94,11 +94,11 @@ void RefFunction::execute(RefChain *arg, unistring &result, Session *sess) {
     }
     sess->gc_clean();
     delete sess;
-};
+}
 
 void RefFunction::execute(unistring arg,  unistring& result) {
     Session *sess = new Session(program);
     execute(text_to_chain(sess, arg.c_str()), result);
-};
+}
 
 

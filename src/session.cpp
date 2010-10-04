@@ -105,7 +105,7 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 #ifdef TESTCODE
 			if (l && !r) {
 				SYSTEMERRORs(this, "RefData::init() tring to matching with NULL address!");
-			};
+			}
 #endif
 			l=0;
 			//ref_assert(r);
@@ -171,13 +171,13 @@ bool  Session::matching(RefObject *initer, RefChain *thetmplate, RefData **arg_l
 			SYSTEMERRORs(this, "Unexpected result_sost value");
 			break;
 		}
-	};
+	}
 
 
 	current_view_borders.pop();
 	popTmplate();
 	return (result_sost==SUCCESS);
-};
+}
 
 #ifdef TESTCODE
 unistring Session::debug(){
@@ -209,7 +209,7 @@ unistring Session::debug(){
 
 
 	return s.str();
-};
+}
 #else
 unistring Session::debug(){
 	std::ostringstream s;
@@ -230,7 +230,7 @@ unistring Session::debug(){
 		s << varMapStack.pool[i+1]->debug();
 	}
 	return s.str();
-};
+}
 #endif
 
 
@@ -285,7 +285,7 @@ void Session::gc_clean(RefData* save_point){
 
 	//std::cout << "GC FINISH!\n";
 
-};
+}
 
 
 
@@ -312,12 +312,12 @@ bool Session::gc_prepare(RefData *save_point){
 #endif
 	if (tmpdbg > 1024) return true;
 	return false;
-};
+}
 
 void Session::gc_exclude(RefChain *chain){
 	if (!chain) return;
 	Session::gc_exclude(chain->at_first(), chain->isEmpty() ? 0 : chain->at_last(), chain);
-};
+}
 
 void Session::gc_exclude(RefData **l, RefData **r, RefChain *own){
 	own->set_gc_mark();
@@ -341,7 +341,7 @@ void Session::gc_exclude(RefData **l, RefData **r, RefChain *own){
 				gc_exclude(seg->own->at(seg->from), seg->own->at(seg->to), seg->own);
 			}
 	}
-};
+}
 
 /*
 unistring MatchState::debug(){
@@ -350,7 +350,7 @@ std::ostringstream s;
 s << "****\tMatchState:\t" << std::flush << chain_to_text(view_l, view_r) << "\t~\t" << tpl->debug() << "\n";
 s << varmap.debug();
 return s.str();
-};
+}
 */
 
 
@@ -370,7 +370,7 @@ bool VarMap::findByName(unistring name, RefData** &l, RefData** &r, RefChain *&l
 		}
 	}
 	return false;
-};
+}
 
 // ищет по ссылке на переменную ее облать видимости
 /*
@@ -384,7 +384,7 @@ return true;
 }
 }
 return false;
-};
+}
 */
 bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* &lr_own, VarMap *&vm) {
 	for (size_t ind = last_ind+1; ind>0; --ind) {
@@ -397,7 +397,7 @@ bool VarMap::findByLink(RefVariable* var, RefData** &l, RefData** &r, RefChain* 
 		}
 	}
 	return false;
-};
+}
 
 bool VarMap::folowByWay(unistring path, RefData** &l, RefData** &r, RefChain* &lr_own, RefVariable* &var, VarMap* &vm){
 #ifdef TESTCODE
@@ -465,9 +465,9 @@ unistring VarMap::debug(){
 	while(ind){
 		s << "****\t\t\t" << ind << ") " << std::flush << pool[ind].i1->debug() << " : " << chain_to_text( pool[ind].i2,  pool[ind].i3 ) << "\n";
 		--ind;
-	};
+	}
 	return s.str();
-};
+}
 
 
 // TODO: оптимизировать!
@@ -570,7 +570,7 @@ RefChain*  Session::substituteExpression(RefChain *chain){
 		*result += *item;
 	}
 	return result;
-};
+}
 
 
 void Session::printExecTrace(){

@@ -31,7 +31,7 @@ RefChain* RefFunctionBase::exec(RefData** l, RefData** r, RefChain* lr_own, Sess
 		#endif
 
 		return res;
-};
+}
 
 
 void RefUserFunction::initilizeAll(RefProgram *program){
@@ -44,9 +44,9 @@ void RefUserFunction::initilizeAll(RefProgram *program){
 				//std::cout << "\n#######\n" << (*sent)->leftPart->debug() << "\n--------\n" << (*sent)->rightPart->debug() << "\n#######\n";
 				(*sent)->rightPart->compile( (*sent)->leftPart, program );
 				++sent;
-            };  // std: body.end() - элемент после последнего
+            }  // std: body.end() - элемент после последнего
 
-};
+}
 
 RefChain* RefUserFunction::eval(RefData **l, RefData **r, RefChain *lr_own, Session *sess){
             // перебор предложений функции
@@ -68,11 +68,11 @@ RefChain* RefUserFunction::eval(RefData **l, RefData **r, RefChain *lr_own, Sess
 					sess->poptopVarMap();
 			}
 			RUNTIMEERRORs(sess, "Function " << this->getName() << " FAIL");
-};
+}
 
 void RefUserTemplate::initilizeAll(RefProgram *program){
 	leftPart->compile(leftPart, program);
-};
+}
 
 RefUserFunction::~RefUserFunction(){
 	//std::cout << "~~~ " << getName() << "\n";
@@ -82,7 +82,7 @@ RefUserFunction::~RefUserFunction(){
 		delete (*body_it);
 		++body_it;
 	}
-};
+}
 
 unistring RefUserFunction::debug(){
 	unistring result = "Function " + getName() + " {\n";
@@ -98,7 +98,7 @@ unistring RefUserFunction::debug(){
 	}
 	result += "}";
 	return result;
-};
+}
 
 
 TResult RefUserCondition::init(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
@@ -118,7 +118,7 @@ TResult RefUserCondition::init(RefData **&tpl, Session* sess, RefData **&l, RefD
 
 
 	if (sess->matching(this, leftPart, rp->at_first(), rp->at_last(), rp, false) == !withnot){
-		if (withnot){ sess->backToState(sess_state); };
+		if (withnot){ sess->backToState(sess_state); }
 		sess->saveConditionArg(this, rp); // сохраняем аргумент условия для возможного отката
 		sess->MOVE_TO_next_template(tpl);
 		return GO;
@@ -129,7 +129,7 @@ TResult RefUserCondition::init(RefData **&tpl, Session* sess, RefData **&l, RefD
 
 	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
-};
+}
 
 
 TResult RefUserCondition::back(RefData **&tpl, Session* sess, RefData **&l, RefData **&r, RefChain *&lr_own){
@@ -144,4 +144,4 @@ TResult RefUserCondition::back(RefData **&tpl, Session* sess, RefData **&l, RefD
 	//delete rp; // аргумент условия для отката больше не нужен
 	sess->MOVE_TO_pred_template(tpl);
 	return BACK;
-};
+}
