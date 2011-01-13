@@ -1,0 +1,9 @@
+F {
+	s.1 e.e s.1 = <F e.e>;
+	s.s = T;
+	s.s e.e = F;
+}
+
+$ENTRY Go {
+	=   <Prout <F '' > > ;
+}
