@@ -9,7 +9,7 @@ bool INC (DataCursor &l, DataCursor r){
 	return true;
 }
 
-bool SLIDE(DataCursor &curr, DataCursor end, DataCursor l, DataCursor r){
+bool SLIDE(DataCursor &curr, const DataCursor end, DataCursor l, const DataCursor r){
 	if (l==r) return true; // сравнение с пусто подцепочкой
 	do {
 		//todo: обязательно оптимизировать! можно сравнивать целыми контейнерами,

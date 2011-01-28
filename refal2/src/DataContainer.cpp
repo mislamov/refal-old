@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <algorithm>
+#include <cstdio>
 
 DataContainer::DataContainer(const DataContainerType ttype, const DataContainerValue vvalue, const size_t len)
 {
@@ -37,10 +39,12 @@ DataContainer* newRefWord(unistring wr) {
     return resut;
 };
 
+size_t min(size_t a, size_t b){ return a>b?b:a; }
+
 DataContainer* newRefExecBrackets(rf_function fn, DataChain *chain, unistring fname){
     DataContainerValue vv;
     vv.bracket_data.fn = fn;
-	strncpy(vv.bracket_data.fname, fname.c_str(), fname.length());
+	strncpy(vv.bracket_data.fname, fname.c_str(), min(fname.length(), 255));
 	vv.bracket_data.fname[fname.length()] = 0;
     vv.bracket_data.chain  = chain;
 
@@ -73,17 +77,14 @@ DataContainer* newRefText(unistring str){
 
     DataContainerValue vv;
 
-	char *dt = new char[str.length()+1];
-	strncpy(dt, str.c_str(), str.length());
-	dt[str.length()] = 0;
-	vv.array = dt;
-
-	//vv.array.length = str.length();
+	unichar *dt = new unichar[str.length()];
+	memcpy(dt, str.c_str(), str.length()*sizeof(unichar));
+	vv.text = dt;
 
 	DataContainer* resut = new DataContainer(text, vv, str.length());
     resut->prev = resut->next = 0;
     return resut;
-	
+
 };
 
 DataContainer* DataContainer::copy(){
@@ -112,14 +113,14 @@ bool equal(DataCursor cur1, DataCursor cur2){
 	if (cont1->type != cont2->type) return false;
 
 	switch (cont1->type){
-	case struct_bracket:  
+	case struct_bracket:
 				  return equal(cont1->value.bracket_data.chain, cont2->value.bracket_data.chain);
 	case byte:    return cont1->value.byte==cont2->value.byte;
 	case integer: return cont1->value.num==cont2->value.num;
 	case real:	  return cont1->value.real==cont2->value.real;
 	case word:	  return (cont1->value.word.leng==cont2->value.word.leng) && memcmp(cont1->value.word.value, cont2->value.word.value, cont1->value.word.leng*sizeof(unichar));
-	case text:	  return ((unichar*) cont1->value.array)[cur1.index] == ((unichar*) cont2->value.array)[cur2.index];
-	case bytes:	  return ((char*) cont1->value.array)[cur1.index] == ((char*) cont2->value.array)[cur2.index];
+	case text:	  return (cont1->value.text)[cur1.index] == (cont2->value.text)[cur2.index];
+	case bytes:	  return ((char*) cont1->value.text)[cur1.index] == ((char*) cont2->value.text)[cur2.index];
 	default:	  SYSTEMERRORn("UNEXPECTED");
 	}
 };

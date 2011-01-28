@@ -18,9 +18,10 @@ struct DataCursor {
     bool operator!=(const DataCursor);
     bool operator==(const DataCursor);
     bool operator! ();
-	void next_container(){ 
-		ref_assert(container && container->type!=dummy); 
-		container=container->next; index=0; 
+	void next_container(){
+		ref_assert(container && container->type!=dummy);
+		container=container->next; index=0;
+		ref_assert(container->leng!=0 || container->type==dummy);
 	};
 
     DataCursor (DataContainer* c){
@@ -65,5 +66,30 @@ class DataChain
 
 DataChain* text_to_chain(unistring);
 unistring chain_to_text(DataCursor prebeg, DataCursor end);
+
+inline bool DataCursor::operator==(const DataCursor cur){
+	return container==cur.container && index==cur.index;
+}
+
+inline bool DataCursor::operator!=(const DataCursor cur){
+	return container!=cur.container || index!=cur.index;
+}
+
+inline DataCursor& DataCursor::operator++ (){
+	ref_assert( container!=0 && container->leng>0);
+
+	if (container->leng==1 || index+1==container->leng){
+		// перемещение между контейнерами
+		container = container->next;
+		ref_assert(container->leng!=0 || container->type==dummy);
+		index = 0;
+		return *this;
+	}
+	// перемещение внутри контейнера
+	++index;
+	return *this;
+}
+
+
 
 #endif // DATACHAIN_H

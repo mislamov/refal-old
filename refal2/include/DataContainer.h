@@ -32,6 +32,7 @@ struct BracketData {
 	char fname[256]; //todo: убрать
 };
 
+
 struct WordData {
 	void* value;
 	size_t leng;
@@ -40,7 +41,7 @@ struct WordData {
 typedef union {
 	BracketData  bracket_data; // struct_bracket or exec_bracket
 	char byte; // byte
-	void *array; // bytes, text
+	unichar *text; // bytes, text
 	infint num;  // integer
 	double real; // real
 	WordData word; // word

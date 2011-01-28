@@ -1,19 +1,9 @@
 #include "DataChain.h"
 
 #include <sstream>
+#include <cstring>
 
-DataCursor& DataCursor::operator++ (){
-	ref_assert( container!=0 && container->leng>0);
-	if (container->leng==1 || index+1==container->leng){
-		// перемещение между контейнерами
-		container = container->next;
-		index = 0;
-		return *this;
-	}
-	// перемещение внутри контейнера
-	++index;
-	return *this;
-}
+
 
 DataCursor& DataCursor::operator-- (){
 	ref_assert( container!=0 && container->leng>0);
@@ -46,13 +36,7 @@ DataCursor DataCursor::operator+(const int& i){
 	return result;
 }
 
-bool DataCursor::operator!=(const DataCursor cur){
-	return container!=cur.container || index!=cur.index;
-}
 
-bool DataCursor::operator==(const DataCursor cur){
-	return container==cur.container && index==cur.index;
-}
 
 bool DataCursor::operator! (){
 	return container==0;
@@ -102,17 +86,25 @@ DataChain*  DataChain::append(DataContainer *con){
 DataChain*  DataChain::append_copy(DataCursor cur_prefrom, DataCursor cur_to){
 	if (cur_prefrom==cur_to) return this;
 
+//	static long ii = 0;
+//	ii++;
+
 	//todo: реализовано очень неэффективно (копирование)! обяательно переделать!
 	DataCursor i=cur_prefrom+1;
 
 	// если все внутри одного контейнера (array)
 	if (i.container == cur_to.container){
+		if (i.container->leng==1 /*&& cur_to.container->leng==1*/){
+			this->append(i.container->copy());
+			return this;
+		}
+
 		DataContainer *cc = i.container->copy();
 		cc->leng = cur_to.index-i.index+1;
 		if (i.container->type==bytes){
-			cc->value.array = ((char*)i.container->value.array) + i.index;
+			cc->value.text = i.container->value.text + i.index;
 		} else if (i.container->type==text) {
-			cc->value.array = ((unichar*)i.container->value.array) + i.index;
+			cc->value.text = i.container->value.text + i.index;
 		} else {
 			notrealisedERRORn;
 		}
@@ -125,33 +117,38 @@ DataChain*  DataChain::append_copy(DataCursor cur_prefrom, DataCursor cur_to){
 		// нужна лишь часть контейнера (array)
 		DataContainerType type = i.container->type;
 		DataContainerValue value = i.container->value;
-		DataContainer container(type, value, i.container->leng - i.index);
+		DataContainer *container = new DataContainer(type, value, i.container->leng - i.index);
 		if (type==text){
-			container.value.array = ((unichar*) i.container->value.array) + i.index;
+			container->value.text = i.container->value.text + i.index;
 		} else if (type==bytes) {
-			value.array = ((char*) i.container->value.array) + i.index;
-			container.value = value; //todo: дебагом проверить нужно ли
+			value.text = i.container->value.text + i.index;
+			container->value = value; //todo: дебагом проверить нужно ли
 		} else {
 			SYSTEMERRORn("UNREALISED");
 		}
+		this->append(container);
 		i.next_container();
 	}
 
+
+
 	// начинка цепочки
-	do {
+	while(i.container!=cur_to.container) {
 		this->append(i.container->copy());
 		i.next_container();
-	} while(i!=cur_to);
+	};
 
 
 	// конец цепочки
-	if (i.container->leng > 1 && i.index < i.container->leng-1){
+	ref_assert(cur_to.container==i.container);
+	if (cur_to.container->leng > 1 && cur_to.index < cur_to.container->leng-1){
 		// нужна лишь часть контейнера (array)
-		DataContainerType type = i.container->type;
-		DataContainerValue value = i.container->value;
-		DataContainer container(type, value, i.index+1);
+		DataContainerType type = cur_to.container->type;
+		DataContainerValue value = cur_to.container->value;
+		DataContainer *container = new DataContainer(type, value, cur_to.index+1);
+		this->append(container);
 	} else {
-		this->append(i.container->copy());
+		this->append(cur_to.container->copy());
 	}
 	return this;
 }
@@ -161,10 +158,10 @@ DataChain* text_to_chain(unistring str)
 	DataChain* ch = new DataChain();
 	if (str!=""){
 		DataContainerValue vv;
-		
+
 		unichar* buff = new unichar[str.length()];
-		strncpy(buff, str.c_str(), str.length());
-		vv.array = buff;
+		memcpy(buff, str.c_str(), str.length()*sizeof(unichar));
+		vv.text = buff;
 
 		ch->append( new DataContainer(text, vv, str.length()));
 	}
@@ -172,11 +169,13 @@ DataChain* text_to_chain(unistring str)
 }
 
 unistring chain_to_text(DataCursor prebeg, DataCursor end){
+	if (prebeg==end) return "";
+
 	std::stringstream str;
 	DataCursor i = prebeg+1;
-	DataCursor iend = end;
+	DataCursor iend = end+1;
 
-	while (i!=iend){
+	do {
 		switch (i.container->type){
 		case integer:
 			str << i.container->value.num;
@@ -188,26 +187,27 @@ unistring chain_to_text(DataCursor prebeg, DataCursor end){
 			str << "\" ";
 			break;
 		case text:
-			str << "\'";
-			str << (char*)i.container->value.array;
-			str << "\' ";
+			//str << "\'";
+			str.write(i.container->value.text + i.index, i.container->leng-i.index);
+			//str << "\' ";
 			break;
 		case struct_bracket:
-			str << " ( ";
+			str << " (";
 			str << i.container->value.bracket_data.chain->debug();
-			str << " ) ";
+			str << ") ";
 			break;
 		case exec_bracket:
-			str << " < " << i.container->value.bracket_data.fname << " ";
+			str << " <" << i.container->value.bracket_data.fname << " ";
 			str << i.container->value.bracket_data.chain->debug();
-			str << " > ";
+			str << "> ";
 			break;
 		default:
 			str << " UNKNOWN ";
 		}
 
-		++i;
-	}
+		i.next_container();
+	} while (i!=iend);
+
 	str << "\0";
 	return str.str();
 };
@@ -231,7 +231,7 @@ unistring DataChain::debug(){
 			break;
 		case text:
 			str << "\'";
-			str.write((unichar*)i.container->value.array, i.container->leng);
+			str.write(i.container->value.text, i.container->leng);
 			//str << (char*)i.container->value.array;
 			str << "\' ";
 			break;
@@ -276,6 +276,6 @@ void DataCursor::replaceBy(DataChain *chain){
 	ba->prev = aa;
 	bb->next = ab;
 
-	chain->at_before_first().container->next = chain->at_after_last().container; 
+	chain->at_before_first().container->next = chain->at_after_last().container;
 	chain->at_after_last().container->prev = chain->at_before_first().container;
 }

@@ -72,6 +72,8 @@ DataChain* RefalTokens  (DataCursor beg, DataCursor end);
 DataChain* PrintStackTrace   (DataCursor beg, DataCursor end);
 DataChain* Eval  (DataCursor beg, DataCursor end);
 
+DataChain* DebugStart  (DataCursor beg, DataCursor end);
+DataChain* DebugStop  (DataCursor beg, DataCursor end);
 
 
 

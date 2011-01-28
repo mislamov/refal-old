@@ -72,27 +72,40 @@ DataCursor findExec (DataChain *ch)
 	return 0;
 }
 
+int debug = 0;
+
 int main ( int , char **)
 {
 	DataChain *ch = text_to_chain("");
 
 	DataChain* result = Go(ch->at_before_first(), ch->at_last());
+    DataCursor b = 0, bb = 0;
 
-	while (ch)
+	while (true)
 	{
-		std::cout << (result ? result->debug() : "null") << "\n";
+		if (debug)
+			std::cout << (result ? result->debug() : "null") << "\n";
 
-		DataCursor b = findExec(result);
+        if (bb!=0){
+            b = bb;
+        } else {
+            b = findExec(result);
+        }
 		if (!b) break;
 
 		ref_assert( b.container->type == exec_bracket );
 		BracketData  exb = b.container->value.bracket_data;
 		ch = exb.fn(exb.chain->at_before_first(), exb.chain->at_last());
+		bb = findExec(ch);
+
+		//if (ch) std::cout << ch->debug() << "\n";
+
 		b.replaceBy( ch );
 
 		//delete result; // опусташенная цепочка
 		//delete b.container->value.bracket_data.chain; // <...>
 		//delete b.container; // <...>
+		//std::cout << (result ? result->debug() : "null") << "\n\n\n";
 	}
 
 	std::getchar();

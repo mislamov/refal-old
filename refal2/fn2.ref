@@ -1,13 +1,22 @@
 
 
 Go {
-	= <File "src\\res.cc"
+	= 
+	<File "src\\res.h"
+        '#include "direfal.h" \n'
+        '#include "system.h" \n'	
+	>
+	<File "src\\res.cc"
         '#include "direfal.h" \n'
         '#include "commands.h" \n'
         '#include "system.h" \n'
+        '#include "res.h" \n'
         <TreeToCode <TokensToTree <DelComments <RefalTokens <Mount 'fn.ref'>>>>>>;
 }
 
+AppendFunction {
+	e.line = <File "src\\res.h" <Mount "src\\res.h"> '\n' e.line>;
+}
 
 TreeToCode {
 	("FUNCTION" e.funk) e.next =
@@ -20,15 +29,17 @@ TreeToCode {
 	=;
 }
 
+DefFunction {
+	t.name = 'DataChain* ' t.name '(DataCursor arg_from, DataCursor arg_to)' ;
+}
+
 TreeToCode_function {
 	t.name e.e =
-			'\n' 'DataChain* ' t.name '(DataCursor arg_from, DataCursor arg_to){'  '\n'
-                        <DEF 'l_tmp'>
-                        <DEF 'r_tmp0'>
-                        <DEF 'l_tmp0'>
+			<AppendFunction  <DefFunction t.name> ';'>
+			'\n' <DefFunction t.name> '{'  '\n'
   			'DataChain *result = new DataChain(); \n'
   			'DataChain *tmp_chain = new DataChain(); \n'
-			<TreeToCode_sentences 0 e.e>
+			<TreeToCode_sentences 1 e.e>
 			'\n' '}' '\n';
 
 }
@@ -68,6 +79,7 @@ DelDoubles {
 TreeToCode_sentences {
 	t.order ("SENTENCE" ("LEFT-PART" e.leftpart)("RIGHT-PART" e.result)) e.e,
 				<Build (e.leftpart)('arg_from')('arg_to')('sentence_after_' t.order)> : (e.code)(e.rollback_label) =
+						<AppendFunction '// ' <META2TEXT e.leftpart> '  =  ' <META2TEXT e.result>>
 						'\n{'
 						'\n'
 						'// подготовка предложения \n'
@@ -107,25 +119,41 @@ ISEMPTY {	(e.l)(e.r)(e.rollback_label) = '/*ISEMPTY*/	if ('e.l'!=0 && ' e.r ' !=
 EQ {
     (e.v1)(e.v2)(e.roll)  =   'if (' e.v1 '!=' e.v2 ') goto ' e.roll;
 }
+
+CHAIN_FIRST {
+	e.chain_var = e.chain_var'->at_before_first()';
+}
+
+CHAIN_LAST {
+	e.chain_var = e.chain_var'->at_last()';
+}
+
 /*
 * код проверки совпадения символаов по типу и значению
 */
 EQSYM {
 	("text" e.val)(e.var)(e.border)(e.rollback_label),
 		<Compare <Lenw e.val> 1> : '+',
+		<RandomIdName> : e.alphas,
+		<RandomIdName> : e.texttmp
+	=
+		'\t' 'static DataChain *' e.texttmp ' = text_to_chain("' e.val '");' '\n'
+		'\t' 'static DataCursor ' e.texttmp '_l = ' <CHAIN_FIRST e.texttmp> ';' '\n'
+		'\t' 'static DataCursor ' e.texttmp '_r = ' <CHAIN_LAST e.texttmp> ';' '\n'
+		<SLIDE (e.var)(e.border)(e.texttmp '_l')(e.texttmp '_r')(e.rollback_label)>;
+
+	("text" s.value)(e.var)(e.border)(e.rollback_label),
 		<RandomIdName> : e.alphas
-			=
-				'\t' 'int 'e.alphas'[] = "' e.val '";' '\n'
-				'\t' 'int i = 0;' '\n'
-				'\t' 'while ( (' <ALPHAP e.var> ') && 'e.var'!='e.border' && **'e.var' == 'e.alphas'[i]){' '\n'
-				'\t' '	++i;' '\n'
-				'\t' '	++'e.var';' '\n'
-				'\t' '}' '\n'
-				'\t' 'if (i != strlen('e.alphas')) goto 'e.rollback_label';' '\n' ;
+	=
+                '\t' 'if (' e.var '.container->type != text || *(' e.var '.container->value.text + 'e.var'.index) != \'' @.value '\') goto ' e.rollback_label ';\n';
 
 	("int" e.value)(e.var)(e.border)(e.rollback_label)
-			=
+	=
                 '\t' 'if ('e.var '.container->type != integer || 'e.var '.container->value.num != ' e.value ') goto ' e.rollback_label ';\n';
+
+	("word" e.value)(e.var)(e.border)(e.rollback_label)
+	=
+                '\t' 'if ('e.var '.container->type != word || !memcmp('e.var '.container->value.word.value, "' e.value '", 'e.var '.container->value.word.leng)) goto ' e.rollback_label ';\n';
 
 /*
 	(t.type e.val)(e.var)(e.border)(e.rollback_label)
@@ -140,13 +168,15 @@ EQSYM {
 */
 JMP_BRACKET {
 	( e.br )(e.newfrom)(e.newto) =
+			'//// JMP_BRACKET \n'
 			'\t' e.newfrom' = 'e.br'.container->value.bracket_data.chain->at_before_first();' '\n'
 			'\t' e.newto'   = 'e.br'.container->value.bracket_data.chain->at_last();' '\n'
 }
 
 ISBRACKET {
     (e.var)(e.rollback_label) =
-            '\t' 'if (' e.var '.container->type != struct_bracket) goto ' e.rollback_label ';' '\n';
+	    '//// ISBRACKET \n'
+	    '\t' 'if (' e.var '.container->type != struct_bracket) goto ' e.rollback_label ';' '\n';
 }
 
 
@@ -198,54 +228,107 @@ l_varname и r_varname - границы значения переменной: перед левым элементом и пра
 //Build { (e.meta) e.e = <Prout e.meta> <Build_ (e.meta) e.e>}
 Build {
 
-	/*  [ e.1 ]  */
+	/*  [ e. ]   [ E. ] */
 	(&VAR.v)( e.arg_prefrom )( e.arg_to )( e.rollback_label ),
-		@.v::type : (word "e")
-            =
-				(
+		@.v::type : (word {"e"|"E"}),
+		@.v::name : $empty
+	=	
+		( '//// e. \n' )( e.rollback_label );
+		
+	/*  [ e.1 ]   [ E.1 ] */
+	(&VAR.v)( e.arg_prefrom )( e.arg_to )( e.rollback_label ),
+		@.v::type : (word {"e"|"E"})
+	=
+		(
 		'//// [ e.1 ] \n'
                 <DEF 'l_' <VarName @.v>>
                 <DEF 'r_' <VarName @.v>>
                 <SET ('l_' <VarName @.v>)(e.arg_prefrom)>
                 <SET ('r_' <VarName @.v>)(e.arg_to)>
-				)(e.rollback_label);
+		)(e.rollback_label);
 
 
 	/*  [ e.1 <any> ] */
 	(&VAR.v e.next)( e.arg_prefrom )( e.arg_to )( e.rollback_label ),
 		@.v::type : (word "e"),
 		<VarName @.v> : e.vname,
-		<Build (e.next)('r_' e.vname)(e.arg_to)('label_' e.vname)> : (e.next_code)(e.next_rollback)
+		<RandomIdName> : e.lbl,
+		<Build (e.next)('r_' e.vname)(e.arg_to)('label_' @.lbl)> : (e.next_code)(e.next_rollback)			=
+		(
+		'//// [ e.1 <any> ] \n'
+                <DEF 'l_' e.vname>
+                <DEF 'r_' e.vname>
+                <SET ('l_' e.vname)(e.arg_prefrom)> // перед первым
+                <SET ('r_' e.vname)(e.arg_prefrom)> // перед первым
+                <JMP 'label_' @.lbl '_firststep'>
+                <LABEL 'label_' @.lbl>
+		<INC ('r_' e.vname)(e.arg_to)(e.rollback_label)>
+		<LABEL 'label_' @.lbl '_firststep'>
+		@.next_code
+		)(e.next_rollback);
+
+
+	/*  [ E.1 <any> ] */
+	(&VAR.v e.next)( e.arg_prefrom )( e.arg_to )( e.rollback_label ),
+		@.v::type : (word "E"),
+		<VarName @.v> : e.vname,
+		<RandomIdName> : e.lbl,
+		<Build (e.next)('r_' e.vname)(e.arg_to)('label_' @.lbl)> : (e.next_code)(e.next_rollback)
 			=
 		(
+		'//// [ E.1 <any> ] \n'
                 <DEF 'l_' e.vname>
                 <DEF 'r_' e.vname>
 
                 <SET ('l_' e.vname)(e.arg_prefrom)> // перед первым
-                <SET ('r_' e.vname)(e.arg_prefrom)> // перед первым
-                <JMP 'label_'e.vname '_firststep'>
-                <LABEL 'label_'e.vname>
-		<INC ('r_' e.vname)(e.arg_to)(e.rollback_label)>
-		<LABEL 'label_'e.vname '_firststep'>
+                <SET ('r_' e.vname)(e.arg_to)> // последний
+                <JMP 'label_' @.lbl '_firststep'>
+                <LABEL 'label_' @.lbl>
+		<DEC ('r_' e.vname)(e.arg_to)(e.rollback_label)>
+		<LABEL 'label_' @.lbl '_firststep'>
 		@.next_code
 		)(e.next_rollback);
+
 
 	/*  [ s.1 <any> ] */
 	(&VAR.v e.next)( e.arg_from )( e.arg_to )( e.rollback_label ),
 		@.v::type : (word "s"),
 		<VarName @.v> : e.vname,
+		<RandomIdName> : e.l_tmp,
 		<Build (e.next)('r_' e.vname)(e.arg_to)(e.rollback_label)> : (e.next_code)(e.next_rollback)
 			=
-				(
+		(
 		'//// [ s.1 <any> ] \n'
+		<DEF e.l_tmp>
                 <DEF 'l_' e.vname>
                 <DEF 'r_' e.vname>
                 <SET ('l_' e.vname)(e.arg_from)>
-                <SET ('l_tmp')(e.arg_from)>
-                <INC ('l_tmp')(e.arg_to)(e.rollback_label)>
-                <SYMBOLP ('l_tmp')(e.rollback_label)>
-                <SET ('r_' e.vname)('l_tmp')>
-				@.next_code
+                <SET (e.l_tmp)(e.arg_from)>
+                <INC (e.l_tmp)(e.arg_to)(e.rollback_label)>
+                <SYMBOLP (e.l_tmp)(e.rollback_label)>
+                <SET ('r_' e.vname)(e.l_tmp)>
+		@.next_code
+                )(e.next_rollback);
+
+
+	/*  [ {...}.varname <any> ] */
+	(&VAR.v e.next)( e.arg_from )( e.arg_to )( e.rollback_label ),
+		@.v::type : GROUP_OR_VARIANT. ,
+		<VarName @.v> : e.vname,
+		<RandomIdName> : e.l_tmp,
+		<Build (e.next)('r_' e.vname)(e.arg_to)(e.rollback_label)> : (e.next_code)(e.next_rollback)
+			=
+		(
+		'//// [ s.1 <any> ] \n'
+		<DEF e.l_tmp>
+                <DEF 'l_' e.vname>
+                <DEF 'r_' e.vname>
+                <SET ('l_' e.vname)(e.arg_from)>
+                <SET (e.l_tmp)(e.arg_from)>
+                <INC (e.l_tmp)(e.arg_to)(e.rollback_label)>
+                <SYMBOLP (e.l_tmp)(e.rollback_label)>
+                <SET ('r_' e.vname)(e.l_tmp)>
+		@.next_code
                 )(e.next_rollback);
 
 
@@ -253,28 +336,30 @@ Build {
 	(&LNK.l e.next)( e.arg_from )( e.arg_to )( e.rollback_label ),
 		@.l::path : $empty,
 		@.l::name : (t. e.vname),
-		<Build (e.next)('r_tmp')(e.arg_to)(e.rollback_label)> : (e.next_code)(e.next_rollback)
+		<RandomIdName> : e.r_tmp,
+		<Build (e.next)(e.r_tmp)(e.arg_to)(e.rollback_label)> : (e.next_code)(e.next_rollback)
 		=
 		(
 		'//// [ &.name <any> ] \n'
-                <DEF 'r_tmp'>
-                <SET ('r_tmp')(e.arg_from)>
-                <SLIDE ('r_tmp')(e.arg_to)('l_'@.vname)('r_'@.vname)(e.rollback_label)>
+		<DEF e.r_tmp>
+                <SET (e.r_tmp)(e.arg_from)>
+                <SLIDE (e.r_tmp)(e.arg_to)('l_'@.vname)('r_'@.vname)(e.rollback_label)>
 		@.next_code
                 )(e.next_rollback);
 
 	/* [ 'a' <any> ] */
 	(&SYMBOL.s e.next)( e.arg_from )( e.arg_to )( e.rollback_label ),
 		@.s : (t.type e.value),
-        <Build (e.next)('r_tmp')(e.arg_to)(e.rollback_label)> : (e.next_code)(e.next_rollback)
-            =
-				(
+		<RandomIdName> : e.r_tmp,
+		<Build (e.next)(e.r_tmp)(e.arg_to)(e.rollback_label)> : (e.next_code)(e.next_rollback)
+	=
+		(
 		'//// [ `a` <any> ] \n'
-                <DEF 'r_tmp'>
-                <SET ('r_tmp')(e.arg_from)>
-                <INC ('r_tmp')(e.arg_to)(e.rollback_label)>
-                <EQSYM @.s ( 'r_tmp' )(e.arg_to)( e.rollback_label )>
-			@.next_code
+		<DEF e.r_tmp>
+                <SET (e.r_tmp)(e.arg_from)>
+                <INC (e.r_tmp)(e.arg_to)(e.rollback_label)>
+                <EQSYM @.s ( e.r_tmp )(e.arg_to)( e.rollback_label )>
+		@.next_code
                 )(e.next_rollback);
 
 
@@ -282,27 +367,41 @@ Build {
 	/* [ ( <any> ) <any> ] */
 	(("(" e.into) e.next)( e.arg_from )( e.arg_to )( e.rollback_label ),
         <RandomIdName> : e.lrand,
-		<Build  (e.into )('l_tmp0')('r_tmp0')(e.rollback_label)> : (e.bracket_code)(e.bracket_rollback),
+        <RandomIdName> : e.l_tmp0,
+        <RandomIdName> : e.r_tmp0,	
+		<Build  (e.into )(e.l_tmp0)(e.r_tmp0)(e.rollback_label)> : (e.bracket_code)(e.bracket_rollback),
 		<Build  (e.next)( e.lrand )( e.arg_to )(e.bracket_rollback)> : (e.next_code)(e.next_rollback)  /* возможно, откат идет от рефал-условия и нужно переопределить внутренности скобок */
 //		<Build  (e.next)( e.arg_from )( e.arg_to )(e.bracket_rollback)> : (e.next_code)(e.next_rollback)  /* возможно, откат идет от рефал-условия и нужно переопределить внутренности скобок */
-				= (
+	=
+		(
 		'//// [ (<any>) <any> ] \n'
                 <DEF e.lrand>
+                <DEF e.l_tmp0>
+                <DEF e.r_tmp0>
                 <SET (e.lrand)(e.arg_from)>
                 <INC (e.lrand)(e.arg_to)(e.rollback_label)>
                 <ISBRACKET (e.lrand)(e.rollback_label)>
-				<JMP_BRACKET ( e.lrand)('l_tmp0')('r_tmp0')>
-				e.bracket_code
+		<JMP_BRACKET ( e.lrand)(e.l_tmp0)(e.r_tmp0)>
+		e.bracket_code
                 //<INC ('l_tmp')(e.arg_to)(e.rollback_label)>
-				e.next_code
-				)(e.next_rollback);
+		e.next_code
+		)(e.next_rollback);
 
 	/* empty */
 	(  )( e.arg_from )( e.arg_to )( e.rollback_label ) =
 		(
-    '//// [ empty ] \n'
-    <ISEMPTY ( e.arg_from )( e.arg_to )( e.rollback_label )>)( e.rollback_label );
+		'//// [ empty ] \n'
+		<ISEMPTY ( e.arg_from )( e.arg_to )( e.rollback_label )>
+		)( e.rollback_label );
 
+}
+
+Fname {
+	"-"  = "Dec";
+	"+"  = "Add";
+	"*"  = "Mul";
+	"/" = "Div";
+	e.else = e.else;
 }
 
 SubstCompile {
@@ -315,7 +414,7 @@ SubstCompile {
         <RandomIdName> : e.v,
         @.fn : (t. e.fname) =
                             'DataChain* ' e.v ' = new DataChain(); \n'
-                            e.ch'->append(newRefExecBrackets(' e.fname ', ' e.v ', "'e.fname'")); \n'
+                            e.ch'->append(newRefExecBrackets(' <Fname e.fname> ', ' e.v ', "'e.fname'")); \n'
                             <SubstCompile (e.v) /*&SYMBOL.fn*/ e.in>
                             <SubstCompile (e.ch) e.next>;
     (e.ch) ("(" e.in) e.next,
@@ -330,9 +429,19 @@ SubstCompile {
 }
 
 SubstCompileSYMBOL {
-    ("word" t.w) =  'newRefWord("' t.w '")' ;
+    ("word" t.w) =  'newRefWord("' <Escape <Explode t.w>> '")' ;
     ("int" t.w)  =  'newRefInteger(' t.w ')' ;
-    ("text" e.t) =  'newRefText("' e.t '")' ;
+    ("text" e.t) =  'newRefText("' <Escape e.t> '")' ;
+}
+
+Escape {
+	'\n' e.e = '\\n' <Escape e.e>;
+	'\t' e.e = '\\t' <Escape e.e>;
+	'\\' e.e = '\\\\' <Escape e.e>;
+	'\'' e.e = '\\\'' <Escape e.e>;
+	'"' e.e = '\\"' <Escape e.e>;
+	s.s e.e = s.s  <Escape e.e>;
+	= ;
 }
 
 
@@ -431,6 +540,7 @@ VarName {
     &VAR.v, @.v::name : (t. e.n) = e.n;
     VAR.v, @.v::name : (t. e.n) = e.n;
     &LNK.v, @.v::name : (t. e.n) = e.n;
+    VAR.v, @.v::name : $empty = <RandomIdName>;
 }
 
 
@@ -686,7 +796,6 @@ ErrorIfNotEqualType {
 }
 
 GetArgName {
-	,<ExplodeAll <Args>> : e.fname '.ref' e. = @.fname;
 	= <Prout '#### Bad .ref filename: '<Args>>;
 }
 
@@ -783,21 +892,32 @@ ProutError {
 
 META2TEXT_ { e.e = <ProutDebug '<META2TEXT ' e.e> <META2TEXT_ e.e>; }
 META2TEXT {
-	(word e.w)"."(word e.ww) e.e 		= 	<ExplodeAll @.w>'.'<ExplodeAll @.ww> <META2TEXT e.e>;
-	(word e.w) e.e 		= 	'"' <ExplodeAll @.w>'"'  <META2TEXT e.e>;
-	(text e.w) e.e 		= 	'\''<ExplodeAll @.w>'\'' <META2TEXT e.e>;
-	(int  e.i) e.e		= 	    <ExplodeAll @.i>' '  <META2TEXT e.e>;
+	&VAR.v e.e = <META2TEXT @.v ' ' e.e>;
+	&SYMBOL.v e.e = <META2TEXT @.v ' ' e.e>;
+	&LNK.v e.e = <META2TEXT @.v ' ' e.e>;
+	(word e.w)"."(word e.ww) e.e 		= 	<ExplodeAllN @.w>'.'<ExplodeAllN @.ww> <META2TEXT e.e>;
+	(word e.w) e.e 		= 	<ExplodeAllN @.w>  <META2TEXT e.e>;
+	(text e.w) e.e 		= 	'\''<ExplodeAllN @.w>'\'' <META2TEXT e.e>;
+	(int  e.i) e.e		= 	    <ExplodeAllN @.i>' '  <META2TEXT e.e>;
 	("|" e.e) = <META2TEXT e.e>;
 	("|" e.v) e.next	=	<META2TEXT e.v> "|" <META2TEXT e.next>;
 	( {"("|"{"|"["|"<"}.br e.w ) e.e,
 		"(" ")" "{" "}" "[" "]" "<" ">" : e. @.br t.clbr e.
 				=	<Explode @.br> <META2TEXT @.w> <Explode @.clbr> <META2TEXT e.e>;
-	word.t e.e		=	<ExplodeAll @.t> <META2TEXT e.e>;
+	word.t e.e		=	<ExplodeAllN @.t> <META2TEXT e.e>;
 	s.s e.e			=	s.s <META2TEXT e.e>;
 	("$error" e.data)	=	<META2TEXT e.data>; // ошибка из RefalTockens
 	=;
 }
 
+ExplodeAllN {
+	e.e = <ExplodeAllN2 <ExplodeAll e.e>>;
+}
+
+ExplodeAllN2 {
+	e.1 '\n' e.2 = e.1 ' ' <ExplodeAllN2 e.2>;
+	e.e = e.e;
+}
 
 FindErrorInSentence {
 	LEFT_PART.left_part "=" e.right_part,
@@ -818,6 +938,13 @@ FindErrorInSentence {
 	e.lp "=" e.rp = 'left part and right part error: ' e.lp "=" e.rp;
 	e. = '"=" - separator not found';
 }
+
+/*
+	{ 'd' | 'dsd' | 'ssd' }
+
+
+*/
+
 
 
 

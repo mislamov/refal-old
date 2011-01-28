@@ -19,10 +19,10 @@
 #ifndef REF_CORE_H_INCLUDED
 #define REF_CORE_H_INCLUDED
 
-#define REFVERSION "D-Refal 0.1.2 alpha  Copyright (c) 2008-2010 Marat Islamov"
-#define TESTCODE
+#define REFVERSION "D-Refal 0.2.0 alpha  Copyright (c) 2008-2011 Marat Islamov"
+//#define TESTCODE
 //#define DEBUG
-#define xDEBUG  // garbage collector
+//#define xDEBUG  // garbage collector
 //#define UNICODE
 
 #ifdef UNICODE
@@ -340,7 +340,6 @@ inline std::string replace(std::string text, std::string s, std::string d)
     #define SYSTEMERRORn(msg) { \
         std::cerr << "\n\n######## " << __FILE__ << '[' << __LINE__ << "] : "; \
         std::cerr << "\n######## " << __FUNCTION__ << "():: " << msg << "\n\n" << std::flush; \
-		std::getchar(); \
         exit(-1); \
         };
     #define SYSTEMERRORs(msg) { \
