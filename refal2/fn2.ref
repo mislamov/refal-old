@@ -28,7 +28,7 @@ TreeToCode {
 }
 
 DefFunction {
-	t.name = 'DataChain* ' t.name '(DataCursor arg_from, DataCursor arg_to)' ;
+	t.name = 'DataChain* ' t.name '(DataCursor arg_from, DataCursor arg_to, ExecContext &context)' ;
 }
 
 TreeToCode_function {

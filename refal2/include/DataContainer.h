@@ -8,7 +8,7 @@
 class DataChain;
 struct DataCursor;
 
-typedef DataChain* (*rf_function)(DataCursor arg_from, DataCursor arg_to);
+typedef DataChain* (*rf_function)(DataCursor arg_from, DataCursor arg_to, ExecContext &context);
 
 enum DataContainerType {
 	byte,

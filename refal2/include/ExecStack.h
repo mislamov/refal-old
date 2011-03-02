@@ -16,11 +16,13 @@
 // with this program; if not, write to the Free Software Foundation, Inc.,
 // 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#ifndef DiRefal_H_INCLUDED
-#define DiRefal_H_INCLUDED
+#ifndef EXECSTACK_H_INCLUDED
+#define EXECSTACK_H_INCLUDED
 
-#include "DataChain.h"
-#include "ExecContext.h"
+#include <stack>
 
+class ExecStack : public std::stack<DataContainer*> {
+
+};
 
 #endif

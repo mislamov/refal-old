@@ -44,6 +44,7 @@ void help(char *pname)
 extern DataChain* Go(DataCursor arg_from, DataCursor arg_to);
 extern DataChain* FN(DataCursor arg_from, DataCursor arg_to);
 
+//*
 DataCursor findExec (DataChain *ch)
 {
 	//std::cout << ch->debug() << "\n" << std::flush;
@@ -71,11 +72,12 @@ DataCursor findExec (DataChain *ch)
 
 	return 0;
 }
-
+//*/
 int debug = 0;
 
 int main ( int , char **)
 {
+	ExecContext execContext;
 	DataChain *ch = text_to_chain("");
 
 	DataChain* result = Go(ch->at_before_first(), ch->at_last());

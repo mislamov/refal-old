@@ -3,7 +3,7 @@
 #include "system.h" 
 #include "res.h" 
 
-DataChain* Go(DataCursor arg_from, DataCursor arg_to){
+DataChain* Go(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -27,7 +27,7 @@ return 0;
 
 }
 
-DataChain* Begin(DataCursor arg_from, DataCursor arg_to){
+DataChain* Begin(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -86,7 +86,7 @@ return 0;
 
 }
 
-DataChain* FirG(DataCursor arg_from, DataCursor arg_to){
+DataChain* FirG(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -170,7 +170,7 @@ return 0;
 
 }
 
-DataChain* Game__(DataCursor arg_from, DataCursor arg_to){
+DataChain* Game__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -201,7 +201,7 @@ return 0;
 
 }
 
-DataChain* Game(DataCursor arg_from, DataCursor arg_to){
+DataChain* Game(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -336,7 +336,7 @@ return 0;
 
 }
 
-DataChain* GameIfWin(DataCursor arg_from, DataCursor arg_to){
+DataChain* GameIfWin(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -453,7 +453,7 @@ return 0;
 
 }
 
-DataChain* Game1__(DataCursor arg_from, DataCursor arg_to){
+DataChain* Game1__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -484,7 +484,7 @@ return 0;
 
 }
 
-DataChain* Game1(DataCursor arg_from, DataCursor arg_to){
+DataChain* Game1(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -644,7 +644,7 @@ return 0;
 
 }
 
-DataChain* PlayerHod__(DataCursor arg_from, DataCursor arg_to){
+DataChain* PlayerHod__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -675,7 +675,7 @@ return 0;
 
 }
 
-DataChain* PlayerHod(DataCursor arg_from, DataCursor arg_to){
+DataChain* PlayerHod(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -901,7 +901,7 @@ return 0;
 
 }
 
-DataChain* GetHod__(DataCursor arg_from, DataCursor arg_to){
+DataChain* GetHod__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -932,7 +932,7 @@ return 0;
 
 }
 
-DataChain* GetHod(DataCursor arg_from, DataCursor arg_to){
+DataChain* GetHod(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -1003,7 +1003,7 @@ return 0;
 
 }
 
-DataChain* UseHod__(DataCursor arg_from, DataCursor arg_to){
+DataChain* UseHod__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -1034,7 +1034,7 @@ return 0;
 
 }
 
-DataChain* UseHod(DataCursor arg_from, DataCursor arg_to){
+DataChain* UseHod(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -1167,7 +1167,7 @@ return 0;
 
 }
 
-DataChain* UHod__(DataCursor arg_from, DataCursor arg_to){
+DataChain* UHod__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -1198,7 +1198,7 @@ return 0;
 
 }
 
-DataChain* UHod(DataCursor arg_from, DataCursor arg_to){
+DataChain* UHod(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -1398,7 +1398,7 @@ return 0;
 
 }
 
-DataChain* Ekran(DataCursor arg_from, DataCursor arg_to){
+DataChain* Ekran(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -1488,7 +1488,7 @@ return 0;
 
 }
 
-DataChain* XO(DataCursor arg_from, DataCursor arg_to){
+DataChain* XO(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -1684,7 +1684,7 @@ return 0;
 
 }
 
-DataChain* Switch(DataCursor arg_from, DataCursor arg_to){
+DataChain* Switch(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2069,7 +2069,7 @@ return 0;
 
 }
 
-DataChain* Maix(DataCursor arg_from, DataCursor arg_to){
+DataChain* Maix(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2278,7 +2278,7 @@ return 0;
 
 }
 
-DataChain* WriteXO__(DataCursor arg_from, DataCursor arg_to){
+DataChain* WriteXO__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2309,7 +2309,7 @@ return 0;
 
 }
 
-DataChain* WriteXO(DataCursor arg_from, DataCursor arg_to){
+DataChain* WriteXO(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2440,7 +2440,7 @@ return 0;
 
 }
 
-DataChain* WXOif__(DataCursor arg_from, DataCursor arg_to){
+DataChain* WXOif__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2471,7 +2471,7 @@ return 0;
 
 }
 
-DataChain* WXOif(DataCursor arg_from, DataCursor arg_to){
+DataChain* WXOif(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2765,7 +2765,7 @@ return 0;
 
 }
 
-DataChain* Lins__(DataCursor arg_from, DataCursor arg_to){
+DataChain* Lins__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2796,7 +2796,7 @@ return 0;
 
 }
 
-DataChain* Lins(DataCursor arg_from, DataCursor arg_to){
+DataChain* Lins(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2868,7 +2868,7 @@ return 0;
 
 }
 
-DataChain* AntiStrategy__(DataCursor arg_from, DataCursor arg_to){
+DataChain* AntiStrategy__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -2899,7 +2899,7 @@ return 0;
 
 }
 
-DataChain* AntiStrategy(DataCursor arg_from, DataCursor arg_to){
+DataChain* AntiStrategy(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3045,7 +3045,7 @@ return 0;
 
 }
 
-DataChain* WriteXO1__(DataCursor arg_from, DataCursor arg_to){
+DataChain* WriteXO1__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3076,7 +3076,7 @@ return 0;
 
 }
 
-DataChain* WriteXO1(DataCursor arg_from, DataCursor arg_to){
+DataChain* WriteXO1(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3253,7 +3253,7 @@ return 0;
 
 }
 
-DataChain* First1(DataCursor arg_from, DataCursor arg_to){
+DataChain* First1(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3302,7 +3302,7 @@ return 0;
 
 }
 
-DataChain* Length__(DataCursor arg_from, DataCursor arg_to){
+DataChain* Length__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3333,7 +3333,7 @@ return 0;
 
 }
 
-DataChain* Length(DataCursor arg_from, DataCursor arg_to){
+DataChain* Length(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3481,7 +3481,7 @@ return 0;
 
 }
 
-DataChain* DivS(DataCursor arg_from, DataCursor arg_to){
+DataChain* DivS(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3528,7 +3528,7 @@ return 0;
 
 }
 
-DataChain* IfDiv(DataCursor arg_from, DataCursor arg_to){
+DataChain* IfDiv(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3620,7 +3620,7 @@ return 0;
 
 }
 
-DataChain* NextPl(DataCursor arg_from, DataCursor arg_to){
+DataChain* NextPl(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3682,7 +3682,7 @@ return 0;
 
 }
 
-DataChain* Optima21(DataCursor arg_from, DataCursor arg_to){
+DataChain* Optima21(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3709,7 +3709,7 @@ return 0;
 
 }
 
-DataChain* Optima211(DataCursor arg_from, DataCursor arg_to){
+DataChain* Optima211(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3815,7 +3815,7 @@ return 0;
 
 }
 
-DataChain* Strategy__(DataCursor arg_from, DataCursor arg_to){
+DataChain* Strategy__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -3846,7 +3846,7 @@ return 0;
 
 }
 
-DataChain* Strategy(DataCursor arg_from, DataCursor arg_to){
+DataChain* Strategy(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4179,7 +4179,7 @@ return 0;
 
 }
 
-DataChain* Ifwin(DataCursor arg_from, DataCursor arg_to){
+DataChain* Ifwin(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4244,7 +4244,7 @@ return 0;
 
 }
 
-DataChain* Ifwin1(DataCursor arg_from, DataCursor arg_to){
+DataChain* Ifwin1(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4474,7 +4474,7 @@ return 0;
 
 }
 
-DataChain* Analiz__(DataCursor arg_from, DataCursor arg_to){
+DataChain* Analiz__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4505,7 +4505,7 @@ return 0;
 
 }
 
-DataChain* Analiz(DataCursor arg_from, DataCursor arg_to){
+DataChain* Analiz(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4812,7 +4812,7 @@ return 0;
 
 }
 
-DataChain* PolnAnaliz__(DataCursor arg_from, DataCursor arg_to){
+DataChain* PolnAnaliz__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4843,7 +4843,7 @@ return 0;
 
 }
 
-DataChain* PolnAnaliz(DataCursor arg_from, DataCursor arg_to){
+DataChain* PolnAnaliz(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4963,7 +4963,7 @@ return 0;
 
 }
 
-DataChain* Ifmust__(DataCursor arg_from, DataCursor arg_to){
+DataChain* Ifmust__(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -4994,7 +4994,7 @@ return 0;
 
 }
 
-DataChain* Ifmust(DataCursor arg_from, DataCursor arg_to){
+DataChain* Ifmust(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -5689,7 +5689,7 @@ return 0;
 
 }
 
-DataChain* StepShag(DataCursor arg_from, DataCursor arg_to){
+DataChain* StepShag(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
@@ -5929,7 +5929,7 @@ return 0;
 
 }
 
-DataChain* PolnAnalizEny(DataCursor arg_from, DataCursor arg_to){
+DataChain* PolnAnalizEny(DataCursor arg_from, DataCursor arg_to, ExecContext &context){
 DataChain *result = new DataChain(); 
 DataChain *tmp_chain = new DataChain(); 
 
