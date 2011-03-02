@@ -3,7 +3,7 @@
 
 #include "direfal.h"
 
-bool INC (DataCursor &l, DataCursor r){
+inline bool INC (DataCursor &l, DataCursor r){
 	if (l==r) return false;
 	++l;
 	return true;

@@ -1,9 +1,12 @@
-$ENTRY Go {  = <Begin>; }
+$ENTRY Go {  = <Begin 100>; }
 
-Begin {  =
+Begin {  
+        0 = ;
+	s.n =
 
 	   <Prout 'Who is first? (1 - pc  2 - you)'>
-	   <FirG <Card>>;
+	   <FirG <Card>>
+	   <Begin <- s.n 1>>;
 };
 
 FirG {  '1' = <Game ('2')('1')('')('23456789')>;

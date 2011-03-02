@@ -2,9 +2,10 @@
 #include "system.h" 
 
 DataChain* Go(DataCursor arg_from, DataCursor arg_to);
-//   =  <Begin >
+//   =  <Begin 100  >
 DataChain* Begin(DataCursor arg_from, DataCursor arg_to);
-//   =  <Prout 'Who is first? (1 - pc  2 - you)' ><FirG <Card >>
+// 0    =  
+// s.n   =  <Prout 'Who is first? (1 - pc  2 - you)' ><FirG <Card >><Begin <- @.n 1  >>
 DataChain* FirG(DataCursor arg_from, DataCursor arg_to);
 // '1'   =  <Game ('2' )('1' )('' )('23456789' )>
 // '2'   =  <Game ('2' )('' )('' )('123456789' )>

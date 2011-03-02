@@ -1,12 +1,10 @@
-
-
 Go {
 	= 
-	<File "src\\res.h"
+	<File "include/res.h"
         '#include "direfal.h" \n'
         '#include "system.h" \n'	
 	>
-	<File "src\\res.cc"
+	<File "src/res.cc"
         '#include "direfal.h" \n'
         '#include "commands.h" \n'
         '#include "system.h" \n'
@@ -15,7 +13,7 @@ Go {
 }
 
 AppendFunction {
-	e.line = <File "src\\res.h" <Mount "src\\res.h"> '\n' e.line>;
+	e.line = <File "include/res.h" <Mount "include/res.h"> '\n' e.line>;
 }
 
 TreeToCode {
