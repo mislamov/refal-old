@@ -3,25 +3,13 @@
 
 
 #include <stddef.h>
+
 #include "config.h"
+#include "direfal.h"
 
 class DataChain;
-struct DataCursor;
+class DataCursor;
 
-typedef DataChain* (*rf_function)(DataCursor arg_from, DataCursor arg_to, ExecContext &context);
-
-enum DataContainerType {
-	byte,
-	bytes,
-	text,
-	integer,
-	real,
-
-	word,
-	struct_bracket,
-	exec_bracket,
-	dummy
-};
 
 inline bool isSymbolType(DataContainerType type){
 	return (type <= word);
@@ -60,7 +48,7 @@ public:
 	DataContainer *next;
 
 	DataContainerType  type;
-	DataContainerValue value;
+	DataContainerValue  value;
 
 	size_t leng;
 	DataContainer* copy();
@@ -86,12 +74,12 @@ bool equal(DataChain *ch1, DataChain *ch2);
 bool equal(DataCursor cur1, DataCursor cur2);
 /*
 inline bool equal(
-	const DataContainerType &cont1_type, 
-	const DataContainerValue &cont1_value, 
-	const size_t &cur1_index, 
-	
-	const DataContainerType &cont2_type, 
-	const DataContainerValue &cont2_value, 
+	const DataContainerType &cont1_type,
+	const DataContainerValue &cont1_value,
+	const size_t &cur1_index,
+
+	const DataContainerType &cont2_type,
+	const DataContainerValue &cont2_value,
 	const size_t &cur2_index){
 
 	if (cont1_type != cont2_type) return false;

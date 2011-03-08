@@ -23,57 +23,58 @@
 
 //#include "symbols.h"
 #include "DataChain.h"
+#include "ExecContext.h"
 
 //#include "module_sdk.h"
 
 
-DataChain* Dec  (DataCursor beg, DataCursor end);
-DataChain* Div  (DataCursor beg, DataCursor end);
-DataChain* Mul  (DataCursor beg, DataCursor end);
-DataChain* Sum  (DataCursor beg, DataCursor end);
+DataChain* Dec  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Div  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Mul  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Sum  (DataCursor beg, DataCursor end, ExecContext *context);
 
-DataChain* Mod  (DataCursor beg, DataCursor end);
-DataChain* Trunc(DataCursor beg, DataCursor end);
-DataChain* Round(DataCursor beg, DataCursor end);
-DataChain* Symb (DataCursor beg, DataCursor end);
-DataChain* Chr (DataCursor beg, DataCursor end);
-DataChain* Ord (DataCursor beg, DataCursor end);
-DataChain* First (DataCursor beg, DataCursor end);
-DataChain* Last (DataCursor beg, DataCursor end);
-DataChain* Lower (DataCursor beg, DataCursor end);
-DataChain* Upper (DataCursor beg, DataCursor end);
-DataChain* StdLog (DataCursor beg, DataCursor end);
-DataChain* Time (DataCursor beg, DataCursor end);
-DataChain* Mu (DataCursor beg, DataCursor end);
+DataChain* Mod  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Trunc(DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Round(DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Symb (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Chr (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Ord (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* First (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Last (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Lower (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Upper (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* StdLog (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Time (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Mu (DataCursor beg, DataCursor end, ExecContext *context);
 
 
-DataChain* Numb (DataCursor beg, DataCursor end); // строку в число
-DataChain* Lenw (DataCursor beg, DataCursor end);
-DataChain* Compare (DataCursor beg, DataCursor end); // Сравнивает два терма (по перегруженному оператору > или ==)
-DataChain* Implode (DataCursor beg, DataCursor end);
-DataChain* Explode (DataCursor beg, DataCursor end);
-DataChain* ExplodeAll (DataCursor beg, DataCursor end);
-DataChain* Add   (DataCursor beg, DataCursor end);
-DataChain* Sub   (DataCursor beg, DataCursor end);
-DataChain* Mount (DataCursor beg, DataCursor end);
-DataChain* File  (DataCursor beg, DataCursor end);
-DataChain* Args  (DataCursor beg, DataCursor end);
-DataChain* Card  (DataCursor beg, DataCursor end);
-DataChain* Prout (DataCursor beg, DataCursor end);
-DataChain* ProutDebug (DataCursor beg, DataCursor end);
-DataChain* StdErr(DataCursor beg, DataCursor end);
-DataChain* StdLog(DataCursor beg, DataCursor end);
-DataChain* Print (DataCursor beg, DataCursor end);
-DataChain* Exit  (DataCursor beg, DataCursor end);
+DataChain* Numb (DataCursor beg, DataCursor end, ExecContext *context); // строку в число
+DataChain* Lenw (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Compare (DataCursor beg, DataCursor end, ExecContext *context); // Сравнивает два терма (по перегруженному оператору > или ==)
+DataChain* Implode (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Explode (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* ExplodeAll (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Add   (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Sub   (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Mount (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* File  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Args  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Card  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Prout (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* ProutDebug (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* StdErr(DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* StdLog(DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Print (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Exit  (DataCursor beg, DataCursor end, ExecContext *context);
 
-DataChain* RandomIdName(DataCursor beg, DataCursor end);
+DataChain* RandomIdName(DataCursor beg, DataCursor end, ExecContext *context);
 
-DataChain* RefalTokens  (DataCursor beg, DataCursor end);
-DataChain* PrintStackTrace   (DataCursor beg, DataCursor end);
-DataChain* Eval  (DataCursor beg, DataCursor end);
+DataChain* RefalTokens  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* PrintStackTrace   (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* Eval  (DataCursor beg, DataCursor end, ExecContext *context);
 
-DataChain* DebugStart  (DataCursor beg, DataCursor end);
-DataChain* DebugStop  (DataCursor beg, DataCursor end);
+DataChain* DebugStart  (DataCursor beg, DataCursor end, ExecContext *context);
+DataChain* DebugStop  (DataCursor beg, DataCursor end, ExecContext *context);
 
 
 

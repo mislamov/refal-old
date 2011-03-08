@@ -28,7 +28,7 @@ TreeToCode {
 }
 
 DefFunction {
-	t.name = 'DataChain* ' t.name '(DataCursor arg_from, DataCursor arg_to, ExecContext &context)' ;
+	t.name = 'DataChain* ' t.name '(DataCursor arg_from, DataCursor arg_to, ExecContext *context)' ;
 }
 
 TreeToCode_function {
@@ -412,8 +412,10 @@ SubstCompile {
         <RandomIdName> : e.v,
         @.fn : (t. e.fname) =
                             'DataChain* ' e.v ' = new DataChain(); \n'
-                            e.ch'->append(newRefExecBrackets(' <Fname e.fname> ', ' e.v ', "'e.fname'")); \n'
-                            <SubstCompile (e.v) /*&SYMBOL.fn*/ e.in>
+                            'DataContainer* ' e.v'_execbr = newRefExecBrackets(' <Fname e.fname> ', ' e.v ', "'e.fname'");' '\n'
+                            e.ch'->append('e.v'_execbr);' '\n'
+                            <SubstCompile (e.v) e.in>
+                            'context->pushExecuteCall(' e.v'_execbr);' '\n'
                             <SubstCompile (e.ch) e.next>;
     (e.ch) ("(" e.in) e.next,
         <RandomIdName> : e.v   =

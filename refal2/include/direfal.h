@@ -19,8 +19,24 @@
 #ifndef DiRefal_H_INCLUDED
 #define DiRefal_H_INCLUDED
 
+class DataChain;
+class DataCursor;
+class ExecContext;
+
+typedef DataChain* (*rf_function)(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
+
+//DataChain* dummy(DataCursor arg_from, DataCursor arg_to, ExecContext *context){return 0; };
+//rf_function dummy2(){ return 0; }
+
+
+
+#include "DataContainerType.h"
+#include "DataContainer.h"
+#include "DataCursor.h"
 #include "DataChain.h"
-#include "ExecContext.h"
+
+//#include "ExecContext.h"
+
 
 
 #endif

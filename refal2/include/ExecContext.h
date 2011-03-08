@@ -19,12 +19,31 @@
 #ifndef EXECCONTEXT_H_INCLUDED
 #define EXECCONTEXT_H_INCLUDED
 
+#include "direfal.h"
+
 #include "ExecStack.h"
 
-class ExecContext  {
-public: 
-	ExecStack execStack;
+struct ExecQueue {
+	DataContainer* fn_call;
+	ExecQueue* next;
+	//inline void push(DataContainer* dc){ next=new ExecQueue(dc); }
+	inline ExecQueue(DataContainer* dc, ExecQueue* willnext=0){ fn_call=dc; next=willnext; }
+};
 
+class ExecContext  {
+	ExecQueue* active;
+	ExecQueue* pre_active;
+	ExecQueue* topOfExecQueue;
+
+public: 
+	ExecContext();
+
+	void prepareExecute(); // подготовка перед очередным функциональным вызовом
+	void pushExecuteCall(DataContainer*); // добавление вызова в очередь выполнения
+
+	DataCursor getCurrentExec(); // возвращает указатель на ближайший функциональный вызов
+
+	void print_debug();
 };
 
 #endif

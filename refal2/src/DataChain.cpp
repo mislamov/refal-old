@@ -1,46 +1,9 @@
 #include "DataChain.h"
 
+#include "direfal.h"
+
 #include <sstream>
 #include <cstring>
-
-
-
-DataCursor& DataCursor::operator-- (){
-	ref_assert( container!=0 && container->leng>0);
-	if (container->leng==1 || index==0){
-		// перемещение между контейнерами
-		container = container->prev;
-		index = container->leng-1;
-		return *this;
-	}
-	// перемещение внутри контейнера
-	--index;
-	return *this;
-}
-
-DataCursor DataCursor::operator-(const int& i){
-	ref_assert(i==1);
-	ref_assert(container!=0);
-
-	DataCursor result = *this;
-	--result;
-	return result;
-}
-
-DataCursor DataCursor::operator+(const int& i){
-	ref_assert(i==1);
-	ref_assert(container!=0);
-
-	DataCursor result = *this;
-	++result;
-	return result;
-}
-
-
-
-bool DataCursor::operator! (){
-	return container==0;
-}
 
 
 
@@ -67,6 +30,11 @@ DataChain::~DataChain()
 {
 	//dtor
 }
+
+bool DataChain::isEmpty(){ 
+	return before_first_cursor.container->next == after_last_cursor.container; 
+};
+
 
 DataChain*  DataChain::append(DataContainer *con){
 	if (!con) return this;
@@ -214,6 +182,11 @@ unistring chain_to_text(DataCursor prebeg, DataCursor end){
 
 unistring DataChain::debug(){
 	std::stringstream str;
+	if (this==0){
+		str << " /*empty*/ ";
+		return str.str();
+	}
+
 	DataCursor i = this->at_first();
 	DataCursor iend = this->at_after_last();
 
@@ -254,28 +227,3 @@ unistring DataChain::debug(){
 	return str.str();
 }
 
-
-void DataCursor::replaceBy(DataChain *chain){
-	ref_assert(container!=0);
-	ref_assert(container->type==exec_bracket); // пока используется только для замены <> на результат
-
-	DataContainer *aa = container->prev;
-	DataContainer *ab = container->next;
-
-	if (!chain || chain->isEmpty()){
-		aa->next = ab;
-		ab->prev = aa;
-		return;
-	}
-
-	DataContainer *ba = chain->at_first().container;
-	DataContainer *bb = chain->at_last().container;
-
-	aa->next = ba;
-	ab->prev = bb;
-	ba->prev = aa;
-	bb->next = ab;
-
-	chain->at_before_first().container->next = chain->at_after_last().container;
-	chain->at_after_last().container->prev = chain->at_before_first().container;
-}

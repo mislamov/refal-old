@@ -19,10 +19,15 @@
 #ifndef EXECSTACK_H_INCLUDED
 #define EXECSTACK_H_INCLUDED
 
-#include <stack>
+#include <deque>
 
-class ExecStack : public std::stack<DataContainer*> {
+class DataContainer;
 
+class ExecStack : public std::deque<DataContainer*> {
+public:
+	void push(DataContainer *dc){
+		push_back(dc);
+	}
 };
 
 #endif

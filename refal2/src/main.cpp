@@ -18,9 +18,13 @@
 
 #include "direfal.h"
 
+#include "ExecContext.h"
+
 #include <ctime>
 #include <iostream>
 #include <fstream>
+
+#include <deque>
 
 std::string stringtime(struct tm *timeptr)
 {
@@ -41,14 +45,21 @@ void help(char *pname)
 
 
 
-extern DataChain* Go(DataCursor arg_from, DataCursor arg_to);
-extern DataChain* FN(DataCursor arg_from, DataCursor arg_to);
+extern DataChain* Go(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
+extern DataChain* FN(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
 
-//*
-DataCursor findExec (DataChain *ch)
+/*
+DataCursor findExec (DataChain *ch, ExecContext *context)
 {
-	//std::cout << ch->debug() << "\n" << std::flush;
+	if (context->execStack.empty()) return 0;
+	DataContainer *dc =  context->execStack.front();
+	context->execStack.pop_front();
+	return DataCursor(dc);
 
+
+
+	std::cout << ch->debug() << "\n" << std::flush;
+	DataCursor result = 0;
 	if (!ch || ch->isEmpty()) return 0;
 	for (
 		DataCursor i=ch->at_first(),
@@ -60,17 +71,24 @@ DataCursor findExec (DataChain *ch)
 
 		// <...>
 		if (i.container->type == exec_bracket){
-			DataCursor bb = findExec((DataChain*)i.container->value.bracket_data.chain);
-			if (!bb) return i;
-			return bb;
+			DataCursor bb = findExec((DataChain*)i.container->value.bracket_data.chain, context);
+			if (!bb) {
+				result = i;
+				break;
+			}
+			result = bb;
+			break;
 		}
 
 		// (...)
-		DataCursor bb = findExec((DataChain*)i.container->value.bracket_data.chain);
-		if (bb!=0) return bb;
+		DataCursor bb = findExec((DataChain*)i.container->value.bracket_data.chain, context);
+		if (bb!=0) {
+			result = bb;
+			break;
+		}
 	}
 
-	return 0;
+	return result;
 }
 //*/
 int debug = 0;
@@ -80,7 +98,8 @@ int main ( int , char **)
 	ExecContext execContext;
 	DataChain *ch = text_to_chain("");
 
-	DataChain* result = Go(ch->at_before_first(), ch->at_last());
+	execContext.prepareExecute();
+	DataChain* result = Go(ch->at_before_first(), ch->at_last(), &execContext);
     DataCursor b = 0, bb = 0;
 
 	while (true)
@@ -88,26 +107,22 @@ int main ( int , char **)
 		if (debug)
 			std::cout << (result ? result->debug() : "null") << "\n";
 
-        if (bb!=0){
-            b = bb;
-        } else {
-            b = findExec(result);
-        }
+		b = execContext.getCurrentExec();
 		if (!b) break;
-
 		ref_assert( b.container->type == exec_bracket );
+
 		BracketData  exb = b.container->value.bracket_data;
-		ch = exb.fn(exb.chain->at_before_first(), exb.chain->at_last());
-		bb = findExec(ch);
-
+		execContext.prepareExecute();
+		ch = exb.fn(exb.chain->at_before_first(), exb.chain->at_last(), &execContext);
 		//if (ch) std::cout << ch->debug() << "\n";
-
 		b.replaceBy( ch );
 
 		//delete result; // опусташенная цепочка
 		//delete b.container->value.bracket_data.chain; // <...>
 		//delete b.container; // <...>
-		//std::cout << (result ? result->debug() : "null") << "\n\n\n";
+
+		//std::cout << result->debug() << "\n\n";
+		//execContext.print_debug();
 	}
 
 	std::getchar();
