@@ -9,7 +9,7 @@ DataChain* Begin(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
 DataChain* FirG(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
 // '1'   =  <Game ('2' )('1' )('' )('23456789' )>
 // '2'   =  <Game ('2' )('' )('' )('123456789' )>
-// e.e   =  
+// e.e   =  <Exit 0  >
 DataChain* Game__(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
 // e.e   =  <Prout Game: @.e ><Game__ @.e >
 DataChain* Game(DataCursor arg_from, DataCursor arg_to, ExecContext *context);

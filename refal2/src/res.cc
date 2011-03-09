@@ -175,6 +175,11 @@ sentence_after_2:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
+DataChain* FWLQIJTVDWVXHR = new DataChain(); 
+DataContainer* FWLQIJTVDWVXHR_execbr = newRefExecBrackets(Exit, FWLQIJTVDWVXHR, "Exit");
+result->append(FWLQIJTVDWVXHR_execbr);
+FWLQIJTVDWVXHR->append(newRefInteger(0)); 
+context->pushExecuteCall(FWLQIJTVDWVXHR_execbr);
 
 return result; 
 }
@@ -199,17 +204,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* FWLQIJTVDWVXHR = new DataChain(); 
-DataContainer* FWLQIJTVDWVXHR_execbr = newRefExecBrackets(Prout, FWLQIJTVDWVXHR, "Prout");
-result->append(FWLQIJTVDWVXHR_execbr);
-FWLQIJTVDWVXHR->append(newRefWord("Game:")); 
-FWLQIJTVDWVXHR->append_copy(l_e, r_e); 
-context->pushExecuteCall(FWLQIJTVDWVXHR_execbr);
 DataChain* CBLDVGYLWGBUSB = new DataChain(); 
-DataContainer* CBLDVGYLWGBUSB_execbr = newRefExecBrackets(Game__, CBLDVGYLWGBUSB, "Game__");
+DataContainer* CBLDVGYLWGBUSB_execbr = newRefExecBrackets(Prout, CBLDVGYLWGBUSB, "Prout");
 result->append(CBLDVGYLWGBUSB_execbr);
+CBLDVGYLWGBUSB->append(newRefWord("Game:")); 
 CBLDVGYLWGBUSB->append_copy(l_e, r_e); 
 context->pushExecuteCall(CBLDVGYLWGBUSB_execbr);
+DataChain* MBORXTLHCSMPXO = new DataChain(); 
+DataContainer* MBORXTLHCSMPXO_execbr = newRefExecBrackets(Game__, MBORXTLHCSMPXO, "Game__");
+result->append(MBORXTLHCSMPXO_execbr);
+MBORXTLHCSMPXO->append_copy(l_e, r_e); 
+context->pushExecuteCall(MBORXTLHCSMPXO_execbr);
 
 return result; 
 }
@@ -228,115 +233,115 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor MBORXTLHCSMPXO;
 /*DEF*/	DataCursor HGMGNKEUFDXOTO;
 /*DEF*/	DataCursor GBGXPEYANFETCU;
-/*SET*/	MBORXTLHCSMPXO = arg_from;
-/*INC*/	if (!INC(MBORXTLHCSMPXO, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (MBORXTLHCSMPXO.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	HGMGNKEUFDXOTO = MBORXTLHCSMPXO.container->value.bracket_data.chain->at_before_first();
-	GBGXPEYANFETCU   = MBORXTLHCSMPXO.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor KEPZSHKLJUGGGE;
+/*SET*/	HGMGNKEUFDXOTO = arg_from;
+/*INC*/	if (!INC(HGMGNKEUFDXOTO, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (HGMGNKEUFDXOTO.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	GBGXPEYANFETCU = HGMGNKEUFDXOTO.container->value.bracket_data.chain->at_before_first();
+	KEPZSHKLJUGGGE   = HGMGNKEUFDXOTO.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor KJDQZJENPEVQGX;
 /*DEF*/	DataCursor l_g;
 /*DEF*/	DataCursor r_g;
-/*SET*/	l_g = HGMGNKEUFDXOTO;
-/*SET*/	KEPZSHKLJUGGGE = HGMGNKEUFDXOTO;
-/*INC*/	if (!INC(KEPZSHKLJUGGGE, GBGXPEYANFETCU)) goto sentence_after_1;
-	if (! isSymbolType(KEPZSHKLJUGGGE.container->type)) goto sentence_after_1;
-/*SET*/	r_g = KEPZSHKLJUGGGE;
+/*SET*/	l_g = GBGXPEYANFETCU;
+/*SET*/	KJDQZJENPEVQGX = GBGXPEYANFETCU;
+/*INC*/	if (!INC(KJDQZJENPEVQGX, KEPZSHKLJUGGGE)) goto sentence_after_1;
+	if (! isSymbolType(KJDQZJENPEVQGX.container->type)) goto sentence_after_1;
+/*SET*/	r_g = KJDQZJENPEVQGX;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_g!=0 && GBGXPEYANFETCU != r_g) goto sentence_after_1;
+/*ISEMPTY*/	if (r_g!=0 && KEPZSHKLJUGGGE != r_g) goto sentence_after_1;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor KJDQZJENPEVQGX;
 /*DEF*/	DataCursor IEPJSRDZJAZUJL;
 /*DEF*/	DataCursor LCHHBFQMKIMWZO;
-/*SET*/	KJDQZJENPEVQGX = MBORXTLHCSMPXO;
-/*INC*/	if (!INC(KJDQZJENPEVQGX, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor BIWYBXDUUNFSKS;
+/*SET*/	IEPJSRDZJAZUJL = HGMGNKEUFDXOTO;
+/*INC*/	if (!INC(IEPJSRDZJAZUJL, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (KJDQZJENPEVQGX.container->type != struct_bracket) goto sentence_after_1;
+	if (IEPJSRDZJAZUJL.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	IEPJSRDZJAZUJL = KJDQZJENPEVQGX.container->value.bracket_data.chain->at_before_first();
-	LCHHBFQMKIMWZO   = KJDQZJENPEVQGX.container->value.bracket_data.chain->at_last();
+	LCHHBFQMKIMWZO = IEPJSRDZJAZUJL.container->value.bracket_data.chain->at_before_first();
+	BIWYBXDUUNFSKS   = IEPJSRDZJAZUJL.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = IEPJSRDZJAZUJL;
-/*SET*/	r_1 = LCHHBFQMKIMWZO;
+/*SET*/	l_1 = LCHHBFQMKIMWZO;
+/*SET*/	r_1 = BIWYBXDUUNFSKS;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor BIWYBXDUUNFSKS;
 /*DEF*/	DataCursor RSRTEKMQDCYZJE;
 /*DEF*/	DataCursor EUHMSRQCOZIJIP;
-/*SET*/	BIWYBXDUUNFSKS = KJDQZJENPEVQGX;
-/*INC*/	if (!INC(BIWYBXDUUNFSKS, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor FIONEEDDPSZRNA;
+/*SET*/	RSRTEKMQDCYZJE = IEPJSRDZJAZUJL;
+/*INC*/	if (!INC(RSRTEKMQDCYZJE, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (BIWYBXDUUNFSKS.container->type != struct_bracket) goto sentence_after_1;
+	if (RSRTEKMQDCYZJE.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	RSRTEKMQDCYZJE = BIWYBXDUUNFSKS.container->value.bracket_data.chain->at_before_first();
-	EUHMSRQCOZIJIP   = BIWYBXDUUNFSKS.container->value.bracket_data.chain->at_last();
+	EUHMSRQCOZIJIP = RSRTEKMQDCYZJE.container->value.bracket_data.chain->at_before_first();
+	FIONEEDDPSZRNA   = RSRTEKMQDCYZJE.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = RSRTEKMQDCYZJE;
-/*SET*/	r_2 = EUHMSRQCOZIJIP;
+/*SET*/	l_2 = EUHMSRQCOZIJIP;
+/*SET*/	r_2 = FIONEEDDPSZRNA;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor FIONEEDDPSZRNA;
 /*DEF*/	DataCursor VYMMTATBDZQSOE;
 /*DEF*/	DataCursor MUVNPPPSUACBAZ;
-/*SET*/	FIONEEDDPSZRNA = BIWYBXDUUNFSKS;
-/*INC*/	if (!INC(FIONEEDDPSZRNA, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor UXMHECTHLEGRPU;
+/*SET*/	VYMMTATBDZQSOE = RSRTEKMQDCYZJE;
+/*INC*/	if (!INC(VYMMTATBDZQSOE, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (FIONEEDDPSZRNA.container->type != struct_bracket) goto sentence_after_1;
+	if (VYMMTATBDZQSOE.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	VYMMTATBDZQSOE = FIONEEDDPSZRNA.container->value.bracket_data.chain->at_before_first();
-	MUVNPPPSUACBAZ   = FIONEEDDPSZRNA.container->value.bracket_data.chain->at_last();
+	MUVNPPPSUACBAZ = VYMMTATBDZQSOE.container->value.bracket_data.chain->at_before_first();
+	UXMHECTHLEGRPU   = VYMMTATBDZQSOE.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = VYMMTATBDZQSOE;
-/*SET*/	r_n = MUVNPPPSUACBAZ;
+/*SET*/	l_n = MUVNPPPSUACBAZ;
+/*SET*/	r_n = UXMHECTHLEGRPU;
 //// [ empty ] 
-/*ISEMPTY*/	if (FIONEEDDPSZRNA!=0 && arg_to != FIONEEDDPSZRNA) goto sentence_after_1;
+/*ISEMPTY*/	if (VYMMTATBDZQSOE!=0 && arg_to != VYMMTATBDZQSOE) goto sentence_after_1;
 
 // подготовка подстановки 
-DataChain* UXMHECTHLEGRPU = new DataChain(); 
-DataContainer* UXMHECTHLEGRPU_execbr = newRefExecBrackets(Ekran, UXMHECTHLEGRPU, "Ekran");
-result->append(UXMHECTHLEGRPU_execbr);
 DataChain* NKDMBPPWEQTGJO = new DataChain(); 
-UXMHECTHLEGRPU->append(newRefStructBrackets(NKDMBPPWEQTGJO)); 
-NKDMBPPWEQTGJO->append_copy(l_1, r_1); 
+DataContainer* NKDMBPPWEQTGJO_execbr = newRefExecBrackets(Ekran, NKDMBPPWEQTGJO, "Ekran");
+result->append(NKDMBPPWEQTGJO_execbr);
 DataChain* PARMOWZDQYOXYT = new DataChain(); 
-UXMHECTHLEGRPU->append(newRefStructBrackets(PARMOWZDQYOXYT)); 
-PARMOWZDQYOXYT->append_copy(l_2, r_2); 
-context->pushExecuteCall(UXMHECTHLEGRPU_execbr);
+NKDMBPPWEQTGJO->append(newRefStructBrackets(PARMOWZDQYOXYT)); 
+PARMOWZDQYOXYT->append_copy(l_1, r_1); 
 DataChain* JBBHAWDYDCPRJB = new DataChain(); 
-DataContainer* JBBHAWDYDCPRJB_execbr = newRefExecBrackets(GameIfWin, JBBHAWDYDCPRJB, "GameIfWin");
-result->append(JBBHAWDYDCPRJB_execbr);
+NKDMBPPWEQTGJO->append(newRefStructBrackets(JBBHAWDYDCPRJB)); 
+JBBHAWDYDCPRJB->append_copy(l_2, r_2); 
+context->pushExecuteCall(NKDMBPPWEQTGJO_execbr);
 DataChain* XPHOOHPKWQYUHR = new DataChain(); 
-DataContainer* XPHOOHPKWQYUHR_execbr = newRefExecBrackets(Ifwin, XPHOOHPKWQYUHR, "Ifwin");
-JBBHAWDYDCPRJB->append(XPHOOHPKWQYUHR_execbr);
+DataContainer* XPHOOHPKWQYUHR_execbr = newRefExecBrackets(GameIfWin, XPHOOHPKWQYUHR, "GameIfWin");
+result->append(XPHOOHPKWQYUHR_execbr);
 DataChain* QZHNBNFUVQNQQL = new DataChain(); 
-XPHOOHPKWQYUHR->append(newRefStructBrackets(QZHNBNFUVQNQQL)); 
-QZHNBNFUVQNQQL->append_copy(l_1, r_1); 
+DataContainer* QZHNBNFUVQNQQL_execbr = newRefExecBrackets(Ifwin, QZHNBNFUVQNQQL, "Ifwin");
+XPHOOHPKWQYUHR->append(QZHNBNFUVQNQQL_execbr);
 DataChain* RZJPXIOGVLIEXD = new DataChain(); 
-XPHOOHPKWQYUHR->append(newRefStructBrackets(RZJPXIOGVLIEXD)); 
-RZJPXIOGVLIEXD->append_copy(l_2, r_2); 
-context->pushExecuteCall(XPHOOHPKWQYUHR_execbr);
+QZHNBNFUVQNQQL->append(newRefStructBrackets(RZJPXIOGVLIEXD)); 
+RZJPXIOGVLIEXD->append_copy(l_1, r_1); 
 DataChain* ZUZOSRKRUSVOJB = new DataChain(); 
-JBBHAWDYDCPRJB->append(newRefStructBrackets(ZUZOSRKRUSVOJB)); 
-ZUZOSRKRUSVOJB->append_copy(l_g, r_g); 
+QZHNBNFUVQNQQL->append(newRefStructBrackets(ZUZOSRKRUSVOJB)); 
+ZUZOSRKRUSVOJB->append_copy(l_2, r_2); 
+context->pushExecuteCall(QZHNBNFUVQNQQL_execbr);
 DataChain* RZMWZPOWKJILEF = new DataChain(); 
-JBBHAWDYDCPRJB->append(newRefStructBrackets(RZMWZPOWKJILEF)); 
-RZMWZPOWKJILEF->append_copy(l_1, r_1); 
+XPHOOHPKWQYUHR->append(newRefStructBrackets(RZMWZPOWKJILEF)); 
+RZMWZPOWKJILEF->append_copy(l_g, r_g); 
 DataChain* RAAMDIGPNPUUHG = new DataChain(); 
-JBBHAWDYDCPRJB->append(newRefStructBrackets(RAAMDIGPNPUUHG)); 
-RAAMDIGPNPUUHG->append_copy(l_2, r_2); 
+XPHOOHPKWQYUHR->append(newRefStructBrackets(RAAMDIGPNPUUHG)); 
+RAAMDIGPNPUUHG->append_copy(l_1, r_1); 
 DataChain* XPQNJWJMWAXXMN = new DataChain(); 
-JBBHAWDYDCPRJB->append(newRefStructBrackets(XPQNJWJMWAXXMN)); 
-XPQNJWJMWAXXMN->append_copy(l_n, r_n); 
-context->pushExecuteCall(JBBHAWDYDCPRJB_execbr);
+XPHOOHPKWQYUHR->append(newRefStructBrackets(XPQNJWJMWAXXMN)); 
+XPQNJWJMWAXXMN->append_copy(l_2, r_2); 
+DataChain* SNHHLQQRZUDLTF = new DataChain(); 
+XPHOOHPKWQYUHR->append(newRefStructBrackets(SNHHLQQRZUDLTF)); 
+SNHHLQQRZUDLTF->append_copy(l_n, r_n); 
+context->pushExecuteCall(XPHOOHPKWQYUHR_execbr);
 
 return result; 
 }
@@ -369,41 +374,41 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor SNHHLQQRZUDLTF;
-/*SET*/	SNHHLQQRZUDLTF = arg_from;
-/*INC*/	if (!INC(SNHHLQQRZUDLTF, arg_to)) goto sentence_after_1;
-	if (SNHHLQQRZUDLTF.container->type != text || *(SNHHLQQRZUDLTF.container->value.text + SNHHLQQRZUDLTF.index) != '0') goto sentence_after_1;
+/*DEF*/	DataCursor ZOTCJTNZXUGLSD;
+/*SET*/	ZOTCJTNZXUGLSD = arg_from;
+/*INC*/	if (!INC(ZOTCJTNZXUGLSD, arg_to)) goto sentence_after_1;
+	if (ZOTCJTNZXUGLSD.container->type != text || *(ZOTCJTNZXUGLSD.container->value.text + ZOTCJTNZXUGLSD.index) != '0') goto sentence_after_1;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
-/*SET*/	l_e = SNHHLQQRZUDLTF;
-/*SET*/	r_e = SNHHLQQRZUDLTF;
-/*JMP*/	goto label_ZOTCJTNZXUGLSD_firststep;
-label_ZOTCJTNZXUGLSD: 
+/*SET*/	l_e = ZOTCJTNZXUGLSD;
+/*SET*/	r_e = ZOTCJTNZXUGLSD;
+/*JMP*/	goto label_SMZCNOCKVFAJFR_firststep;
+label_SMZCNOCKVFAJFR: 
 /*INC*/	if (!INC(r_e, arg_to)) goto sentence_after_1;
-label_ZOTCJTNZXUGLSD_firststep: 
+label_SMZCNOCKVFAJFR_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor SMZCNOCKVFAJFR;
 /*DEF*/	DataCursor MXOTHOWKBJZWUC;
 /*DEF*/	DataCursor WLJFRIMPMYHCHZ;
-/*SET*/	SMZCNOCKVFAJFR = r_e;
-/*INC*/	if (!INC(SMZCNOCKVFAJFR, arg_to)) goto label_ZOTCJTNZXUGLSD;
+/*DEF*/	DataCursor RIWKBARXBGFCBC;
+/*SET*/	MXOTHOWKBJZWUC = r_e;
+/*INC*/	if (!INC(MXOTHOWKBJZWUC, arg_to)) goto label_SMZCNOCKVFAJFR;
 //// ISBRACKET 
-	if (SMZCNOCKVFAJFR.container->type != struct_bracket) goto label_ZOTCJTNZXUGLSD;
+	if (MXOTHOWKBJZWUC.container->type != struct_bracket) goto label_SMZCNOCKVFAJFR;
 //// JMP_BRACKET 
-	MXOTHOWKBJZWUC = SMZCNOCKVFAJFR.container->value.bracket_data.chain->at_before_first();
-	WLJFRIMPMYHCHZ   = SMZCNOCKVFAJFR.container->value.bracket_data.chain->at_last();
+	WLJFRIMPMYHCHZ = MXOTHOWKBJZWUC.container->value.bracket_data.chain->at_before_first();
+	RIWKBARXBGFCBC   = MXOTHOWKBJZWUC.container->value.bracket_data.chain->at_last();
 //// [ empty ] 
-/*ISEMPTY*/	if (MXOTHOWKBJZWUC!=0 && WLJFRIMPMYHCHZ != MXOTHOWKBJZWUC) goto label_ZOTCJTNZXUGLSD;
+/*ISEMPTY*/	if (WLJFRIMPMYHCHZ!=0 && RIWKBARXBGFCBC != WLJFRIMPMYHCHZ) goto label_SMZCNOCKVFAJFR;
 //// [ empty ] 
-/*ISEMPTY*/	if (SMZCNOCKVFAJFR!=0 && arg_to != SMZCNOCKVFAJFR) goto label_ZOTCJTNZXUGLSD;
+/*ISEMPTY*/	if (MXOTHOWKBJZWUC!=0 && arg_to != MXOTHOWKBJZWUC) goto label_SMZCNOCKVFAJFR;
 
 // подготовка подстановки 
-DataChain* EYHJUGIXWTBVTR = new DataChain(); 
-DataContainer* EYHJUGIXWTBVTR_execbr = newRefExecBrackets(Prout, EYHJUGIXWTBVTR, "Prout");
-result->append(EYHJUGIXWTBVTR_execbr);
-EYHJUGIXWTBVTR->append(newRefText("Nobody !!!.")); 
-context->pushExecuteCall(EYHJUGIXWTBVTR_execbr);
+DataChain* EHBBCPXIFBXVFB = new DataChain(); 
+DataContainer* EHBBCPXIFBXVFB_execbr = newRefExecBrackets(Prout, EHBBCPXIFBXVFB, "Prout");
+result->append(EHBBCPXIFBXVFB_execbr);
+EHBBCPXIFBXVFB->append(newRefText("Nobody !!!.")); 
+context->pushExecuteCall(EHBBCPXIFBXVFB_execbr);
 
 return result; 
 }
@@ -412,22 +417,22 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor EHBBCPXIFBXVFB;
-/*SET*/	EHBBCPXIFBXVFB = arg_from;
-/*INC*/	if (!INC(EHBBCPXIFBXVFB, arg_to)) goto sentence_after_2;
-	if (EHBBCPXIFBXVFB.container->type != text || *(EHBBCPXIFBXVFB.container->value.text + EHBBCPXIFBXVFB.index) != '1') goto sentence_after_2;
+/*DEF*/	DataCursor CGKCFQCKCOTZGK;
+/*SET*/	CGKCFQCKCOTZGK = arg_from;
+/*INC*/	if (!INC(CGKCFQCKCOTZGK, arg_to)) goto sentence_after_2;
+	if (CGKCFQCKCOTZGK.container->type != text || *(CGKCFQCKCOTZGK.container->value.text + CGKCFQCKCOTZGK.index) != '1') goto sentence_after_2;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
-/*SET*/	l_e = EHBBCPXIFBXVFB;
+/*SET*/	l_e = CGKCFQCKCOTZGK;
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* UBMJRMBSZTSSHF = new DataChain(); 
-DataContainer* UBMJRMBSZTSSHF_execbr = newRefExecBrackets(Prout, UBMJRMBSZTSSHF, "Prout");
-result->append(UBMJRMBSZTSSHF_execbr);
-UBMJRMBSZTSSHF->append(newRefText("Winner X")); 
-context->pushExecuteCall(UBMJRMBSZTSSHF_execbr);
+DataChain* ROEFWSJRXJHGUZ = new DataChain(); 
+DataContainer* ROEFWSJRXJHGUZ_execbr = newRefExecBrackets(Prout, ROEFWSJRXJHGUZ, "Prout");
+result->append(ROEFWSJRXJHGUZ_execbr);
+ROEFWSJRXJHGUZ->append(newRefText("Winner X")); 
+context->pushExecuteCall(ROEFWSJRXJHGUZ_execbr);
 
 return result; 
 }
@@ -436,22 +441,22 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ROEFWSJRXJHGUZ;
-/*SET*/	ROEFWSJRXJHGUZ = arg_from;
-/*INC*/	if (!INC(ROEFWSJRXJHGUZ, arg_to)) goto sentence_after_3;
-	if (ROEFWSJRXJHGUZ.container->type != text || *(ROEFWSJRXJHGUZ.container->value.text + ROEFWSJRXJHGUZ.index) != '2') goto sentence_after_3;
+/*DEF*/	DataCursor YUPZWWEIQURPIX;
+/*SET*/	YUPZWWEIQURPIX = arg_from;
+/*INC*/	if (!INC(YUPZWWEIQURPIX, arg_to)) goto sentence_after_3;
+	if (YUPZWWEIQURPIX.container->type != text || *(YUPZWWEIQURPIX.container->value.text + YUPZWWEIQURPIX.index) != '2') goto sentence_after_3;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
-/*SET*/	l_e = ROEFWSJRXJHGUZ;
+/*SET*/	l_e = YUPZWWEIQURPIX;
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* IQFLDUUVEOOWQC = new DataChain(); 
-DataContainer* IQFLDUUVEOOWQC_execbr = newRefExecBrackets(Prout, IQFLDUUVEOOWQC, "Prout");
-result->append(IQFLDUUVEOOWQC_execbr);
-IQFLDUUVEOOWQC->append(newRefText("Winner O")); 
-context->pushExecuteCall(IQFLDUUVEOOWQC_execbr);
+DataChain* UDHNEFNJHAIMUC = new DataChain(); 
+DataContainer* UDHNEFNJHAIMUC_execbr = newRefExecBrackets(Prout, UDHNEFNJHAIMUC, "Prout");
+result->append(UDHNEFNJHAIMUC_execbr);
+UDHNEFNJHAIMUC->append(newRefText("Winner O")); 
+context->pushExecuteCall(UDHNEFNJHAIMUC_execbr);
 
 return result; 
 }
@@ -460,22 +465,22 @@ sentence_after_3:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor UDHNEFNJHAIMUC;
-/*SET*/	UDHNEFNJHAIMUC = arg_from;
-/*INC*/	if (!INC(UDHNEFNJHAIMUC, arg_to)) goto sentence_after_4;
-	if (UDHNEFNJHAIMUC.container->type != text || *(UDHNEFNJHAIMUC.container->value.text + UDHNEFNJHAIMUC.index) != '0') goto sentence_after_4;
+/*DEF*/	DataCursor ZFSKUIDUBURISW;
+/*SET*/	ZFSKUIDUBURISW = arg_from;
+/*INC*/	if (!INC(ZFSKUIDUBURISW, arg_to)) goto sentence_after_4;
+	if (ZFSKUIDUBURISW.container->type != text || *(ZFSKUIDUBURISW.container->value.text + ZFSKUIDUBURISW.index) != '0') goto sentence_after_4;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
-/*SET*/	l_e = UDHNEFNJHAIMUC;
+/*SET*/	l_e = ZFSKUIDUBURISW;
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* TBRECUYKABFCVK = new DataChain(); 
-DataContainer* TBRECUYKABFCVK_execbr = newRefExecBrackets(Game1, TBRECUYKABFCVK, "Game1");
-result->append(TBRECUYKABFCVK_execbr);
-TBRECUYKABFCVK->append_copy(l_e, r_e); 
-context->pushExecuteCall(TBRECUYKABFCVK_execbr);
+DataChain* DZEZTOIDUKUHJZ = new DataChain(); 
+DataContainer* DZEZTOIDUKUHJZ_execbr = newRefExecBrackets(Game1, DZEZTOIDUKUHJZ, "Game1");
+result->append(DZEZTOIDUKUHJZ_execbr);
+DZEZTOIDUKUHJZ->append_copy(l_e, r_e); 
+context->pushExecuteCall(DZEZTOIDUKUHJZ_execbr);
 
 return result; 
 }
@@ -500,17 +505,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* DZEZTOIDUKUHJZ = new DataChain(); 
-DataContainer* DZEZTOIDUKUHJZ_execbr = newRefExecBrackets(Prout, DZEZTOIDUKUHJZ, "Prout");
-result->append(DZEZTOIDUKUHJZ_execbr);
-DZEZTOIDUKUHJZ->append(newRefWord("Game1:")); 
-DZEZTOIDUKUHJZ->append_copy(l_e, r_e); 
-context->pushExecuteCall(DZEZTOIDUKUHJZ_execbr);
 DataChain* EFCZZZBFKQDPQZ = new DataChain(); 
-DataContainer* EFCZZZBFKQDPQZ_execbr = newRefExecBrackets(Game1__, EFCZZZBFKQDPQZ, "Game1__");
+DataContainer* EFCZZZBFKQDPQZ_execbr = newRefExecBrackets(Prout, EFCZZZBFKQDPQZ, "Prout");
 result->append(EFCZZZBFKQDPQZ_execbr);
+EFCZZZBFKQDPQZ->append(newRefWord("Game1:")); 
 EFCZZZBFKQDPQZ->append_copy(l_e, r_e); 
 context->pushExecuteCall(EFCZZZBFKQDPQZ_execbr);
+DataChain* IKFOBUCDHTHXDJ = new DataChain(); 
+DataContainer* IKFOBUCDHTHXDJ_execbr = newRefExecBrackets(Game1__, IKFOBUCDHTHXDJ, "Game1__");
+result->append(IKFOBUCDHTHXDJ_execbr);
+IKFOBUCDHTHXDJ->append_copy(l_e, r_e); 
+context->pushExecuteCall(IKFOBUCDHTHXDJ_execbr);
 
 return result; 
 }
@@ -529,85 +534,85 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor IKFOBUCDHTHXDJ;
 /*DEF*/	DataCursor GKJELRLPAXAMCE;
 /*DEF*/	DataCursor ROSWITDPTPCCLI;
-/*SET*/	IKFOBUCDHTHXDJ = arg_from;
-/*INC*/	if (!INC(IKFOBUCDHTHXDJ, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (IKFOBUCDHTHXDJ.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	GKJELRLPAXAMCE = IKFOBUCDHTHXDJ.container->value.bracket_data.chain->at_before_first();
-	ROSWITDPTPCCLI   = IKFOBUCDHTHXDJ.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor FKELJYTIHRCQAY;
-/*SET*/	FKELJYTIHRCQAY = GKJELRLPAXAMCE;
-/*INC*/	if (!INC(FKELJYTIHRCQAY, ROSWITDPTPCCLI)) goto sentence_after_1;
-	if (FKELJYTIHRCQAY.container->type != text || *(FKELJYTIHRCQAY.container->value.text + FKELJYTIHRCQAY.index) != '1') goto sentence_after_1;
+/*SET*/	GKJELRLPAXAMCE = arg_from;
+/*INC*/	if (!INC(GKJELRLPAXAMCE, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (GKJELRLPAXAMCE.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	ROSWITDPTPCCLI = GKJELRLPAXAMCE.container->value.bracket_data.chain->at_before_first();
+	FKELJYTIHRCQAY   = GKJELRLPAXAMCE.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor BNEFXNXVGZEDYY;
+/*SET*/	BNEFXNXVGZEDYY = ROSWITDPTPCCLI;
+/*INC*/	if (!INC(BNEFXNXVGZEDYY, FKELJYTIHRCQAY)) goto sentence_after_1;
+	if (BNEFXNXVGZEDYY.container->type != text || *(BNEFXNXVGZEDYY.container->value.text + BNEFXNXVGZEDYY.index) != '1') goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (FKELJYTIHRCQAY!=0 && ROSWITDPTPCCLI != FKELJYTIHRCQAY) goto sentence_after_1;
+/*ISEMPTY*/	if (BNEFXNXVGZEDYY!=0 && FKELJYTIHRCQAY != BNEFXNXVGZEDYY) goto sentence_after_1;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_12;
 /*DEF*/	DataCursor r_12;
-/*SET*/	l_12 = IKFOBUCDHTHXDJ;
-/*SET*/	r_12 = IKFOBUCDHTHXDJ;
-/*JMP*/	goto label_HNGYCDRUDMPHME_firststep;
-label_HNGYCDRUDMPHME: 
+/*SET*/	l_12 = GKJELRLPAXAMCE;
+/*SET*/	r_12 = GKJELRLPAXAMCE;
+/*JMP*/	goto label_CKOTRWOSPOFGHF_firststep;
+label_CKOTRWOSPOFGHF: 
 /*INC*/	if (!INC(r_12, arg_to)) goto sentence_after_1;
-label_HNGYCDRUDMPHME_firststep: 
+label_CKOTRWOSPOFGHF_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor CKOTRWOSPOFGHF;
 /*DEF*/	DataCursor OZQVLQFXWWKMFX;
 /*DEF*/	DataCursor DYYGMDCASZSGOV;
-/*SET*/	CKOTRWOSPOFGHF = r_12;
-/*INC*/	if (!INC(CKOTRWOSPOFGHF, arg_to)) goto label_HNGYCDRUDMPHME;
+/*DEF*/	DataCursor SODKJGHCWMBMXR;
+/*SET*/	OZQVLQFXWWKMFX = r_12;
+/*INC*/	if (!INC(OZQVLQFXWWKMFX, arg_to)) goto label_CKOTRWOSPOFGHF;
 //// ISBRACKET 
-	if (CKOTRWOSPOFGHF.container->type != struct_bracket) goto label_HNGYCDRUDMPHME;
+	if (OZQVLQFXWWKMFX.container->type != struct_bracket) goto label_CKOTRWOSPOFGHF;
 //// JMP_BRACKET 
-	OZQVLQFXWWKMFX = CKOTRWOSPOFGHF.container->value.bracket_data.chain->at_before_first();
-	DYYGMDCASZSGOV   = CKOTRWOSPOFGHF.container->value.bracket_data.chain->at_last();
+	DYYGMDCASZSGOV = OZQVLQFXWWKMFX.container->value.bracket_data.chain->at_before_first();
+	SODKJGHCWMBMXR   = OZQVLQFXWWKMFX.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = OZQVLQFXWWKMFX;
-/*SET*/	r_n = DYYGMDCASZSGOV;
+/*SET*/	l_n = DYYGMDCASZSGOV;
+/*SET*/	r_n = SODKJGHCWMBMXR;
 //// [ empty ] 
-/*ISEMPTY*/	if (CKOTRWOSPOFGHF!=0 && arg_to != CKOTRWOSPOFGHF) goto label_HNGYCDRUDMPHME;
+/*ISEMPTY*/	if (OZQVLQFXWWKMFX!=0 && arg_to != OZQVLQFXWWKMFX) goto label_CKOTRWOSPOFGHF;
 
 // подготовка подстановки 
-DataChain* SODKJGHCWMBMXR = new DataChain(); 
-DataContainer* SODKJGHCWMBMXR_execbr = newRefExecBrackets(Prout, SODKJGHCWMBMXR, "Prout");
-result->append(SODKJGHCWMBMXR_execbr);
-SODKJGHCWMBMXR->append(newRefText("hmm ...")); 
-context->pushExecuteCall(SODKJGHCWMBMXR_execbr);
 DataChain* MHUYFYQGAJQKCK = new DataChain(); 
-DataContainer* MHUYFYQGAJQKCK_execbr = newRefExecBrackets(Game, MHUYFYQGAJQKCK, "Game");
+DataContainer* MHUYFYQGAJQKCK_execbr = newRefExecBrackets(Prout, MHUYFYQGAJQKCK, "Prout");
 result->append(MHUYFYQGAJQKCK_execbr);
+MHUYFYQGAJQKCK->append(newRefText("hmm ...")); 
+context->pushExecuteCall(MHUYFYQGAJQKCK_execbr);
 DataChain* LZNAYXQKQOYZWM = new DataChain(); 
-MHUYFYQGAJQKCK->append(newRefStructBrackets(LZNAYXQKQOYZWM)); 
-LZNAYXQKQOYZWM->append(newRefText("2")); 
+DataContainer* LZNAYXQKQOYZWM_execbr = newRefExecBrackets(Game, LZNAYXQKQOYZWM, "Game");
+result->append(LZNAYXQKQOYZWM_execbr);
 DataChain* YUBZAZCPKHKTKY = new DataChain(); 
-DataContainer* YUBZAZCPKHKTKY_execbr = newRefExecBrackets(PlayerHod, YUBZAZCPKHKTKY, "PlayerHod");
-MHUYFYQGAJQKCK->append(YUBZAZCPKHKTKY_execbr);
-YUBZAZCPKHKTKY->append(newRefText("1")); 
+LZNAYXQKQOYZWM->append(newRefStructBrackets(YUBZAZCPKHKTKY)); 
+YUBZAZCPKHKTKY->append(newRefText("2")); 
 DataChain* DZIVCUYPURFMBI = new DataChain(); 
-DataContainer* DZIVCUYPURFMBI_execbr = newRefExecBrackets(GetHod, DZIVCUYPURFMBI, "GetHod");
-YUBZAZCPKHKTKY->append(DZIVCUYPURFMBI_execbr);
+DataContainer* DZIVCUYPURFMBI_execbr = newRefExecBrackets(PlayerHod, DZIVCUYPURFMBI, "PlayerHod");
+LZNAYXQKQOYZWM->append(DZIVCUYPURFMBI_execbr);
 DZIVCUYPURFMBI->append(newRefText("1")); 
 DataChain* SGEKYRGZVXDHPO = new DataChain(); 
-DZIVCUYPURFMBI->append(newRefStructBrackets(SGEKYRGZVXDHPO)); 
+DataContainer* SGEKYRGZVXDHPO_execbr = newRefExecBrackets(GetHod, SGEKYRGZVXDHPO, "GetHod");
+DZIVCUYPURFMBI->append(SGEKYRGZVXDHPO_execbr);
 SGEKYRGZVXDHPO->append(newRefText("1")); 
-DZIVCUYPURFMBI->append_copy(l_12, r_12); 
 DataChain* AMVAFYRARXSVKH = new DataChain(); 
-DZIVCUYPURFMBI->append(newRefStructBrackets(AMVAFYRARXSVKH)); 
-AMVAFYRARXSVKH->append_copy(l_n, r_n); 
-context->pushExecuteCall(DZIVCUYPURFMBI_execbr);
-YUBZAZCPKHKTKY->append_copy(l_12, r_12); 
+SGEKYRGZVXDHPO->append(newRefStructBrackets(AMVAFYRARXSVKH)); 
+AMVAFYRARXSVKH->append(newRefText("1")); 
+SGEKYRGZVXDHPO->append_copy(l_12, r_12); 
 DataChain* TQDIHERSIGBHZJ = new DataChain(); 
-YUBZAZCPKHKTKY->append(newRefStructBrackets(TQDIHERSIGBHZJ)); 
+SGEKYRGZVXDHPO->append(newRefStructBrackets(TQDIHERSIGBHZJ)); 
 TQDIHERSIGBHZJ->append_copy(l_n, r_n); 
-context->pushExecuteCall(YUBZAZCPKHKTKY_execbr);
-context->pushExecuteCall(MHUYFYQGAJQKCK_execbr);
+context->pushExecuteCall(SGEKYRGZVXDHPO_execbr);
+DZIVCUYPURFMBI->append_copy(l_12, r_12); 
+DataChain* ZUJXMMYSPNARAE = new DataChain(); 
+DZIVCUYPURFMBI->append(newRefStructBrackets(ZUJXMMYSPNARAE)); 
+ZUJXMMYSPNARAE->append_copy(l_n, r_n); 
+context->pushExecuteCall(DZIVCUYPURFMBI_execbr);
+context->pushExecuteCall(LZNAYXQKQOYZWM_execbr);
 
 return result; 
 }
@@ -616,77 +621,77 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ZUJXMMYSPNARAE;
 /*DEF*/	DataCursor WKEGJCCVHHRJVB;
 /*DEF*/	DataCursor JTSQDJOOTGPKNF;
-/*SET*/	ZUJXMMYSPNARAE = arg_from;
-/*INC*/	if (!INC(ZUJXMMYSPNARAE, arg_to)) goto sentence_after_2;
-//// ISBRACKET 
-	if (ZUJXMMYSPNARAE.container->type != struct_bracket) goto sentence_after_2;
-//// JMP_BRACKET 
-	WKEGJCCVHHRJVB = ZUJXMMYSPNARAE.container->value.bracket_data.chain->at_before_first();
-	JTSQDJOOTGPKNF   = ZUJXMMYSPNARAE.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor PFYCGFIEOWQRWW;
-/*SET*/	PFYCGFIEOWQRWW = WKEGJCCVHHRJVB;
-/*INC*/	if (!INC(PFYCGFIEOWQRWW, JTSQDJOOTGPKNF)) goto sentence_after_2;
-	if (PFYCGFIEOWQRWW.container->type != text || *(PFYCGFIEOWQRWW.container->value.text + PFYCGFIEOWQRWW.index) != '2') goto sentence_after_2;
+/*SET*/	WKEGJCCVHHRJVB = arg_from;
+/*INC*/	if (!INC(WKEGJCCVHHRJVB, arg_to)) goto sentence_after_2;
+//// ISBRACKET 
+	if (WKEGJCCVHHRJVB.container->type != struct_bracket) goto sentence_after_2;
+//// JMP_BRACKET 
+	JTSQDJOOTGPKNF = WKEGJCCVHHRJVB.container->value.bracket_data.chain->at_before_first();
+	PFYCGFIEOWQRWW   = WKEGJCCVHHRJVB.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor WPZSQMETOGEPSP;
+/*SET*/	WPZSQMETOGEPSP = JTSQDJOOTGPKNF;
+/*INC*/	if (!INC(WPZSQMETOGEPSP, PFYCGFIEOWQRWW)) goto sentence_after_2;
+	if (WPZSQMETOGEPSP.container->type != text || *(WPZSQMETOGEPSP.container->value.text + WPZSQMETOGEPSP.index) != '2') goto sentence_after_2;
 //// [ empty ] 
-/*ISEMPTY*/	if (PFYCGFIEOWQRWW!=0 && JTSQDJOOTGPKNF != PFYCGFIEOWQRWW) goto sentence_after_2;
+/*ISEMPTY*/	if (WPZSQMETOGEPSP!=0 && PFYCGFIEOWQRWW != WPZSQMETOGEPSP) goto sentence_after_2;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_12;
 /*DEF*/	DataCursor r_12;
-/*SET*/	l_12 = ZUJXMMYSPNARAE;
-/*SET*/	r_12 = ZUJXMMYSPNARAE;
-/*JMP*/	goto label_XNVJIUPALYYNMK_firststep;
-label_XNVJIUPALYYNMK: 
+/*SET*/	l_12 = WKEGJCCVHHRJVB;
+/*SET*/	r_12 = WKEGJCCVHHRJVB;
+/*JMP*/	goto label_MNUVKLHSECDWRA_firststep;
+label_MNUVKLHSECDWRA: 
 /*INC*/	if (!INC(r_12, arg_to)) goto sentence_after_2;
-label_XNVJIUPALYYNMK_firststep: 
+label_MNUVKLHSECDWRA_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor MNUVKLHSECDWRA;
 /*DEF*/	DataCursor CGFMZKGIPDFODK;
 /*DEF*/	DataCursor JMJQWIQPUOQHIM;
-/*SET*/	MNUVKLHSECDWRA = r_12;
-/*INC*/	if (!INC(MNUVKLHSECDWRA, arg_to)) goto label_XNVJIUPALYYNMK;
+/*DEF*/	DataCursor VFVUZWYVIJGFUL;
+/*SET*/	CGFMZKGIPDFODK = r_12;
+/*INC*/	if (!INC(CGFMZKGIPDFODK, arg_to)) goto label_MNUVKLHSECDWRA;
 //// ISBRACKET 
-	if (MNUVKLHSECDWRA.container->type != struct_bracket) goto label_XNVJIUPALYYNMK;
+	if (CGFMZKGIPDFODK.container->type != struct_bracket) goto label_MNUVKLHSECDWRA;
 //// JMP_BRACKET 
-	CGFMZKGIPDFODK = MNUVKLHSECDWRA.container->value.bracket_data.chain->at_before_first();
-	JMJQWIQPUOQHIM   = MNUVKLHSECDWRA.container->value.bracket_data.chain->at_last();
+	JMJQWIQPUOQHIM = CGFMZKGIPDFODK.container->value.bracket_data.chain->at_before_first();
+	VFVUZWYVIJGFUL   = CGFMZKGIPDFODK.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = CGFMZKGIPDFODK;
-/*SET*/	r_n = JMJQWIQPUOQHIM;
+/*SET*/	l_n = JMJQWIQPUOQHIM;
+/*SET*/	r_n = VFVUZWYVIJGFUL;
 //// [ empty ] 
-/*ISEMPTY*/	if (MNUVKLHSECDWRA!=0 && arg_to != MNUVKLHSECDWRA) goto label_XNVJIUPALYYNMK;
+/*ISEMPTY*/	if (CGFMZKGIPDFODK!=0 && arg_to != CGFMZKGIPDFODK) goto label_MNUVKLHSECDWRA;
 
 // подготовка подстановки 
-DataChain* VFVUZWYVIJGFUL = new DataChain(); 
-DataContainer* VFVUZWYVIJGFUL_execbr = newRefExecBrackets(Game, VFVUZWYVIJGFUL, "Game");
-result->append(VFVUZWYVIJGFUL_execbr);
 DataChain* LKJDUHSJAFBTLK = new DataChain(); 
-VFVUZWYVIJGFUL->append(newRefStructBrackets(LKJDUHSJAFBTLK)); 
-LKJDUHSJAFBTLK->append(newRefText("1")); 
+DataContainer* LKJDUHSJAFBTLK_execbr = newRefExecBrackets(Game, LKJDUHSJAFBTLK, "Game");
+result->append(LKJDUHSJAFBTLK_execbr);
 DataChain* MFQRMYJFJNHHSS = new DataChain(); 
-DataContainer* MFQRMYJFJNHHSS_execbr = newRefExecBrackets(PlayerHod, MFQRMYJFJNHHSS, "PlayerHod");
-VFVUZWYVIJGFUL->append(MFQRMYJFJNHHSS_execbr);
-MFQRMYJFJNHHSS->append(newRefText("2")); 
+LKJDUHSJAFBTLK->append(newRefStructBrackets(MFQRMYJFJNHHSS)); 
+MFQRMYJFJNHHSS->append(newRefText("1")); 
 DataChain* QCTYDTEAMDCJBP = new DataChain(); 
-DataContainer* QCTYDTEAMDCJBP_execbr = newRefExecBrackets(Prout, QCTYDTEAMDCJBP, "Prout");
-MFQRMYJFJNHHSS->append(QCTYDTEAMDCJBP_execbr);
-QCTYDTEAMDCJBP->append(newRefText("Select number for 0:")); 
-context->pushExecuteCall(QCTYDTEAMDCJBP_execbr);
+DataContainer* QCTYDTEAMDCJBP_execbr = newRefExecBrackets(PlayerHod, QCTYDTEAMDCJBP, "PlayerHod");
+LKJDUHSJAFBTLK->append(QCTYDTEAMDCJBP_execbr);
+QCTYDTEAMDCJBP->append(newRefText("2")); 
 DataChain* RHTNEGYIWXGCJW = new DataChain(); 
-DataContainer* RHTNEGYIWXGCJW_execbr = newRefExecBrackets(Card, RHTNEGYIWXGCJW, "Card");
-MFQRMYJFJNHHSS->append(RHTNEGYIWXGCJW_execbr);
+DataContainer* RHTNEGYIWXGCJW_execbr = newRefExecBrackets(Prout, RHTNEGYIWXGCJW, "Prout");
+QCTYDTEAMDCJBP->append(RHTNEGYIWXGCJW_execbr);
+RHTNEGYIWXGCJW->append(newRefText("Select number for 0:")); 
 context->pushExecuteCall(RHTNEGYIWXGCJW_execbr);
-MFQRMYJFJNHHSS->append_copy(l_12, r_12); 
 DataChain* LGRSMEAEARWTVJ = new DataChain(); 
-MFQRMYJFJNHHSS->append(newRefStructBrackets(LGRSMEAEARWTVJ)); 
-LGRSMEAEARWTVJ->append_copy(l_n, r_n); 
-context->pushExecuteCall(MFQRMYJFJNHHSS_execbr);
-context->pushExecuteCall(VFVUZWYVIJGFUL_execbr);
+DataContainer* LGRSMEAEARWTVJ_execbr = newRefExecBrackets(Card, LGRSMEAEARWTVJ, "Card");
+QCTYDTEAMDCJBP->append(LGRSMEAEARWTVJ_execbr);
+context->pushExecuteCall(LGRSMEAEARWTVJ_execbr);
+QCTYDTEAMDCJBP->append_copy(l_12, r_12); 
+DataChain* SJBAOIOJLWHYPN = new DataChain(); 
+QCTYDTEAMDCJBP->append(newRefStructBrackets(SJBAOIOJLWHYPN)); 
+SJBAOIOJLWHYPN->append_copy(l_n, r_n); 
+context->pushExecuteCall(QCTYDTEAMDCJBP_execbr);
+context->pushExecuteCall(LKJDUHSJAFBTLK_execbr);
 
 return result; 
 }
@@ -711,17 +716,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* SJBAOIOJLWHYPN = new DataChain(); 
-DataContainer* SJBAOIOJLWHYPN_execbr = newRefExecBrackets(Prout, SJBAOIOJLWHYPN, "Prout");
-result->append(SJBAOIOJLWHYPN_execbr);
-SJBAOIOJLWHYPN->append(newRefWord("PlayerHod:")); 
-SJBAOIOJLWHYPN->append_copy(l_e, r_e); 
-context->pushExecuteCall(SJBAOIOJLWHYPN_execbr);
 DataChain* VRUIHOSWKIFYGT = new DataChain(); 
-DataContainer* VRUIHOSWKIFYGT_execbr = newRefExecBrackets(PlayerHod__, VRUIHOSWKIFYGT, "PlayerHod__");
+DataContainer* VRUIHOSWKIFYGT_execbr = newRefExecBrackets(Prout, VRUIHOSWKIFYGT, "Prout");
 result->append(VRUIHOSWKIFYGT_execbr);
+VRUIHOSWKIFYGT->append(newRefWord("PlayerHod:")); 
 VRUIHOSWKIFYGT->append_copy(l_e, r_e); 
 context->pushExecuteCall(VRUIHOSWKIFYGT_execbr);
+DataChain* YDHACWYHSGEWZM = new DataChain(); 
+DataContainer* YDHACWYHSGEWZM_execbr = newRefExecBrackets(PlayerHod__, YDHACWYHSGEWZM, "PlayerHod__");
+result->append(YDHACWYHSGEWZM_execbr);
+YDHACWYHSGEWZM->append_copy(l_e, r_e); 
+context->pushExecuteCall(YDHACWYHSGEWZM_execbr);
 
 return result; 
 }
@@ -740,101 +745,101 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor YDHACWYHSGEWZM;
-/*SET*/	YDHACWYHSGEWZM = arg_from;
-/*INC*/	if (!INC(YDHACWYHSGEWZM, arg_to)) goto sentence_after_1;
-	if (YDHACWYHSGEWZM.container->type != text || *(YDHACWYHSGEWZM.container->value.text + YDHACWYHSGEWZM.index) != '1') goto sentence_after_1;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor TGONZLTJHGAUHN;
+/*SET*/	TGONZLTJHGAUHN = arg_from;
+/*INC*/	if (!INC(TGONZLTJHGAUHN, arg_to)) goto sentence_after_1;
+	if (TGONZLTJHGAUHN.container->type != text || *(TGONZLTJHGAUHN.container->value.text + TGONZLTJHGAUHN.index) != '1') goto sentence_after_1;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor IHREQGJFWKJSMT;
 /*DEF*/	DataCursor l_h;
 /*DEF*/	DataCursor r_h;
-/*SET*/	l_h = YDHACWYHSGEWZM;
-/*SET*/	TGONZLTJHGAUHN = YDHACWYHSGEWZM;
-/*INC*/	if (!INC(TGONZLTJHGAUHN, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(TGONZLTJHGAUHN.container->type)) goto sentence_after_1;
-/*SET*/	r_h = TGONZLTJHGAUHN;
+/*SET*/	l_h = TGONZLTJHGAUHN;
+/*SET*/	IHREQGJFWKJSMT = TGONZLTJHGAUHN;
+/*INC*/	if (!INC(IHREQGJFWKJSMT, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(IHREQGJFWKJSMT.container->type)) goto sentence_after_1;
+/*SET*/	r_h = IHREQGJFWKJSMT;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor IHREQGJFWKJSMT;
 /*DEF*/	DataCursor PJHAEFQZAAULDR;
 /*DEF*/	DataCursor CHJCCDYRFVVRIV;
-/*SET*/	IHREQGJFWKJSMT = r_h;
-/*INC*/	if (!INC(IHREQGJFWKJSMT, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor UYEEGFIVDRCYGU;
+/*SET*/	PJHAEFQZAAULDR = r_h;
+/*INC*/	if (!INC(PJHAEFQZAAULDR, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (IHREQGJFWKJSMT.container->type != struct_bracket) goto sentence_after_1;
+	if (PJHAEFQZAAULDR.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	PJHAEFQZAAULDR = IHREQGJFWKJSMT.container->value.bracket_data.chain->at_before_first();
-	CHJCCDYRFVVRIV   = IHREQGJFWKJSMT.container->value.bracket_data.chain->at_last();
+	CHJCCDYRFVVRIV = PJHAEFQZAAULDR.container->value.bracket_data.chain->at_before_first();
+	UYEEGFIVDRCYGU   = PJHAEFQZAAULDR.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = PJHAEFQZAAULDR;
-/*SET*/	r_1 = CHJCCDYRFVVRIV;
+/*SET*/	l_1 = CHJCCDYRFVVRIV;
+/*SET*/	r_1 = UYEEGFIVDRCYGU;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor UYEEGFIVDRCYGU;
 /*DEF*/	DataCursor RQDREDAKUBNFGU;
 /*DEF*/	DataCursor PROQYLOBCWQXKZ;
-/*SET*/	UYEEGFIVDRCYGU = IHREQGJFWKJSMT;
-/*INC*/	if (!INC(UYEEGFIVDRCYGU, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor MAUSJGMHCMHGDN;
+/*SET*/	RQDREDAKUBNFGU = PJHAEFQZAAULDR;
+/*INC*/	if (!INC(RQDREDAKUBNFGU, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (UYEEGFIVDRCYGU.container->type != struct_bracket) goto sentence_after_1;
+	if (RQDREDAKUBNFGU.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	RQDREDAKUBNFGU = UYEEGFIVDRCYGU.container->value.bracket_data.chain->at_before_first();
-	PROQYLOBCWQXKZ   = UYEEGFIVDRCYGU.container->value.bracket_data.chain->at_last();
+	PROQYLOBCWQXKZ = RQDREDAKUBNFGU.container->value.bracket_data.chain->at_before_first();
+	MAUSJGMHCMHGDN   = RQDREDAKUBNFGU.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = RQDREDAKUBNFGU;
-/*SET*/	r_2 = PROQYLOBCWQXKZ;
+/*SET*/	l_2 = PROQYLOBCWQXKZ;
+/*SET*/	r_2 = MAUSJGMHCMHGDN;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor MAUSJGMHCMHGDN;
 /*DEF*/	DataCursor MPHNQKAMHURKTR;
 /*DEF*/	DataCursor FFACLVGRZKKLDA;
-/*SET*/	MAUSJGMHCMHGDN = UYEEGFIVDRCYGU;
-/*INC*/	if (!INC(MAUSJGMHCMHGDN, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor CLLTEOJOMONXRQ;
+/*SET*/	MPHNQKAMHURKTR = RQDREDAKUBNFGU;
+/*INC*/	if (!INC(MPHNQKAMHURKTR, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (MAUSJGMHCMHGDN.container->type != struct_bracket) goto sentence_after_1;
+	if (MPHNQKAMHURKTR.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	MPHNQKAMHURKTR = MAUSJGMHCMHGDN.container->value.bracket_data.chain->at_before_first();
-	FFACLVGRZKKLDA   = MAUSJGMHCMHGDN.container->value.bracket_data.chain->at_last();
+	FFACLVGRZKKLDA = MPHNQKAMHURKTR.container->value.bracket_data.chain->at_before_first();
+	CLLTEOJOMONXRQ   = MPHNQKAMHURKTR.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_n1;
 /*DEF*/	DataCursor r_n1;
-/*SET*/	l_n1 = MPHNQKAMHURKTR;
-/*SET*/	r_n1 = MPHNQKAMHURKTR;
-/*JMP*/	goto label_CLLTEOJOMONXRQ_firststep;
-label_CLLTEOJOMONXRQ: 
-/*INC*/	if (!INC(r_n1, FFACLVGRZKKLDA)) goto sentence_after_1;
-label_CLLTEOJOMONXRQ_firststep: 
+/*SET*/	l_n1 = FFACLVGRZKKLDA;
+/*SET*/	r_n1 = FFACLVGRZKKLDA;
+/*JMP*/	goto label_YJZGINRNNZWACX_firststep;
+label_YJZGINRNNZWACX: 
+/*INC*/	if (!INC(r_n1, CLLTEOJOMONXRQ)) goto sentence_after_1;
+label_YJZGINRNNZWACX_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor YJZGINRNNZWACX;
-/*SET*/	YJZGINRNNZWACX = r_n1;
- if (!SLIDE(YJZGINRNNZWACX, FFACLVGRZKKLDA, l_h, r_h)) goto label_CLLTEOJOMONXRQ;
+/*DEF*/	DataCursor XAEDRWUDXZRFUS;
+/*SET*/	XAEDRWUDXZRFUS = r_n1;
+ if (!SLIDE(XAEDRWUDXZRFUS, CLLTEOJOMONXRQ, l_h, r_h)) goto label_YJZGINRNNZWACX;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n2;
 /*DEF*/	DataCursor r_n2;
-/*SET*/	l_n2 = YJZGINRNNZWACX;
-/*SET*/	r_n2 = FFACLVGRZKKLDA;
+/*SET*/	l_n2 = XAEDRWUDXZRFUS;
+/*SET*/	r_n2 = CLLTEOJOMONXRQ;
 //// [ empty ] 
-/*ISEMPTY*/	if (MAUSJGMHCMHGDN!=0 && arg_to != MAUSJGMHCMHGDN) goto label_CLLTEOJOMONXRQ;
+/*ISEMPTY*/	if (MPHNQKAMHURKTR!=0 && arg_to != MPHNQKAMHURKTR) goto label_YJZGINRNNZWACX;
 
 // подготовка подстановки 
-DataChain* EWJTBOXVYNFHKS = new DataChain(); 
-DataContainer* EWJTBOXVYNFHKS_execbr = newRefExecBrackets(Prout, EWJTBOXVYNFHKS, "Prout");
-result->append(EWJTBOXVYNFHKS_execbr);
-EWJTBOXVYNFHKS->append(newRefText("step:")); 
-EWJTBOXVYNFHKS->append_copy(l_h, r_h); 
-context->pushExecuteCall(EWJTBOXVYNFHKS_execbr);
 DataChain* TCENAUMNDDXFDM = new DataChain(); 
-result->append(newRefStructBrackets(TCENAUMNDDXFDM)); 
-TCENAUMNDDXFDM->append_copy(l_1, r_1); 
+DataContainer* TCENAUMNDDXFDM_execbr = newRefExecBrackets(Prout, TCENAUMNDDXFDM, "Prout");
+result->append(TCENAUMNDDXFDM_execbr);
+TCENAUMNDDXFDM->append(newRefText("step:")); 
 TCENAUMNDDXFDM->append_copy(l_h, r_h); 
+context->pushExecuteCall(TCENAUMNDDXFDM_execbr);
 DataChain* VZCAUTDCCKXAAY = new DataChain(); 
 result->append(newRefStructBrackets(VZCAUTDCCKXAAY)); 
-VZCAUTDCCKXAAY->append_copy(l_2, r_2); 
+VZCAUTDCCKXAAY->append_copy(l_1, r_1); 
+VZCAUTDCCKXAAY->append_copy(l_h, r_h); 
 DataChain* DZSXTTOBBGQNGV = new DataChain(); 
 result->append(newRefStructBrackets(DZSXTTOBBGQNGV)); 
-DZSXTTOBBGQNGV->append_copy(l_n1, r_n1); 
-DZSXTTOBBGQNGV->append_copy(l_n2, r_n2); 
+DZSXTTOBBGQNGV->append_copy(l_2, r_2); 
+DataChain* VPJGOJOGLMKXGB = new DataChain(); 
+result->append(newRefStructBrackets(VPJGOJOGLMKXGB)); 
+VPJGOJOGLMKXGB->append_copy(l_n1, r_n1); 
+VPJGOJOGLMKXGB->append_copy(l_n2, r_n2); 
 
 return result; 
 }
@@ -843,101 +848,101 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor VPJGOJOGLMKXGB;
-/*SET*/	VPJGOJOGLMKXGB = arg_from;
-/*INC*/	if (!INC(VPJGOJOGLMKXGB, arg_to)) goto sentence_after_2;
-	if (VPJGOJOGLMKXGB.container->type != text || *(VPJGOJOGLMKXGB.container->value.text + VPJGOJOGLMKXGB.index) != '2') goto sentence_after_2;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor FCPYPCKQCHBDDZ;
+/*SET*/	FCPYPCKQCHBDDZ = arg_from;
+/*INC*/	if (!INC(FCPYPCKQCHBDDZ, arg_to)) goto sentence_after_2;
+	if (FCPYPCKQCHBDDZ.container->type != text || *(FCPYPCKQCHBDDZ.container->value.text + FCPYPCKQCHBDDZ.index) != '2') goto sentence_after_2;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor WRXBZMQRLXVOBT;
 /*DEF*/	DataCursor l_h;
 /*DEF*/	DataCursor r_h;
-/*SET*/	l_h = VPJGOJOGLMKXGB;
-/*SET*/	FCPYPCKQCHBDDZ = VPJGOJOGLMKXGB;
-/*INC*/	if (!INC(FCPYPCKQCHBDDZ, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(FCPYPCKQCHBDDZ.container->type)) goto sentence_after_2;
-/*SET*/	r_h = FCPYPCKQCHBDDZ;
+/*SET*/	l_h = FCPYPCKQCHBDDZ;
+/*SET*/	WRXBZMQRLXVOBT = FCPYPCKQCHBDDZ;
+/*INC*/	if (!INC(WRXBZMQRLXVOBT, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(WRXBZMQRLXVOBT.container->type)) goto sentence_after_2;
+/*SET*/	r_h = WRXBZMQRLXVOBT;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor WRXBZMQRLXVOBT;
 /*DEF*/	DataCursor WHXGINFGFRCCLM;
 /*DEF*/	DataCursor ZNMJUGWWBSQFCI;
-/*SET*/	WRXBZMQRLXVOBT = r_h;
-/*INC*/	if (!INC(WRXBZMQRLXVOBT, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor HUBSJOLLMSQSGH;
+/*SET*/	WHXGINFGFRCCLM = r_h;
+/*INC*/	if (!INC(WHXGINFGFRCCLM, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (WRXBZMQRLXVOBT.container->type != struct_bracket) goto sentence_after_2;
+	if (WHXGINFGFRCCLM.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	WHXGINFGFRCCLM = WRXBZMQRLXVOBT.container->value.bracket_data.chain->at_before_first();
-	ZNMJUGWWBSQFCI   = WRXBZMQRLXVOBT.container->value.bracket_data.chain->at_last();
+	ZNMJUGWWBSQFCI = WHXGINFGFRCCLM.container->value.bracket_data.chain->at_before_first();
+	HUBSJOLLMSQSGH   = WHXGINFGFRCCLM.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = WHXGINFGFRCCLM;
-/*SET*/	r_1 = ZNMJUGWWBSQFCI;
+/*SET*/	l_1 = ZNMJUGWWBSQFCI;
+/*SET*/	r_1 = HUBSJOLLMSQSGH;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor HUBSJOLLMSQSGH;
 /*DEF*/	DataCursor MCPHELSOTFLBGS;
 /*DEF*/	DataCursor FNPCUZSRUPCHYN;
-/*SET*/	HUBSJOLLMSQSGH = WRXBZMQRLXVOBT;
-/*INC*/	if (!INC(HUBSJOLLMSQSGH, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor VZHCPQUGRIWNIQ;
+/*SET*/	MCPHELSOTFLBGS = WHXGINFGFRCCLM;
+/*INC*/	if (!INC(MCPHELSOTFLBGS, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (HUBSJOLLMSQSGH.container->type != struct_bracket) goto sentence_after_2;
+	if (MCPHELSOTFLBGS.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	MCPHELSOTFLBGS = HUBSJOLLMSQSGH.container->value.bracket_data.chain->at_before_first();
-	FNPCUZSRUPCHYN   = HUBSJOLLMSQSGH.container->value.bracket_data.chain->at_last();
+	FNPCUZSRUPCHYN = MCPHELSOTFLBGS.container->value.bracket_data.chain->at_before_first();
+	VZHCPQUGRIWNIQ   = MCPHELSOTFLBGS.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = MCPHELSOTFLBGS;
-/*SET*/	r_2 = FNPCUZSRUPCHYN;
+/*SET*/	l_2 = FNPCUZSRUPCHYN;
+/*SET*/	r_2 = VZHCPQUGRIWNIQ;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor VZHCPQUGRIWNIQ;
 /*DEF*/	DataCursor XDFJPWPXFBLKPN;
 /*DEF*/	DataCursor PEELFJMTKUQPZO;
-/*SET*/	VZHCPQUGRIWNIQ = HUBSJOLLMSQSGH;
-/*INC*/	if (!INC(VZHCPQUGRIWNIQ, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor MWNLMBUPMKTLPT;
+/*SET*/	XDFJPWPXFBLKPN = MCPHELSOTFLBGS;
+/*INC*/	if (!INC(XDFJPWPXFBLKPN, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (VZHCPQUGRIWNIQ.container->type != struct_bracket) goto sentence_after_2;
+	if (XDFJPWPXFBLKPN.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	XDFJPWPXFBLKPN = VZHCPQUGRIWNIQ.container->value.bracket_data.chain->at_before_first();
-	PEELFJMTKUQPZO   = VZHCPQUGRIWNIQ.container->value.bracket_data.chain->at_last();
+	PEELFJMTKUQPZO = XDFJPWPXFBLKPN.container->value.bracket_data.chain->at_before_first();
+	MWNLMBUPMKTLPT   = XDFJPWPXFBLKPN.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_n1;
 /*DEF*/	DataCursor r_n1;
-/*SET*/	l_n1 = XDFJPWPXFBLKPN;
-/*SET*/	r_n1 = XDFJPWPXFBLKPN;
-/*JMP*/	goto label_MWNLMBUPMKTLPT_firststep;
-label_MWNLMBUPMKTLPT: 
-/*INC*/	if (!INC(r_n1, PEELFJMTKUQPZO)) goto sentence_after_2;
-label_MWNLMBUPMKTLPT_firststep: 
+/*SET*/	l_n1 = PEELFJMTKUQPZO;
+/*SET*/	r_n1 = PEELFJMTKUQPZO;
+/*JMP*/	goto label_NDMPDSYDSGVFPE_firststep;
+label_NDMPDSYDSGVFPE: 
+/*INC*/	if (!INC(r_n1, MWNLMBUPMKTLPT)) goto sentence_after_2;
+label_NDMPDSYDSGVFPE_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor NDMPDSYDSGVFPE;
-/*SET*/	NDMPDSYDSGVFPE = r_n1;
- if (!SLIDE(NDMPDSYDSGVFPE, PEELFJMTKUQPZO, l_h, r_h)) goto label_MWNLMBUPMKTLPT;
+/*DEF*/	DataCursor NEMWBORIFSUQHC;
+/*SET*/	NEMWBORIFSUQHC = r_n1;
+ if (!SLIDE(NEMWBORIFSUQHC, MWNLMBUPMKTLPT, l_h, r_h)) goto label_NDMPDSYDSGVFPE;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n2;
 /*DEF*/	DataCursor r_n2;
-/*SET*/	l_n2 = NDMPDSYDSGVFPE;
-/*SET*/	r_n2 = PEELFJMTKUQPZO;
+/*SET*/	l_n2 = NEMWBORIFSUQHC;
+/*SET*/	r_n2 = MWNLMBUPMKTLPT;
 //// [ empty ] 
-/*ISEMPTY*/	if (VZHCPQUGRIWNIQ!=0 && arg_to != VZHCPQUGRIWNIQ) goto label_MWNLMBUPMKTLPT;
+/*ISEMPTY*/	if (XDFJPWPXFBLKPN!=0 && arg_to != XDFJPWPXFBLKPN) goto label_NDMPDSYDSGVFPE;
 
 // подготовка подстановки 
-DataChain* ESKMKHSSMVNONW = new DataChain(); 
-DataContainer* ESKMKHSSMVNONW_execbr = newRefExecBrackets(Prout, ESKMKHSSMVNONW, "Prout");
-result->append(ESKMKHSSMVNONW_execbr);
-ESKMKHSSMVNONW->append(newRefText("step:")); 
-ESKMKHSSMVNONW->append_copy(l_h, r_h); 
-context->pushExecuteCall(ESKMKHSSMVNONW_execbr);
 DataChain* AFXWHGBIBABVQO = new DataChain(); 
-result->append(newRefStructBrackets(AFXWHGBIBABVQO)); 
-AFXWHGBIBABVQO->append_copy(l_1, r_1); 
+DataContainer* AFXWHGBIBABVQO_execbr = newRefExecBrackets(Prout, AFXWHGBIBABVQO, "Prout");
+result->append(AFXWHGBIBABVQO_execbr);
+AFXWHGBIBABVQO->append(newRefText("step:")); 
+AFXWHGBIBABVQO->append_copy(l_h, r_h); 
+context->pushExecuteCall(AFXWHGBIBABVQO_execbr);
 DataChain* PQFOVIUSSQFQWE = new DataChain(); 
 result->append(newRefStructBrackets(PQFOVIUSSQFQWE)); 
-PQFOVIUSSQFQWE->append_copy(l_2, r_2); 
-PQFOVIUSSQFQWE->append_copy(l_h, r_h); 
+PQFOVIUSSQFQWE->append_copy(l_1, r_1); 
 DataChain* HTXDZUJTLNTXMR = new DataChain(); 
 result->append(newRefStructBrackets(HTXDZUJTLNTXMR)); 
-HTXDZUJTLNTXMR->append_copy(l_n1, r_n1); 
-HTXDZUJTLNTXMR->append_copy(l_n2, r_n2); 
+HTXDZUJTLNTXMR->append_copy(l_2, r_2); 
+HTXDZUJTLNTXMR->append_copy(l_h, r_h); 
+DataChain* JXXWTLGGKYTBIO = new DataChain(); 
+result->append(newRefStructBrackets(JXXWTLGGKYTBIO)); 
+JXXWTLGGKYTBIO->append_copy(l_n1, r_n1); 
+JXXWTLGGKYTBIO->append_copy(l_n2, r_n2); 
 
 return result; 
 }
@@ -976,17 +981,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* JXXWTLGGKYTBIO = new DataChain(); 
-DataContainer* JXXWTLGGKYTBIO_execbr = newRefExecBrackets(Prout, JXXWTLGGKYTBIO, "Prout");
-result->append(JXXWTLGGKYTBIO_execbr);
-JXXWTLGGKYTBIO->append(newRefWord("GetHod:")); 
-JXXWTLGGKYTBIO->append_copy(l_e, r_e); 
-context->pushExecuteCall(JXXWTLGGKYTBIO_execbr);
 DataChain* LYDNILQADOJSKK = new DataChain(); 
-DataContainer* LYDNILQADOJSKK_execbr = newRefExecBrackets(GetHod__, LYDNILQADOJSKK, "GetHod__");
+DataContainer* LYDNILQADOJSKK_execbr = newRefExecBrackets(Prout, LYDNILQADOJSKK, "Prout");
 result->append(LYDNILQADOJSKK_execbr);
+LYDNILQADOJSKK->append(newRefWord("GetHod:")); 
 LYDNILQADOJSKK->append_copy(l_e, r_e); 
 context->pushExecuteCall(LYDNILQADOJSKK_execbr);
+DataChain* VFXAHHJMBOCLJA = new DataChain(); 
+DataContainer* VFXAHHJMBOCLJA_execbr = newRefExecBrackets(GetHod__, VFXAHHJMBOCLJA, "GetHod__");
+result->append(VFXAHHJMBOCLJA_execbr);
+VFXAHHJMBOCLJA->append_copy(l_e, r_e); 
+context->pushExecuteCall(VFXAHHJMBOCLJA_execbr);
 
 return result; 
 }
@@ -1005,63 +1010,63 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor VFXAHHJMBOCLJA;
+/*DEF*/	DataCursor RINTDWCLDVDXRO;
 /*DEF*/	DataCursor l_v;
 /*DEF*/	DataCursor r_v;
 /*SET*/	l_v = arg_from;
-/*SET*/	VFXAHHJMBOCLJA = arg_from;
-/*INC*/	if (!INC(VFXAHHJMBOCLJA, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(VFXAHHJMBOCLJA.container->type)) goto sentence_after_1;
-/*SET*/	r_v = VFXAHHJMBOCLJA;
+/*SET*/	RINTDWCLDVDXRO = arg_from;
+/*INC*/	if (!INC(RINTDWCLDVDXRO, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(RINTDWCLDVDXRO.container->type)) goto sentence_after_1;
+/*SET*/	r_v = RINTDWCLDVDXRO;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
 /*SET*/	l_e = r_v;
 /*SET*/	r_e = r_v;
-/*JMP*/	goto label_RINTDWCLDVDXRO_firststep;
-label_RINTDWCLDVDXRO: 
+/*JMP*/	goto label_PBYJZWYYOJUOTH_firststep;
+label_PBYJZWYYOJUOTH: 
 /*INC*/	if (!INC(r_e, arg_to)) goto sentence_after_1;
-label_RINTDWCLDVDXRO_firststep: 
+label_PBYJZWYYOJUOTH_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor PBYJZWYYOJUOTH;
 /*DEF*/	DataCursor WMLVRGLFZDZDBT;
 /*DEF*/	DataCursor UBXUOFFVNCRSWS;
-/*SET*/	PBYJZWYYOJUOTH = r_e;
-/*INC*/	if (!INC(PBYJZWYYOJUOTH, arg_to)) goto label_RINTDWCLDVDXRO;
+/*DEF*/	DataCursor AZNMOIJOIVVGOB;
+/*SET*/	WMLVRGLFZDZDBT = r_e;
+/*INC*/	if (!INC(WMLVRGLFZDZDBT, arg_to)) goto label_PBYJZWYYOJUOTH;
 //// ISBRACKET 
-	if (PBYJZWYYOJUOTH.container->type != struct_bracket) goto label_RINTDWCLDVDXRO;
+	if (WMLVRGLFZDZDBT.container->type != struct_bracket) goto label_PBYJZWYYOJUOTH;
 //// JMP_BRACKET 
-	WMLVRGLFZDZDBT = PBYJZWYYOJUOTH.container->value.bracket_data.chain->at_before_first();
-	UBXUOFFVNCRSWS   = PBYJZWYYOJUOTH.container->value.bracket_data.chain->at_last();
+	UBXUOFFVNCRSWS = WMLVRGLFZDZDBT.container->value.bracket_data.chain->at_before_first();
+	AZNMOIJOIVVGOB   = WMLVRGLFZDZDBT.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_not;
 /*DEF*/	DataCursor r_not;
-/*SET*/	l_not = WMLVRGLFZDZDBT;
-/*SET*/	r_not = UBXUOFFVNCRSWS;
+/*SET*/	l_not = UBXUOFFVNCRSWS;
+/*SET*/	r_not = AZNMOIJOIVVGOB;
 //// [ empty ] 
-/*ISEMPTY*/	if (PBYJZWYYOJUOTH!=0 && arg_to != PBYJZWYYOJUOTH) goto label_RINTDWCLDVDXRO;
+/*ISEMPTY*/	if (WMLVRGLFZDZDBT!=0 && arg_to != WMLVRGLFZDZDBT) goto label_PBYJZWYYOJUOTH;
 
 // подготовка подстановки 
-DataChain* AZNMOIJOIVVGOB = new DataChain(); 
-DataContainer* AZNMOIJOIVVGOB_execbr = newRefExecBrackets(UseHod, AZNMOIJOIVVGOB, "UseHod");
-result->append(AZNMOIJOIVVGOB_execbr);
-AZNMOIJOIVVGOB->append_copy(l_v, r_v); 
-AZNMOIJOIVVGOB->append_copy(l_e, r_e); 
 DataChain* QPNCKWVNHKEBMT = new DataChain(); 
-AZNMOIJOIVVGOB->append(newRefStructBrackets(QPNCKWVNHKEBMT)); 
-QPNCKWVNHKEBMT->append_copy(l_not, r_not); 
+DataContainer* QPNCKWVNHKEBMT_execbr = newRefExecBrackets(UseHod, QPNCKWVNHKEBMT, "UseHod");
+result->append(QPNCKWVNHKEBMT_execbr);
+QPNCKWVNHKEBMT->append_copy(l_v, r_v); 
+QPNCKWVNHKEBMT->append_copy(l_e, r_e); 
 DataChain* DHVYGKJISUXHAT = new DataChain(); 
-AZNMOIJOIVVGOB->append(newRefStructBrackets(DHVYGKJISUXHAT)); 
+QPNCKWVNHKEBMT->append(newRefStructBrackets(DHVYGKJISUXHAT)); 
+DHVYGKJISUXHAT->append_copy(l_not, r_not); 
 DataChain* MUUDQBHMKNHFXA = new DataChain(); 
-DataContainer* MUUDQBHMKNHFXA_execbr = newRefExecBrackets(WriteXO, MUUDQBHMKNHFXA, "WriteXO");
-DHVYGKJISUXHAT->append(MUUDQBHMKNHFXA_execbr);
-MUUDQBHMKNHFXA->append_copy(l_e, r_e); 
+QPNCKWVNHKEBMT->append(newRefStructBrackets(MUUDQBHMKNHFXA)); 
 DataChain* XQXKJLZZQTSJFA = new DataChain(); 
-MUUDQBHMKNHFXA->append(newRefStructBrackets(XQXKJLZZQTSJFA)); 
-XQXKJLZZQTSJFA->append(newRefText(">")); 
-XQXKJLZZQTSJFA->append_copy(l_not, r_not); 
-context->pushExecuteCall(MUUDQBHMKNHFXA_execbr);
-context->pushExecuteCall(AZNMOIJOIVVGOB_execbr);
+DataContainer* XQXKJLZZQTSJFA_execbr = newRefExecBrackets(WriteXO, XQXKJLZZQTSJFA, "WriteXO");
+MUUDQBHMKNHFXA->append(XQXKJLZZQTSJFA_execbr);
+XQXKJLZZQTSJFA->append_copy(l_e, r_e); 
+DataChain* EEDFUUJKOLXJOQ = new DataChain(); 
+XQXKJLZZQTSJFA->append(newRefStructBrackets(EEDFUUJKOLXJOQ)); 
+EEDFUUJKOLXJOQ->append(newRefText(">")); 
+EEDFUUJKOLXJOQ->append_copy(l_not, r_not); 
+context->pushExecuteCall(XQXKJLZZQTSJFA_execbr);
+context->pushExecuteCall(QPNCKWVNHKEBMT_execbr);
 
 return result; 
 }
@@ -1086,17 +1091,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* EEDFUUJKOLXJOQ = new DataChain(); 
-DataContainer* EEDFUUJKOLXJOQ_execbr = newRefExecBrackets(Prout, EEDFUUJKOLXJOQ, "Prout");
-result->append(EEDFUUJKOLXJOQ_execbr);
-EEDFUUJKOLXJOQ->append(newRefWord("UseHod:")); 
-EEDFUUJKOLXJOQ->append_copy(l_e, r_e); 
-context->pushExecuteCall(EEDFUUJKOLXJOQ_execbr);
 DataChain* KDVFEPVLHVHRWT = new DataChain(); 
-DataContainer* KDVFEPVLHVHRWT_execbr = newRefExecBrackets(UseHod__, KDVFEPVLHVHRWT, "UseHod__");
+DataContainer* KDVFEPVLHVHRWT_execbr = newRefExecBrackets(Prout, KDVFEPVLHVHRWT, "Prout");
 result->append(KDVFEPVLHVHRWT_execbr);
+KDVFEPVLHVHRWT->append(newRefWord("UseHod:")); 
 KDVFEPVLHVHRWT->append_copy(l_e, r_e); 
 context->pushExecuteCall(KDVFEPVLHVHRWT_execbr);
+DataChain* FDUKXFFJPSSWYX = new DataChain(); 
+DataContainer* FDUKXFFJPSSWYX_execbr = newRefExecBrackets(UseHod__, FDUKXFFJPSSWYX, "UseHod__");
+result->append(FDUKXFFJPSSWYX_execbr);
+FDUKXFFJPSSWYX->append_copy(l_e, r_e); 
+context->pushExecuteCall(FDUKXFFJPSSWYX_execbr);
 
 return result; 
 }
@@ -1119,39 +1124,39 @@ DataChain *tmp_chain = new DataChain();
 /*DEF*/	DataCursor r_e;
 /*SET*/	l_e = arg_from;
 /*SET*/	r_e = arg_from;
-/*JMP*/	goto label_FDUKXFFJPSSWYX_firststep;
-label_FDUKXFFJPSSWYX: 
+/*JMP*/	goto label_LIJJHEVRYXOZBA_firststep;
+label_LIJJHEVRYXOZBA: 
 /*INC*/	if (!INC(r_e, arg_to)) goto sentence_after_1;
-label_FDUKXFFJPSSWYX_firststep: 
+label_LIJJHEVRYXOZBA_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor LIJJHEVRYXOZBA;
 /*DEF*/	DataCursor FPFMOWGRGONUAT;
 /*DEF*/	DataCursor DQLAHYGGYLJDDJ;
-/*SET*/	LIJJHEVRYXOZBA = r_e;
-/*INC*/	if (!INC(LIJJHEVRYXOZBA, arg_to)) goto label_FDUKXFFJPSSWYX;
-//// ISBRACKET 
-	if (LIJJHEVRYXOZBA.container->type != struct_bracket) goto label_FDUKXFFJPSSWYX;
-//// JMP_BRACKET 
-	FPFMOWGRGONUAT = LIJJHEVRYXOZBA.container->value.bracket_data.chain->at_before_first();
-	DQLAHYGGYLJDDJ   = LIJJHEVRYXOZBA.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor HMLTEDZLODSRKE;
-/*SET*/	HMLTEDZLODSRKE = FPFMOWGRGONUAT;
-/*INC*/	if (!INC(HMLTEDZLODSRKE, DQLAHYGGYLJDDJ)) goto label_FDUKXFFJPSSWYX;
-	if (HMLTEDZLODSRKE.container->type != text || *(HMLTEDZLODSRKE.container->value.text + HMLTEDZLODSRKE.index) != '#') goto label_FDUKXFFJPSSWYX;
-//// [ s.1 <any> ] 
+/*SET*/	FPFMOWGRGONUAT = r_e;
+/*INC*/	if (!INC(FPFMOWGRGONUAT, arg_to)) goto label_LIJJHEVRYXOZBA;
+//// ISBRACKET 
+	if (FPFMOWGRGONUAT.container->type != struct_bracket) goto label_LIJJHEVRYXOZBA;
+//// JMP_BRACKET 
+	DQLAHYGGYLJDDJ = FPFMOWGRGONUAT.container->value.bracket_data.chain->at_before_first();
+	HMLTEDZLODSRKE   = FPFMOWGRGONUAT.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor UTGTNKNTARJKPX;
+/*SET*/	UTGTNKNTARJKPX = DQLAHYGGYLJDDJ;
+/*INC*/	if (!INC(UTGTNKNTARJKPX, HMLTEDZLODSRKE)) goto label_LIJJHEVRYXOZBA;
+	if (UTGTNKNTARJKPX.container->type != text || *(UTGTNKNTARJKPX.container->value.text + UTGTNKNTARJKPX.index) != '#') goto label_LIJJHEVRYXOZBA;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor INOVGZDTHUNWOO;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
-/*SET*/	l_s = HMLTEDZLODSRKE;
-/*SET*/	UTGTNKNTARJKPX = HMLTEDZLODSRKE;
-/*INC*/	if (!INC(UTGTNKNTARJKPX, DQLAHYGGYLJDDJ)) goto label_FDUKXFFJPSSWYX;
-	if (! isSymbolType(UTGTNKNTARJKPX.container->type)) goto label_FDUKXFFJPSSWYX;
-/*SET*/	r_s = UTGTNKNTARJKPX;
+/*SET*/	l_s = UTGTNKNTARJKPX;
+/*SET*/	INOVGZDTHUNWOO = UTGTNKNTARJKPX;
+/*INC*/	if (!INC(INOVGZDTHUNWOO, HMLTEDZLODSRKE)) goto label_LIJJHEVRYXOZBA;
+	if (! isSymbolType(INOVGZDTHUNWOO.container->type)) goto label_LIJJHEVRYXOZBA;
+/*SET*/	r_s = INOVGZDTHUNWOO;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_s!=0 && DQLAHYGGYLJDDJ != r_s) goto label_FDUKXFFJPSSWYX;
+/*ISEMPTY*/	if (r_s!=0 && HMLTEDZLODSRKE != r_s) goto label_LIJJHEVRYXOZBA;
 //// [ empty ] 
-/*ISEMPTY*/	if (LIJJHEVRYXOZBA!=0 && arg_to != LIJJHEVRYXOZBA) goto label_FDUKXFFJPSSWYX;
+/*ISEMPTY*/	if (FPFMOWGRGONUAT!=0 && arg_to != FPFMOWGRGONUAT) goto label_LIJJHEVRYXOZBA;
 
 // подготовка подстановки 
 result->append_copy(l_s, r_s); 
@@ -1163,77 +1168,77 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor XVJJMPSVKNHKWJ;
+/*DEF*/	DataCursor OPMMLEBKSUCVZQ;
 /*DEF*/	DataCursor l_v;
 /*DEF*/	DataCursor r_v;
 /*SET*/	l_v = arg_from;
-/*SET*/	XVJJMPSVKNHKWJ = arg_from;
-/*INC*/	if (!INC(XVJJMPSVKNHKWJ, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(XVJJMPSVKNHKWJ.container->type)) goto sentence_after_2;
-/*SET*/	r_v = XVJJMPSVKNHKWJ;
+/*SET*/	OPMMLEBKSUCVZQ = arg_from;
+/*INC*/	if (!INC(OPMMLEBKSUCVZQ, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(OPMMLEBKSUCVZQ.container->type)) goto sentence_after_2;
+/*SET*/	r_v = OPMMLEBKSUCVZQ;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
 /*SET*/	l_e = r_v;
 /*SET*/	r_e = r_v;
-/*JMP*/	goto label_OPMMLEBKSUCVZQ_firststep;
-label_OPMMLEBKSUCVZQ: 
+/*JMP*/	goto label_LYQNWCMBVBHRML_firststep;
+label_LYQNWCMBVBHRML: 
 /*INC*/	if (!INC(r_e, arg_to)) goto sentence_after_2;
-label_OPMMLEBKSUCVZQ_firststep: 
+label_LYQNWCMBVBHRML_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor LYQNWCMBVBHRML;
 /*DEF*/	DataCursor OWPJBWYVWTGTOQ;
 /*DEF*/	DataCursor NMICXAPZARKNNX;
-/*SET*/	LYQNWCMBVBHRML = r_e;
-/*INC*/	if (!INC(LYQNWCMBVBHRML, arg_to)) goto label_OPMMLEBKSUCVZQ;
+/*DEF*/	DataCursor TUUFARZROSDQWS;
+/*SET*/	OWPJBWYVWTGTOQ = r_e;
+/*INC*/	if (!INC(OWPJBWYVWTGTOQ, arg_to)) goto label_LYQNWCMBVBHRML;
 //// ISBRACKET 
-	if (LYQNWCMBVBHRML.container->type != struct_bracket) goto label_OPMMLEBKSUCVZQ;
+	if (OWPJBWYVWTGTOQ.container->type != struct_bracket) goto label_LYQNWCMBVBHRML;
 //// JMP_BRACKET 
-	OWPJBWYVWTGTOQ = LYQNWCMBVBHRML.container->value.bracket_data.chain->at_before_first();
-	NMICXAPZARKNNX   = LYQNWCMBVBHRML.container->value.bracket_data.chain->at_last();
+	NMICXAPZARKNNX = OWPJBWYVWTGTOQ.container->value.bracket_data.chain->at_before_first();
+	TUUFARZROSDQWS   = OWPJBWYVWTGTOQ.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_not;
 /*DEF*/	DataCursor r_not;
-/*SET*/	l_not = OWPJBWYVWTGTOQ;
-/*SET*/	r_not = NMICXAPZARKNNX;
+/*SET*/	l_not = NMICXAPZARKNNX;
+/*SET*/	r_not = TUUFARZROSDQWS;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor TUUFARZROSDQWS;
 /*DEF*/	DataCursor MTCJGHECQUDOSR;
 /*DEF*/	DataCursor TJXYAAYKQRXYCR;
-/*SET*/	TUUFARZROSDQWS = LYQNWCMBVBHRML;
-/*INC*/	if (!INC(TUUFARZROSDQWS, arg_to)) goto label_OPMMLEBKSUCVZQ;
+/*DEF*/	DataCursor XUWJXNPQJNBKCP;
+/*SET*/	MTCJGHECQUDOSR = OWPJBWYVWTGTOQ;
+/*INC*/	if (!INC(MTCJGHECQUDOSR, arg_to)) goto label_LYQNWCMBVBHRML;
 //// ISBRACKET 
-	if (TUUFARZROSDQWS.container->type != struct_bracket) goto label_OPMMLEBKSUCVZQ;
+	if (MTCJGHECQUDOSR.container->type != struct_bracket) goto label_LYQNWCMBVBHRML;
 //// JMP_BRACKET 
-	MTCJGHECQUDOSR = TUUFARZROSDQWS.container->value.bracket_data.chain->at_before_first();
-	TJXYAAYKQRXYCR   = TUUFARZROSDQWS.container->value.bracket_data.chain->at_last();
+	TJXYAAYKQRXYCR = MTCJGHECQUDOSR.container->value.bracket_data.chain->at_before_first();
+	XUWJXNPQJNBKCP   = MTCJGHECQUDOSR.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_Wr;
 /*DEF*/	DataCursor r_Wr;
-/*SET*/	l_Wr = MTCJGHECQUDOSR;
-/*SET*/	r_Wr = TJXYAAYKQRXYCR;
+/*SET*/	l_Wr = TJXYAAYKQRXYCR;
+/*SET*/	r_Wr = XUWJXNPQJNBKCP;
 //// [ empty ] 
-/*ISEMPTY*/	if (TUUFARZROSDQWS!=0 && arg_to != TUUFARZROSDQWS) goto label_OPMMLEBKSUCVZQ;
+/*ISEMPTY*/	if (MTCJGHECQUDOSR!=0 && arg_to != MTCJGHECQUDOSR) goto label_LYQNWCMBVBHRML;
 
 // подготовка подстановки 
-DataChain* XUWJXNPQJNBKCP = new DataChain(); 
-DataContainer* XUWJXNPQJNBKCP_execbr = newRefExecBrackets(UHod, XUWJXNPQJNBKCP, "UHod");
-result->append(XUWJXNPQJNBKCP_execbr);
 DataChain* DMOKALXAPEMVBQ = new DataChain(); 
-XUWJXNPQJNBKCP->append(newRefStructBrackets(DMOKALXAPEMVBQ)); 
+DataContainer* DMOKALXAPEMVBQ_execbr = newRefExecBrackets(UHod, DMOKALXAPEMVBQ, "UHod");
+result->append(DMOKALXAPEMVBQ_execbr);
 DataChain* LZSVXZKUTAPPWG = new DataChain(); 
-DataContainer* LZSVXZKUTAPPWG_execbr = newRefExecBrackets(Switch, LZSVXZKUTAPPWG, "Switch");
-DMOKALXAPEMVBQ->append(LZSVXZKUTAPPWG_execbr);
-LZSVXZKUTAPPWG->append_copy(l_v, r_v); 
-LZSVXZKUTAPPWG->append_copy(l_Wr, r_Wr); 
-context->pushExecuteCall(LZSVXZKUTAPPWG_execbr);
+DMOKALXAPEMVBQ->append(newRefStructBrackets(LZSVXZKUTAPPWG)); 
 DataChain* ZPDPYZKZCVBNTC = new DataChain(); 
-XUWJXNPQJNBKCP->append(newRefStructBrackets(ZPDPYZKZCVBNTC)); 
+DataContainer* ZPDPYZKZCVBNTC_execbr = newRefExecBrackets(Switch, ZPDPYZKZCVBNTC, "Switch");
+LZSVXZKUTAPPWG->append(ZPDPYZKZCVBNTC_execbr);
+ZPDPYZKZCVBNTC->append_copy(l_v, r_v); 
 ZPDPYZKZCVBNTC->append_copy(l_Wr, r_Wr); 
+context->pushExecuteCall(ZPDPYZKZCVBNTC_execbr);
 DataChain* VFXSXPJAOXTFHV = new DataChain(); 
-XUWJXNPQJNBKCP->append(newRefStructBrackets(VFXSXPJAOXTFHV)); 
-VFXSXPJAOXTFHV->append_copy(l_not, r_not); 
-context->pushExecuteCall(XUWJXNPQJNBKCP_execbr);
+DMOKALXAPEMVBQ->append(newRefStructBrackets(VFXSXPJAOXTFHV)); 
+VFXSXPJAOXTFHV->append_copy(l_Wr, r_Wr); 
+DataChain* XXYTGOKRCXAETA = new DataChain(); 
+DMOKALXAPEMVBQ->append(newRefStructBrackets(XXYTGOKRCXAETA)); 
+XXYTGOKRCXAETA->append_copy(l_not, r_not); 
+context->pushExecuteCall(DMOKALXAPEMVBQ_execbr);
 
 return result; 
 }
@@ -1258,17 +1263,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* XXYTGOKRCXAETA = new DataChain(); 
-DataContainer* XXYTGOKRCXAETA_execbr = newRefExecBrackets(Prout, XXYTGOKRCXAETA, "Prout");
-result->append(XXYTGOKRCXAETA_execbr);
-XXYTGOKRCXAETA->append(newRefWord("UHod:")); 
-XXYTGOKRCXAETA->append_copy(l_e, r_e); 
-context->pushExecuteCall(XXYTGOKRCXAETA_execbr);
 DataChain* UQGNDMPHWZYIAY = new DataChain(); 
-DataContainer* UQGNDMPHWZYIAY_execbr = newRefExecBrackets(UHod__, UQGNDMPHWZYIAY, "UHod__");
+DataContainer* UQGNDMPHWZYIAY_execbr = newRefExecBrackets(Prout, UQGNDMPHWZYIAY, "Prout");
 result->append(UQGNDMPHWZYIAY_execbr);
+UQGNDMPHWZYIAY->append(newRefWord("UHod:")); 
 UQGNDMPHWZYIAY->append_copy(l_e, r_e); 
 context->pushExecuteCall(UQGNDMPHWZYIAY_execbr);
+DataChain* ABJRQGEPPXYJST = new DataChain(); 
+DataContainer* ABJRQGEPPXYJST_execbr = newRefExecBrackets(UHod__, ABJRQGEPPXYJST, "UHod__");
+result->append(ABJRQGEPPXYJST_execbr);
+ABJRQGEPPXYJST->append_copy(l_e, r_e); 
+context->pushExecuteCall(ABJRQGEPPXYJST_execbr);
 
 return result; 
 }
@@ -1287,68 +1292,68 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ABJRQGEPPXYJST;
 /*DEF*/	DataCursor TYZUVLDVYBSUXK;
 /*DEF*/	DataCursor BMFZVRTNOVIDZN;
-/*SET*/	ABJRQGEPPXYJST = arg_from;
-/*INC*/	if (!INC(ABJRQGEPPXYJST, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor PGHOZVAFMSNSNQ;
+/*SET*/	TYZUVLDVYBSUXK = arg_from;
+/*INC*/	if (!INC(TYZUVLDVYBSUXK, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (ABJRQGEPPXYJST.container->type != struct_bracket) goto sentence_after_1;
+	if (TYZUVLDVYBSUXK.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	TYZUVLDVYBSUXK = ABJRQGEPPXYJST.container->value.bracket_data.chain->at_before_first();
-	BMFZVRTNOVIDZN   = ABJRQGEPPXYJST.container->value.bracket_data.chain->at_last();
+	BMFZVRTNOVIDZN = TYZUVLDVYBSUXK.container->value.bracket_data.chain->at_before_first();
+	PGHOZVAFMSNSNQ   = TYZUVLDVYBSUXK.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_Sw;
 /*DEF*/	DataCursor r_Sw;
-/*SET*/	l_Sw = TYZUVLDVYBSUXK;
-/*SET*/	r_Sw = BMFZVRTNOVIDZN;
+/*SET*/	l_Sw = BMFZVRTNOVIDZN;
+/*SET*/	r_Sw = PGHOZVAFMSNSNQ;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor PGHOZVAFMSNSNQ;
 /*DEF*/	DataCursor IVMVUBCWTFSRQT;
 /*DEF*/	DataCursor MKNEPBHOWEJAZH;
-/*SET*/	PGHOZVAFMSNSNQ = ABJRQGEPPXYJST;
-/*INC*/	if (!INC(PGHOZVAFMSNSNQ, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (PGHOZVAFMSNSNQ.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	IVMVUBCWTFSRQT = PGHOZVAFMSNSNQ.container->value.bracket_data.chain->at_before_first();
-	MKNEPBHOWEJAZH   = PGHOZVAFMSNSNQ.container->value.bracket_data.chain->at_last();
-//// [ &.name <any> ] 
 /*DEF*/	DataCursor KWCMMTPIXXXLZQ;
-/*SET*/	KWCMMTPIXXXLZQ = IVMVUBCWTFSRQT;
- if (!SLIDE(KWCMMTPIXXXLZQ, MKNEPBHOWEJAZH, l_Sw, r_Sw)) goto sentence_after_1;
+/*SET*/	IVMVUBCWTFSRQT = TYZUVLDVYBSUXK;
+/*INC*/	if (!INC(IVMVUBCWTFSRQT, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (IVMVUBCWTFSRQT.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	MKNEPBHOWEJAZH = IVMVUBCWTFSRQT.container->value.bracket_data.chain->at_before_first();
+	KWCMMTPIXXXLZQ   = IVMVUBCWTFSRQT.container->value.bracket_data.chain->at_last();
+//// [ &.name <any> ] 
+/*DEF*/	DataCursor YSXTWWTAIDYAXY;
+/*SET*/	YSXTWWTAIDYAXY = MKNEPBHOWEJAZH;
+ if (!SLIDE(YSXTWWTAIDYAXY, KWCMMTPIXXXLZQ, l_Sw, r_Sw)) goto sentence_after_1;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_Wr;
 /*DEF*/	DataCursor r_Wr;
-/*SET*/	l_Wr = KWCMMTPIXXXLZQ;
-/*SET*/	r_Wr = MKNEPBHOWEJAZH;
+/*SET*/	l_Wr = YSXTWWTAIDYAXY;
+/*SET*/	r_Wr = KWCMMTPIXXXLZQ;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor YSXTWWTAIDYAXY;
 /*DEF*/	DataCursor QLEPRXIBEXXYFV;
 /*DEF*/	DataCursor SDDYGTHCUYYFWP;
-/*SET*/	YSXTWWTAIDYAXY = PGHOZVAFMSNSNQ;
-/*INC*/	if (!INC(YSXTWWTAIDYAXY, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (YSXTWWTAIDYAXY.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	QLEPRXIBEXXYFV = YSXTWWTAIDYAXY.container->value.bracket_data.chain->at_before_first();
-	SDDYGTHCUYYFWP   = YSXTWWTAIDYAXY.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor JSFYBGLGZMBINT;
+/*SET*/	QLEPRXIBEXXYFV = IVMVUBCWTFSRQT;
+/*INC*/	if (!INC(QLEPRXIBEXXYFV, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (QLEPRXIBEXXYFV.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	SDDYGTHCUYYFWP = QLEPRXIBEXXYFV.container->value.bracket_data.chain->at_before_first();
+	JSFYBGLGZMBINT   = QLEPRXIBEXXYFV.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor ATTNHODTONPYZW;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
-/*SET*/	l_s = QLEPRXIBEXXYFV;
-/*SET*/	JSFYBGLGZMBINT = QLEPRXIBEXXYFV;
-/*INC*/	if (!INC(JSFYBGLGZMBINT, SDDYGTHCUYYFWP)) goto sentence_after_1;
-	if (! isSymbolType(JSFYBGLGZMBINT.container->type)) goto sentence_after_1;
-/*SET*/	r_s = JSFYBGLGZMBINT;
+/*SET*/	l_s = SDDYGTHCUYYFWP;
+/*SET*/	ATTNHODTONPYZW = SDDYGTHCUYYFWP;
+/*INC*/	if (!INC(ATTNHODTONPYZW, JSFYBGLGZMBINT)) goto sentence_after_1;
+	if (! isSymbolType(ATTNHODTONPYZW.container->type)) goto sentence_after_1;
+/*SET*/	r_s = ATTNHODTONPYZW;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
 /*SET*/	l_n = r_s;
-/*SET*/	r_n = SDDYGTHCUYYFWP;
+/*SET*/	r_n = JSFYBGLGZMBINT;
 //// [ empty ] 
-/*ISEMPTY*/	if (YSXTWWTAIDYAXY!=0 && arg_to != YSXTWWTAIDYAXY) goto sentence_after_1;
+/*ISEMPTY*/	if (QLEPRXIBEXXYFV!=0 && arg_to != QLEPRXIBEXXYFV) goto sentence_after_1;
 
 // подготовка подстановки 
 result->append_copy(l_s, r_s); 
@@ -1360,117 +1365,117 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ATTNHODTONPYZW;
 /*DEF*/	DataCursor OTKGNGUPHPKXEA;
 /*DEF*/	DataCursor TOWZABSDNVQHKF;
-/*SET*/	ATTNHODTONPYZW = arg_from;
-/*INC*/	if (!INC(ATTNHODTONPYZW, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor CMOFISFRFQGVPM;
+/*SET*/	OTKGNGUPHPKXEA = arg_from;
+/*INC*/	if (!INC(OTKGNGUPHPKXEA, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (ATTNHODTONPYZW.container->type != struct_bracket) goto sentence_after_2;
+	if (OTKGNGUPHPKXEA.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	OTKGNGUPHPKXEA = ATTNHODTONPYZW.container->value.bracket_data.chain->at_before_first();
-	TOWZABSDNVQHKF   = ATTNHODTONPYZW.container->value.bracket_data.chain->at_last();
+	TOWZABSDNVQHKF = OTKGNGUPHPKXEA.container->value.bracket_data.chain->at_before_first();
+	CMOFISFRFQGVPM   = OTKGNGUPHPKXEA.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_Sw;
 /*DEF*/	DataCursor r_Sw;
-/*SET*/	l_Sw = OTKGNGUPHPKXEA;
-/*SET*/	r_Sw = TOWZABSDNVQHKF;
+/*SET*/	l_Sw = TOWZABSDNVQHKF;
+/*SET*/	r_Sw = CMOFISFRFQGVPM;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor CMOFISFRFQGVPM;
 /*DEF*/	DataCursor VORPJFZSLZMPJJ;
 /*DEF*/	DataCursor NEHRYKXJZUBUAC;
-/*SET*/	CMOFISFRFQGVPM = ATTNHODTONPYZW;
-/*INC*/	if (!INC(CMOFISFRFQGVPM, arg_to)) goto sentence_after_2;
-//// ISBRACKET 
-	if (CMOFISFRFQGVPM.container->type != struct_bracket) goto sentence_after_2;
-//// JMP_BRACKET 
-	VORPJFZSLZMPJJ = CMOFISFRFQGVPM.container->value.bracket_data.chain->at_before_first();
-	NEHRYKXJZUBUAC   = CMOFISFRFQGVPM.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor CLFKCYZOBGHTUO;
+/*SET*/	VORPJFZSLZMPJJ = OTKGNGUPHPKXEA;
+/*INC*/	if (!INC(VORPJFZSLZMPJJ, arg_to)) goto sentence_after_2;
+//// ISBRACKET 
+	if (VORPJFZSLZMPJJ.container->type != struct_bracket) goto sentence_after_2;
+//// JMP_BRACKET 
+	NEHRYKXJZUBUAC = VORPJFZSLZMPJJ.container->value.bracket_data.chain->at_before_first();
+	CLFKCYZOBGHTUO   = VORPJFZSLZMPJJ.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor XRAJVPRECWGXXP;
 /*DEF*/	DataCursor l_s1;
 /*DEF*/	DataCursor r_s1;
-/*SET*/	l_s1 = VORPJFZSLZMPJJ;
-/*SET*/	CLFKCYZOBGHTUO = VORPJFZSLZMPJJ;
-/*INC*/	if (!INC(CLFKCYZOBGHTUO, NEHRYKXJZUBUAC)) goto sentence_after_2;
-	if (! isSymbolType(CLFKCYZOBGHTUO.container->type)) goto sentence_after_2;
-/*SET*/	r_s1 = CLFKCYZOBGHTUO;
+/*SET*/	l_s1 = NEHRYKXJZUBUAC;
+/*SET*/	XRAJVPRECWGXXP = NEHRYKXJZUBUAC;
+/*INC*/	if (!INC(XRAJVPRECWGXXP, CLFKCYZOBGHTUO)) goto sentence_after_2;
+	if (! isSymbolType(XRAJVPRECWGXXP.container->type)) goto sentence_after_2;
+/*SET*/	r_s1 = XRAJVPRECWGXXP;
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor XRAJVPRECWGXXP;
-/*SET*/	XRAJVPRECWGXXP = r_s1;
-/*INC*/	if (!INC(XRAJVPRECWGXXP, NEHRYKXJZUBUAC)) goto sentence_after_2;
-	if (XRAJVPRECWGXXP.container->type != text || *(XRAJVPRECWGXXP.container->value.text + XRAJVPRECWGXXP.index) != '=') goto sentence_after_2;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor SWCGMMVEDEWDMF;
+/*SET*/	SWCGMMVEDEWDMF = r_s1;
+/*INC*/	if (!INC(SWCGMMVEDEWDMF, CLFKCYZOBGHTUO)) goto sentence_after_2;
+	if (SWCGMMVEDEWDMF.container->type != text || *(SWCGMMVEDEWDMF.container->value.text + SWCGMMVEDEWDMF.index) != '=') goto sentence_after_2;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor NQWCUQDSCILIQE;
 /*DEF*/	DataCursor l_s2;
 /*DEF*/	DataCursor r_s2;
-/*SET*/	l_s2 = XRAJVPRECWGXXP;
-/*SET*/	SWCGMMVEDEWDMF = XRAJVPRECWGXXP;
-/*INC*/	if (!INC(SWCGMMVEDEWDMF, NEHRYKXJZUBUAC)) goto sentence_after_2;
-	if (! isSymbolType(SWCGMMVEDEWDMF.container->type)) goto sentence_after_2;
-/*SET*/	r_s2 = SWCGMMVEDEWDMF;
+/*SET*/	l_s2 = SWCGMMVEDEWDMF;
+/*SET*/	NQWCUQDSCILIQE = SWCGMMVEDEWDMF;
+/*INC*/	if (!INC(NQWCUQDSCILIQE, CLFKCYZOBGHTUO)) goto sentence_after_2;
+	if (! isSymbolType(NQWCUQDSCILIQE.container->type)) goto sentence_after_2;
+/*SET*/	r_s2 = NQWCUQDSCILIQE;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
 /*SET*/	l_e = r_s2;
 /*SET*/	r_e = r_s2;
-/*JMP*/	goto label_NQWCUQDSCILIQE_firststep;
-label_NQWCUQDSCILIQE: 
-/*INC*/	if (!INC(r_e, NEHRYKXJZUBUAC)) goto sentence_after_2;
-label_NQWCUQDSCILIQE_firststep: 
+/*JMP*/	goto label_CIHLUILGMFCSWT_firststep;
+label_CIHLUILGMFCSWT: 
+/*INC*/	if (!INC(r_e, CLFKCYZOBGHTUO)) goto sentence_after_2;
+label_CIHLUILGMFCSWT_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor CIHLUILGMFCSWT;
-/*SET*/	CIHLUILGMFCSWT = r_e;
- if (!SLIDE(CIHLUILGMFCSWT, NEHRYKXJZUBUAC, l_Sw, r_Sw)) goto label_NQWCUQDSCILIQE;
+/*DEF*/	DataCursor WKKXLCBHQKVCSW;
+/*SET*/	WKKXLCBHQKVCSW = r_e;
+ if (!SLIDE(WKKXLCBHQKVCSW, CLFKCYZOBGHTUO, l_Sw, r_Sw)) goto label_CIHLUILGMFCSWT;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_Wr;
 /*DEF*/	DataCursor r_Wr;
-/*SET*/	l_Wr = CIHLUILGMFCSWT;
-/*SET*/	r_Wr = NEHRYKXJZUBUAC;
+/*SET*/	l_Wr = WKKXLCBHQKVCSW;
+/*SET*/	r_Wr = CLFKCYZOBGHTUO;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor JEBKRJLPGFGRAT;
 /*DEF*/	DataCursor ZBSGUVZIFNHYXW;
 /*DEF*/	DataCursor JSJAVWAUXPANNA;
-/*SET*/	JEBKRJLPGFGRAT = CMOFISFRFQGVPM;
-/*INC*/	if (!INC(JEBKRJLPGFGRAT, arg_to)) goto label_NQWCUQDSCILIQE;
-//// ISBRACKET 
-	if (JEBKRJLPGFGRAT.container->type != struct_bracket) goto label_NQWCUQDSCILIQE;
-//// JMP_BRACKET 
-	ZBSGUVZIFNHYXW = JEBKRJLPGFGRAT.container->value.bracket_data.chain->at_before_first();
-	JSJAVWAUXPANNA   = JEBKRJLPGFGRAT.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor MXJDVZUHNACZYH;
+/*SET*/	ZBSGUVZIFNHYXW = VORPJFZSLZMPJJ;
+/*INC*/	if (!INC(ZBSGUVZIFNHYXW, arg_to)) goto label_CIHLUILGMFCSWT;
+//// ISBRACKET 
+	if (ZBSGUVZIFNHYXW.container->type != struct_bracket) goto label_CIHLUILGMFCSWT;
+//// JMP_BRACKET 
+	JSJAVWAUXPANNA = ZBSGUVZIFNHYXW.container->value.bracket_data.chain->at_before_first();
+	MXJDVZUHNACZYH   = ZBSGUVZIFNHYXW.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor EPWZOLHUSLRKVW;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
-/*SET*/	l_s = ZBSGUVZIFNHYXW;
-/*SET*/	MXJDVZUHNACZYH = ZBSGUVZIFNHYXW;
-/*INC*/	if (!INC(MXJDVZUHNACZYH, JSJAVWAUXPANNA)) goto label_NQWCUQDSCILIQE;
-	if (! isSymbolType(MXJDVZUHNACZYH.container->type)) goto label_NQWCUQDSCILIQE;
-/*SET*/	r_s = MXJDVZUHNACZYH;
+/*SET*/	l_s = JSJAVWAUXPANNA;
+/*SET*/	EPWZOLHUSLRKVW = JSJAVWAUXPANNA;
+/*INC*/	if (!INC(EPWZOLHUSLRKVW, MXJDVZUHNACZYH)) goto label_CIHLUILGMFCSWT;
+	if (! isSymbolType(EPWZOLHUSLRKVW.container->type)) goto label_CIHLUILGMFCSWT;
+/*SET*/	r_s = EPWZOLHUSLRKVW;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
 /*SET*/	l_n = r_s;
-/*SET*/	r_n = JSJAVWAUXPANNA;
+/*SET*/	r_n = MXJDVZUHNACZYH;
 //// [ empty ] 
-/*ISEMPTY*/	if (JEBKRJLPGFGRAT!=0 && arg_to != JEBKRJLPGFGRAT) goto label_NQWCUQDSCILIQE;
+/*ISEMPTY*/	if (ZBSGUVZIFNHYXW!=0 && arg_to != ZBSGUVZIFNHYXW) goto label_CIHLUILGMFCSWT;
 
 // подготовка подстановки 
-DataChain* EPWZOLHUSLRKVW = new DataChain(); 
-DataContainer* EPWZOLHUSLRKVW_execbr = newRefExecBrackets(UHod, EPWZOLHUSLRKVW, "UHod");
-result->append(EPWZOLHUSLRKVW_execbr);
 DataChain* PNVGZMIIZWUDWD = new DataChain(); 
-EPWZOLHUSLRKVW->append(newRefStructBrackets(PNVGZMIIZWUDWD)); 
-PNVGZMIIZWUDWD->append_copy(l_Sw, r_Sw); 
+DataContainer* PNVGZMIIZWUDWD_execbr = newRefExecBrackets(UHod, PNVGZMIIZWUDWD, "UHod");
+result->append(PNVGZMIIZWUDWD_execbr);
 DataChain* FZLKTBQDXGYYIU = new DataChain(); 
-EPWZOLHUSLRKVW->append(newRefStructBrackets(FZLKTBQDXGYYIU)); 
-FZLKTBQDXGYYIU->append_copy(l_e, r_e); 
+PNVGZMIIZWUDWD->append(newRefStructBrackets(FZLKTBQDXGYYIU)); 
 FZLKTBQDXGYYIU->append_copy(l_Sw, r_Sw); 
-FZLKTBQDXGYYIU->append_copy(l_Wr, r_Wr); 
 DataChain* DSJVEZKMESBJLK = new DataChain(); 
-EPWZOLHUSLRKVW->append(newRefStructBrackets(DSJVEZKMESBJLK)); 
-DSJVEZKMESBJLK->append_copy(l_n, r_n); 
-context->pushExecuteCall(EPWZOLHUSLRKVW_execbr);
+PNVGZMIIZWUDWD->append(newRefStructBrackets(DSJVEZKMESBJLK)); 
+DSJVEZKMESBJLK->append_copy(l_e, r_e); 
+DSJVEZKMESBJLK->append_copy(l_Sw, r_Sw); 
+DSJVEZKMESBJLK->append_copy(l_Wr, r_Wr); 
+DataChain* YERTAHNEXHUQMJ = new DataChain(); 
+PNVGZMIIZWUDWD->append(newRefStructBrackets(YERTAHNEXHUQMJ)); 
+YERTAHNEXHUQMJ->append_copy(l_n, r_n); 
+context->pushExecuteCall(PNVGZMIIZWUDWD_execbr);
 
 return result; 
 }
@@ -1495,104 +1500,104 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_1 = arg_to;
 
 // подготовка подстановки 
-DataChain* YERTAHNEXHUQMJ = new DataChain(); 
-DataContainer* YERTAHNEXHUQMJ_execbr = newRefExecBrackets(Prout, YERTAHNEXHUQMJ, "Prout");
-result->append(YERTAHNEXHUQMJ_execbr);
-YERTAHNEXHUQMJ->append(newRefText("*===T===T===*")); 
-context->pushExecuteCall(YERTAHNEXHUQMJ_execbr);
 DataChain* ICBMUSQDKLASOL = new DataChain(); 
 DataContainer* ICBMUSQDKLASOL_execbr = newRefExecBrackets(Prout, ICBMUSQDKLASOL, "Prout");
 result->append(ICBMUSQDKLASOL_execbr);
-ICBMUSQDKLASOL->append(newRefText("|")); 
+ICBMUSQDKLASOL->append(newRefText("*===T===T===*")); 
+context->pushExecuteCall(ICBMUSQDKLASOL_execbr);
 DataChain* WJXPTXXEUMZFWY = new DataChain(); 
-DataContainer* WJXPTXXEUMZFWY_execbr = newRefExecBrackets(XO, WJXPTXXEUMZFWY, "XO");
-ICBMUSQDKLASOL->append(WJXPTXXEUMZFWY_execbr);
-WJXPTXXEUMZFWY->append(newRefText("1")); 
-WJXPTXXEUMZFWY->append_copy(l_1, r_1); 
-context->pushExecuteCall(WJXPTXXEUMZFWY_execbr);
-ICBMUSQDKLASOL->append(newRefText("|")); 
+DataContainer* WJXPTXXEUMZFWY_execbr = newRefExecBrackets(Prout, WJXPTXXEUMZFWY, "Prout");
+result->append(WJXPTXXEUMZFWY_execbr);
+WJXPTXXEUMZFWY->append(newRefText("|")); 
 DataChain* UCPABQSEFFUNQP = new DataChain(); 
 DataContainer* UCPABQSEFFUNQP_execbr = newRefExecBrackets(XO, UCPABQSEFFUNQP, "XO");
-ICBMUSQDKLASOL->append(UCPABQSEFFUNQP_execbr);
-UCPABQSEFFUNQP->append(newRefText("2")); 
+WJXPTXXEUMZFWY->append(UCPABQSEFFUNQP_execbr);
+UCPABQSEFFUNQP->append(newRefText("1")); 
 UCPABQSEFFUNQP->append_copy(l_1, r_1); 
 context->pushExecuteCall(UCPABQSEFFUNQP_execbr);
-ICBMUSQDKLASOL->append(newRefText("|")); 
+WJXPTXXEUMZFWY->append(newRefText("|")); 
 DataChain* KFNNBECBBCJPDY = new DataChain(); 
 DataContainer* KFNNBECBBCJPDY_execbr = newRefExecBrackets(XO, KFNNBECBBCJPDY, "XO");
-ICBMUSQDKLASOL->append(KFNNBECBBCJPDY_execbr);
-KFNNBECBBCJPDY->append(newRefText("3")); 
+WJXPTXXEUMZFWY->append(KFNNBECBBCJPDY_execbr);
+KFNNBECBBCJPDY->append(newRefText("2")); 
 KFNNBECBBCJPDY->append_copy(l_1, r_1); 
 context->pushExecuteCall(KFNNBECBBCJPDY_execbr);
-ICBMUSQDKLASOL->append(newRefText("|")); 
-context->pushExecuteCall(ICBMUSQDKLASOL_execbr);
+WJXPTXXEUMZFWY->append(newRefText("|")); 
 DataChain* JLIBITLLPLXELR = new DataChain(); 
-DataContainer* JLIBITLLPLXELR_execbr = newRefExecBrackets(Prout, JLIBITLLPLXELR, "Prout");
-result->append(JLIBITLLPLXELR_execbr);
-JLIBITLLPLXELR->append(newRefText("*===I===I===*")); 
+DataContainer* JLIBITLLPLXELR_execbr = newRefExecBrackets(XO, JLIBITLLPLXELR, "XO");
+WJXPTXXEUMZFWY->append(JLIBITLLPLXELR_execbr);
+JLIBITLLPLXELR->append(newRefText("3")); 
+JLIBITLLPLXELR->append_copy(l_1, r_1); 
 context->pushExecuteCall(JLIBITLLPLXELR_execbr);
+WJXPTXXEUMZFWY->append(newRefText("|")); 
+context->pushExecuteCall(WJXPTXXEUMZFWY_execbr);
 DataChain* DKEXDTQUVPTTEY = new DataChain(); 
 DataContainer* DKEXDTQUVPTTEY_execbr = newRefExecBrackets(Prout, DKEXDTQUVPTTEY, "Prout");
 result->append(DKEXDTQUVPTTEY_execbr);
-DKEXDTQUVPTTEY->append(newRefText("|")); 
+DKEXDTQUVPTTEY->append(newRefText("*===I===I===*")); 
+context->pushExecuteCall(DKEXDTQUVPTTEY_execbr);
 DataChain* HTLQLBBBVOQOZK = new DataChain(); 
-DataContainer* HTLQLBBBVOQOZK_execbr = newRefExecBrackets(XO, HTLQLBBBVOQOZK, "XO");
-DKEXDTQUVPTTEY->append(HTLQLBBBVOQOZK_execbr);
-HTLQLBBBVOQOZK->append(newRefText("4")); 
-HTLQLBBBVOQOZK->append_copy(l_1, r_1); 
-context->pushExecuteCall(HTLQLBBBVOQOZK_execbr);
-DKEXDTQUVPTTEY->append(newRefText("|")); 
+DataContainer* HTLQLBBBVOQOZK_execbr = newRefExecBrackets(Prout, HTLQLBBBVOQOZK, "Prout");
+result->append(HTLQLBBBVOQOZK_execbr);
+HTLQLBBBVOQOZK->append(newRefText("|")); 
 DataChain* YNAYYRBAQMYJHZ = new DataChain(); 
 DataContainer* YNAYYRBAQMYJHZ_execbr = newRefExecBrackets(XO, YNAYYRBAQMYJHZ, "XO");
-DKEXDTQUVPTTEY->append(YNAYYRBAQMYJHZ_execbr);
-YNAYYRBAQMYJHZ->append(newRefText("5")); 
+HTLQLBBBVOQOZK->append(YNAYYRBAQMYJHZ_execbr);
+YNAYYRBAQMYJHZ->append(newRefText("4")); 
 YNAYYRBAQMYJHZ->append_copy(l_1, r_1); 
 context->pushExecuteCall(YNAYYRBAQMYJHZ_execbr);
-DKEXDTQUVPTTEY->append(newRefText("|")); 
+HTLQLBBBVOQOZK->append(newRefText("|")); 
 DataChain* XNDSIYFSEXWBIO = new DataChain(); 
 DataContainer* XNDSIYFSEXWBIO_execbr = newRefExecBrackets(XO, XNDSIYFSEXWBIO, "XO");
-DKEXDTQUVPTTEY->append(XNDSIYFSEXWBIO_execbr);
-XNDSIYFSEXWBIO->append(newRefText("6")); 
+HTLQLBBBVOQOZK->append(XNDSIYFSEXWBIO_execbr);
+XNDSIYFSEXWBIO->append(newRefText("5")); 
 XNDSIYFSEXWBIO->append_copy(l_1, r_1); 
 context->pushExecuteCall(XNDSIYFSEXWBIO_execbr);
-DKEXDTQUVPTTEY->append(newRefText("|")); 
-context->pushExecuteCall(DKEXDTQUVPTTEY_execbr);
+HTLQLBBBVOQOZK->append(newRefText("|")); 
 DataChain* EWQVQRTCDLPQMV = new DataChain(); 
-DataContainer* EWQVQRTCDLPQMV_execbr = newRefExecBrackets(Prout, EWQVQRTCDLPQMV, "Prout");
-result->append(EWQVQRTCDLPQMV_execbr);
-EWQVQRTCDLPQMV->append(newRefText("*===I===I===*")); 
+DataContainer* EWQVQRTCDLPQMV_execbr = newRefExecBrackets(XO, EWQVQRTCDLPQMV, "XO");
+HTLQLBBBVOQOZK->append(EWQVQRTCDLPQMV_execbr);
+EWQVQRTCDLPQMV->append(newRefText("6")); 
+EWQVQRTCDLPQMV->append_copy(l_1, r_1); 
 context->pushExecuteCall(EWQVQRTCDLPQMV_execbr);
+HTLQLBBBVOQOZK->append(newRefText("|")); 
+context->pushExecuteCall(HTLQLBBBVOQOZK_execbr);
 DataChain* JIFVGYMKGOTZJM = new DataChain(); 
 DataContainer* JIFVGYMKGOTZJM_execbr = newRefExecBrackets(Prout, JIFVGYMKGOTZJM, "Prout");
 result->append(JIFVGYMKGOTZJM_execbr);
-JIFVGYMKGOTZJM->append(newRefText("|")); 
+JIFVGYMKGOTZJM->append(newRefText("*===I===I===*")); 
+context->pushExecuteCall(JIFVGYMKGOTZJM_execbr);
 DataChain* NZQTMRPNDEVNMT = new DataChain(); 
-DataContainer* NZQTMRPNDEVNMT_execbr = newRefExecBrackets(XO, NZQTMRPNDEVNMT, "XO");
-JIFVGYMKGOTZJM->append(NZQTMRPNDEVNMT_execbr);
-NZQTMRPNDEVNMT->append(newRefText("7")); 
-NZQTMRPNDEVNMT->append_copy(l_1, r_1); 
-context->pushExecuteCall(NZQTMRPNDEVNMT_execbr);
-JIFVGYMKGOTZJM->append(newRefText("|")); 
+DataContainer* NZQTMRPNDEVNMT_execbr = newRefExecBrackets(Prout, NZQTMRPNDEVNMT, "Prout");
+result->append(NZQTMRPNDEVNMT_execbr);
+NZQTMRPNDEVNMT->append(newRefText("|")); 
 DataChain* HJITSSPAQNJRDO = new DataChain(); 
 DataContainer* HJITSSPAQNJRDO_execbr = newRefExecBrackets(XO, HJITSSPAQNJRDO, "XO");
-JIFVGYMKGOTZJM->append(HJITSSPAQNJRDO_execbr);
-HJITSSPAQNJRDO->append(newRefText("8")); 
+NZQTMRPNDEVNMT->append(HJITSSPAQNJRDO_execbr);
+HJITSSPAQNJRDO->append(newRefText("7")); 
 HJITSSPAQNJRDO->append_copy(l_1, r_1); 
 context->pushExecuteCall(HJITSSPAQNJRDO_execbr);
-JIFVGYMKGOTZJM->append(newRefText("|")); 
+NZQTMRPNDEVNMT->append(newRefText("|")); 
 DataChain* YJWPYATMLEYQSV = new DataChain(); 
 DataContainer* YJWPYATMLEYQSV_execbr = newRefExecBrackets(XO, YJWPYATMLEYQSV, "XO");
-JIFVGYMKGOTZJM->append(YJWPYATMLEYQSV_execbr);
-YJWPYATMLEYQSV->append(newRefText("9")); 
+NZQTMRPNDEVNMT->append(YJWPYATMLEYQSV_execbr);
+YJWPYATMLEYQSV->append(newRefText("8")); 
 YJWPYATMLEYQSV->append_copy(l_1, r_1); 
 context->pushExecuteCall(YJWPYATMLEYQSV_execbr);
-JIFVGYMKGOTZJM->append(newRefText("|")); 
-context->pushExecuteCall(JIFVGYMKGOTZJM_execbr);
+NZQTMRPNDEVNMT->append(newRefText("|")); 
 DataChain* KPAMSVBMVXRLLI = new DataChain(); 
-DataContainer* KPAMSVBMVXRLLI_execbr = newRefExecBrackets(Prout, KPAMSVBMVXRLLI, "Prout");
-result->append(KPAMSVBMVXRLLI_execbr);
-KPAMSVBMVXRLLI->append(newRefText("*===I===I===*")); 
+DataContainer* KPAMSVBMVXRLLI_execbr = newRefExecBrackets(XO, KPAMSVBMVXRLLI, "XO");
+NZQTMRPNDEVNMT->append(KPAMSVBMVXRLLI_execbr);
+KPAMSVBMVXRLLI->append(newRefText("9")); 
+KPAMSVBMVXRLLI->append_copy(l_1, r_1); 
 context->pushExecuteCall(KPAMSVBMVXRLLI_execbr);
+NZQTMRPNDEVNMT->append(newRefText("|")); 
+context->pushExecuteCall(NZQTMRPNDEVNMT_execbr);
+DataChain* VFEDKJIGAVYXJV = new DataChain(); 
+DataContainer* VFEDKJIGAVYXJV_execbr = newRefExecBrackets(Prout, VFEDKJIGAVYXJV, "Prout");
+result->append(VFEDKJIGAVYXJV_execbr);
+VFEDKJIGAVYXJV->append(newRefText("*===I===I===*")); 
+context->pushExecuteCall(VFEDKJIGAVYXJV_execbr);
 
 return result; 
 }
@@ -1611,61 +1616,61 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor VFEDKJIGAVYXJV;
+/*DEF*/	DataCursor EQVRBACUIGAIPY;
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
-/*SET*/	VFEDKJIGAVYXJV = arg_from;
-/*INC*/	if (!INC(VFEDKJIGAVYXJV, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(VFEDKJIGAVYXJV.container->type)) goto sentence_after_1;
-/*SET*/	r_1 = VFEDKJIGAVYXJV;
+/*SET*/	EQVRBACUIGAIPY = arg_from;
+/*INC*/	if (!INC(EQVRBACUIGAIPY, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(EQVRBACUIGAIPY.container->type)) goto sentence_after_1;
+/*SET*/	r_1 = EQVRBACUIGAIPY;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor EQVRBACUIGAIPY;
 /*DEF*/	DataCursor HBBXIPBZNCWHRB;
 /*DEF*/	DataCursor LIRIZXOQPTQQWE;
-/*SET*/	EQVRBACUIGAIPY = r_1;
-/*INC*/	if (!INC(EQVRBACUIGAIPY, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor AAFJEQIOZPYFAU;
+/*SET*/	HBBXIPBZNCWHRB = r_1;
+/*INC*/	if (!INC(HBBXIPBZNCWHRB, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (EQVRBACUIGAIPY.container->type != struct_bracket) goto sentence_after_1;
+	if (HBBXIPBZNCWHRB.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	HBBXIPBZNCWHRB = EQVRBACUIGAIPY.container->value.bracket_data.chain->at_before_first();
-	LIRIZXOQPTQQWE   = EQVRBACUIGAIPY.container->value.bracket_data.chain->at_last();
+	LIRIZXOQPTQQWE = HBBXIPBZNCWHRB.container->value.bracket_data.chain->at_before_first();
+	AAFJEQIOZPYFAU   = HBBXIPBZNCWHRB.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_21;
 /*DEF*/	DataCursor r_21;
-/*SET*/	l_21 = HBBXIPBZNCWHRB;
-/*SET*/	r_21 = HBBXIPBZNCWHRB;
-/*JMP*/	goto label_AAFJEQIOZPYFAU_firststep;
-label_AAFJEQIOZPYFAU: 
-/*INC*/	if (!INC(r_21, LIRIZXOQPTQQWE)) goto sentence_after_1;
-label_AAFJEQIOZPYFAU_firststep: 
+/*SET*/	l_21 = LIRIZXOQPTQQWE;
+/*SET*/	r_21 = LIRIZXOQPTQQWE;
+/*JMP*/	goto label_UQMVHXKMNXMSYA_firststep;
+label_UQMVHXKMNXMSYA: 
+/*INC*/	if (!INC(r_21, AAFJEQIOZPYFAU)) goto sentence_after_1;
+label_UQMVHXKMNXMSYA_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor UQMVHXKMNXMSYA;
-/*SET*/	UQMVHXKMNXMSYA = r_21;
- if (!SLIDE(UQMVHXKMNXMSYA, LIRIZXOQPTQQWE, l_1, r_1)) goto label_AAFJEQIOZPYFAU;
+/*DEF*/	DataCursor MPTLZANOTLSLWU;
+/*SET*/	MPTLZANOTLSLWU = r_21;
+ if (!SLIDE(MPTLZANOTLSLWU, AAFJEQIOZPYFAU, l_1, r_1)) goto label_UQMVHXKMNXMSYA;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_22;
 /*DEF*/	DataCursor r_22;
-/*SET*/	l_22 = UQMVHXKMNXMSYA;
-/*SET*/	r_22 = LIRIZXOQPTQQWE;
+/*SET*/	l_22 = MPTLZANOTLSLWU;
+/*SET*/	r_22 = AAFJEQIOZPYFAU;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor MPTLZANOTLSLWU;
 /*DEF*/	DataCursor HTFQJRRWBWHMQH;
 /*DEF*/	DataCursor ZKHDKCRFVBEIYI;
-/*SET*/	MPTLZANOTLSLWU = EQVRBACUIGAIPY;
-/*INC*/	if (!INC(MPTLZANOTLSLWU, arg_to)) goto label_AAFJEQIOZPYFAU;
+/*DEF*/	DataCursor PVFVPZHYUJABTQ;
+/*SET*/	HTFQJRRWBWHMQH = HBBXIPBZNCWHRB;
+/*INC*/	if (!INC(HTFQJRRWBWHMQH, arg_to)) goto label_UQMVHXKMNXMSYA;
 //// ISBRACKET 
-	if (MPTLZANOTLSLWU.container->type != struct_bracket) goto label_AAFJEQIOZPYFAU;
+	if (HTFQJRRWBWHMQH.container->type != struct_bracket) goto label_UQMVHXKMNXMSYA;
 //// JMP_BRACKET 
-	HTFQJRRWBWHMQH = MPTLZANOTLSLWU.container->value.bracket_data.chain->at_before_first();
-	ZKHDKCRFVBEIYI   = MPTLZANOTLSLWU.container->value.bracket_data.chain->at_last();
+	ZKHDKCRFVBEIYI = HTFQJRRWBWHMQH.container->value.bracket_data.chain->at_before_first();
+	PVFVPZHYUJABTQ   = HTFQJRRWBWHMQH.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = HTFQJRRWBWHMQH;
-/*SET*/	r_3 = ZKHDKCRFVBEIYI;
+/*SET*/	l_3 = ZKHDKCRFVBEIYI;
+/*SET*/	r_3 = PVFVPZHYUJABTQ;
 //// [ empty ] 
-/*ISEMPTY*/	if (MPTLZANOTLSLWU!=0 && arg_to != MPTLZANOTLSLWU) goto label_AAFJEQIOZPYFAU;
+/*ISEMPTY*/	if (HTFQJRRWBWHMQH!=0 && arg_to != HTFQJRRWBWHMQH) goto label_UQMVHXKMNXMSYA;
 
 // подготовка подстановки 
 result->append(newRefText("-X-")); 
@@ -1677,61 +1682,61 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor PVFVPZHYUJABTQ;
+/*DEF*/	DataCursor WWTBKDOGKEMHIB;
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
-/*SET*/	PVFVPZHYUJABTQ = arg_from;
-/*INC*/	if (!INC(PVFVPZHYUJABTQ, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(PVFVPZHYUJABTQ.container->type)) goto sentence_after_2;
-/*SET*/	r_1 = PVFVPZHYUJABTQ;
+/*SET*/	WWTBKDOGKEMHIB = arg_from;
+/*INC*/	if (!INC(WWTBKDOGKEMHIB, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(WWTBKDOGKEMHIB.container->type)) goto sentence_after_2;
+/*SET*/	r_1 = WWTBKDOGKEMHIB;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor WWTBKDOGKEMHIB;
 /*DEF*/	DataCursor YXRNXSXRZLETBQ;
 /*DEF*/	DataCursor EXKRQOIERNAPLQ;
-/*SET*/	WWTBKDOGKEMHIB = r_1;
-/*INC*/	if (!INC(WWTBKDOGKEMHIB, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor YJPQOUBVJSEBAL;
+/*SET*/	YXRNXSXRZLETBQ = r_1;
+/*INC*/	if (!INC(YXRNXSXRZLETBQ, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (WWTBKDOGKEMHIB.container->type != struct_bracket) goto sentence_after_2;
+	if (YXRNXSXRZLETBQ.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	YXRNXSXRZLETBQ = WWTBKDOGKEMHIB.container->value.bracket_data.chain->at_before_first();
-	EXKRQOIERNAPLQ   = WWTBKDOGKEMHIB.container->value.bracket_data.chain->at_last();
+	EXKRQOIERNAPLQ = YXRNXSXRZLETBQ.container->value.bracket_data.chain->at_before_first();
+	YJPQOUBVJSEBAL   = YXRNXSXRZLETBQ.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = YXRNXSXRZLETBQ;
-/*SET*/	r_2 = EXKRQOIERNAPLQ;
+/*SET*/	l_2 = EXKRQOIERNAPLQ;
+/*SET*/	r_2 = YJPQOUBVJSEBAL;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor YJPQOUBVJSEBAL;
 /*DEF*/	DataCursor WNKSVLOIDZFPIR;
 /*DEF*/	DataCursor WYCZTWZZVEWXOT;
-/*SET*/	YJPQOUBVJSEBAL = WWTBKDOGKEMHIB;
-/*INC*/	if (!INC(YJPQOUBVJSEBAL, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor AKUDKPEDUPKCZL;
+/*SET*/	WNKSVLOIDZFPIR = YXRNXSXRZLETBQ;
+/*INC*/	if (!INC(WNKSVLOIDZFPIR, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (YJPQOUBVJSEBAL.container->type != struct_bracket) goto sentence_after_2;
+	if (WNKSVLOIDZFPIR.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	WNKSVLOIDZFPIR = YJPQOUBVJSEBAL.container->value.bracket_data.chain->at_before_first();
-	WYCZTWZZVEWXOT   = YJPQOUBVJSEBAL.container->value.bracket_data.chain->at_last();
+	WYCZTWZZVEWXOT = WNKSVLOIDZFPIR.container->value.bracket_data.chain->at_before_first();
+	AKUDKPEDUPKCZL   = WNKSVLOIDZFPIR.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_31;
 /*DEF*/	DataCursor r_31;
-/*SET*/	l_31 = WNKSVLOIDZFPIR;
-/*SET*/	r_31 = WNKSVLOIDZFPIR;
-/*JMP*/	goto label_AKUDKPEDUPKCZL_firststep;
-label_AKUDKPEDUPKCZL: 
-/*INC*/	if (!INC(r_31, WYCZTWZZVEWXOT)) goto sentence_after_2;
-label_AKUDKPEDUPKCZL_firststep: 
+/*SET*/	l_31 = WYCZTWZZVEWXOT;
+/*SET*/	r_31 = WYCZTWZZVEWXOT;
+/*JMP*/	goto label_HWUSKDNEVDCPLB_firststep;
+label_HWUSKDNEVDCPLB: 
+/*INC*/	if (!INC(r_31, AKUDKPEDUPKCZL)) goto sentence_after_2;
+label_HWUSKDNEVDCPLB_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor HWUSKDNEVDCPLB;
-/*SET*/	HWUSKDNEVDCPLB = r_31;
- if (!SLIDE(HWUSKDNEVDCPLB, WYCZTWZZVEWXOT, l_1, r_1)) goto label_AKUDKPEDUPKCZL;
+/*DEF*/	DataCursor KLPJMPFDCYQTRC;
+/*SET*/	KLPJMPFDCYQTRC = r_31;
+ if (!SLIDE(KLPJMPFDCYQTRC, AKUDKPEDUPKCZL, l_1, r_1)) goto label_HWUSKDNEVDCPLB;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_32;
 /*DEF*/	DataCursor r_32;
-/*SET*/	l_32 = HWUSKDNEVDCPLB;
-/*SET*/	r_32 = WYCZTWZZVEWXOT;
+/*SET*/	l_32 = KLPJMPFDCYQTRC;
+/*SET*/	r_32 = AKUDKPEDUPKCZL;
 //// [ empty ] 
-/*ISEMPTY*/	if (YJPQOUBVJSEBAL!=0 && arg_to != YJPQOUBVJSEBAL) goto label_AKUDKPEDUPKCZL;
+/*ISEMPTY*/	if (WNKSVLOIDZFPIR!=0 && arg_to != WNKSVLOIDZFPIR) goto label_HWUSKDNEVDCPLB;
 
 // подготовка подстановки 
 result->append(newRefText("-O-")); 
@@ -1743,48 +1748,48 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor KLPJMPFDCYQTRC;
+/*DEF*/	DataCursor VVVTRFFVPEKKQM;
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
-/*SET*/	KLPJMPFDCYQTRC = arg_from;
-/*INC*/	if (!INC(KLPJMPFDCYQTRC, arg_to)) goto sentence_after_3;
-	if (! isSymbolType(KLPJMPFDCYQTRC.container->type)) goto sentence_after_3;
-/*SET*/	r_1 = KLPJMPFDCYQTRC;
+/*SET*/	VVVTRFFVPEKKQM = arg_from;
+/*INC*/	if (!INC(VVVTRFFVPEKKQM, arg_to)) goto sentence_after_3;
+	if (! isSymbolType(VVVTRFFVPEKKQM.container->type)) goto sentence_after_3;
+/*SET*/	r_1 = VVVTRFFVPEKKQM;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor VVVTRFFVPEKKQM;
 /*DEF*/	DataCursor CUPRYJAUTEUVCZ;
 /*DEF*/	DataCursor VICTHRXSXCLPRG;
-/*SET*/	VVVTRFFVPEKKQM = r_1;
-/*INC*/	if (!INC(VVVTRFFVPEKKQM, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor DLWXFAIGAYRUEI;
+/*SET*/	CUPRYJAUTEUVCZ = r_1;
+/*INC*/	if (!INC(CUPRYJAUTEUVCZ, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (VVVTRFFVPEKKQM.container->type != struct_bracket) goto sentence_after_3;
+	if (CUPRYJAUTEUVCZ.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	CUPRYJAUTEUVCZ = VVVTRFFVPEKKQM.container->value.bracket_data.chain->at_before_first();
-	VICTHRXSXCLPRG   = VVVTRFFVPEKKQM.container->value.bracket_data.chain->at_last();
+	VICTHRXSXCLPRG = CUPRYJAUTEUVCZ.container->value.bracket_data.chain->at_before_first();
+	DLWXFAIGAYRUEI   = CUPRYJAUTEUVCZ.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = CUPRYJAUTEUVCZ;
-/*SET*/	r_2 = VICTHRXSXCLPRG;
+/*SET*/	l_2 = VICTHRXSXCLPRG;
+/*SET*/	r_2 = DLWXFAIGAYRUEI;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DLWXFAIGAYRUEI;
 /*DEF*/	DataCursor CUFDIAMHTKBXOT;
 /*DEF*/	DataCursor DIRXXGVZQMEYRO;
-/*SET*/	DLWXFAIGAYRUEI = VVVTRFFVPEKKQM;
-/*INC*/	if (!INC(DLWXFAIGAYRUEI, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor VFICHQNIVFJZAU;
+/*SET*/	CUFDIAMHTKBXOT = CUPRYJAUTEUVCZ;
+/*INC*/	if (!INC(CUFDIAMHTKBXOT, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (DLWXFAIGAYRUEI.container->type != struct_bracket) goto sentence_after_3;
+	if (CUFDIAMHTKBXOT.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	CUFDIAMHTKBXOT = DLWXFAIGAYRUEI.container->value.bracket_data.chain->at_before_first();
-	DIRXXGVZQMEYRO   = DLWXFAIGAYRUEI.container->value.bracket_data.chain->at_last();
+	DIRXXGVZQMEYRO = CUFDIAMHTKBXOT.container->value.bracket_data.chain->at_before_first();
+	VFICHQNIVFJZAU   = CUFDIAMHTKBXOT.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = CUFDIAMHTKBXOT;
-/*SET*/	r_3 = DIRXXGVZQMEYRO;
+/*SET*/	l_3 = DIRXXGVZQMEYRO;
+/*SET*/	r_3 = VFICHQNIVFJZAU;
 //// [ empty ] 
-/*ISEMPTY*/	if (DLWXFAIGAYRUEI!=0 && arg_to != DLWXFAIGAYRUEI) goto sentence_after_3;
+/*ISEMPTY*/	if (CUFDIAMHTKBXOT!=0 && arg_to != CUFDIAMHTKBXOT) goto sentence_after_3;
 
 // подготовка подстановки 
 result->append_copy(l_1, r_1); 
@@ -1807,12 +1812,12 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor VFICHQNIVFJZAU;
-/*SET*/	VFICHQNIVFJZAU = arg_from;
-/*INC*/	if (!INC(VFICHQNIVFJZAU, arg_to)) goto sentence_after_1;
-	if (VFICHQNIVFJZAU.container->type != integer || VFICHQNIVFJZAU.container->value.num != 0) goto sentence_after_1;
+/*DEF*/	DataCursor QFDFTGMOPSRGPU;
+/*SET*/	QFDFTGMOPSRGPU = arg_from;
+/*INC*/	if (!INC(QFDFTGMOPSRGPU, arg_to)) goto sentence_after_1;
+	if (QFDFTGMOPSRGPU.container->type != integer || QFDFTGMOPSRGPU.container->value.num != 0) goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (VFICHQNIVFJZAU!=0 && arg_to != VFICHQNIVFJZAU) goto sentence_after_1;
+/*ISEMPTY*/	if (QFDFTGMOPSRGPU!=0 && arg_to != QFDFTGMOPSRGPU) goto sentence_after_1;
 
 // подготовка подстановки 
 
@@ -1823,37 +1828,37 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor QFDFTGMOPSRGPU;
+/*DEF*/	DataCursor GXTUHLCVSPIHAZ;
 /*DEF*/	DataCursor l_G;
 /*DEF*/	DataCursor r_G;
 /*SET*/	l_G = arg_from;
-/*SET*/	QFDFTGMOPSRGPU = arg_from;
-/*INC*/	if (!INC(QFDFTGMOPSRGPU, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(QFDFTGMOPSRGPU.container->type)) goto sentence_after_2;
-/*SET*/	r_G = QFDFTGMOPSRGPU;
+/*SET*/	GXTUHLCVSPIHAZ = arg_from;
+/*INC*/	if (!INC(GXTUHLCVSPIHAZ, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(GXTUHLCVSPIHAZ.container->type)) goto sentence_after_2;
+/*SET*/	r_G = GXTUHLCVSPIHAZ;
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor GXTUHLCVSPIHAZ;
+/*DEF*/	DataCursor RSSFSZWXBQMURW;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_G;
-/*SET*/	GXTUHLCVSPIHAZ = r_G;
-/*INC*/	if (!INC(GXTUHLCVSPIHAZ, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(GXTUHLCVSPIHAZ.container->type)) goto sentence_after_2;
-/*SET*/	r_A = GXTUHLCVSPIHAZ;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor RSSFSZWXBQMURW;
-/*SET*/	RSSFSZWXBQMURW = r_A;
+/*SET*/	RSSFSZWXBQMURW = r_G;
 /*INC*/	if (!INC(RSSFSZWXBQMURW, arg_to)) goto sentence_after_2;
-	if (RSSFSZWXBQMURW.container->type != text || *(RSSFSZWXBQMURW.container->value.text + RSSFSZWXBQMURW.index) != '=') goto sentence_after_2;
-//// [ s.1 <any> ] 
+	if (! isSymbolType(RSSFSZWXBQMURW.container->type)) goto sentence_after_2;
+/*SET*/	r_A = RSSFSZWXBQMURW;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor MXCDBHUMRGJQMV;
+/*SET*/	MXCDBHUMRGJQMV = r_A;
+/*INC*/	if (!INC(MXCDBHUMRGJQMV, arg_to)) goto sentence_after_2;
+	if (MXCDBHUMRGJQMV.container->type != text || *(MXCDBHUMRGJQMV.container->value.text + MXCDBHUMRGJQMV.index) != '=') goto sentence_after_2;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor NKYRTNSJVWZXSS;
 /*DEF*/	DataCursor l_AA;
 /*DEF*/	DataCursor r_AA;
-/*SET*/	l_AA = RSSFSZWXBQMURW;
-/*SET*/	MXCDBHUMRGJQMV = RSSFSZWXBQMURW;
-/*INC*/	if (!INC(MXCDBHUMRGJQMV, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(MXCDBHUMRGJQMV.container->type)) goto sentence_after_2;
-/*SET*/	r_AA = MXCDBHUMRGJQMV;
+/*SET*/	l_AA = MXCDBHUMRGJQMV;
+/*SET*/	NKYRTNSJVWZXSS = MXCDBHUMRGJQMV;
+/*INC*/	if (!INC(NKYRTNSJVWZXSS, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(NKYRTNSJVWZXSS.container->type)) goto sentence_after_2;
+/*SET*/	r_AA = NKYRTNSJVWZXSS;
 //// [ empty ] 
 /*ISEMPTY*/	if (r_AA!=0 && arg_to != r_AA) goto sentence_after_2;
 
@@ -1869,50 +1874,50 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor QXNJOMUYJNJUWR;
+/*DEF*/	DataCursor SYXWQYYXCSZPOK;
 /*DEF*/	DataCursor l_G;
 /*DEF*/	DataCursor r_G;
 /*SET*/	l_G = arg_from;
-/*SET*/	QXNJOMUYJNJUWR = arg_from;
-/*INC*/	if (!INC(QXNJOMUYJNJUWR, arg_to)) goto sentence_after_3;
-	if (! isSymbolType(QXNJOMUYJNJUWR.container->type)) goto sentence_after_3;
-/*SET*/	r_G = QXNJOMUYJNJUWR;
+/*SET*/	SYXWQYYXCSZPOK = arg_from;
+/*INC*/	if (!INC(SYXWQYYXCSZPOK, arg_to)) goto sentence_after_3;
+	if (! isSymbolType(SYXWQYYXCSZPOK.container->type)) goto sentence_after_3;
+/*SET*/	r_G = SYXWQYYXCSZPOK;
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor SYXWQYYXCSZPOK;
-/*SET*/	SYXWQYYXCSZPOK = r_G;
- if (!SLIDE(SYXWQYYXCSZPOK, arg_to, l_G, r_G)) goto sentence_after_3;
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor LWJDRLTBSCIEDP;
-/*SET*/	LWJDRLTBSCIEDP = SYXWQYYXCSZPOK;
-/*INC*/	if (!INC(LWJDRLTBSCIEDP, arg_to)) goto sentence_after_3;
-	if (LWJDRLTBSCIEDP.container->type != text || *(LWJDRLTBSCIEDP.container->value.text + LWJDRLTBSCIEDP.index) != '=') goto sentence_after_3;
-//// [ s.1 <any> ] 
+/*SET*/	LWJDRLTBSCIEDP = r_G;
+ if (!SLIDE(LWJDRLTBSCIEDP, arg_to, l_G, r_G)) goto sentence_after_3;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor IWLAQIGESJSQHS;
-/*DEF*/	DataCursor l_AA;
-/*DEF*/	DataCursor r_AA;
-/*SET*/	l_AA = LWJDRLTBSCIEDP;
 /*SET*/	IWLAQIGESJSQHS = LWJDRLTBSCIEDP;
 /*INC*/	if (!INC(IWLAQIGESJSQHS, arg_to)) goto sentence_after_3;
-	if (! isSymbolType(IWLAQIGESJSQHS.container->type)) goto sentence_after_3;
-/*SET*/	r_AA = IWLAQIGESJSQHS;
-//// [ &.name <any> ] 
-/*DEF*/	DataCursor JLRGLMWANRXRFN;
-/*SET*/	JLRGLMWANRXRFN = r_AA;
- if (!SLIDE(JLRGLMWANRXRFN, arg_to, l_G, r_G)) goto sentence_after_3;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor WAKZTGJHXAUNFQ;
-/*SET*/	WAKZTGJHXAUNFQ = JLRGLMWANRXRFN;
-/*INC*/	if (!INC(WAKZTGJHXAUNFQ, arg_to)) goto sentence_after_3;
-	if (WAKZTGJHXAUNFQ.container->type != text || *(WAKZTGJHXAUNFQ.container->value.text + WAKZTGJHXAUNFQ.index) != '=') goto sentence_after_3;
+	if (IWLAQIGESJSQHS.container->type != text || *(IWLAQIGESJSQHS.container->value.text + IWLAQIGESJSQHS.index) != '=') goto sentence_after_3;
 //// [ s.1 <any> ] 
+/*DEF*/	DataCursor JLRGLMWANRXRFN;
+/*DEF*/	DataCursor l_AA;
+/*DEF*/	DataCursor r_AA;
+/*SET*/	l_AA = IWLAQIGESJSQHS;
+/*SET*/	JLRGLMWANRXRFN = IWLAQIGESJSQHS;
+/*INC*/	if (!INC(JLRGLMWANRXRFN, arg_to)) goto sentence_after_3;
+	if (! isSymbolType(JLRGLMWANRXRFN.container->type)) goto sentence_after_3;
+/*SET*/	r_AA = JLRGLMWANRXRFN;
+//// [ &.name <any> ] 
+/*DEF*/	DataCursor WAKZTGJHXAUNFQ;
+/*SET*/	WAKZTGJHXAUNFQ = r_AA;
+ if (!SLIDE(WAKZTGJHXAUNFQ, arg_to, l_G, r_G)) goto sentence_after_3;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor JVXIOHNJQRJSHY;
-/*DEF*/	DataCursor l_BB;
-/*DEF*/	DataCursor r_BB;
-/*SET*/	l_BB = WAKZTGJHXAUNFQ;
 /*SET*/	JVXIOHNJQRJSHY = WAKZTGJHXAUNFQ;
 /*INC*/	if (!INC(JVXIOHNJQRJSHY, arg_to)) goto sentence_after_3;
-	if (! isSymbolType(JVXIOHNJQRJSHY.container->type)) goto sentence_after_3;
-/*SET*/	r_BB = JVXIOHNJQRJSHY;
+	if (JVXIOHNJQRJSHY.container->type != text || *(JVXIOHNJQRJSHY.container->value.text + JVXIOHNJQRJSHY.index) != '=') goto sentence_after_3;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor MDOVWGEFHJESVH;
+/*DEF*/	DataCursor l_BB;
+/*DEF*/	DataCursor r_BB;
+/*SET*/	l_BB = JVXIOHNJQRJSHY;
+/*SET*/	MDOVWGEFHJESVH = JVXIOHNJQRJSHY;
+/*INC*/	if (!INC(MDOVWGEFHJESVH, arg_to)) goto sentence_after_3;
+	if (! isSymbolType(MDOVWGEFHJESVH.container->type)) goto sentence_after_3;
+/*SET*/	r_BB = MDOVWGEFHJESVH;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
@@ -1920,27 +1925,27 @@ sentence_after_2:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* YUYOPQJKZTVJGK = new DataChain(); 
-DataContainer* YUYOPQJKZTVJGK_execbr = newRefExecBrackets(Switch, YUYOPQJKZTVJGK, "Switch");
-result->append(YUYOPQJKZTVJGK_execbr);
-YUYOPQJKZTVJGK->append_copy(l_G, r_G); 
-YUYOPQJKZTVJGK->append_copy(l_G, r_G); 
-YUYOPQJKZTVJGK->append(newRefText("=")); 
 DataChain* WXKEWPZHBJSUTH = new DataChain(); 
-DataContainer* WXKEWPZHBJSUTH_execbr = newRefExecBrackets(Maix, WXKEWPZHBJSUTH, "Maix");
-YUYOPQJKZTVJGK->append(WXKEWPZHBJSUTH_execbr);
-WXKEWPZHBJSUTH->append(newRefText("a")); 
-WXKEWPZHBJSUTH->append_copy(l_AA, r_AA); 
-WXKEWPZHBJSUTH->append_copy(l_BB, r_BB); 
+DataContainer* WXKEWPZHBJSUTH_execbr = newRefExecBrackets(Switch, WXKEWPZHBJSUTH, "Switch");
+result->append(WXKEWPZHBJSUTH_execbr);
+WXKEWPZHBJSUTH->append_copy(l_G, r_G); 
+WXKEWPZHBJSUTH->append_copy(l_G, r_G); 
+WXKEWPZHBJSUTH->append(newRefText("=")); 
 DataChain* SYOEFJGWWYEOZL = new DataChain(); 
-DataContainer* SYOEFJGWWYEOZL_execbr = newRefExecBrackets(Compare, SYOEFJGWWYEOZL, "Compare");
+DataContainer* SYOEFJGWWYEOZL_execbr = newRefExecBrackets(Maix, SYOEFJGWWYEOZL, "Maix");
 WXKEWPZHBJSUTH->append(SYOEFJGWWYEOZL_execbr);
+SYOEFJGWWYEOZL->append(newRefText("a")); 
 SYOEFJGWWYEOZL->append_copy(l_AA, r_AA); 
 SYOEFJGWWYEOZL->append_copy(l_BB, r_BB); 
+DataChain* UHMGABBSQRHCRT = new DataChain(); 
+DataContainer* UHMGABBSQRHCRT_execbr = newRefExecBrackets(Compare, UHMGABBSQRHCRT, "Compare");
+SYOEFJGWWYEOZL->append(UHMGABBSQRHCRT_execbr);
+UHMGABBSQRHCRT->append_copy(l_AA, r_AA); 
+UHMGABBSQRHCRT->append_copy(l_BB, r_BB); 
+context->pushExecuteCall(UHMGABBSQRHCRT_execbr);
 context->pushExecuteCall(SYOEFJGWWYEOZL_execbr);
+WXKEWPZHBJSUTH->append_copy(l_e, r_e); 
 context->pushExecuteCall(WXKEWPZHBJSUTH_execbr);
-YUYOPQJKZTVJGK->append_copy(l_e, r_e); 
-context->pushExecuteCall(YUYOPQJKZTVJGK_execbr);
 
 return result; 
 }
@@ -1949,55 +1954,55 @@ sentence_after_3:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor UHMGABBSQRHCRT;
+/*DEF*/	DataCursor XMJVCAXXSUFAHY;
 /*DEF*/	DataCursor l_G;
 /*DEF*/	DataCursor r_G;
 /*SET*/	l_G = arg_from;
-/*SET*/	UHMGABBSQRHCRT = arg_from;
-/*INC*/	if (!INC(UHMGABBSQRHCRT, arg_to)) goto sentence_after_4;
-	if (! isSymbolType(UHMGABBSQRHCRT.container->type)) goto sentence_after_4;
-/*SET*/	r_G = UHMGABBSQRHCRT;
+/*SET*/	XMJVCAXXSUFAHY = arg_from;
+/*INC*/	if (!INC(XMJVCAXXSUFAHY, arg_to)) goto sentence_after_4;
+	if (! isSymbolType(XMJVCAXXSUFAHY.container->type)) goto sentence_after_4;
+/*SET*/	r_G = XMJVCAXXSUFAHY;
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor XMJVCAXXSUFAHY;
-/*SET*/	XMJVCAXXSUFAHY = r_G;
- if (!SLIDE(XMJVCAXXSUFAHY, arg_to, l_G, r_G)) goto sentence_after_4;
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor YAYZKHUHJRJSVO;
-/*SET*/	YAYZKHUHJRJSVO = XMJVCAXXSUFAHY;
-/*INC*/	if (!INC(YAYZKHUHJRJSVO, arg_to)) goto sentence_after_4;
-	if (YAYZKHUHJRJSVO.container->type != text || *(YAYZKHUHJRJSVO.container->value.text + YAYZKHUHJRJSVO.index) != '=') goto sentence_after_4;
-//// [ s.1 <any> ] 
+/*SET*/	YAYZKHUHJRJSVO = r_G;
+ if (!SLIDE(YAYZKHUHJRJSVO, arg_to, l_G, r_G)) goto sentence_after_4;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor QHTYDWPBSZXSBZ;
-/*DEF*/	DataCursor l_AA;
-/*DEF*/	DataCursor r_AA;
-/*SET*/	l_AA = YAYZKHUHJRJSVO;
 /*SET*/	QHTYDWPBSZXSBZ = YAYZKHUHJRJSVO;
 /*INC*/	if (!INC(QHTYDWPBSZXSBZ, arg_to)) goto sentence_after_4;
-	if (! isSymbolType(QHTYDWPBSZXSBZ.container->type)) goto sentence_after_4;
-/*SET*/	r_AA = QHTYDWPBSZXSBZ;
+	if (QHTYDWPBSZXSBZ.container->type != text || *(QHTYDWPBSZXSBZ.container->value.text + QHTYDWPBSZXSBZ.index) != '=') goto sentence_after_4;
 //// [ s.1 <any> ] 
 /*DEF*/	DataCursor IYRVGQMLUNWSCP;
+/*DEF*/	DataCursor l_AA;
+/*DEF*/	DataCursor r_AA;
+/*SET*/	l_AA = QHTYDWPBSZXSBZ;
+/*SET*/	IYRVGQMLUNWSCP = QHTYDWPBSZXSBZ;
+/*INC*/	if (!INC(IYRVGQMLUNWSCP, arg_to)) goto sentence_after_4;
+	if (! isSymbolType(IYRVGQMLUNWSCP.container->type)) goto sentence_after_4;
+/*SET*/	r_AA = IYRVGQMLUNWSCP;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor IRZFCBTSEPLKGW;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
 /*SET*/	l_s = r_AA;
-/*SET*/	IYRVGQMLUNWSCP = r_AA;
-/*INC*/	if (!INC(IYRVGQMLUNWSCP, arg_to)) goto sentence_after_4;
-	if (! isSymbolType(IYRVGQMLUNWSCP.container->type)) goto sentence_after_4;
-/*SET*/	r_s = IYRVGQMLUNWSCP;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor IRZFCBTSEPLKGW;
-/*SET*/	IRZFCBTSEPLKGW = r_s;
+/*SET*/	IRZFCBTSEPLKGW = r_AA;
 /*INC*/	if (!INC(IRZFCBTSEPLKGW, arg_to)) goto sentence_after_4;
-	if (IRZFCBTSEPLKGW.container->type != text || *(IRZFCBTSEPLKGW.container->value.text + IRZFCBTSEPLKGW.index) != '=') goto sentence_after_4;
-//// [ s.1 <any> ] 
+	if (! isSymbolType(IRZFCBTSEPLKGW.container->type)) goto sentence_after_4;
+/*SET*/	r_s = IRZFCBTSEPLKGW;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor FKHROUOYSRWMQO;
+/*SET*/	FKHROUOYSRWMQO = r_s;
+/*INC*/	if (!INC(FKHROUOYSRWMQO, arg_to)) goto sentence_after_4;
+	if (FKHROUOYSRWMQO.container->type != text || *(FKHROUOYSRWMQO.container->value.text + FKHROUOYSRWMQO.index) != '=') goto sentence_after_4;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor JAHYQMFEVSDCOM;
 /*DEF*/	DataCursor l_BB;
 /*DEF*/	DataCursor r_BB;
-/*SET*/	l_BB = IRZFCBTSEPLKGW;
-/*SET*/	FKHROUOYSRWMQO = IRZFCBTSEPLKGW;
-/*INC*/	if (!INC(FKHROUOYSRWMQO, arg_to)) goto sentence_after_4;
-	if (! isSymbolType(FKHROUOYSRWMQO.container->type)) goto sentence_after_4;
-/*SET*/	r_BB = FKHROUOYSRWMQO;
+/*SET*/	l_BB = FKHROUOYSRWMQO;
+/*SET*/	JAHYQMFEVSDCOM = FKHROUOYSRWMQO;
+/*INC*/	if (!INC(JAHYQMFEVSDCOM, arg_to)) goto sentence_after_4;
+	if (! isSymbolType(JAHYQMFEVSDCOM.container->type)) goto sentence_after_4;
+/*SET*/	r_BB = JAHYQMFEVSDCOM;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
@@ -2005,15 +2010,15 @@ sentence_after_3:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* PRSKWGXULSUCKB = new DataChain(); 
-DataContainer* PRSKWGXULSUCKB_execbr = newRefExecBrackets(Switch, PRSKWGXULSUCKB, "Switch");
-result->append(PRSKWGXULSUCKB_execbr);
-PRSKWGXULSUCKB->append_copy(l_G, r_G); 
-PRSKWGXULSUCKB->append_copy(l_G, r_G); 
-PRSKWGXULSUCKB->append(newRefText("=")); 
-PRSKWGXULSUCKB->append_copy(l_AA, r_AA); 
-PRSKWGXULSUCKB->append_copy(l_e, r_e); 
-context->pushExecuteCall(PRSKWGXULSUCKB_execbr);
+DataChain* SEPJEISZSGCEZW = new DataChain(); 
+DataContainer* SEPJEISZSGCEZW_execbr = newRefExecBrackets(Switch, SEPJEISZSGCEZW, "Switch");
+result->append(SEPJEISZSGCEZW_execbr);
+SEPJEISZSGCEZW->append_copy(l_G, r_G); 
+SEPJEISZSGCEZW->append_copy(l_G, r_G); 
+SEPJEISZSGCEZW->append(newRefText("=")); 
+SEPJEISZSGCEZW->append_copy(l_AA, r_AA); 
+SEPJEISZSGCEZW->append_copy(l_e, r_e); 
+context->pushExecuteCall(SEPJEISZSGCEZW_execbr);
 
 return result; 
 }
@@ -2022,55 +2027,55 @@ sentence_after_4:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor SEPJEISZSGCEZW;
+/*DEF*/	DataCursor APQRVLWIGROVJC;
 /*DEF*/	DataCursor l_G;
 /*DEF*/	DataCursor r_G;
 /*SET*/	l_G = arg_from;
-/*SET*/	SEPJEISZSGCEZW = arg_from;
-/*INC*/	if (!INC(SEPJEISZSGCEZW, arg_to)) goto sentence_after_5;
-	if (! isSymbolType(SEPJEISZSGCEZW.container->type)) goto sentence_after_5;
-/*SET*/	r_G = SEPJEISZSGCEZW;
+/*SET*/	APQRVLWIGROVJC = arg_from;
+/*INC*/	if (!INC(APQRVLWIGROVJC, arg_to)) goto sentence_after_5;
+	if (! isSymbolType(APQRVLWIGROVJC.container->type)) goto sentence_after_5;
+/*SET*/	r_G = APQRVLWIGROVJC;
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor APQRVLWIGROVJC;
+/*DEF*/	DataCursor DZXXPHQLSRZIHM;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
 /*SET*/	l_s = r_G;
-/*SET*/	APQRVLWIGROVJC = r_G;
-/*INC*/	if (!INC(APQRVLWIGROVJC, arg_to)) goto sentence_after_5;
-	if (! isSymbolType(APQRVLWIGROVJC.container->type)) goto sentence_after_5;
-/*SET*/	r_s = APQRVLWIGROVJC;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor DZXXPHQLSRZIHM;
-/*SET*/	DZXXPHQLSRZIHM = r_s;
+/*SET*/	DZXXPHQLSRZIHM = r_G;
 /*INC*/	if (!INC(DZXXPHQLSRZIHM, arg_to)) goto sentence_after_5;
-	if (DZXXPHQLSRZIHM.container->type != text || *(DZXXPHQLSRZIHM.container->value.text + DZXXPHQLSRZIHM.index) != '=') goto sentence_after_5;
-//// [ s.1 <any> ] 
+	if (! isSymbolType(DZXXPHQLSRZIHM.container->type)) goto sentence_after_5;
+/*SET*/	r_s = DZXXPHQLSRZIHM;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor GZRIOQRQETKZFB;
+/*SET*/	GZRIOQRQETKZFB = r_s;
+/*INC*/	if (!INC(GZRIOQRQETKZFB, arg_to)) goto sentence_after_5;
+	if (GZRIOQRQETKZFB.container->type != text || *(GZRIOQRQETKZFB.container->value.text + GZRIOQRQETKZFB.index) != '=') goto sentence_after_5;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor LDJIEMSFZBHZFN;
 /*DEF*/	DataCursor l_AA;
 /*DEF*/	DataCursor r_AA;
-/*SET*/	l_AA = DZXXPHQLSRZIHM;
-/*SET*/	GZRIOQRQETKZFB = DZXXPHQLSRZIHM;
-/*INC*/	if (!INC(GZRIOQRQETKZFB, arg_to)) goto sentence_after_5;
-	if (! isSymbolType(GZRIOQRQETKZFB.container->type)) goto sentence_after_5;
-/*SET*/	r_AA = GZRIOQRQETKZFB;
+/*SET*/	l_AA = GZRIOQRQETKZFB;
+/*SET*/	LDJIEMSFZBHZFN = GZRIOQRQETKZFB;
+/*INC*/	if (!INC(LDJIEMSFZBHZFN, arg_to)) goto sentence_after_5;
+	if (! isSymbolType(LDJIEMSFZBHZFN.container->type)) goto sentence_after_5;
+/*SET*/	r_AA = LDJIEMSFZBHZFN;
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor LDJIEMSFZBHZFN;
-/*SET*/	LDJIEMSFZBHZFN = r_AA;
- if (!SLIDE(LDJIEMSFZBHZFN, arg_to, l_G, r_G)) goto sentence_after_5;
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor WYWMXXGDPYLRAX;
-/*SET*/	WYWMXXGDPYLRAX = LDJIEMSFZBHZFN;
-/*INC*/	if (!INC(WYWMXXGDPYLRAX, arg_to)) goto sentence_after_5;
-	if (WYWMXXGDPYLRAX.container->type != text || *(WYWMXXGDPYLRAX.container->value.text + WYWMXXGDPYLRAX.index) != '=') goto sentence_after_5;
-//// [ s.1 <any> ] 
+/*SET*/	WYWMXXGDPYLRAX = r_AA;
+ if (!SLIDE(WYWMXXGDPYLRAX, arg_to, l_G, r_G)) goto sentence_after_5;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor GLMTBIYLBHCWHL;
-/*DEF*/	DataCursor l_BB;
-/*DEF*/	DataCursor r_BB;
-/*SET*/	l_BB = WYWMXXGDPYLRAX;
 /*SET*/	GLMTBIYLBHCWHL = WYWMXXGDPYLRAX;
 /*INC*/	if (!INC(GLMTBIYLBHCWHL, arg_to)) goto sentence_after_5;
-	if (! isSymbolType(GLMTBIYLBHCWHL.container->type)) goto sentence_after_5;
-/*SET*/	r_BB = GLMTBIYLBHCWHL;
+	if (GLMTBIYLBHCWHL.container->type != text || *(GLMTBIYLBHCWHL.container->value.text + GLMTBIYLBHCWHL.index) != '=') goto sentence_after_5;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor SYOYHGMGOPPRZA;
+/*DEF*/	DataCursor l_BB;
+/*DEF*/	DataCursor r_BB;
+/*SET*/	l_BB = GLMTBIYLBHCWHL;
+/*SET*/	SYOYHGMGOPPRZA = GLMTBIYLBHCWHL;
+/*INC*/	if (!INC(SYOYHGMGOPPRZA, arg_to)) goto sentence_after_5;
+	if (! isSymbolType(SYOYHGMGOPPRZA.container->type)) goto sentence_after_5;
+/*SET*/	r_BB = SYOYHGMGOPPRZA;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
@@ -2078,15 +2083,15 @@ sentence_after_4:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* JQBZXTHTOPOTMI = new DataChain(); 
-DataContainer* JQBZXTHTOPOTMI_execbr = newRefExecBrackets(Switch, JQBZXTHTOPOTMI, "Switch");
-result->append(JQBZXTHTOPOTMI_execbr);
-JQBZXTHTOPOTMI->append_copy(l_G, r_G); 
-JQBZXTHTOPOTMI->append_copy(l_G, r_G); 
-JQBZXTHTOPOTMI->append(newRefText("=")); 
-JQBZXTHTOPOTMI->append_copy(l_BB, r_BB); 
-JQBZXTHTOPOTMI->append_copy(l_e, r_e); 
-context->pushExecuteCall(JQBZXTHTOPOTMI_execbr);
+DataChain* TNQWTOETONXWZG = new DataChain(); 
+DataContainer* TNQWTOETONXWZG_execbr = newRefExecBrackets(Switch, TNQWTOETONXWZG, "Switch");
+result->append(TNQWTOETONXWZG_execbr);
+TNQWTOETONXWZG->append_copy(l_G, r_G); 
+TNQWTOETONXWZG->append_copy(l_G, r_G); 
+TNQWTOETONXWZG->append(newRefText("=")); 
+TNQWTOETONXWZG->append_copy(l_BB, r_BB); 
+TNQWTOETONXWZG->append_copy(l_e, r_e); 
+context->pushExecuteCall(TNQWTOETONXWZG_execbr);
 
 return result; 
 }
@@ -2095,55 +2100,55 @@ sentence_after_5:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor TNQWTOETONXWZG;
+/*DEF*/	DataCursor HUTIFKLGKLRNUW;
 /*DEF*/	DataCursor l_G;
 /*DEF*/	DataCursor r_G;
 /*SET*/	l_G = arg_from;
-/*SET*/	TNQWTOETONXWZG = arg_from;
-/*INC*/	if (!INC(TNQWTOETONXWZG, arg_to)) goto sentence_after_6;
-	if (! isSymbolType(TNQWTOETONXWZG.container->type)) goto sentence_after_6;
-/*SET*/	r_G = TNQWTOETONXWZG;
+/*SET*/	HUTIFKLGKLRNUW = arg_from;
+/*INC*/	if (!INC(HUTIFKLGKLRNUW, arg_to)) goto sentence_after_6;
+	if (! isSymbolType(HUTIFKLGKLRNUW.container->type)) goto sentence_after_6;
+/*SET*/	r_G = HUTIFKLGKLRNUW;
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor HUTIFKLGKLRNUW;
+/*DEF*/	DataCursor KMSYQCPUIVAHQA;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
 /*SET*/	l_s = r_G;
-/*SET*/	HUTIFKLGKLRNUW = r_G;
-/*INC*/	if (!INC(HUTIFKLGKLRNUW, arg_to)) goto sentence_after_6;
-	if (! isSymbolType(HUTIFKLGKLRNUW.container->type)) goto sentence_after_6;
-/*SET*/	r_s = HUTIFKLGKLRNUW;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor KMSYQCPUIVAHQA;
-/*SET*/	KMSYQCPUIVAHQA = r_s;
+/*SET*/	KMSYQCPUIVAHQA = r_G;
 /*INC*/	if (!INC(KMSYQCPUIVAHQA, arg_to)) goto sentence_after_6;
-	if (KMSYQCPUIVAHQA.container->type != text || *(KMSYQCPUIVAHQA.container->value.text + KMSYQCPUIVAHQA.index) != '=') goto sentence_after_6;
-//// [ s.1 <any> ] 
+	if (! isSymbolType(KMSYQCPUIVAHQA.container->type)) goto sentence_after_6;
+/*SET*/	r_s = KMSYQCPUIVAHQA;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor TMSCKMAALKICSN;
+/*SET*/	TMSCKMAALKICSN = r_s;
+/*INC*/	if (!INC(TMSCKMAALKICSN, arg_to)) goto sentence_after_6;
+	if (TMSCKMAALKICSN.container->type != text || *(TMSCKMAALKICSN.container->value.text + TMSCKMAALKICSN.index) != '=') goto sentence_after_6;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor XUCOVTYKRXAWZA;
 /*DEF*/	DataCursor l_AA;
 /*DEF*/	DataCursor r_AA;
-/*SET*/	l_AA = KMSYQCPUIVAHQA;
-/*SET*/	TMSCKMAALKICSN = KMSYQCPUIVAHQA;
-/*INC*/	if (!INC(TMSCKMAALKICSN, arg_to)) goto sentence_after_6;
-	if (! isSymbolType(TMSCKMAALKICSN.container->type)) goto sentence_after_6;
-/*SET*/	r_AA = TMSCKMAALKICSN;
+/*SET*/	l_AA = TMSCKMAALKICSN;
+/*SET*/	XUCOVTYKRXAWZA = TMSCKMAALKICSN;
+/*INC*/	if (!INC(XUCOVTYKRXAWZA, arg_to)) goto sentence_after_6;
+	if (! isSymbolType(XUCOVTYKRXAWZA.container->type)) goto sentence_after_6;
+/*SET*/	r_AA = XUCOVTYKRXAWZA;
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor XUCOVTYKRXAWZA;
-/*SET*/	XUCOVTYKRXAWZA = r_AA;
- if (!SLIDE(XUCOVTYKRXAWZA, arg_to, l_s, r_s)) goto sentence_after_6;
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor DJXWXQMNDHLDTT;
-/*SET*/	DJXWXQMNDHLDTT = XUCOVTYKRXAWZA;
-/*INC*/	if (!INC(DJXWXQMNDHLDTT, arg_to)) goto sentence_after_6;
-	if (DJXWXQMNDHLDTT.container->type != text || *(DJXWXQMNDHLDTT.container->value.text + DJXWXQMNDHLDTT.index) != '=') goto sentence_after_6;
-//// [ s.1 <any> ] 
+/*SET*/	DJXWXQMNDHLDTT = r_AA;
+ if (!SLIDE(DJXWXQMNDHLDTT, arg_to, l_s, r_s)) goto sentence_after_6;
+//// [ `a` <any> ] 
 /*DEF*/	DataCursor XSKNXTEZNJSQTF;
-/*DEF*/	DataCursor l_BB;
-/*DEF*/	DataCursor r_BB;
-/*SET*/	l_BB = DJXWXQMNDHLDTT;
 /*SET*/	XSKNXTEZNJSQTF = DJXWXQMNDHLDTT;
 /*INC*/	if (!INC(XSKNXTEZNJSQTF, arg_to)) goto sentence_after_6;
-	if (! isSymbolType(XSKNXTEZNJSQTF.container->type)) goto sentence_after_6;
-/*SET*/	r_BB = XSKNXTEZNJSQTF;
+	if (XSKNXTEZNJSQTF.container->type != text || *(XSKNXTEZNJSQTF.container->value.text + XSKNXTEZNJSQTF.index) != '=') goto sentence_after_6;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor BCCFQMWHBVSSII;
+/*DEF*/	DataCursor l_BB;
+/*DEF*/	DataCursor r_BB;
+/*SET*/	l_BB = XSKNXTEZNJSQTF;
+/*SET*/	BCCFQMWHBVSSII = XSKNXTEZNJSQTF;
+/*INC*/	if (!INC(BCCFQMWHBVSSII, arg_to)) goto sentence_after_6;
+	if (! isSymbolType(BCCFQMWHBVSSII.container->type)) goto sentence_after_6;
+/*SET*/	r_BB = BCCFQMWHBVSSII;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
@@ -2151,27 +2156,27 @@ sentence_after_5:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* KWYWTTJZPPKWLB = new DataChain(); 
-DataContainer* KWYWTTJZPPKWLB_execbr = newRefExecBrackets(Switch, KWYWTTJZPPKWLB, "Switch");
-result->append(KWYWTTJZPPKWLB_execbr);
-KWYWTTJZPPKWLB->append_copy(l_G, r_G); 
-KWYWTTJZPPKWLB->append_copy(l_s, r_s); 
-KWYWTTJZPPKWLB->append(newRefText("=")); 
 DataChain* MJAHTPUTIEBPBB = new DataChain(); 
-DataContainer* MJAHTPUTIEBPBB_execbr = newRefExecBrackets(Maix, MJAHTPUTIEBPBB, "Maix");
-KWYWTTJZPPKWLB->append(MJAHTPUTIEBPBB_execbr);
-MJAHTPUTIEBPBB->append(newRefText("i")); 
-MJAHTPUTIEBPBB->append_copy(l_AA, r_AA); 
-MJAHTPUTIEBPBB->append_copy(l_BB, r_BB); 
+DataContainer* MJAHTPUTIEBPBB_execbr = newRefExecBrackets(Switch, MJAHTPUTIEBPBB, "Switch");
+result->append(MJAHTPUTIEBPBB_execbr);
+MJAHTPUTIEBPBB->append_copy(l_G, r_G); 
+MJAHTPUTIEBPBB->append_copy(l_s, r_s); 
+MJAHTPUTIEBPBB->append(newRefText("=")); 
 DataChain* MUEGYRHLTHXWGJ = new DataChain(); 
-DataContainer* MUEGYRHLTHXWGJ_execbr = newRefExecBrackets(Compare, MUEGYRHLTHXWGJ, "Compare");
+DataContainer* MUEGYRHLTHXWGJ_execbr = newRefExecBrackets(Maix, MUEGYRHLTHXWGJ, "Maix");
 MJAHTPUTIEBPBB->append(MUEGYRHLTHXWGJ_execbr);
+MUEGYRHLTHXWGJ->append(newRefText("i")); 
 MUEGYRHLTHXWGJ->append_copy(l_AA, r_AA); 
 MUEGYRHLTHXWGJ->append_copy(l_BB, r_BB); 
+DataChain* PRWVHSHZYAVQYE = new DataChain(); 
+DataContainer* PRWVHSHZYAVQYE_execbr = newRefExecBrackets(Compare, PRWVHSHZYAVQYE, "Compare");
+MUEGYRHLTHXWGJ->append(PRWVHSHZYAVQYE_execbr);
+PRWVHSHZYAVQYE->append_copy(l_AA, r_AA); 
+PRWVHSHZYAVQYE->append_copy(l_BB, r_BB); 
+context->pushExecuteCall(PRWVHSHZYAVQYE_execbr);
 context->pushExecuteCall(MUEGYRHLTHXWGJ_execbr);
+MJAHTPUTIEBPBB->append_copy(l_e, r_e); 
 context->pushExecuteCall(MJAHTPUTIEBPBB_execbr);
-KWYWTTJZPPKWLB->append_copy(l_e, r_e); 
-context->pushExecuteCall(KWYWTTJZPPKWLB_execbr);
 
 return result; 
 }
@@ -2186,12 +2191,12 @@ sentence_after_6:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* PRWVHSHZYAVQYE = new DataChain(); 
-DataContainer* PRWVHSHZYAVQYE_execbr = newRefExecBrackets(Prout, PRWVHSHZYAVQYE, "Prout");
-result->append(PRWVHSHZYAVQYE_execbr);
-PRWVHSHZYAVQYE->append(newRefText("Sw unk: ")); 
-PRWVHSHZYAVQYE->append_copy(l_e, r_e); 
-context->pushExecuteCall(PRWVHSHZYAVQYE_execbr);
+DataChain* CZTOZOABNANHRR = new DataChain(); 
+DataContainer* CZTOZOABNANHRR_execbr = newRefExecBrackets(Prout, CZTOZOABNANHRR, "Prout");
+result->append(CZTOZOABNANHRR_execbr);
+CZTOZOABNANHRR->append(newRefText("Sw unk: ")); 
+CZTOZOABNANHRR->append_copy(l_e, r_e); 
+context->pushExecuteCall(CZTOZOABNANHRR_execbr);
 
 return result; 
 }
@@ -2210,35 +2215,35 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor CZTOZOABNANHRR;
-/*SET*/	CZTOZOABNANHRR = arg_from;
-/*INC*/	if (!INC(CZTOZOABNANHRR, arg_to)) goto sentence_after_1;
-	if (CZTOZOABNANHRR.container->type != text || *(CZTOZOABNANHRR.container->value.text + CZTOZOABNANHRR.index) != 'a') goto sentence_after_1;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor BDDNDODXEUIOZI;
-/*DEF*/	DataCursor l_A;
-/*DEF*/	DataCursor r_A;
-/*SET*/	l_A = CZTOZOABNANHRR;
-/*SET*/	BDDNDODXEUIOZI = CZTOZOABNANHRR;
+/*SET*/	BDDNDODXEUIOZI = arg_from;
 /*INC*/	if (!INC(BDDNDODXEUIOZI, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(BDDNDODXEUIOZI.container->type)) goto sentence_after_1;
-/*SET*/	r_A = BDDNDODXEUIOZI;
+	if (BDDNDODXEUIOZI.container->type != text || *(BDDNDODXEUIOZI.container->value.text + BDDNDODXEUIOZI.index) != 'a') goto sentence_after_1;
 //// [ s.1 <any> ] 
 /*DEF*/	DataCursor OIUOZXQTIHWAUR;
+/*DEF*/	DataCursor l_A;
+/*DEF*/	DataCursor r_A;
+/*SET*/	l_A = BDDNDODXEUIOZI;
+/*SET*/	OIUOZXQTIHWAUR = BDDNDODXEUIOZI;
+/*INC*/	if (!INC(OIUOZXQTIHWAUR, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(OIUOZXQTIHWAUR.container->type)) goto sentence_after_1;
+/*SET*/	r_A = OIUOZXQTIHWAUR;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor OQRDQWCVLXZIPO;
 /*DEF*/	DataCursor l_B;
 /*DEF*/	DataCursor r_B;
 /*SET*/	l_B = r_A;
-/*SET*/	OIUOZXQTIHWAUR = r_A;
-/*INC*/	if (!INC(OIUOZXQTIHWAUR, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(OIUOZXQTIHWAUR.container->type)) goto sentence_after_1;
-/*SET*/	r_B = OIUOZXQTIHWAUR;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor OQRDQWCVLXZIPO;
-/*SET*/	OQRDQWCVLXZIPO = r_B;
+/*SET*/	OQRDQWCVLXZIPO = r_A;
 /*INC*/	if (!INC(OQRDQWCVLXZIPO, arg_to)) goto sentence_after_1;
-	if (OQRDQWCVLXZIPO.container->type != text || *(OQRDQWCVLXZIPO.container->value.text + OQRDQWCVLXZIPO.index) != '-') goto sentence_after_1;
+	if (! isSymbolType(OQRDQWCVLXZIPO.container->type)) goto sentence_after_1;
+/*SET*/	r_B = OQRDQWCVLXZIPO;
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor DIISPQNZOMCWVA;
+/*SET*/	DIISPQNZOMCWVA = r_B;
+/*INC*/	if (!INC(DIISPQNZOMCWVA, arg_to)) goto sentence_after_1;
+	if (DIISPQNZOMCWVA.container->type != text || *(DIISPQNZOMCWVA.container->value.text + DIISPQNZOMCWVA.index) != '-') goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (OQRDQWCVLXZIPO!=0 && arg_to != OQRDQWCVLXZIPO) goto sentence_after_1;
+/*ISEMPTY*/	if (DIISPQNZOMCWVA!=0 && arg_to != DIISPQNZOMCWVA) goto sentence_after_1;
 
 // подготовка подстановки 
 result->append_copy(l_B, r_B); 
@@ -2250,35 +2255,35 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor QQTMIUUYVGAIHF;
-/*SET*/	QQTMIUUYVGAIHF = arg_from;
-/*INC*/	if (!INC(QQTMIUUYVGAIHF, arg_to)) goto sentence_after_2;
-	if (QQTMIUUYVGAIHF.container->type != text || *(QQTMIUUYVGAIHF.container->value.text + QQTMIUUYVGAIHF.index) != 'a') goto sentence_after_2;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor SHCCXHUUYYHTGD;
-/*DEF*/	DataCursor l_A;
-/*DEF*/	DataCursor r_A;
-/*SET*/	l_A = QQTMIUUYVGAIHF;
-/*SET*/	SHCCXHUUYYHTGD = QQTMIUUYVGAIHF;
+/*SET*/	SHCCXHUUYYHTGD = arg_from;
 /*INC*/	if (!INC(SHCCXHUUYYHTGD, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(SHCCXHUUYYHTGD.container->type)) goto sentence_after_2;
-/*SET*/	r_A = SHCCXHUUYYHTGD;
+	if (SHCCXHUUYYHTGD.container->type != text || *(SHCCXHUUYYHTGD.container->value.text + SHCCXHUUYYHTGD.index) != 'a') goto sentence_after_2;
 //// [ s.1 <any> ] 
 /*DEF*/	DataCursor GLFCIEBDUTOEUN;
+/*DEF*/	DataCursor l_A;
+/*DEF*/	DataCursor r_A;
+/*SET*/	l_A = SHCCXHUUYYHTGD;
+/*SET*/	GLFCIEBDUTOEUN = SHCCXHUUYYHTGD;
+/*INC*/	if (!INC(GLFCIEBDUTOEUN, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(GLFCIEBDUTOEUN.container->type)) goto sentence_after_2;
+/*SET*/	r_A = GLFCIEBDUTOEUN;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor FHDAXPHBSYWZTP;
 /*DEF*/	DataCursor l_B;
 /*DEF*/	DataCursor r_B;
 /*SET*/	l_B = r_A;
-/*SET*/	GLFCIEBDUTOEUN = r_A;
-/*INC*/	if (!INC(GLFCIEBDUTOEUN, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(GLFCIEBDUTOEUN.container->type)) goto sentence_after_2;
-/*SET*/	r_B = GLFCIEBDUTOEUN;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor FHDAXPHBSYWZTP;
-/*SET*/	FHDAXPHBSYWZTP = r_B;
+/*SET*/	FHDAXPHBSYWZTP = r_A;
 /*INC*/	if (!INC(FHDAXPHBSYWZTP, arg_to)) goto sentence_after_2;
-	if (FHDAXPHBSYWZTP.container->type != text || *(FHDAXPHBSYWZTP.container->value.text + FHDAXPHBSYWZTP.index) != '+') goto sentence_after_2;
+	if (! isSymbolType(FHDAXPHBSYWZTP.container->type)) goto sentence_after_2;
+/*SET*/	r_B = FHDAXPHBSYWZTP;
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor WJNGJNCPXRJVBV;
+/*SET*/	WJNGJNCPXRJVBV = r_B;
+/*INC*/	if (!INC(WJNGJNCPXRJVBV, arg_to)) goto sentence_after_2;
+	if (WJNGJNCPXRJVBV.container->type != text || *(WJNGJNCPXRJVBV.container->value.text + WJNGJNCPXRJVBV.index) != '+') goto sentence_after_2;
 //// [ empty ] 
-/*ISEMPTY*/	if (FHDAXPHBSYWZTP!=0 && arg_to != FHDAXPHBSYWZTP) goto sentence_after_2;
+/*ISEMPTY*/	if (WJNGJNCPXRJVBV!=0 && arg_to != WJNGJNCPXRJVBV) goto sentence_after_2;
 
 // подготовка подстановки 
 result->append_copy(l_A, r_A); 
@@ -2290,35 +2295,35 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor MMKWDEHFKRUQBY;
-/*SET*/	MMKWDEHFKRUQBY = arg_from;
-/*INC*/	if (!INC(MMKWDEHFKRUQBY, arg_to)) goto sentence_after_3;
-	if (MMKWDEHFKRUQBY.container->type != text || *(MMKWDEHFKRUQBY.container->value.text + MMKWDEHFKRUQBY.index) != 'i') goto sentence_after_3;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor VECMPESROMDXLL;
-/*DEF*/	DataCursor l_B;
-/*DEF*/	DataCursor r_B;
-/*SET*/	l_B = MMKWDEHFKRUQBY;
-/*SET*/	VECMPESROMDXLL = MMKWDEHFKRUQBY;
+/*SET*/	VECMPESROMDXLL = arg_from;
 /*INC*/	if (!INC(VECMPESROMDXLL, arg_to)) goto sentence_after_3;
-	if (! isSymbolType(VECMPESROMDXLL.container->type)) goto sentence_after_3;
-/*SET*/	r_B = VECMPESROMDXLL;
+	if (VECMPESROMDXLL.container->type != text || *(VECMPESROMDXLL.container->value.text + VECMPESROMDXLL.index) != 'i') goto sentence_after_3;
 //// [ s.1 <any> ] 
 /*DEF*/	DataCursor UBRYYESHQLZMRE;
+/*DEF*/	DataCursor l_B;
+/*DEF*/	DataCursor r_B;
+/*SET*/	l_B = VECMPESROMDXLL;
+/*SET*/	UBRYYESHQLZMRE = VECMPESROMDXLL;
+/*INC*/	if (!INC(UBRYYESHQLZMRE, arg_to)) goto sentence_after_3;
+	if (! isSymbolType(UBRYYESHQLZMRE.container->type)) goto sentence_after_3;
+/*SET*/	r_B = UBRYYESHQLZMRE;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor WQNKQITXGIIGQU;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_B;
-/*SET*/	UBRYYESHQLZMRE = r_B;
-/*INC*/	if (!INC(UBRYYESHQLZMRE, arg_to)) goto sentence_after_3;
-	if (! isSymbolType(UBRYYESHQLZMRE.container->type)) goto sentence_after_3;
-/*SET*/	r_A = UBRYYESHQLZMRE;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor WQNKQITXGIIGQU;
-/*SET*/	WQNKQITXGIIGQU = r_A;
+/*SET*/	WQNKQITXGIIGQU = r_B;
 /*INC*/	if (!INC(WQNKQITXGIIGQU, arg_to)) goto sentence_after_3;
-	if (WQNKQITXGIIGQU.container->type != text || *(WQNKQITXGIIGQU.container->value.text + WQNKQITXGIIGQU.index) != '-') goto sentence_after_3;
+	if (! isSymbolType(WQNKQITXGIIGQU.container->type)) goto sentence_after_3;
+/*SET*/	r_A = WQNKQITXGIIGQU;
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor SKWTCZNLTERXBL;
+/*SET*/	SKWTCZNLTERXBL = r_A;
+/*INC*/	if (!INC(SKWTCZNLTERXBL, arg_to)) goto sentence_after_3;
+	if (SKWTCZNLTERXBL.container->type != text || *(SKWTCZNLTERXBL.container->value.text + SKWTCZNLTERXBL.index) != '-') goto sentence_after_3;
 //// [ empty ] 
-/*ISEMPTY*/	if (WQNKQITXGIIGQU!=0 && arg_to != WQNKQITXGIIGQU) goto sentence_after_3;
+/*ISEMPTY*/	if (SKWTCZNLTERXBL!=0 && arg_to != SKWTCZNLTERXBL) goto sentence_after_3;
 
 // подготовка подстановки 
 result->append_copy(l_B, r_B); 
@@ -2330,35 +2335,35 @@ sentence_after_3:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor WZZTDJPQSUOWKV;
-/*SET*/	WZZTDJPQSUOWKV = arg_from;
-/*INC*/	if (!INC(WZZTDJPQSUOWKV, arg_to)) goto sentence_after_4;
-	if (WZZTDJPQSUOWKV.container->type != text || *(WZZTDJPQSUOWKV.container->value.text + WZZTDJPQSUOWKV.index) != 'i') goto sentence_after_4;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor FCCOCKVRJBFRJP;
-/*DEF*/	DataCursor l_B;
-/*DEF*/	DataCursor r_B;
-/*SET*/	l_B = WZZTDJPQSUOWKV;
-/*SET*/	FCCOCKVRJBFRJP = WZZTDJPQSUOWKV;
+/*SET*/	FCCOCKVRJBFRJP = arg_from;
 /*INC*/	if (!INC(FCCOCKVRJBFRJP, arg_to)) goto sentence_after_4;
-	if (! isSymbolType(FCCOCKVRJBFRJP.container->type)) goto sentence_after_4;
-/*SET*/	r_B = FCCOCKVRJBFRJP;
+	if (FCCOCKVRJBFRJP.container->type != text || *(FCCOCKVRJBFRJP.container->value.text + FCCOCKVRJBFRJP.index) != 'i') goto sentence_after_4;
 //// [ s.1 <any> ] 
 /*DEF*/	DataCursor CGDJDRWDNPOSRJ;
+/*DEF*/	DataCursor l_B;
+/*DEF*/	DataCursor r_B;
+/*SET*/	l_B = FCCOCKVRJBFRJP;
+/*SET*/	CGDJDRWDNPOSRJ = FCCOCKVRJBFRJP;
+/*INC*/	if (!INC(CGDJDRWDNPOSRJ, arg_to)) goto sentence_after_4;
+	if (! isSymbolType(CGDJDRWDNPOSRJ.container->type)) goto sentence_after_4;
+/*SET*/	r_B = CGDJDRWDNPOSRJ;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor GDRQRVQTVPPAZH;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_B;
-/*SET*/	CGDJDRWDNPOSRJ = r_B;
-/*INC*/	if (!INC(CGDJDRWDNPOSRJ, arg_to)) goto sentence_after_4;
-	if (! isSymbolType(CGDJDRWDNPOSRJ.container->type)) goto sentence_after_4;
-/*SET*/	r_A = CGDJDRWDNPOSRJ;
-//// [ `a` <any> ] 
-/*DEF*/	DataCursor GDRQRVQTVPPAZH;
-/*SET*/	GDRQRVQTVPPAZH = r_A;
+/*SET*/	GDRQRVQTVPPAZH = r_B;
 /*INC*/	if (!INC(GDRQRVQTVPPAZH, arg_to)) goto sentence_after_4;
-	if (GDRQRVQTVPPAZH.container->type != text || *(GDRQRVQTVPPAZH.container->value.text + GDRQRVQTVPPAZH.index) != '+') goto sentence_after_4;
+	if (! isSymbolType(GDRQRVQTVPPAZH.container->type)) goto sentence_after_4;
+/*SET*/	r_A = GDRQRVQTVPPAZH;
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor LTJQVCCLPEZTSJ;
+/*SET*/	LTJQVCCLPEZTSJ = r_A;
+/*INC*/	if (!INC(LTJQVCCLPEZTSJ, arg_to)) goto sentence_after_4;
+	if (LTJQVCCLPEZTSJ.container->type != text || *(LTJQVCCLPEZTSJ.container->value.text + LTJQVCCLPEZTSJ.index) != '+') goto sentence_after_4;
 //// [ empty ] 
-/*ISEMPTY*/	if (GDRQRVQTVPPAZH!=0 && arg_to != GDRQRVQTVPPAZH) goto sentence_after_4;
+/*ISEMPTY*/	if (LTJQVCCLPEZTSJ!=0 && arg_to != LTJQVCCLPEZTSJ) goto sentence_after_4;
 
 // подготовка подстановки 
 result->append_copy(l_A, r_A); 
@@ -2374,30 +2379,30 @@ sentence_after_4:
 /*DEF*/	DataCursor r_e;
 /*SET*/	l_e = arg_from;
 /*SET*/	r_e = arg_from;
-/*JMP*/	goto label_HHWEWNVCBVDKUZ_firststep;
-label_HHWEWNVCBVDKUZ: 
+/*JMP*/	goto label_IFIFRTWQQEOJUE_firststep;
+label_IFIFRTWQQEOJUE: 
 /*INC*/	if (!INC(r_e, arg_to)) goto sentence_after_5;
-label_HHWEWNVCBVDKUZ_firststep: 
+label_IFIFRTWQQEOJUE_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor IFIFRTWQQEOJUE;
+/*DEF*/	DataCursor QBNSKWZEEWZKAO;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_e;
-/*SET*/	IFIFRTWQQEOJUE = r_e;
-/*INC*/	if (!INC(IFIFRTWQQEOJUE, arg_to)) goto label_HHWEWNVCBVDKUZ;
-	if (! isSymbolType(IFIFRTWQQEOJUE.container->type)) goto label_HHWEWNVCBVDKUZ;
-/*SET*/	r_A = IFIFRTWQQEOJUE;
+/*SET*/	QBNSKWZEEWZKAO = r_e;
+/*INC*/	if (!INC(QBNSKWZEEWZKAO, arg_to)) goto label_IFIFRTWQQEOJUE;
+	if (! isSymbolType(QBNSKWZEEWZKAO.container->type)) goto label_IFIFRTWQQEOJUE;
+/*SET*/	r_A = QBNSKWZEEWZKAO;
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor QBNSKWZEEWZKAO;
+/*DEF*/	DataCursor JURSQGSCZVHHUJ;
 /*DEF*/	DataCursor l_zn;
 /*DEF*/	DataCursor r_zn;
 /*SET*/	l_zn = r_A;
-/*SET*/	QBNSKWZEEWZKAO = r_A;
-/*INC*/	if (!INC(QBNSKWZEEWZKAO, arg_to)) goto label_HHWEWNVCBVDKUZ;
-	if (! isSymbolType(QBNSKWZEEWZKAO.container->type)) goto label_HHWEWNVCBVDKUZ;
-/*SET*/	r_zn = QBNSKWZEEWZKAO;
+/*SET*/	JURSQGSCZVHHUJ = r_A;
+/*INC*/	if (!INC(JURSQGSCZVHHUJ, arg_to)) goto label_IFIFRTWQQEOJUE;
+	if (! isSymbolType(JURSQGSCZVHHUJ.container->type)) goto label_IFIFRTWQQEOJUE;
+/*SET*/	r_zn = JURSQGSCZVHHUJ;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_zn!=0 && arg_to != r_zn) goto label_HHWEWNVCBVDKUZ;
+/*ISEMPTY*/	if (r_zn!=0 && arg_to != r_zn) goto label_IFIFRTWQQEOJUE;
 
 // подготовка подстановки 
 result->append_copy(l_A, r_A); 
@@ -2425,17 +2430,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* JURSQGSCZVHHUJ = new DataChain(); 
-DataContainer* JURSQGSCZVHHUJ_execbr = newRefExecBrackets(Prout, JURSQGSCZVHHUJ, "Prout");
-result->append(JURSQGSCZVHHUJ_execbr);
-JURSQGSCZVHHUJ->append(newRefWord("WriteXO:")); 
-JURSQGSCZVHHUJ->append_copy(l_e, r_e); 
-context->pushExecuteCall(JURSQGSCZVHHUJ_execbr);
 DataChain* ZUMIGOFHWBKKFL = new DataChain(); 
-DataContainer* ZUMIGOFHWBKKFL_execbr = newRefExecBrackets(WriteXO__, ZUMIGOFHWBKKFL, "WriteXO__");
+DataContainer* ZUMIGOFHWBKKFL_execbr = newRefExecBrackets(Prout, ZUMIGOFHWBKKFL, "Prout");
 result->append(ZUMIGOFHWBKKFL_execbr);
+ZUMIGOFHWBKKFL->append(newRefWord("WriteXO:")); 
 ZUMIGOFHWBKKFL->append_copy(l_e, r_e); 
 context->pushExecuteCall(ZUMIGOFHWBKKFL_execbr);
+DataChain* UWZKCTKAGXKSMF = new DataChain(); 
+DataContainer* UWZKCTKAGXKSMF_execbr = newRefExecBrackets(WriteXO__, UWZKCTKAGXKSMF, "WriteXO__");
+result->append(UWZKCTKAGXKSMF_execbr);
+UWZKCTKAGXKSMF->append_copy(l_e, r_e); 
+context->pushExecuteCall(UWZKCTKAGXKSMF_execbr);
 
 return result; 
 }
@@ -2465,116 +2470,116 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor UWZKCTKAGXKSMF;
 /*DEF*/	DataCursor AUWINSJLSOJTRX;
 /*DEF*/	DataCursor HWMHLVBYPECJEI;
-/*SET*/	UWZKCTKAGXKSMF = arg_from;
-/*INC*/	if (!INC(UWZKCTKAGXKSMF, arg_to)) goto sentence_after_2;
-//// ISBRACKET 
-	if (UWZKCTKAGXKSMF.container->type != struct_bracket) goto sentence_after_2;
-//// JMP_BRACKET 
-	AUWINSJLSOJTRX = UWZKCTKAGXKSMF.container->value.bracket_data.chain->at_before_first();
-	HWMHLVBYPECJEI   = UWZKCTKAGXKSMF.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor WWSTNEUIQUBPGU;
+/*SET*/	AUWINSJLSOJTRX = arg_from;
+/*INC*/	if (!INC(AUWINSJLSOJTRX, arg_to)) goto sentence_after_2;
+//// ISBRACKET 
+	if (AUWINSJLSOJTRX.container->type != struct_bracket) goto sentence_after_2;
+//// JMP_BRACKET 
+	HWMHLVBYPECJEI = AUWINSJLSOJTRX.container->value.bracket_data.chain->at_before_first();
+	WWSTNEUIQUBPGU   = AUWINSJLSOJTRX.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor GWGNMIKDWICKDI;
 /*DEF*/	DataCursor l_g;
 /*DEF*/	DataCursor r_g;
-/*SET*/	l_g = AUWINSJLSOJTRX;
-/*SET*/	WWSTNEUIQUBPGU = AUWINSJLSOJTRX;
-/*INC*/	if (!INC(WWSTNEUIQUBPGU, HWMHLVBYPECJEI)) goto sentence_after_2;
-	if (! isSymbolType(WWSTNEUIQUBPGU.container->type)) goto sentence_after_2;
-/*SET*/	r_g = WWSTNEUIQUBPGU;
+/*SET*/	l_g = HWMHLVBYPECJEI;
+/*SET*/	GWGNMIKDWICKDI = HWMHLVBYPECJEI;
+/*INC*/	if (!INC(GWGNMIKDWICKDI, WWSTNEUIQUBPGU)) goto sentence_after_2;
+	if (! isSymbolType(GWGNMIKDWICKDI.container->type)) goto sentence_after_2;
+/*SET*/	r_g = GWGNMIKDWICKDI;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_g!=0 && HWMHLVBYPECJEI != r_g) goto sentence_after_2;
+/*ISEMPTY*/	if (r_g!=0 && WWSTNEUIQUBPGU != r_g) goto sentence_after_2;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor GWGNMIKDWICKDI;
 /*DEF*/	DataCursor LSNPDQSVMTERDF;
 /*DEF*/	DataCursor BLHWBAFBGARCSF;
-/*SET*/	GWGNMIKDWICKDI = UWZKCTKAGXKSMF;
-/*INC*/	if (!INC(GWGNMIKDWICKDI, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor IJYLBIIMOFGXEI;
+/*SET*/	LSNPDQSVMTERDF = AUWINSJLSOJTRX;
+/*INC*/	if (!INC(LSNPDQSVMTERDF, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (GWGNMIKDWICKDI.container->type != struct_bracket) goto sentence_after_2;
+	if (LSNPDQSVMTERDF.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	LSNPDQSVMTERDF = GWGNMIKDWICKDI.container->value.bracket_data.chain->at_before_first();
-	BLHWBAFBGARCSF   = GWGNMIKDWICKDI.container->value.bracket_data.chain->at_last();
+	BLHWBAFBGARCSF = LSNPDQSVMTERDF.container->value.bracket_data.chain->at_before_first();
+	IJYLBIIMOFGXEI   = LSNPDQSVMTERDF.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = LSNPDQSVMTERDF;
-/*SET*/	r_1 = BLHWBAFBGARCSF;
+/*SET*/	l_1 = BLHWBAFBGARCSF;
+/*SET*/	r_1 = IJYLBIIMOFGXEI;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor IJYLBIIMOFGXEI;
 /*DEF*/	DataCursor RPBTYWQZAPKKCA;
 /*DEF*/	DataCursor FCOMVNTMDHZXLE;
-/*SET*/	IJYLBIIMOFGXEI = GWGNMIKDWICKDI;
-/*INC*/	if (!INC(IJYLBIIMOFGXEI, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor FPPYEBEOEQZNBH;
+/*SET*/	RPBTYWQZAPKKCA = LSNPDQSVMTERDF;
+/*INC*/	if (!INC(RPBTYWQZAPKKCA, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (IJYLBIIMOFGXEI.container->type != struct_bracket) goto sentence_after_2;
+	if (RPBTYWQZAPKKCA.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	RPBTYWQZAPKKCA = IJYLBIIMOFGXEI.container->value.bracket_data.chain->at_before_first();
-	FCOMVNTMDHZXLE   = IJYLBIIMOFGXEI.container->value.bracket_data.chain->at_last();
+	FCOMVNTMDHZXLE = RPBTYWQZAPKKCA.container->value.bracket_data.chain->at_before_first();
+	FPPYEBEOEQZNBH   = RPBTYWQZAPKKCA.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = RPBTYWQZAPKKCA;
-/*SET*/	r_2 = FCOMVNTMDHZXLE;
+/*SET*/	l_2 = FCOMVNTMDHZXLE;
+/*SET*/	r_2 = FPPYEBEOEQZNBH;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor FPPYEBEOEQZNBH;
 /*DEF*/	DataCursor YCWMFYAQQIANNY;
 /*DEF*/	DataCursor HQOUIZVEAVGZJW;
-/*SET*/	FPPYEBEOEQZNBH = IJYLBIIMOFGXEI;
-/*INC*/	if (!INC(FPPYEBEOEQZNBH, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor OBLSGWNKVJLNIV;
+/*SET*/	YCWMFYAQQIANNY = RPBTYWQZAPKKCA;
+/*INC*/	if (!INC(YCWMFYAQQIANNY, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (FPPYEBEOEQZNBH.container->type != struct_bracket) goto sentence_after_2;
+	if (YCWMFYAQQIANNY.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	YCWMFYAQQIANNY = FPPYEBEOEQZNBH.container->value.bracket_data.chain->at_before_first();
-	HQOUIZVEAVGZJW   = FPPYEBEOEQZNBH.container->value.bracket_data.chain->at_last();
+	HQOUIZVEAVGZJW = YCWMFYAQQIANNY.container->value.bracket_data.chain->at_before_first();
+	OBLSGWNKVJLNIV   = YCWMFYAQQIANNY.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = YCWMFYAQQIANNY;
-/*SET*/	r_n = HQOUIZVEAVGZJW;
+/*SET*/	l_n = HQOUIZVEAVGZJW;
+/*SET*/	r_n = OBLSGWNKVJLNIV;
 //// [ empty ] 
-/*ISEMPTY*/	if (FPPYEBEOEQZNBH!=0 && arg_to != FPPYEBEOEQZNBH) goto sentence_after_2;
+/*ISEMPTY*/	if (YCWMFYAQQIANNY!=0 && arg_to != YCWMFYAQQIANNY) goto sentence_after_2;
 
 // подготовка подстановки 
-DataChain* OBLSGWNKVJLNIV = new DataChain(); 
-DataContainer* OBLSGWNKVJLNIV_execbr = newRefExecBrackets(WXOif, OBLSGWNKVJLNIV, "WXOif");
-result->append(OBLSGWNKVJLNIV_execbr);
 DataChain* QCWVZXTCTHYNMU = new DataChain(); 
-OBLSGWNKVJLNIV->append(newRefStructBrackets(QCWVZXTCTHYNMU)); 
-QCWVZXTCTHYNMU->append_copy(l_g, r_g); 
+DataContainer* QCWVZXTCTHYNMU_execbr = newRefExecBrackets(WXOif, QCWVZXTCTHYNMU, "WXOif");
+result->append(QCWVZXTCTHYNMU_execbr);
 DataChain* XQKWWMTFISGGLG = new DataChain(); 
-OBLSGWNKVJLNIV->append(newRefStructBrackets(XQKWWMTFISGGLG)); 
+QCWVZXTCTHYNMU->append(newRefStructBrackets(XQKWWMTFISGGLG)); 
+XQKWWMTFISGGLG->append_copy(l_g, r_g); 
 DataChain* COXPIPYTDBAMRY = new DataChain(); 
-DataContainer* COXPIPYTDBAMRY_execbr = newRefExecBrackets(Strategy, COXPIPYTDBAMRY, "Strategy");
-XQKWWMTFISGGLG->append(COXPIPYTDBAMRY_execbr);
-COXPIPYTDBAMRY->append_copy(l_1, r_1); 
-context->pushExecuteCall(COXPIPYTDBAMRY_execbr);
+QCWVZXTCTHYNMU->append(newRefStructBrackets(COXPIPYTDBAMRY)); 
 DataChain* KBOKMWGSDDPQKR = new DataChain(); 
-OBLSGWNKVJLNIV->append(newRefStructBrackets(KBOKMWGSDDPQKR)); 
+DataContainer* KBOKMWGSDDPQKR_execbr = newRefExecBrackets(Strategy, KBOKMWGSDDPQKR, "Strategy");
+COXPIPYTDBAMRY->append(KBOKMWGSDDPQKR_execbr);
+KBOKMWGSDDPQKR->append_copy(l_1, r_1); 
+context->pushExecuteCall(KBOKMWGSDDPQKR_execbr);
 DataChain* ZYJCHZTMIEPAGW = new DataChain(); 
-DataContainer* ZYJCHZTMIEPAGW_execbr = newRefExecBrackets(Strategy, ZYJCHZTMIEPAGW, "Strategy");
-KBOKMWGSDDPQKR->append(ZYJCHZTMIEPAGW_execbr);
-ZYJCHZTMIEPAGW->append_copy(l_2, r_2); 
-context->pushExecuteCall(ZYJCHZTMIEPAGW_execbr);
+QCWVZXTCTHYNMU->append(newRefStructBrackets(ZYJCHZTMIEPAGW)); 
 DataChain* HROQKHWUDBCIHP = new DataChain(); 
-OBLSGWNKVJLNIV->append(newRefStructBrackets(HROQKHWUDBCIHP)); 
+DataContainer* HROQKHWUDBCIHP_execbr = newRefExecBrackets(Strategy, HROQKHWUDBCIHP, "Strategy");
+ZYJCHZTMIEPAGW->append(HROQKHWUDBCIHP_execbr);
+HROQKHWUDBCIHP->append_copy(l_2, r_2); 
+context->pushExecuteCall(HROQKHWUDBCIHP_execbr);
 DataChain* QWAQZXUGKVAKVL = new DataChain(); 
-DataContainer* QWAQZXUGKVAKVL_execbr = newRefExecBrackets(Strategy, QWAQZXUGKVAKVL, "Strategy");
-HROQKHWUDBCIHP->append(QWAQZXUGKVAKVL_execbr);
-QWAQZXUGKVAKVL->append_copy(l_n, r_n); 
-context->pushExecuteCall(QWAQZXUGKVAKVL_execbr);
+QCWVZXTCTHYNMU->append(newRefStructBrackets(QWAQZXUGKVAKVL)); 
 DataChain* AVKSWFZSDBVQID = new DataChain(); 
-OBLSGWNKVJLNIV->append(newRefStructBrackets(AVKSWFZSDBVQID)); 
-AVKSWFZSDBVQID->append_copy(l_1, r_1); 
+DataContainer* AVKSWFZSDBVQID_execbr = newRefExecBrackets(Strategy, AVKSWFZSDBVQID, "Strategy");
+QWAQZXUGKVAKVL->append(AVKSWFZSDBVQID_execbr);
+AVKSWFZSDBVQID->append_copy(l_n, r_n); 
+context->pushExecuteCall(AVKSWFZSDBVQID_execbr);
 DataChain* HTBCDEYTMPPHKU = new DataChain(); 
-OBLSGWNKVJLNIV->append(newRefStructBrackets(HTBCDEYTMPPHKU)); 
-HTBCDEYTMPPHKU->append_copy(l_2, r_2); 
+QCWVZXTCTHYNMU->append(newRefStructBrackets(HTBCDEYTMPPHKU)); 
+HTBCDEYTMPPHKU->append_copy(l_1, r_1); 
 DataChain* HSXORPUFWHJRUT = new DataChain(); 
-OBLSGWNKVJLNIV->append(newRefStructBrackets(HSXORPUFWHJRUT)); 
-HSXORPUFWHJRUT->append_copy(l_n, r_n); 
-context->pushExecuteCall(OBLSGWNKVJLNIV_execbr);
+QCWVZXTCTHYNMU->append(newRefStructBrackets(HSXORPUFWHJRUT)); 
+HSXORPUFWHJRUT->append_copy(l_2, r_2); 
+DataChain* KSSLHLRXLYDXVK = new DataChain(); 
+QCWVZXTCTHYNMU->append(newRefStructBrackets(KSSLHLRXLYDXVK)); 
+KSSLHLRXLYDXVK->append_copy(l_n, r_n); 
+context->pushExecuteCall(QCWVZXTCTHYNMU_execbr);
 
 return result; 
 }
@@ -2599,17 +2604,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* KSSLHLRXLYDXVK = new DataChain(); 
-DataContainer* KSSLHLRXLYDXVK_execbr = newRefExecBrackets(Prout, KSSLHLRXLYDXVK, "Prout");
-result->append(KSSLHLRXLYDXVK_execbr);
-KSSLHLRXLYDXVK->append(newRefWord("WXOif:")); 
-KSSLHLRXLYDXVK->append_copy(l_e, r_e); 
-context->pushExecuteCall(KSSLHLRXLYDXVK_execbr);
 DataChain* OSAGGMPBGZVBAF = new DataChain(); 
-DataContainer* OSAGGMPBGZVBAF_execbr = newRefExecBrackets(WXOif__, OSAGGMPBGZVBAF, "WXOif__");
+DataContainer* OSAGGMPBGZVBAF_execbr = newRefExecBrackets(Prout, OSAGGMPBGZVBAF, "Prout");
 result->append(OSAGGMPBGZVBAF_execbr);
+OSAGGMPBGZVBAF->append(newRefWord("WXOif:")); 
 OSAGGMPBGZVBAF->append_copy(l_e, r_e); 
 context->pushExecuteCall(OSAGGMPBGZVBAF_execbr);
+DataChain* AZJOHQSSWTORCK = new DataChain(); 
+DataContainer* AZJOHQSSWTORCK_execbr = newRefExecBrackets(WXOif__, AZJOHQSSWTORCK, "WXOif__");
+result->append(AZJOHQSSWTORCK_execbr);
+AZJOHQSSWTORCK->append_copy(l_e, r_e); 
+context->pushExecuteCall(AZJOHQSSWTORCK_execbr);
 
 return result; 
 }
@@ -2628,182 +2633,182 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor AZJOHQSSWTORCK;
 /*DEF*/	DataCursor QAXSREHNRLYJIW;
 /*DEF*/	DataCursor TMHGLKOZFKMMXT;
-/*SET*/	AZJOHQSSWTORCK = arg_from;
-/*INC*/	if (!INC(AZJOHQSSWTORCK, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (AZJOHQSSWTORCK.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	QAXSREHNRLYJIW = AZJOHQSSWTORCK.container->value.bracket_data.chain->at_before_first();
-	TMHGLKOZFKMMXT   = AZJOHQSSWTORCK.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor YVOXHFKXOPVYBJ;
-/*SET*/	YVOXHFKXOPVYBJ = QAXSREHNRLYJIW;
-/*INC*/	if (!INC(YVOXHFKXOPVYBJ, TMHGLKOZFKMMXT)) goto sentence_after_1;
-	if (YVOXHFKXOPVYBJ.container->type != text || *(YVOXHFKXOPVYBJ.container->value.text + YVOXHFKXOPVYBJ.index) != '1') goto sentence_after_1;
+/*SET*/	QAXSREHNRLYJIW = arg_from;
+/*INC*/	if (!INC(QAXSREHNRLYJIW, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (QAXSREHNRLYJIW.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	TMHGLKOZFKMMXT = QAXSREHNRLYJIW.container->value.bracket_data.chain->at_before_first();
+	YVOXHFKXOPVYBJ   = QAXSREHNRLYJIW.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor ZOXHZUBDNTOAMZ;
+/*SET*/	ZOXHZUBDNTOAMZ = TMHGLKOZFKMMXT;
+/*INC*/	if (!INC(ZOXHZUBDNTOAMZ, YVOXHFKXOPVYBJ)) goto sentence_after_1;
+	if (ZOXHZUBDNTOAMZ.container->type != text || *(ZOXHZUBDNTOAMZ.container->value.text + ZOXHZUBDNTOAMZ.index) != '1') goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (YVOXHFKXOPVYBJ!=0 && TMHGLKOZFKMMXT != YVOXHFKXOPVYBJ) goto sentence_after_1;
+/*ISEMPTY*/	if (ZOXHZUBDNTOAMZ!=0 && YVOXHFKXOPVYBJ != ZOXHZUBDNTOAMZ) goto sentence_after_1;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_eee1;
 /*DEF*/	DataCursor r_eee1;
-/*SET*/	l_eee1 = AZJOHQSSWTORCK;
-/*SET*/	r_eee1 = AZJOHQSSWTORCK;
-/*JMP*/	goto label_OTTCJTUEGMPQKC_firststep;
-label_OTTCJTUEGMPQKC: 
+/*SET*/	l_eee1 = QAXSREHNRLYJIW;
+/*SET*/	r_eee1 = QAXSREHNRLYJIW;
+/*JMP*/	goto label_DBBGCKJQTEBICH_firststep;
+label_DBBGCKJQTEBICH: 
 /*INC*/	if (!INC(r_eee1, arg_to)) goto sentence_after_1;
-label_OTTCJTUEGMPQKC_firststep: 
+label_DBBGCKJQTEBICH_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DBBGCKJQTEBICH;
 /*DEF*/	DataCursor ZNPPRQISWBDHOY;
 /*DEF*/	DataCursor NCSAETLGBFVIOC;
-/*SET*/	DBBGCKJQTEBICH = r_eee1;
-/*INC*/	if (!INC(DBBGCKJQTEBICH, arg_to)) goto label_OTTCJTUEGMPQKC;
+/*DEF*/	DataCursor FWXWDRNLFFBFHV;
+/*SET*/	ZNPPRQISWBDHOY = r_eee1;
+/*INC*/	if (!INC(ZNPPRQISWBDHOY, arg_to)) goto label_DBBGCKJQTEBICH;
 //// ISBRACKET 
-	if (DBBGCKJQTEBICH.container->type != struct_bracket) goto label_OTTCJTUEGMPQKC;
+	if (ZNPPRQISWBDHOY.container->type != struct_bracket) goto label_DBBGCKJQTEBICH;
 //// JMP_BRACKET 
-	ZNPPRQISWBDHOY = DBBGCKJQTEBICH.container->value.bracket_data.chain->at_before_first();
-	NCSAETLGBFVIOC   = DBBGCKJQTEBICH.container->value.bracket_data.chain->at_last();
+	NCSAETLGBFVIOC = ZNPPRQISWBDHOY.container->value.bracket_data.chain->at_before_first();
+	FWXWDRNLFFBFHV   = ZNPPRQISWBDHOY.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = ZNPPRQISWBDHOY;
-/*SET*/	r_1 = ZNPPRQISWBDHOY;
-/*JMP*/	goto label_FWXWDRNLFFBFHV_firststep;
-label_FWXWDRNLFFBFHV: 
-/*INC*/	if (!INC(r_1, NCSAETLGBFVIOC)) goto label_OTTCJTUEGMPQKC;
-label_FWXWDRNLFFBFHV_firststep: 
+/*SET*/	l_1 = NCSAETLGBFVIOC;
+/*SET*/	r_1 = NCSAETLGBFVIOC;
+/*JMP*/	goto label_YXZUKJWOCYHZQJ_firststep;
+label_YXZUKJWOCYHZQJ: 
+/*INC*/	if (!INC(r_1, FWXWDRNLFFBFHV)) goto label_DBBGCKJQTEBICH;
+label_YXZUKJWOCYHZQJ_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor YXZUKJWOCYHZQJ;
+/*DEF*/	DataCursor ZDHTBRRRLLKTCH;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_1;
-/*SET*/	YXZUKJWOCYHZQJ = r_1;
-/*INC*/	if (!INC(YXZUKJWOCYHZQJ, NCSAETLGBFVIOC)) goto label_FWXWDRNLFFBFHV;
-	if (! isSymbolType(YXZUKJWOCYHZQJ.container->type)) goto label_FWXWDRNLFFBFHV;
-/*SET*/	r_A = YXZUKJWOCYHZQJ;
+/*SET*/	ZDHTBRRRLLKTCH = r_1;
+/*INC*/	if (!INC(ZDHTBRRRLLKTCH, FWXWDRNLFFBFHV)) goto label_YXZUKJWOCYHZQJ;
+	if (! isSymbolType(ZDHTBRRRLLKTCH.container->type)) goto label_YXZUKJWOCYHZQJ;
+/*SET*/	r_A = ZDHTBRRRLLKTCH;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
 /*SET*/	l_2 = r_A;
 /*SET*/	r_2 = r_A;
-/*JMP*/	goto label_ZDHTBRRRLLKTCH_firststep;
-label_ZDHTBRRRLLKTCH: 
-/*INC*/	if (!INC(r_2, NCSAETLGBFVIOC)) goto label_FWXWDRNLFFBFHV;
-label_ZDHTBRRRLLKTCH_firststep: 
+/*JMP*/	goto label_FNCTPIRNAWONYD_firststep;
+label_FNCTPIRNAWONYD: 
+/*INC*/	if (!INC(r_2, FWXWDRNLFFBFHV)) goto label_YXZUKJWOCYHZQJ;
+label_FNCTPIRNAWONYD_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor FNCTPIRNAWONYD;
-/*SET*/	FNCTPIRNAWONYD = r_2;
- if (!SLIDE(FNCTPIRNAWONYD, NCSAETLGBFVIOC, l_A, r_A)) goto label_ZDHTBRRRLLKTCH;
+/*DEF*/	DataCursor WWVUABUQCIMCNL;
+/*SET*/	WWVUABUQCIMCNL = r_2;
+ if (!SLIDE(WWVUABUQCIMCNL, FWXWDRNLFFBFHV, l_A, r_A)) goto label_FNCTPIRNAWONYD;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = FNCTPIRNAWONYD;
-/*SET*/	r_3 = NCSAETLGBFVIOC;
+/*SET*/	l_3 = WWVUABUQCIMCNL;
+/*SET*/	r_3 = FWXWDRNLFFBFHV;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_eee2;
 /*DEF*/	DataCursor r_eee2;
-/*SET*/	l_eee2 = DBBGCKJQTEBICH;
-/*SET*/	r_eee2 = DBBGCKJQTEBICH;
-/*JMP*/	goto label_WWVUABUQCIMCNL_firststep;
-label_WWVUABUQCIMCNL: 
-/*INC*/	if (!INC(r_eee2, arg_to)) goto label_ZDHTBRRRLLKTCH;
-label_WWVUABUQCIMCNL_firststep: 
+/*SET*/	l_eee2 = ZNPPRQISWBDHOY;
+/*SET*/	r_eee2 = ZNPPRQISWBDHOY;
+/*JMP*/	goto label_HQODEMAKMUNMAX_firststep;
+label_HQODEMAKMUNMAX: 
+/*INC*/	if (!INC(r_eee2, arg_to)) goto label_FNCTPIRNAWONYD;
+label_HQODEMAKMUNMAX_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor HQODEMAKMUNMAX;
 /*DEF*/	DataCursor IOMKEYWCOFQBKD;
 /*DEF*/	DataCursor MZOIZGQIPZAYIX;
-/*SET*/	HQODEMAKMUNMAX = r_eee2;
-/*INC*/	if (!INC(HQODEMAKMUNMAX, arg_to)) goto label_WWVUABUQCIMCNL;
+/*DEF*/	DataCursor RYDWSOVHZTKGZS;
+/*SET*/	IOMKEYWCOFQBKD = r_eee2;
+/*INC*/	if (!INC(IOMKEYWCOFQBKD, arg_to)) goto label_HQODEMAKMUNMAX;
 //// ISBRACKET 
-	if (HQODEMAKMUNMAX.container->type != struct_bracket) goto label_WWVUABUQCIMCNL;
+	if (IOMKEYWCOFQBKD.container->type != struct_bracket) goto label_HQODEMAKMUNMAX;
 //// JMP_BRACKET 
-	IOMKEYWCOFQBKD = HQODEMAKMUNMAX.container->value.bracket_data.chain->at_before_first();
-	MZOIZGQIPZAYIX   = HQODEMAKMUNMAX.container->value.bracket_data.chain->at_last();
+	MZOIZGQIPZAYIX = IOMKEYWCOFQBKD.container->value.bracket_data.chain->at_before_first();
+	RYDWSOVHZTKGZS   = IOMKEYWCOFQBKD.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_n1;
 /*DEF*/	DataCursor r_n1;
-/*SET*/	l_n1 = IOMKEYWCOFQBKD;
-/*SET*/	r_n1 = IOMKEYWCOFQBKD;
-/*JMP*/	goto label_RYDWSOVHZTKGZS_firststep;
-label_RYDWSOVHZTKGZS: 
-/*INC*/	if (!INC(r_n1, MZOIZGQIPZAYIX)) goto label_WWVUABUQCIMCNL;
-label_RYDWSOVHZTKGZS_firststep: 
+/*SET*/	l_n1 = MZOIZGQIPZAYIX;
+/*SET*/	r_n1 = MZOIZGQIPZAYIX;
+/*JMP*/	goto label_KWPTKQCEXRNNXS_firststep;
+label_KWPTKQCEXRNNXS: 
+/*INC*/	if (!INC(r_n1, RYDWSOVHZTKGZS)) goto label_HQODEMAKMUNMAX;
+label_KWPTKQCEXRNNXS_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor KWPTKQCEXRNNXS;
-/*SET*/	KWPTKQCEXRNNXS = r_n1;
- if (!SLIDE(KWPTKQCEXRNNXS, MZOIZGQIPZAYIX, l_A, r_A)) goto label_RYDWSOVHZTKGZS;
+/*DEF*/	DataCursor KYWNDQIZLZKLNI;
+/*SET*/	KYWNDQIZLZKLNI = r_n1;
+ if (!SLIDE(KYWNDQIZLZKLNI, RYDWSOVHZTKGZS, l_A, r_A)) goto label_KWPTKQCEXRNNXS;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n2;
 /*DEF*/	DataCursor r_n2;
-/*SET*/	l_n2 = KWPTKQCEXRNNXS;
-/*SET*/	r_n2 = MZOIZGQIPZAYIX;
+/*SET*/	l_n2 = KYWNDQIZLZKLNI;
+/*SET*/	r_n2 = RYDWSOVHZTKGZS;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor KYWNDQIZLZKLNI;
 /*DEF*/	DataCursor SSAMQAZHLNDNVI;
 /*DEF*/	DataCursor LTKOIAFMEICGGU;
-/*SET*/	KYWNDQIZLZKLNI = HQODEMAKMUNMAX;
-/*INC*/	if (!INC(KYWNDQIZLZKLNI, arg_to)) goto label_RYDWSOVHZTKGZS;
+/*DEF*/	DataCursor ZXHRDJZZHERUSW;
+/*SET*/	SSAMQAZHLNDNVI = IOMKEYWCOFQBKD;
+/*INC*/	if (!INC(SSAMQAZHLNDNVI, arg_to)) goto label_KWPTKQCEXRNNXS;
 //// ISBRACKET 
-	if (KYWNDQIZLZKLNI.container->type != struct_bracket) goto label_RYDWSOVHZTKGZS;
+	if (SSAMQAZHLNDNVI.container->type != struct_bracket) goto label_KWPTKQCEXRNNXS;
 //// JMP_BRACKET 
-	SSAMQAZHLNDNVI = KYWNDQIZLZKLNI.container->value.bracket_data.chain->at_before_first();
-	LTKOIAFMEICGGU   = KYWNDQIZLZKLNI.container->value.bracket_data.chain->at_last();
+	LTKOIAFMEICGGU = SSAMQAZHLNDNVI.container->value.bracket_data.chain->at_before_first();
+	ZXHRDJZZHERUSW   = SSAMQAZHLNDNVI.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e1;
 /*DEF*/	DataCursor r_e1;
-/*SET*/	l_e1 = SSAMQAZHLNDNVI;
-/*SET*/	r_e1 = LTKOIAFMEICGGU;
+/*SET*/	l_e1 = LTKOIAFMEICGGU;
+/*SET*/	r_e1 = ZXHRDJZZHERUSW;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ZXHRDJZZHERUSW;
 /*DEF*/	DataCursor AVNVSLONOASRUD;
 /*DEF*/	DataCursor RNLDKLDKFZTAGI;
-/*SET*/	ZXHRDJZZHERUSW = KYWNDQIZLZKLNI;
-/*INC*/	if (!INC(ZXHRDJZZHERUSW, arg_to)) goto label_RYDWSOVHZTKGZS;
+/*DEF*/	DataCursor ENATJZWXCLKKUL;
+/*SET*/	AVNVSLONOASRUD = SSAMQAZHLNDNVI;
+/*INC*/	if (!INC(AVNVSLONOASRUD, arg_to)) goto label_KWPTKQCEXRNNXS;
 //// ISBRACKET 
-	if (ZXHRDJZZHERUSW.container->type != struct_bracket) goto label_RYDWSOVHZTKGZS;
+	if (AVNVSLONOASRUD.container->type != struct_bracket) goto label_KWPTKQCEXRNNXS;
 //// JMP_BRACKET 
-	AVNVSLONOASRUD = ZXHRDJZZHERUSW.container->value.bracket_data.chain->at_before_first();
-	RNLDKLDKFZTAGI   = ZXHRDJZZHERUSW.container->value.bracket_data.chain->at_last();
+	RNLDKLDKFZTAGI = AVNVSLONOASRUD.container->value.bracket_data.chain->at_before_first();
+	ENATJZWXCLKKUL   = AVNVSLONOASRUD.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e2;
 /*DEF*/	DataCursor r_e2;
-/*SET*/	l_e2 = AVNVSLONOASRUD;
-/*SET*/	r_e2 = RNLDKLDKFZTAGI;
+/*SET*/	l_e2 = RNLDKLDKFZTAGI;
+/*SET*/	r_e2 = ENATJZWXCLKKUL;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ENATJZWXCLKKUL;
 /*DEF*/	DataCursor NCAQPTONEQLNBT;
 /*DEF*/	DataCursor ODDBMIVAZXZMCO;
-/*SET*/	ENATJZWXCLKKUL = ZXHRDJZZHERUSW;
-/*INC*/	if (!INC(ENATJZWXCLKKUL, arg_to)) goto label_RYDWSOVHZTKGZS;
+/*DEF*/	DataCursor JDHISWKAXIAGTU;
+/*SET*/	NCAQPTONEQLNBT = AVNVSLONOASRUD;
+/*INC*/	if (!INC(NCAQPTONEQLNBT, arg_to)) goto label_KWPTKQCEXRNNXS;
 //// ISBRACKET 
-	if (ENATJZWXCLKKUL.container->type != struct_bracket) goto label_RYDWSOVHZTKGZS;
+	if (NCAQPTONEQLNBT.container->type != struct_bracket) goto label_KWPTKQCEXRNNXS;
 //// JMP_BRACKET 
-	NCAQPTONEQLNBT = ENATJZWXCLKKUL.container->value.bracket_data.chain->at_before_first();
-	ODDBMIVAZXZMCO   = ENATJZWXCLKKUL.container->value.bracket_data.chain->at_last();
+	ODDBMIVAZXZMCO = NCAQPTONEQLNBT.container->value.bracket_data.chain->at_before_first();
+	JDHISWKAXIAGTU   = NCAQPTONEQLNBT.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = NCAQPTONEQLNBT;
-/*SET*/	r_n = ODDBMIVAZXZMCO;
+/*SET*/	l_n = ODDBMIVAZXZMCO;
+/*SET*/	r_n = JDHISWKAXIAGTU;
 //// [ empty ] 
-/*ISEMPTY*/	if (ENATJZWXCLKKUL!=0 && arg_to != ENATJZWXCLKKUL) goto label_RYDWSOVHZTKGZS;
+/*ISEMPTY*/	if (NCAQPTONEQLNBT!=0 && arg_to != NCAQPTONEQLNBT) goto label_KWPTKQCEXRNNXS;
 
 // подготовка подстановки 
 result->append(newRefText("#")); 
-DataChain* JDHISWKAXIAGTU = new DataChain(); 
-DataContainer* JDHISWKAXIAGTU_execbr = newRefExecBrackets(Lins, JDHISWKAXIAGTU, "Lins");
-result->append(JDHISWKAXIAGTU_execbr);
 DataChain* TAFRSVPPHURAAA = new DataChain(); 
-JDHISWKAXIAGTU->append(newRefStructBrackets(TAFRSVPPHURAAA)); 
-TAFRSVPPHURAAA->append_copy(l_n, r_n); 
+DataContainer* TAFRSVPPHURAAA_execbr = newRefExecBrackets(Lins, TAFRSVPPHURAAA, "Lins");
+result->append(TAFRSVPPHURAAA_execbr);
 DataChain* IXZTWDYRUUMQAD = new DataChain(); 
-DataContainer* IXZTWDYRUUMQAD_execbr = newRefExecBrackets(AntiStrategy, IXZTWDYRUUMQAD, "AntiStrategy");
-JDHISWKAXIAGTU->append(IXZTWDYRUUMQAD_execbr);
-IXZTWDYRUUMQAD->append_copy(l_A, r_A); 
-context->pushExecuteCall(IXZTWDYRUUMQAD_execbr);
-context->pushExecuteCall(JDHISWKAXIAGTU_execbr);
+TAFRSVPPHURAAA->append(newRefStructBrackets(IXZTWDYRUUMQAD)); 
+IXZTWDYRUUMQAD->append_copy(l_n, r_n); 
+DataChain* JEPVVCVOIDWMTP = new DataChain(); 
+DataContainer* JEPVVCVOIDWMTP_execbr = newRefExecBrackets(AntiStrategy, JEPVVCVOIDWMTP, "AntiStrategy");
+TAFRSVPPHURAAA->append(JEPVVCVOIDWMTP_execbr);
+JEPVVCVOIDWMTP->append_copy(l_A, r_A); 
+context->pushExecuteCall(JEPVVCVOIDWMTP_execbr);
+context->pushExecuteCall(TAFRSVPPHURAAA_execbr);
 
 return result; 
 }
@@ -2812,104 +2817,104 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor JEPVVCVOIDWMTP;
 /*DEF*/	DataCursor BNMQUIOPIWPUWC;
 /*DEF*/	DataCursor ZDAPDZGHAVVIYI;
-/*SET*/	JEPVVCVOIDWMTP = arg_from;
-/*INC*/	if (!INC(JEPVVCVOIDWMTP, arg_to)) goto sentence_after_2;
-//// ISBRACKET 
-	if (JEPVVCVOIDWMTP.container->type != struct_bracket) goto sentence_after_2;
-//// JMP_BRACKET 
-	BNMQUIOPIWPUWC = JEPVVCVOIDWMTP.container->value.bracket_data.chain->at_before_first();
-	ZDAPDZGHAVVIYI   = JEPVVCVOIDWMTP.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor ROJNOLSOWRMVVJ;
+/*SET*/	BNMQUIOPIWPUWC = arg_from;
+/*INC*/	if (!INC(BNMQUIOPIWPUWC, arg_to)) goto sentence_after_2;
+//// ISBRACKET 
+	if (BNMQUIOPIWPUWC.container->type != struct_bracket) goto sentence_after_2;
+//// JMP_BRACKET 
+	ZDAPDZGHAVVIYI = BNMQUIOPIWPUWC.container->value.bracket_data.chain->at_before_first();
+	ROJNOLSOWRMVVJ   = BNMQUIOPIWPUWC.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor IQSWRICMZSXAVD;
 /*DEF*/	DataCursor l_g;
 /*DEF*/	DataCursor r_g;
-/*SET*/	l_g = BNMQUIOPIWPUWC;
-/*SET*/	ROJNOLSOWRMVVJ = BNMQUIOPIWPUWC;
-/*INC*/	if (!INC(ROJNOLSOWRMVVJ, ZDAPDZGHAVVIYI)) goto sentence_after_2;
-	if (! isSymbolType(ROJNOLSOWRMVVJ.container->type)) goto sentence_after_2;
-/*SET*/	r_g = ROJNOLSOWRMVVJ;
+/*SET*/	l_g = ZDAPDZGHAVVIYI;
+/*SET*/	IQSWRICMZSXAVD = ZDAPDZGHAVVIYI;
+/*INC*/	if (!INC(IQSWRICMZSXAVD, ROJNOLSOWRMVVJ)) goto sentence_after_2;
+	if (! isSymbolType(IQSWRICMZSXAVD.container->type)) goto sentence_after_2;
+/*SET*/	r_g = IQSWRICMZSXAVD;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_g!=0 && ZDAPDZGHAVVIYI != r_g) goto sentence_after_2;
+/*ISEMPTY*/	if (r_g!=0 && ROJNOLSOWRMVVJ != r_g) goto sentence_after_2;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
-/*SET*/	l_e = JEPVVCVOIDWMTP;
-/*SET*/	r_e = JEPVVCVOIDWMTP;
-/*JMP*/	goto label_IQSWRICMZSXAVD_firststep;
-label_IQSWRICMZSXAVD: 
+/*SET*/	l_e = BNMQUIOPIWPUWC;
+/*SET*/	r_e = BNMQUIOPIWPUWC;
+/*JMP*/	goto label_QAMNFHWFGEOHSK_firststep;
+label_QAMNFHWFGEOHSK: 
 /*INC*/	if (!INC(r_e, arg_to)) goto sentence_after_2;
-label_IQSWRICMZSXAVD_firststep: 
+label_QAMNFHWFGEOHSK_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor QAMNFHWFGEOHSK;
 /*DEF*/	DataCursor KEFUTXXIBHPULN;
 /*DEF*/	DataCursor LWXQWWZDGDJGEQ;
-/*SET*/	QAMNFHWFGEOHSK = r_e;
-/*INC*/	if (!INC(QAMNFHWFGEOHSK, arg_to)) goto label_IQSWRICMZSXAVD;
+/*DEF*/	DataCursor WAPBHLPUDOEMNN;
+/*SET*/	KEFUTXXIBHPULN = r_e;
+/*INC*/	if (!INC(KEFUTXXIBHPULN, arg_to)) goto label_QAMNFHWFGEOHSK;
 //// ISBRACKET 
-	if (QAMNFHWFGEOHSK.container->type != struct_bracket) goto label_IQSWRICMZSXAVD;
+	if (KEFUTXXIBHPULN.container->type != struct_bracket) goto label_QAMNFHWFGEOHSK;
 //// JMP_BRACKET 
-	KEFUTXXIBHPULN = QAMNFHWFGEOHSK.container->value.bracket_data.chain->at_before_first();
-	LWXQWWZDGDJGEQ   = QAMNFHWFGEOHSK.container->value.bracket_data.chain->at_last();
+	LWXQWWZDGDJGEQ = KEFUTXXIBHPULN.container->value.bracket_data.chain->at_before_first();
+	WAPBHLPUDOEMNN   = KEFUTXXIBHPULN.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = KEFUTXXIBHPULN;
-/*SET*/	r_1 = LWXQWWZDGDJGEQ;
+/*SET*/	l_1 = LWXQWWZDGDJGEQ;
+/*SET*/	r_1 = WAPBHLPUDOEMNN;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor WAPBHLPUDOEMNN;
 /*DEF*/	DataCursor TPOUAHGXJHZJBE;
 /*DEF*/	DataCursor PLTTRIABWUCRJM;
-/*SET*/	WAPBHLPUDOEMNN = QAMNFHWFGEOHSK;
-/*INC*/	if (!INC(WAPBHLPUDOEMNN, arg_to)) goto label_IQSWRICMZSXAVD;
+/*DEF*/	DataCursor BVBOZVMXOBATKH;
+/*SET*/	TPOUAHGXJHZJBE = KEFUTXXIBHPULN;
+/*INC*/	if (!INC(TPOUAHGXJHZJBE, arg_to)) goto label_QAMNFHWFGEOHSK;
 //// ISBRACKET 
-	if (WAPBHLPUDOEMNN.container->type != struct_bracket) goto label_IQSWRICMZSXAVD;
+	if (TPOUAHGXJHZJBE.container->type != struct_bracket) goto label_QAMNFHWFGEOHSK;
 //// JMP_BRACKET 
-	TPOUAHGXJHZJBE = WAPBHLPUDOEMNN.container->value.bracket_data.chain->at_before_first();
-	PLTTRIABWUCRJM   = WAPBHLPUDOEMNN.container->value.bracket_data.chain->at_last();
+	PLTTRIABWUCRJM = TPOUAHGXJHZJBE.container->value.bracket_data.chain->at_before_first();
+	BVBOZVMXOBATKH   = TPOUAHGXJHZJBE.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = TPOUAHGXJHZJBE;
-/*SET*/	r_2 = PLTTRIABWUCRJM;
+/*SET*/	l_2 = PLTTRIABWUCRJM;
+/*SET*/	r_2 = BVBOZVMXOBATKH;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor BVBOZVMXOBATKH;
 /*DEF*/	DataCursor QSQCHLHTBOFUIK;
 /*DEF*/	DataCursor WAFKCOWUUNTFHP;
-/*SET*/	BVBOZVMXOBATKH = WAPBHLPUDOEMNN;
-/*INC*/	if (!INC(BVBOZVMXOBATKH, arg_to)) goto label_IQSWRICMZSXAVD;
+/*DEF*/	DataCursor KDEYHOKQUWQVWT;
+/*SET*/	QSQCHLHTBOFUIK = TPOUAHGXJHZJBE;
+/*INC*/	if (!INC(QSQCHLHTBOFUIK, arg_to)) goto label_QAMNFHWFGEOHSK;
 //// ISBRACKET 
-	if (BVBOZVMXOBATKH.container->type != struct_bracket) goto label_IQSWRICMZSXAVD;
+	if (QSQCHLHTBOFUIK.container->type != struct_bracket) goto label_QAMNFHWFGEOHSK;
 //// JMP_BRACKET 
-	QSQCHLHTBOFUIK = BVBOZVMXOBATKH.container->value.bracket_data.chain->at_before_first();
-	WAFKCOWUUNTFHP   = BVBOZVMXOBATKH.container->value.bracket_data.chain->at_last();
+	WAFKCOWUUNTFHP = QSQCHLHTBOFUIK.container->value.bracket_data.chain->at_before_first();
+	KDEYHOKQUWQVWT   = QSQCHLHTBOFUIK.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = QSQCHLHTBOFUIK;
-/*SET*/	r_n = WAFKCOWUUNTFHP;
+/*SET*/	l_n = WAFKCOWUUNTFHP;
+/*SET*/	r_n = KDEYHOKQUWQVWT;
 //// [ empty ] 
-/*ISEMPTY*/	if (BVBOZVMXOBATKH!=0 && arg_to != BVBOZVMXOBATKH) goto label_IQSWRICMZSXAVD;
+/*ISEMPTY*/	if (QSQCHLHTBOFUIK!=0 && arg_to != QSQCHLHTBOFUIK) goto label_QAMNFHWFGEOHSK;
 
 // подготовка подстановки 
-DataChain* KDEYHOKQUWQVWT = new DataChain(); 
-DataContainer* KDEYHOKQUWQVWT_execbr = newRefExecBrackets(WriteXO1, KDEYHOKQUWQVWT, "WriteXO1");
-result->append(KDEYHOKQUWQVWT_execbr);
 DataChain* THHHUGJZMFEUIN = new DataChain(); 
-KDEYHOKQUWQVWT->append(newRefStructBrackets(THHHUGJZMFEUIN)); 
-THHHUGJZMFEUIN->append_copy(l_g, r_g); 
+DataContainer* THHHUGJZMFEUIN_execbr = newRefExecBrackets(WriteXO1, THHHUGJZMFEUIN, "WriteXO1");
+result->append(THHHUGJZMFEUIN_execbr);
 DataChain* IPBNCIZOCKAADA = new DataChain(); 
-KDEYHOKQUWQVWT->append(newRefStructBrackets(IPBNCIZOCKAADA)); 
-IPBNCIZOCKAADA->append_copy(l_1, r_1); 
+THHHUGJZMFEUIN->append(newRefStructBrackets(IPBNCIZOCKAADA)); 
+IPBNCIZOCKAADA->append_copy(l_g, r_g); 
 DataChain* LLJREQTKHUDBLP = new DataChain(); 
-KDEYHOKQUWQVWT->append(newRefStructBrackets(LLJREQTKHUDBLP)); 
-LLJREQTKHUDBLP->append_copy(l_2, r_2); 
+THHHUGJZMFEUIN->append(newRefStructBrackets(LLJREQTKHUDBLP)); 
+LLJREQTKHUDBLP->append_copy(l_1, r_1); 
 DataChain* RZLSRWXOCCSLUT = new DataChain(); 
-KDEYHOKQUWQVWT->append(newRefStructBrackets(RZLSRWXOCCSLUT)); 
-RZLSRWXOCCSLUT->append_copy(l_n, r_n); 
-context->pushExecuteCall(KDEYHOKQUWQVWT_execbr);
+THHHUGJZMFEUIN->append(newRefStructBrackets(RZLSRWXOCCSLUT)); 
+RZLSRWXOCCSLUT->append_copy(l_2, r_2); 
+DataChain* WQZSQTIJVCWNPF = new DataChain(); 
+THHHUGJZMFEUIN->append(newRefStructBrackets(WQZSQTIJVCWNPF)); 
+WQZSQTIJVCWNPF->append_copy(l_n, r_n); 
+context->pushExecuteCall(THHHUGJZMFEUIN_execbr);
 
 return result; 
 }
@@ -2934,17 +2939,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* WQZSQTIJVCWNPF = new DataChain(); 
-DataContainer* WQZSQTIJVCWNPF_execbr = newRefExecBrackets(Prout, WQZSQTIJVCWNPF, "Prout");
-result->append(WQZSQTIJVCWNPF_execbr);
-WQZSQTIJVCWNPF->append(newRefWord("Lins:")); 
-WQZSQTIJVCWNPF->append_copy(l_e, r_e); 
-context->pushExecuteCall(WQZSQTIJVCWNPF_execbr);
 DataChain* LRLUKDIAOHQJHR = new DataChain(); 
-DataContainer* LRLUKDIAOHQJHR_execbr = newRefExecBrackets(Lins__, LRLUKDIAOHQJHR, "Lins__");
+DataContainer* LRLUKDIAOHQJHR_execbr = newRefExecBrackets(Prout, LRLUKDIAOHQJHR, "Prout");
 result->append(LRLUKDIAOHQJHR_execbr);
+LRLUKDIAOHQJHR->append(newRefWord("Lins:")); 
 LRLUKDIAOHQJHR->append_copy(l_e, r_e); 
 context->pushExecuteCall(LRLUKDIAOHQJHR_execbr);
+DataChain* AGLGRIYKLDKDFR = new DataChain(); 
+DataContainer* AGLGRIYKLDKDFR_execbr = newRefExecBrackets(Lins__, AGLGRIYKLDKDFR, "Lins__");
+result->append(AGLGRIYKLDKDFR_execbr);
+AGLGRIYKLDKDFR->append_copy(l_e, r_e); 
+context->pushExecuteCall(AGLGRIYKLDKDFR_execbr);
 
 return result; 
 }
@@ -2963,56 +2968,56 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor AGLGRIYKLDKDFR;
 /*DEF*/	DataCursor DRXJSTCWRSXGYW;
 /*DEF*/	DataCursor FNHCBKPMESUPMT;
-/*SET*/	AGLGRIYKLDKDFR = arg_from;
-/*INC*/	if (!INC(AGLGRIYKLDKDFR, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor RVIPFBKTBWZFAH;
+/*SET*/	DRXJSTCWRSXGYW = arg_from;
+/*INC*/	if (!INC(DRXJSTCWRSXGYW, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (AGLGRIYKLDKDFR.container->type != struct_bracket) goto sentence_after_1;
+	if (DRXJSTCWRSXGYW.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	DRXJSTCWRSXGYW = AGLGRIYKLDKDFR.container->value.bracket_data.chain->at_before_first();
-	FNHCBKPMESUPMT   = AGLGRIYKLDKDFR.container->value.bracket_data.chain->at_last();
+	FNHCBKPMESUPMT = DRXJSTCWRSXGYW.container->value.bracket_data.chain->at_before_first();
+	RVIPFBKTBWZFAH   = DRXJSTCWRSXGYW.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_n1;
 /*DEF*/	DataCursor r_n1;
-/*SET*/	l_n1 = DRXJSTCWRSXGYW;
-/*SET*/	r_n1 = DRXJSTCWRSXGYW;
-/*JMP*/	goto label_RVIPFBKTBWZFAH_firststep;
-label_RVIPFBKTBWZFAH: 
-/*INC*/	if (!INC(r_n1, FNHCBKPMESUPMT)) goto sentence_after_1;
-label_RVIPFBKTBWZFAH_firststep: 
+/*SET*/	l_n1 = FNHCBKPMESUPMT;
+/*SET*/	r_n1 = FNHCBKPMESUPMT;
+/*JMP*/	goto label_OEVNHXBRHHFOBG_firststep;
+label_OEVNHXBRHHFOBG: 
+/*INC*/	if (!INC(r_n1, RVIPFBKTBWZFAH)) goto sentence_after_1;
+label_OEVNHXBRHHFOBG_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor OEVNHXBRHHFOBG;
+/*DEF*/	DataCursor YWCVHKTDOXQTEK;
 /*DEF*/	DataCursor l_hod;
 /*DEF*/	DataCursor r_hod;
 /*SET*/	l_hod = r_n1;
-/*SET*/	OEVNHXBRHHFOBG = r_n1;
-/*INC*/	if (!INC(OEVNHXBRHHFOBG, FNHCBKPMESUPMT)) goto label_RVIPFBKTBWZFAH;
-	if (! isSymbolType(OEVNHXBRHHFOBG.container->type)) goto label_RVIPFBKTBWZFAH;
-/*SET*/	r_hod = OEVNHXBRHHFOBG;
+/*SET*/	YWCVHKTDOXQTEK = r_n1;
+/*INC*/	if (!INC(YWCVHKTDOXQTEK, RVIPFBKTBWZFAH)) goto label_OEVNHXBRHHFOBG;
+	if (! isSymbolType(YWCVHKTDOXQTEK.container->type)) goto label_OEVNHXBRHHFOBG;
+/*SET*/	r_hod = YWCVHKTDOXQTEK;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n2;
 /*DEF*/	DataCursor r_n2;
 /*SET*/	l_n2 = r_hod;
-/*SET*/	r_n2 = FNHCBKPMESUPMT;
+/*SET*/	r_n2 = RVIPFBKTBWZFAH;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_as1;
 /*DEF*/	DataCursor r_as1;
-/*SET*/	l_as1 = AGLGRIYKLDKDFR;
-/*SET*/	r_as1 = AGLGRIYKLDKDFR;
-/*JMP*/	goto label_YWCVHKTDOXQTEK_firststep;
-label_YWCVHKTDOXQTEK: 
-/*INC*/	if (!INC(r_as1, arg_to)) goto label_RVIPFBKTBWZFAH;
-label_YWCVHKTDOXQTEK_firststep: 
+/*SET*/	l_as1 = DRXJSTCWRSXGYW;
+/*SET*/	r_as1 = DRXJSTCWRSXGYW;
+/*JMP*/	goto label_IWWURZBLMLDLFI_firststep;
+label_IWWURZBLMLDLFI: 
+/*INC*/	if (!INC(r_as1, arg_to)) goto label_OEVNHXBRHHFOBG;
+label_IWWURZBLMLDLFI_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor IWWURZBLMLDLFI;
-/*SET*/	IWWURZBLMLDLFI = r_as1;
- if (!SLIDE(IWWURZBLMLDLFI, arg_to, l_hod, r_hod)) goto label_YWCVHKTDOXQTEK;
+/*DEF*/	DataCursor BDVEMUNNLXUBYK;
+/*SET*/	BDVEMUNNLXUBYK = r_as1;
+ if (!SLIDE(BDVEMUNNLXUBYK, arg_to, l_hod, r_hod)) goto label_IWWURZBLMLDLFI;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_as2;
 /*DEF*/	DataCursor r_as2;
-/*SET*/	l_as2 = IWWURZBLMLDLFI;
+/*SET*/	l_as2 = BDVEMUNNLXUBYK;
 /*SET*/	r_as2 = arg_to;
 
 // подготовка подстановки 
@@ -3041,17 +3046,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* BDVEMUNNLXUBYK = new DataChain(); 
-DataContainer* BDVEMUNNLXUBYK_execbr = newRefExecBrackets(Prout, BDVEMUNNLXUBYK, "Prout");
-result->append(BDVEMUNNLXUBYK_execbr);
-BDVEMUNNLXUBYK->append(newRefWord("AntiStrategy:")); 
-BDVEMUNNLXUBYK->append_copy(l_e, r_e); 
-context->pushExecuteCall(BDVEMUNNLXUBYK_execbr);
 DataChain* VVRGKTRERPTISI = new DataChain(); 
-DataContainer* VVRGKTRERPTISI_execbr = newRefExecBrackets(AntiStrategy__, VVRGKTRERPTISI, "AntiStrategy__");
+DataContainer* VVRGKTRERPTISI_execbr = newRefExecBrackets(Prout, VVRGKTRERPTISI, "Prout");
 result->append(VVRGKTRERPTISI_execbr);
+VVRGKTRERPTISI->append(newRefWord("AntiStrategy:")); 
 VVRGKTRERPTISI->append_copy(l_e, r_e); 
 context->pushExecuteCall(VVRGKTRERPTISI_execbr);
+DataChain* ZXHREVNXQUEZXK = new DataChain(); 
+DataContainer* ZXHREVNXQUEZXK_execbr = newRefExecBrackets(AntiStrategy__, ZXHREVNXQUEZXK, "AntiStrategy__");
+result->append(ZXHREVNXQUEZXK_execbr);
+ZXHREVNXQUEZXK->append_copy(l_e, r_e); 
+context->pushExecuteCall(ZXHREVNXQUEZXK_execbr);
 
 return result; 
 }
@@ -3070,12 +3075,12 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ZXHREVNXQUEZXK;
-/*SET*/	ZXHREVNXQUEZXK = arg_from;
-/*INC*/	if (!INC(ZXHREVNXQUEZXK, arg_to)) goto sentence_after_1;
-	if (ZXHREVNXQUEZXK.container->type != text || *(ZXHREVNXQUEZXK.container->value.text + ZXHREVNXQUEZXK.index) != '1') goto sentence_after_1;
+/*DEF*/	DataCursor UGROOHRHUDIDGV;
+/*SET*/	UGROOHRHUDIDGV = arg_from;
+/*INC*/	if (!INC(UGROOHRHUDIDGV, arg_to)) goto sentence_after_1;
+	if (UGROOHRHUDIDGV.container->type != text || *(UGROOHRHUDIDGV.container->value.text + UGROOHRHUDIDGV.index) != '1') goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (ZXHREVNXQUEZXK!=0 && arg_to != ZXHREVNXQUEZXK) goto sentence_after_1;
+/*ISEMPTY*/	if (UGROOHRHUDIDGV!=0 && arg_to != UGROOHRHUDIDGV) goto sentence_after_1;
 
 // подготовка подстановки 
 result->append(newRefText("123")); 
@@ -3087,12 +3092,12 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor HTJHYEZKYHPFXW;
-/*SET*/	HTJHYEZKYHPFXW = arg_from;
-/*INC*/	if (!INC(HTJHYEZKYHPFXW, arg_to)) goto sentence_after_2;
-	if (HTJHYEZKYHPFXW.container->type != text || *(HTJHYEZKYHPFXW.container->value.text + HTJHYEZKYHPFXW.index) != '2') goto sentence_after_2;
+/*DEF*/	DataCursor GPRPSEACCXKWVI;
+/*SET*/	GPRPSEACCXKWVI = arg_from;
+/*INC*/	if (!INC(GPRPSEACCXKWVI, arg_to)) goto sentence_after_2;
+	if (GPRPSEACCXKWVI.container->type != text || *(GPRPSEACCXKWVI.container->value.text + GPRPSEACCXKWVI.index) != '2') goto sentence_after_2;
 //// [ empty ] 
-/*ISEMPTY*/	if (HTJHYEZKYHPFXW!=0 && arg_to != HTJHYEZKYHPFXW) goto sentence_after_2;
+/*ISEMPTY*/	if (GPRPSEACCXKWVI!=0 && arg_to != GPRPSEACCXKWVI) goto sentence_after_2;
 
 // подготовка подстановки 
 result->append(newRefText("456")); 
@@ -3104,12 +3109,12 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor XVFHQFAWKFDJPY;
-/*SET*/	XVFHQFAWKFDJPY = arg_from;
-/*INC*/	if (!INC(XVFHQFAWKFDJPY, arg_to)) goto sentence_after_3;
-	if (XVFHQFAWKFDJPY.container->type != text || *(XVFHQFAWKFDJPY.container->value.text + XVFHQFAWKFDJPY.index) != '3') goto sentence_after_3;
+/*DEF*/	DataCursor EEVDGGATFIEKIX;
+/*SET*/	EEVDGGATFIEKIX = arg_from;
+/*INC*/	if (!INC(EEVDGGATFIEKIX, arg_to)) goto sentence_after_3;
+	if (EEVDGGATFIEKIX.container->type != text || *(EEVDGGATFIEKIX.container->value.text + EEVDGGATFIEKIX.index) != '3') goto sentence_after_3;
 //// [ empty ] 
-/*ISEMPTY*/	if (XVFHQFAWKFDJPY!=0 && arg_to != XVFHQFAWKFDJPY) goto sentence_after_3;
+/*ISEMPTY*/	if (EEVDGGATFIEKIX!=0 && arg_to != EEVDGGATFIEKIX) goto sentence_after_3;
 
 // подготовка подстановки 
 result->append(newRefText("789")); 
@@ -3121,12 +3126,12 @@ sentence_after_3:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor EYRFCPXSCJKCFG;
-/*SET*/	EYRFCPXSCJKCFG = arg_from;
-/*INC*/	if (!INC(EYRFCPXSCJKCFG, arg_to)) goto sentence_after_4;
-	if (EYRFCPXSCJKCFG.container->type != text || *(EYRFCPXSCJKCFG.container->value.text + EYRFCPXSCJKCFG.index) != '4') goto sentence_after_4;
+/*DEF*/	DataCursor QMYHJMJTIMDSPI;
+/*SET*/	QMYHJMJTIMDSPI = arg_from;
+/*INC*/	if (!INC(QMYHJMJTIMDSPI, arg_to)) goto sentence_after_4;
+	if (QMYHJMJTIMDSPI.container->type != text || *(QMYHJMJTIMDSPI.container->value.text + QMYHJMJTIMDSPI.index) != '4') goto sentence_after_4;
 //// [ empty ] 
-/*ISEMPTY*/	if (EYRFCPXSCJKCFG!=0 && arg_to != EYRFCPXSCJKCFG) goto sentence_after_4;
+/*ISEMPTY*/	if (QMYHJMJTIMDSPI!=0 && arg_to != QMYHJMJTIMDSPI) goto sentence_after_4;
 
 // подготовка подстановки 
 result->append(newRefText("147")); 
@@ -3138,12 +3143,12 @@ sentence_after_4:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ZHWZIZCYUCEGLM;
-/*SET*/	ZHWZIZCYUCEGLM = arg_from;
-/*INC*/	if (!INC(ZHWZIZCYUCEGLM, arg_to)) goto sentence_after_5;
-	if (ZHWZIZCYUCEGLM.container->type != text || *(ZHWZIZCYUCEGLM.container->value.text + ZHWZIZCYUCEGLM.index) != '5') goto sentence_after_5;
+/*DEF*/	DataCursor MBGYGFVTQVZQAT;
+/*SET*/	MBGYGFVTQVZQAT = arg_from;
+/*INC*/	if (!INC(MBGYGFVTQVZQAT, arg_to)) goto sentence_after_5;
+	if (MBGYGFVTQVZQAT.container->type != text || *(MBGYGFVTQVZQAT.container->value.text + MBGYGFVTQVZQAT.index) != '5') goto sentence_after_5;
 //// [ empty ] 
-/*ISEMPTY*/	if (ZHWZIZCYUCEGLM!=0 && arg_to != ZHWZIZCYUCEGLM) goto sentence_after_5;
+/*ISEMPTY*/	if (MBGYGFVTQVZQAT!=0 && arg_to != MBGYGFVTQVZQAT) goto sentence_after_5;
 
 // подготовка подстановки 
 result->append(newRefText("258")); 
@@ -3155,12 +3160,12 @@ sentence_after_5:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor XLGIBYZZKIAJXM;
-/*SET*/	XLGIBYZZKIAJXM = arg_from;
-/*INC*/	if (!INC(XLGIBYZZKIAJXM, arg_to)) goto sentence_after_6;
-	if (XLGIBYZZKIAJXM.container->type != text || *(XLGIBYZZKIAJXM.container->value.text + XLGIBYZZKIAJXM.index) != '6') goto sentence_after_6;
+/*DEF*/	DataCursor BHMKQLWHQNGHLV;
+/*SET*/	BHMKQLWHQNGHLV = arg_from;
+/*INC*/	if (!INC(BHMKQLWHQNGHLV, arg_to)) goto sentence_after_6;
+	if (BHMKQLWHQNGHLV.container->type != text || *(BHMKQLWHQNGHLV.container->value.text + BHMKQLWHQNGHLV.index) != '6') goto sentence_after_6;
 //// [ empty ] 
-/*ISEMPTY*/	if (XLGIBYZZKIAJXM!=0 && arg_to != XLGIBYZZKIAJXM) goto sentence_after_6;
+/*ISEMPTY*/	if (BHMKQLWHQNGHLV!=0 && arg_to != BHMKQLWHQNGHLV) goto sentence_after_6;
 
 // подготовка подстановки 
 result->append(newRefText("369")); 
@@ -3172,12 +3177,12 @@ sentence_after_6:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor LZGPPXOOEOQXPP;
-/*SET*/	LZGPPXOOEOQXPP = arg_from;
-/*INC*/	if (!INC(LZGPPXOOEOQXPP, arg_to)) goto sentence_after_7;
-	if (LZGPPXOOEOQXPP.container->type != text || *(LZGPPXOOEOQXPP.container->value.text + LZGPPXOOEOQXPP.index) != '7') goto sentence_after_7;
+/*DEF*/	DataCursor BPMBLXNKEOFMNI;
+/*SET*/	BPMBLXNKEOFMNI = arg_from;
+/*INC*/	if (!INC(BPMBLXNKEOFMNI, arg_to)) goto sentence_after_7;
+	if (BPMBLXNKEOFMNI.container->type != text || *(BPMBLXNKEOFMNI.container->value.text + BPMBLXNKEOFMNI.index) != '7') goto sentence_after_7;
 //// [ empty ] 
-/*ISEMPTY*/	if (LZGPPXOOEOQXPP!=0 && arg_to != LZGPPXOOEOQXPP) goto sentence_after_7;
+/*ISEMPTY*/	if (BPMBLXNKEOFMNI!=0 && arg_to != BPMBLXNKEOFMNI) goto sentence_after_7;
 
 // подготовка подстановки 
 result->append(newRefText("159")); 
@@ -3189,12 +3194,12 @@ sentence_after_7:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor UMJCAFCUYVDCUE;
-/*SET*/	UMJCAFCUYVDCUE = arg_from;
-/*INC*/	if (!INC(UMJCAFCUYVDCUE, arg_to)) goto sentence_after_8;
-	if (UMJCAFCUYVDCUE.container->type != text || *(UMJCAFCUYVDCUE.container->value.text + UMJCAFCUYVDCUE.index) != '8') goto sentence_after_8;
+/*DEF*/	DataCursor TERQPJJWAKNKXT;
+/*SET*/	TERQPJJWAKNKXT = arg_from;
+/*INC*/	if (!INC(TERQPJJWAKNKXT, arg_to)) goto sentence_after_8;
+	if (TERQPJJWAKNKXT.container->type != text || *(TERQPJJWAKNKXT.container->value.text + TERQPJJWAKNKXT.index) != '8') goto sentence_after_8;
 //// [ empty ] 
-/*ISEMPTY*/	if (UMJCAFCUYVDCUE!=0 && arg_to != UMJCAFCUYVDCUE) goto sentence_after_8;
+/*ISEMPTY*/	if (TERQPJJWAKNKXT!=0 && arg_to != TERQPJJWAKNKXT) goto sentence_after_8;
 
 // подготовка подстановки 
 result->append(newRefText("357")); 
@@ -3222,17 +3227,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* LZQFLJNWKXGKFY = new DataChain(); 
-DataContainer* LZQFLJNWKXGKFY_execbr = newRefExecBrackets(Prout, LZQFLJNWKXGKFY, "Prout");
-result->append(LZQFLJNWKXGKFY_execbr);
-LZQFLJNWKXGKFY->append(newRefWord("WriteXO1:")); 
-LZQFLJNWKXGKFY->append_copy(l_e, r_e); 
-context->pushExecuteCall(LZQFLJNWKXGKFY_execbr);
 DataChain* LNUKBIYSPLKHJU = new DataChain(); 
-DataContainer* LNUKBIYSPLKHJU_execbr = newRefExecBrackets(WriteXO1__, LNUKBIYSPLKHJU, "WriteXO1__");
+DataContainer* LNUKBIYSPLKHJU_execbr = newRefExecBrackets(Prout, LNUKBIYSPLKHJU, "Prout");
 result->append(LNUKBIYSPLKHJU_execbr);
+LNUKBIYSPLKHJU->append(newRefWord("WriteXO1:")); 
 LNUKBIYSPLKHJU->append_copy(l_e, r_e); 
 context->pushExecuteCall(LNUKBIYSPLKHJU_execbr);
+DataChain* CFUWOHZVPHJBJY = new DataChain(); 
+DataContainer* CFUWOHZVPHJBJY_execbr = newRefExecBrackets(WriteXO1__, CFUWOHZVPHJBJY, "WriteXO1__");
+result->append(CFUWOHZVPHJBJY_execbr);
+CFUWOHZVPHJBJY->append_copy(l_e, r_e); 
+context->pushExecuteCall(CFUWOHZVPHJBJY_execbr);
 
 return result; 
 }
@@ -3266,39 +3271,39 @@ sentence_after_1:
 /*DEF*/	DataCursor r_eee;
 /*SET*/	l_eee = arg_from;
 /*SET*/	r_eee = arg_from;
-/*JMP*/	goto label_CFUWOHZVPHJBJY_firststep;
-label_CFUWOHZVPHJBJY: 
+/*JMP*/	goto label_OVDLNBFRKVBEMW_firststep;
+label_OVDLNBFRKVBEMW: 
 /*INC*/	if (!INC(r_eee, arg_to)) goto sentence_after_2;
-label_CFUWOHZVPHJBJY_firststep: 
+label_OVDLNBFRKVBEMW_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor OVDLNBFRKVBEMW;
 /*DEF*/	DataCursor YTFJYNQMGZAGBK;
 /*DEF*/	DataCursor WEKKOUXDCYNKHT;
-/*SET*/	OVDLNBFRKVBEMW = r_eee;
-/*INC*/	if (!INC(OVDLNBFRKVBEMW, arg_to)) goto label_CFUWOHZVPHJBJY;
+/*DEF*/	DataCursor OSFYTLUCENTOIL;
+/*SET*/	YTFJYNQMGZAGBK = r_eee;
+/*INC*/	if (!INC(YTFJYNQMGZAGBK, arg_to)) goto label_OVDLNBFRKVBEMW;
 //// ISBRACKET 
-	if (OVDLNBFRKVBEMW.container->type != struct_bracket) goto label_CFUWOHZVPHJBJY;
+	if (YTFJYNQMGZAGBK.container->type != struct_bracket) goto label_OVDLNBFRKVBEMW;
 //// JMP_BRACKET 
-	YTFJYNQMGZAGBK = OVDLNBFRKVBEMW.container->value.bracket_data.chain->at_before_first();
-	WEKKOUXDCYNKHT   = OVDLNBFRKVBEMW.container->value.bracket_data.chain->at_last();
+	WEKKOUXDCYNKHT = YTFJYNQMGZAGBK.container->value.bracket_data.chain->at_before_first();
+	OSFYTLUCENTOIL   = YTFJYNQMGZAGBK.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = YTFJYNQMGZAGBK;
-/*SET*/	r_3 = YTFJYNQMGZAGBK;
-/*JMP*/	goto label_OSFYTLUCENTOIL_firststep;
-label_OSFYTLUCENTOIL: 
-/*INC*/	if (!INC(r_3, WEKKOUXDCYNKHT)) goto label_CFUWOHZVPHJBJY;
-label_OSFYTLUCENTOIL_firststep: 
+/*SET*/	l_3 = WEKKOUXDCYNKHT;
+/*SET*/	r_3 = WEKKOUXDCYNKHT;
+/*JMP*/	goto label_FULDVRXLONVKXZ_firststep;
+label_FULDVRXLONVKXZ: 
+/*INC*/	if (!INC(r_3, OSFYTLUCENTOIL)) goto label_OVDLNBFRKVBEMW;
+label_FULDVRXLONVKXZ_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor FULDVRXLONVKXZ;
-/*SET*/	FULDVRXLONVKXZ = r_3;
-/*INC*/	if (!INC(FULDVRXLONVKXZ, WEKKOUXDCYNKHT)) goto label_OSFYTLUCENTOIL;
-	if (FULDVRXLONVKXZ.container->type != text || *(FULDVRXLONVKXZ.container->value.text + FULDVRXLONVKXZ.index) != '>') goto label_OSFYTLUCENTOIL;
+/*DEF*/	DataCursor ECXEPKMZZGXLUA;
+/*SET*/	ECXEPKMZZGXLUA = r_3;
+/*INC*/	if (!INC(ECXEPKMZZGXLUA, OSFYTLUCENTOIL)) goto label_FULDVRXLONVKXZ;
+	if (ECXEPKMZZGXLUA.container->type != text || *(ECXEPKMZZGXLUA.container->value.text + ECXEPKMZZGXLUA.index) != '>') goto label_FULDVRXLONVKXZ;
 //// [ empty ] 
-/*ISEMPTY*/	if (FULDVRXLONVKXZ!=0 && WEKKOUXDCYNKHT != FULDVRXLONVKXZ) goto label_OSFYTLUCENTOIL;
+/*ISEMPTY*/	if (ECXEPKMZZGXLUA!=0 && OSFYTLUCENTOIL != ECXEPKMZZGXLUA) goto label_FULDVRXLONVKXZ;
 //// [ empty ] 
-/*ISEMPTY*/	if (OVDLNBFRKVBEMW!=0 && arg_to != OVDLNBFRKVBEMW) goto label_OSFYTLUCENTOIL;
+/*ISEMPTY*/	if (YTFJYNQMGZAGBK!=0 && arg_to != YTFJYNQMGZAGBK) goto label_FULDVRXLONVKXZ;
 
 // подготовка подстановки 
 
@@ -3309,115 +3314,115 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor HMJYECSLDJESDC;
 /*DEF*/	DataCursor PJIKVPAUDVKXGL;
 /*DEF*/	DataCursor LISAAMBOVJKDQR;
-/*SET*/	HMJYECSLDJESDC = arg_from;
-/*INC*/	if (!INC(HMJYECSLDJESDC, arg_to)) goto sentence_after_3;
-//// ISBRACKET 
-	if (HMJYECSLDJESDC.container->type != struct_bracket) goto sentence_after_3;
-//// JMP_BRACKET 
-	PJIKVPAUDVKXGL = HMJYECSLDJESDC.container->value.bracket_data.chain->at_before_first();
-	LISAAMBOVJKDQR   = HMJYECSLDJESDC.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor KDORJFNYGHHHPT;
+/*SET*/	PJIKVPAUDVKXGL = arg_from;
+/*INC*/	if (!INC(PJIKVPAUDVKXGL, arg_to)) goto sentence_after_3;
+//// ISBRACKET 
+	if (PJIKVPAUDVKXGL.container->type != struct_bracket) goto sentence_after_3;
+//// JMP_BRACKET 
+	LISAAMBOVJKDQR = PJIKVPAUDVKXGL.container->value.bracket_data.chain->at_before_first();
+	KDORJFNYGHHHPT   = PJIKVPAUDVKXGL.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor ZIFAWFTZQGEMNH;
 /*DEF*/	DataCursor l_g;
 /*DEF*/	DataCursor r_g;
-/*SET*/	l_g = PJIKVPAUDVKXGL;
-/*SET*/	KDORJFNYGHHHPT = PJIKVPAUDVKXGL;
-/*INC*/	if (!INC(KDORJFNYGHHHPT, LISAAMBOVJKDQR)) goto sentence_after_3;
-	if (! isSymbolType(KDORJFNYGHHHPT.container->type)) goto sentence_after_3;
-/*SET*/	r_g = KDORJFNYGHHHPT;
+/*SET*/	l_g = LISAAMBOVJKDQR;
+/*SET*/	ZIFAWFTZQGEMNH = LISAAMBOVJKDQR;
+/*INC*/	if (!INC(ZIFAWFTZQGEMNH, KDORJFNYGHHHPT)) goto sentence_after_3;
+	if (! isSymbolType(ZIFAWFTZQGEMNH.container->type)) goto sentence_after_3;
+/*SET*/	r_g = ZIFAWFTZQGEMNH;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_g!=0 && LISAAMBOVJKDQR != r_g) goto sentence_after_3;
+/*ISEMPTY*/	if (r_g!=0 && KDORJFNYGHHHPT != r_g) goto sentence_after_3;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_eee;
 /*DEF*/	DataCursor r_eee;
-/*SET*/	l_eee = HMJYECSLDJESDC;
-/*SET*/	r_eee = HMJYECSLDJESDC;
-/*JMP*/	goto label_ZIFAWFTZQGEMNH_firststep;
-label_ZIFAWFTZQGEMNH: 
+/*SET*/	l_eee = PJIKVPAUDVKXGL;
+/*SET*/	r_eee = PJIKVPAUDVKXGL;
+/*JMP*/	goto label_PQYICTMOYFPCVK_firststep;
+label_PQYICTMOYFPCVK: 
 /*INC*/	if (!INC(r_eee, arg_to)) goto sentence_after_3;
-label_ZIFAWFTZQGEMNH_firststep: 
+label_PQYICTMOYFPCVK_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor PQYICTMOYFPCVK;
 /*DEF*/	DataCursor CAODAKJACQAUZY;
 /*DEF*/	DataCursor OWDZSFQHKPLFBY;
-/*SET*/	PQYICTMOYFPCVK = r_eee;
-/*INC*/	if (!INC(PQYICTMOYFPCVK, arg_to)) goto label_ZIFAWFTZQGEMNH;
+/*DEF*/	DataCursor ZMNIMDLXMJYDAX;
+/*SET*/	CAODAKJACQAUZY = r_eee;
+/*INC*/	if (!INC(CAODAKJACQAUZY, arg_to)) goto label_PQYICTMOYFPCVK;
 //// ISBRACKET 
-	if (PQYICTMOYFPCVK.container->type != struct_bracket) goto label_ZIFAWFTZQGEMNH;
+	if (CAODAKJACQAUZY.container->type != struct_bracket) goto label_PQYICTMOYFPCVK;
 //// JMP_BRACKET 
-	CAODAKJACQAUZY = PQYICTMOYFPCVK.container->value.bracket_data.chain->at_before_first();
-	OWDZSFQHKPLFBY   = PQYICTMOYFPCVK.container->value.bracket_data.chain->at_last();
+	OWDZSFQHKPLFBY = CAODAKJACQAUZY.container->value.bracket_data.chain->at_before_first();
+	ZMNIMDLXMJYDAX   = CAODAKJACQAUZY.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = CAODAKJACQAUZY;
-/*SET*/	r_3 = CAODAKJACQAUZY;
-/*JMP*/	goto label_ZMNIMDLXMJYDAX_firststep;
-label_ZMNIMDLXMJYDAX: 
-/*INC*/	if (!INC(r_3, OWDZSFQHKPLFBY)) goto label_ZIFAWFTZQGEMNH;
-label_ZMNIMDLXMJYDAX_firststep: 
+/*SET*/	l_3 = OWDZSFQHKPLFBY;
+/*SET*/	r_3 = OWDZSFQHKPLFBY;
+/*JMP*/	goto label_YJNECXSJJBHIQN_firststep;
+label_YJNECXSJJBHIQN: 
+/*INC*/	if (!INC(r_3, ZMNIMDLXMJYDAX)) goto label_PQYICTMOYFPCVK;
+label_YJNECXSJJBHIQN_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor YJNECXSJJBHIQN;
-/*SET*/	YJNECXSJJBHIQN = r_3;
-/*INC*/	if (!INC(YJNECXSJJBHIQN, OWDZSFQHKPLFBY)) goto label_ZMNIMDLXMJYDAX;
-	if (YJNECXSJJBHIQN.container->type != text || *(YJNECXSJJBHIQN.container->value.text + YJNECXSJJBHIQN.index) != '>') goto label_ZMNIMDLXMJYDAX;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor VOCDENQMWILXXZ;
+/*SET*/	VOCDENQMWILXXZ = r_3;
+/*INC*/	if (!INC(VOCDENQMWILXXZ, ZMNIMDLXMJYDAX)) goto label_YJNECXSJJBHIQN;
+	if (VOCDENQMWILXXZ.container->type != text || *(VOCDENQMWILXXZ.container->value.text + VOCDENQMWILXXZ.index) != '>') goto label_YJNECXSJJBHIQN;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor OQFOTPIKPQUDMO;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
-/*SET*/	l_s = YJNECXSJJBHIQN;
-/*SET*/	VOCDENQMWILXXZ = YJNECXSJJBHIQN;
-/*INC*/	if (!INC(VOCDENQMWILXXZ, OWDZSFQHKPLFBY)) goto label_ZMNIMDLXMJYDAX;
-	if (! isSymbolType(VOCDENQMWILXXZ.container->type)) goto label_ZMNIMDLXMJYDAX;
-/*SET*/	r_s = VOCDENQMWILXXZ;
+/*SET*/	l_s = VOCDENQMWILXXZ;
+/*SET*/	OQFOTPIKPQUDMO = VOCDENQMWILXXZ;
+/*INC*/	if (!INC(OQFOTPIKPQUDMO, ZMNIMDLXMJYDAX)) goto label_YJNECXSJJBHIQN;
+	if (! isSymbolType(OQFOTPIKPQUDMO.container->type)) goto label_YJNECXSJJBHIQN;
+/*SET*/	r_s = OQFOTPIKPQUDMO;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_4;
 /*DEF*/	DataCursor r_4;
 /*SET*/	l_4 = r_s;
-/*SET*/	r_4 = OWDZSFQHKPLFBY;
+/*SET*/	r_4 = ZMNIMDLXMJYDAX;
 //// [ empty ] 
-/*ISEMPTY*/	if (PQYICTMOYFPCVK!=0 && arg_to != PQYICTMOYFPCVK) goto label_ZMNIMDLXMJYDAX;
+/*ISEMPTY*/	if (CAODAKJACQAUZY!=0 && arg_to != CAODAKJACQAUZY) goto label_YJNECXSJJBHIQN;
 
 // подготовка подстановки 
-DataChain* MIKPPZHDHFQSGB = new DataChain(); 
-DataContainer* MIKPPZHDHFQSGB_execbr = newRefExecBrackets(Length, MIKPPZHDHFQSGB, "Length");
-result->append(MIKPPZHDHFQSGB_execbr);
 DataChain* XIISYZWNHXYFVY = new DataChain(); 
-DataContainer* XIISYZWNHXYFVY_execbr = newRefExecBrackets(Optima21, XIISYZWNHXYFVY, "Optima21");
-MIKPPZHDHFQSGB->append(XIISYZWNHXYFVY_execbr);
+DataContainer* XIISYZWNHXYFVY_execbr = newRefExecBrackets(Length, XIISYZWNHXYFVY, "Length");
+result->append(XIISYZWNHXYFVY_execbr);
 DataChain* DFMPDWOMCIUDCN = new DataChain(); 
-DataContainer* DFMPDWOMCIUDCN_execbr = newRefExecBrackets(Analiz, DFMPDWOMCIUDCN, "Analiz");
+DataContainer* DFMPDWOMCIUDCN_execbr = newRefExecBrackets(Optima21, DFMPDWOMCIUDCN, "Optima21");
 XIISYZWNHXYFVY->append(DFMPDWOMCIUDCN_execbr);
 DataChain* YNDGCNFJITPPMY = new DataChain(); 
-DFMPDWOMCIUDCN->append(newRefStructBrackets(YNDGCNFJITPPMY)); 
-YNDGCNFJITPPMY->append_copy(l_g, r_g); 
-DFMPDWOMCIUDCN->append_copy(l_eee, r_eee); 
+DataContainer* YNDGCNFJITPPMY_execbr = newRefExecBrackets(Analiz, YNDGCNFJITPPMY, "Analiz");
+DFMPDWOMCIUDCN->append(YNDGCNFJITPPMY_execbr);
 DataChain* MXIISNEBPYWSGQ = new DataChain(); 
-DFMPDWOMCIUDCN->append(newRefStructBrackets(MXIISNEBPYWSGQ)); 
-MXIISNEBPYWSGQ->append_copy(l_3, r_3); 
-MXIISNEBPYWSGQ->append(newRefText(">")); 
-MXIISNEBPYWSGQ->append_copy(l_s, r_s); 
-MXIISNEBPYWSGQ->append_copy(l_4, r_4); 
+YNDGCNFJITPPMY->append(newRefStructBrackets(MXIISNEBPYWSGQ)); 
+MXIISNEBPYWSGQ->append_copy(l_g, r_g); 
+YNDGCNFJITPPMY->append_copy(l_eee, r_eee); 
+DataChain* SXDJPLWZFMJOOP = new DataChain(); 
+YNDGCNFJITPPMY->append(newRefStructBrackets(SXDJPLWZFMJOOP)); 
+SXDJPLWZFMJOOP->append_copy(l_3, r_3); 
+SXDJPLWZFMJOOP->append(newRefText(">")); 
+SXDJPLWZFMJOOP->append_copy(l_s, r_s); 
+SXDJPLWZFMJOOP->append_copy(l_4, r_4); 
+context->pushExecuteCall(YNDGCNFJITPPMY_execbr);
 context->pushExecuteCall(DFMPDWOMCIUDCN_execbr);
 context->pushExecuteCall(XIISYZWNHXYFVY_execbr);
-context->pushExecuteCall(MIKPPZHDHFQSGB_execbr);
-DataChain* SXDJPLWZFMJOOP = new DataChain(); 
-DataContainer* SXDJPLWZFMJOOP_execbr = newRefExecBrackets(WriteXO, SXDJPLWZFMJOOP, "WriteXO");
-result->append(SXDJPLWZFMJOOP_execbr);
 DataChain* YYIFVKMWWPGPLJ = new DataChain(); 
-SXDJPLWZFMJOOP->append(newRefStructBrackets(YYIFVKMWWPGPLJ)); 
-YYIFVKMWWPGPLJ->append_copy(l_g, r_g); 
-SXDJPLWZFMJOOP->append_copy(l_eee, r_eee); 
+DataContainer* YYIFVKMWWPGPLJ_execbr = newRefExecBrackets(WriteXO, YYIFVKMWWPGPLJ, "WriteXO");
+result->append(YYIFVKMWWPGPLJ_execbr);
 DataChain* EAWPVAPIHOXUUF = new DataChain(); 
-SXDJPLWZFMJOOP->append(newRefStructBrackets(EAWPVAPIHOXUUF)); 
-EAWPVAPIHOXUUF->append_copy(l_3, r_3); 
-EAWPVAPIHOXUUF->append_copy(l_s, r_s); 
-EAWPVAPIHOXUUF->append(newRefText(">")); 
-EAWPVAPIHOXUUF->append_copy(l_4, r_4); 
-context->pushExecuteCall(SXDJPLWZFMJOOP_execbr);
+YYIFVKMWWPGPLJ->append(newRefStructBrackets(EAWPVAPIHOXUUF)); 
+EAWPVAPIHOXUUF->append_copy(l_g, r_g); 
+YYIFVKMWWPGPLJ->append_copy(l_eee, r_eee); 
+DataChain* FBRWHPEVCOQRGR = new DataChain(); 
+YYIFVKMWWPGPLJ->append(newRefStructBrackets(FBRWHPEVCOQRGR)); 
+FBRWHPEVCOQRGR->append_copy(l_3, r_3); 
+FBRWHPEVCOQRGR->append_copy(l_s, r_s); 
+FBRWHPEVCOQRGR->append(newRefText(">")); 
+FBRWHPEVCOQRGR->append_copy(l_4, r_4); 
+context->pushExecuteCall(YYIFVKMWWPGPLJ_execbr);
 
 return result; 
 }
@@ -3436,14 +3441,14 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor FBRWHPEVCOQRGR;
+/*DEF*/	DataCursor QWZHIBNORKHZML;
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
-/*SET*/	FBRWHPEVCOQRGR = arg_from;
-/*INC*/	if (!INC(FBRWHPEVCOQRGR, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(FBRWHPEVCOQRGR.container->type)) goto sentence_after_1;
-/*SET*/	r_1 = FBRWHPEVCOQRGR;
+/*SET*/	QWZHIBNORKHZML = arg_from;
+/*INC*/	if (!INC(QWZHIBNORKHZML, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(QWZHIBNORKHZML.container->type)) goto sentence_after_1;
+/*SET*/	r_1 = QWZHIBNORKHZML;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
@@ -3491,17 +3496,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* QWZHIBNORKHZML = new DataChain(); 
-DataContainer* QWZHIBNORKHZML_execbr = newRefExecBrackets(Prout, QWZHIBNORKHZML, "Prout");
-result->append(QWZHIBNORKHZML_execbr);
-QWZHIBNORKHZML->append(newRefWord("Length:")); 
-QWZHIBNORKHZML->append_copy(l_e, r_e); 
-context->pushExecuteCall(QWZHIBNORKHZML_execbr);
 DataChain* BZFHXUNRKLIBVP = new DataChain(); 
-DataContainer* BZFHXUNRKLIBVP_execbr = newRefExecBrackets(Length__, BZFHXUNRKLIBVP, "Length__");
+DataContainer* BZFHXUNRKLIBVP_execbr = newRefExecBrackets(Prout, BZFHXUNRKLIBVP, "Prout");
 result->append(BZFHXUNRKLIBVP_execbr);
+BZFHXUNRKLIBVP->append(newRefWord("Length:")); 
 BZFHXUNRKLIBVP->append_copy(l_e, r_e); 
 context->pushExecuteCall(BZFHXUNRKLIBVP_execbr);
+DataChain* SZZNOPFGAXZGFL = new DataChain(); 
+DataContainer* SZZNOPFGAXZGFL_execbr = newRefExecBrackets(Length__, SZZNOPFGAXZGFL, "Length__");
+result->append(SZZNOPFGAXZGFL_execbr);
+SZZNOPFGAXZGFL->append_copy(l_e, r_e); 
+context->pushExecuteCall(SZZNOPFGAXZGFL_execbr);
 
 return result; 
 }
@@ -3524,49 +3529,49 @@ DataChain *tmp_chain = new DataChain();
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_SZZNOPFGAXZGFL_firststep;
-label_SZZNOPFGAXZGFL: 
+/*JMP*/	goto label_TLSXBTUMILOCLT_firststep;
+label_TLSXBTUMILOCLT: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_1;
-label_SZZNOPFGAXZGFL_firststep: 
+label_TLSXBTUMILOCLT_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor TLSXBTUMILOCLT;
-/*SET*/	TLSXBTUMILOCLT = r_1;
-/*INC*/	if (!INC(TLSXBTUMILOCLT, arg_to)) goto label_SZZNOPFGAXZGFL;
-	static DataChain *XEEKWNYSBICRFX = text_to_chain("12");
-	static DataCursor XEEKWNYSBICRFX_l = XEEKWNYSBICRFX->at_before_first();
-	static DataCursor XEEKWNYSBICRFX_r = XEEKWNYSBICRFX->at_last();
- if (!SLIDE(TLSXBTUMILOCLT, arg_to, XEEKWNYSBICRFX_l, XEEKWNYSBICRFX_r)) goto label_SZZNOPFGAXZGFL;
+/*DEF*/	DataCursor GCOZGTZIUFUZIM;
+/*SET*/	GCOZGTZIUFUZIM = r_1;
+/*INC*/	if (!INC(GCOZGTZIUFUZIM, arg_to)) goto label_TLSXBTUMILOCLT;
+	static DataChain *DIOGCSEOZPSCRH = text_to_chain("12");
+	static DataCursor DIOGCSEOZPSCRH_l = DIOGCSEOZPSCRH->at_before_first();
+	static DataCursor DIOGCSEOZPSCRH_r = DIOGCSEOZPSCRH->at_last();
+ if (!SLIDE(GCOZGTZIUFUZIM, arg_to, DIOGCSEOZPSCRH_l, DIOGCSEOZPSCRH_r)) goto label_TLSXBTUMILOCLT;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = TLSXBTUMILOCLT;
+/*SET*/	l_2 = GCOZGTZIUFUZIM;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
-DataChain* DIOGCSEOZPSCRH = new DataChain(); 
-DataContainer* DIOGCSEOZPSCRH_execbr = newRefExecBrackets(DivS, DIOGCSEOZPSCRH, "DivS");
-result->append(DIOGCSEOZPSCRH_execbr);
 DataChain* JOTYCZCWMBAAOL = new DataChain(); 
-DataContainer* JOTYCZCWMBAAOL_execbr = newRefExecBrackets(First1, JOTYCZCWMBAAOL, "First1");
-DIOGCSEOZPSCRH->append(JOTYCZCWMBAAOL_execbr);
+DataContainer* JOTYCZCWMBAAOL_execbr = newRefExecBrackets(DivS, JOTYCZCWMBAAOL, "DivS");
+result->append(JOTYCZCWMBAAOL_execbr);
 DataChain* SVUBPYLONMWAJG = new DataChain(); 
-DataContainer* SVUBPYLONMWAJG_execbr = newRefExecBrackets(Lenw, SVUBPYLONMWAJG, "Lenw");
+DataContainer* SVUBPYLONMWAJG_execbr = newRefExecBrackets(First1, SVUBPYLONMWAJG, "First1");
 JOTYCZCWMBAAOL->append(SVUBPYLONMWAJG_execbr);
-SVUBPYLONMWAJG->append_copy(l_1, r_1); 
-SVUBPYLONMWAJG->append(newRefText("1")); 
-context->pushExecuteCall(SVUBPYLONMWAJG_execbr);
-context->pushExecuteCall(JOTYCZCWMBAAOL_execbr);
 DataChain* XZGYZAOVENFVOC = new DataChain(); 
-DataContainer* XZGYZAOVENFVOC_execbr = newRefExecBrackets(First1, XZGYZAOVENFVOC, "First1");
-DIOGCSEOZPSCRH->append(XZGYZAOVENFVOC_execbr);
-DataChain* IKQJTXGVENKSPP = new DataChain(); 
-DataContainer* IKQJTXGVENKSPP_execbr = newRefExecBrackets(Lenw, IKQJTXGVENKSPP, "Lenw");
-XZGYZAOVENFVOC->append(IKQJTXGVENKSPP_execbr);
-IKQJTXGVENKSPP->append(newRefText("2")); 
-IKQJTXGVENKSPP->append_copy(l_2, r_2); 
-context->pushExecuteCall(IKQJTXGVENKSPP_execbr);
+DataContainer* XZGYZAOVENFVOC_execbr = newRefExecBrackets(Lenw, XZGYZAOVENFVOC, "Lenw");
+SVUBPYLONMWAJG->append(XZGYZAOVENFVOC_execbr);
+XZGYZAOVENFVOC->append_copy(l_1, r_1); 
+XZGYZAOVENFVOC->append(newRefText("1")); 
 context->pushExecuteCall(XZGYZAOVENFVOC_execbr);
-context->pushExecuteCall(DIOGCSEOZPSCRH_execbr);
+context->pushExecuteCall(SVUBPYLONMWAJG_execbr);
+DataChain* IKQJTXGVENKSPP = new DataChain(); 
+DataContainer* IKQJTXGVENKSPP_execbr = newRefExecBrackets(First1, IKQJTXGVENKSPP, "First1");
+JOTYCZCWMBAAOL->append(IKQJTXGVENKSPP_execbr);
+DataChain* WWPLHXTGYBVMAJ = new DataChain(); 
+DataContainer* WWPLHXTGYBVMAJ_execbr = newRefExecBrackets(Lenw, WWPLHXTGYBVMAJ, "Lenw");
+IKQJTXGVENKSPP->append(WWPLHXTGYBVMAJ_execbr);
+WWPLHXTGYBVMAJ->append(newRefText("2")); 
+WWPLHXTGYBVMAJ->append_copy(l_2, r_2); 
+context->pushExecuteCall(WWPLHXTGYBVMAJ_execbr);
+context->pushExecuteCall(IKQJTXGVENKSPP_execbr);
+context->pushExecuteCall(JOTYCZCWMBAAOL_execbr);
 
 return result; 
 }
@@ -3579,19 +3584,19 @@ sentence_after_1:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_WWPLHXTGYBVMAJ_firststep;
-label_WWPLHXTGYBVMAJ: 
+/*JMP*/	goto label_EYFAXEGSEIJIKC_firststep;
+label_EYFAXEGSEIJIKC: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_2;
-label_WWPLHXTGYBVMAJ_firststep: 
+label_EYFAXEGSEIJIKC_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor EYFAXEGSEIJIKC;
-/*SET*/	EYFAXEGSEIJIKC = r_1;
-/*INC*/	if (!INC(EYFAXEGSEIJIKC, arg_to)) goto label_WWPLHXTGYBVMAJ;
-	if (EYFAXEGSEIJIKC.container->type != text || *(EYFAXEGSEIJIKC.container->value.text + EYFAXEGSEIJIKC.index) != '1') goto label_WWPLHXTGYBVMAJ;
+/*DEF*/	DataCursor MDUCLAAIOISSIS;
+/*SET*/	MDUCLAAIOISSIS = r_1;
+/*INC*/	if (!INC(MDUCLAAIOISSIS, arg_to)) goto label_EYFAXEGSEIJIKC;
+	if (MDUCLAAIOISSIS.container->type != text || *(MDUCLAAIOISSIS.container->value.text + MDUCLAAIOISSIS.index) != '1') goto label_EYFAXEGSEIJIKC;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = EYFAXEGSEIJIKC;
+/*SET*/	l_2 = MDUCLAAIOISSIS;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
@@ -3609,19 +3614,19 @@ sentence_after_2:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_IYPPNZDUBPTSAV_firststep;
-label_IYPPNZDUBPTSAV: 
+/*JMP*/	goto label_ESZSIPPQMOTJHK_firststep;
+label_ESZSIPPQMOTJHK: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_3;
-label_IYPPNZDUBPTSAV_firststep: 
+label_ESZSIPPQMOTJHK_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ESZSIPPQMOTJHK;
-/*SET*/	ESZSIPPQMOTJHK = r_1;
-/*INC*/	if (!INC(ESZSIPPQMOTJHK, arg_to)) goto label_IYPPNZDUBPTSAV;
-	if (ESZSIPPQMOTJHK.container->type != text || *(ESZSIPPQMOTJHK.container->value.text + ESZSIPPQMOTJHK.index) != '2') goto label_IYPPNZDUBPTSAV;
+/*DEF*/	DataCursor UDNVQZBKATNEFU;
+/*SET*/	UDNVQZBKATNEFU = r_1;
+/*INC*/	if (!INC(UDNVQZBKATNEFU, arg_to)) goto label_ESZSIPPQMOTJHK;
+	if (UDNVQZBKATNEFU.container->type != text || *(UDNVQZBKATNEFU.container->value.text + UDNVQZBKATNEFU.index) != '2') goto label_ESZSIPPQMOTJHK;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = ESZSIPPQMOTJHK;
+/*SET*/	l_2 = UDNVQZBKATNEFU;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
@@ -3654,16 +3659,16 @@ sentence_after_4:
 /*SET*/	r_1 = arg_to;
 
 // подготовка подстановки 
-DataChain* LGEXKTRMHDDAPS = new DataChain(); 
-DataContainer* LGEXKTRMHDDAPS_execbr = newRefExecBrackets(Prout, LGEXKTRMHDDAPS, "Prout");
-result->append(LGEXKTRMHDDAPS_execbr);
-LGEXKTRMHDDAPS->append(newRefText("Length error symbols!!! : ")); 
-context->pushExecuteCall(LGEXKTRMHDDAPS_execbr);
 DataChain* WPTFVOVUJIUWBM = new DataChain(); 
-DataContainer* WPTFVOVUJIUWBM_execbr = newRefExecBrackets(Print, WPTFVOVUJIUWBM, "Print");
+DataContainer* WPTFVOVUJIUWBM_execbr = newRefExecBrackets(Prout, WPTFVOVUJIUWBM, "Prout");
 result->append(WPTFVOVUJIUWBM_execbr);
-WPTFVOVUJIUWBM->append_copy(l_1, r_1); 
+WPTFVOVUJIUWBM->append(newRefText("Length error symbols!!! : ")); 
 context->pushExecuteCall(WPTFVOVUJIUWBM_execbr);
+DataChain* IBRUCTTMRVZNJR = new DataChain(); 
+DataContainer* IBRUCTTMRVZNJR_execbr = newRefExecBrackets(Print, IBRUCTTMRVZNJR, "Print");
+result->append(IBRUCTTMRVZNJR_execbr);
+IBRUCTTMRVZNJR->append_copy(l_1, r_1); 
+context->pushExecuteCall(IBRUCTTMRVZNJR_execbr);
 
 return result; 
 }
@@ -3682,39 +3687,39 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor IBRUCTTMRVZNJR;
+/*DEF*/	DataCursor CHJWZWMOZECRZN;
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
-/*SET*/	IBRUCTTMRVZNJR = arg_from;
-/*INC*/	if (!INC(IBRUCTTMRVZNJR, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(IBRUCTTMRVZNJR.container->type)) goto sentence_after_1;
-/*SET*/	r_1 = IBRUCTTMRVZNJR;
+/*SET*/	CHJWZWMOZECRZN = arg_from;
+/*INC*/	if (!INC(CHJWZWMOZECRZN, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(CHJWZWMOZECRZN.container->type)) goto sentence_after_1;
+/*SET*/	r_1 = CHJWZWMOZECRZN;
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor CHJWZWMOZECRZN;
+/*DEF*/	DataCursor JKFRVKRMRDWROA;
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
 /*SET*/	l_2 = r_1;
-/*SET*/	CHJWZWMOZECRZN = r_1;
-/*INC*/	if (!INC(CHJWZWMOZECRZN, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(CHJWZWMOZECRZN.container->type)) goto sentence_after_1;
-/*SET*/	r_2 = CHJWZWMOZECRZN;
+/*SET*/	JKFRVKRMRDWROA = r_1;
+/*INC*/	if (!INC(JKFRVKRMRDWROA, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(JKFRVKRMRDWROA.container->type)) goto sentence_after_1;
+/*SET*/	r_2 = JKFRVKRMRDWROA;
 //// [ empty ] 
 /*ISEMPTY*/	if (r_2!=0 && arg_to != r_2) goto sentence_after_1;
 
 // подготовка подстановки 
-DataChain* JKFRVKRMRDWROA = new DataChain(); 
-DataContainer* JKFRVKRMRDWROA_execbr = newRefExecBrackets(IfDiv, JKFRVKRMRDWROA, "IfDiv");
-result->append(JKFRVKRMRDWROA_execbr);
 DataChain* OCQPKTLMWXWTNU = new DataChain(); 
-DataContainer* OCQPKTLMWXWTNU_execbr = newRefExecBrackets(Compare, OCQPKTLMWXWTNU, "Compare");
-JKFRVKRMRDWROA->append(OCQPKTLMWXWTNU_execbr);
+DataContainer* OCQPKTLMWXWTNU_execbr = newRefExecBrackets(IfDiv, OCQPKTLMWXWTNU, "IfDiv");
+result->append(OCQPKTLMWXWTNU_execbr);
+DataChain* AMQELRWBGBIJIL = new DataChain(); 
+DataContainer* AMQELRWBGBIJIL_execbr = newRefExecBrackets(Compare, AMQELRWBGBIJIL, "Compare");
+OCQPKTLMWXWTNU->append(AMQELRWBGBIJIL_execbr);
+AMQELRWBGBIJIL->append_copy(l_1, r_1); 
+AMQELRWBGBIJIL->append_copy(l_2, r_2); 
+context->pushExecuteCall(AMQELRWBGBIJIL_execbr);
 OCQPKTLMWXWTNU->append_copy(l_1, r_1); 
 OCQPKTLMWXWTNU->append_copy(l_2, r_2); 
 context->pushExecuteCall(OCQPKTLMWXWTNU_execbr);
-JKFRVKRMRDWROA->append_copy(l_1, r_1); 
-JKFRVKRMRDWROA->append_copy(l_2, r_2); 
-context->pushExecuteCall(JKFRVKRMRDWROA_execbr);
 
 return result; 
 }
@@ -3733,39 +3738,39 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor AMQELRWBGBIJIL;
-/*SET*/	AMQELRWBGBIJIL = arg_from;
-/*INC*/	if (!INC(AMQELRWBGBIJIL, arg_to)) goto sentence_after_1;
-	if (AMQELRWBGBIJIL.container->type != text || *(AMQELRWBGBIJIL.container->value.text + AMQELRWBGBIJIL.index) != '+') goto sentence_after_1;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor NHIIULLTOVBEFL;
-/*DEF*/	DataCursor l_1;
-/*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = AMQELRWBGBIJIL;
-/*SET*/	NHIIULLTOVBEFL = AMQELRWBGBIJIL;
+/*SET*/	NHIIULLTOVBEFL = arg_from;
 /*INC*/	if (!INC(NHIIULLTOVBEFL, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(NHIIULLTOVBEFL.container->type)) goto sentence_after_1;
-/*SET*/	r_1 = NHIIULLTOVBEFL;
+	if (NHIIULLTOVBEFL.container->type != text || *(NHIIULLTOVBEFL.container->value.text + NHIIULLTOVBEFL.index) != '+') goto sentence_after_1;
 //// [ s.1 <any> ] 
 /*DEF*/	DataCursor WLPBHYFFHBAVHF;
+/*DEF*/	DataCursor l_1;
+/*DEF*/	DataCursor r_1;
+/*SET*/	l_1 = NHIIULLTOVBEFL;
+/*SET*/	WLPBHYFFHBAVHF = NHIIULLTOVBEFL;
+/*INC*/	if (!INC(WLPBHYFFHBAVHF, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(WLPBHYFFHBAVHF.container->type)) goto sentence_after_1;
+/*SET*/	r_1 = WLPBHYFFHBAVHF;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor UAHLINDJDFPEKX;
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
 /*SET*/	l_2 = r_1;
-/*SET*/	WLPBHYFFHBAVHF = r_1;
-/*INC*/	if (!INC(WLPBHYFFHBAVHF, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(WLPBHYFFHBAVHF.container->type)) goto sentence_after_1;
-/*SET*/	r_2 = WLPBHYFFHBAVHF;
+/*SET*/	UAHLINDJDFPEKX = r_1;
+/*INC*/	if (!INC(UAHLINDJDFPEKX, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(UAHLINDJDFPEKX.container->type)) goto sentence_after_1;
+/*SET*/	r_2 = UAHLINDJDFPEKX;
 //// [ empty ] 
 /*ISEMPTY*/	if (r_2!=0 && arg_to != r_2) goto sentence_after_1;
 
 // подготовка подстановки 
 result->append(newRefText("1=")); 
-DataChain* GLIXLAXXTOLHGL = new DataChain(); 
-DataContainer* GLIXLAXXTOLHGL_execbr = newRefExecBrackets(Div, GLIXLAXXTOLHGL, "Div");
-result->append(GLIXLAXXTOLHGL_execbr);
-GLIXLAXXTOLHGL->append_copy(l_1, r_1); 
-GLIXLAXXTOLHGL->append_copy(l_2, r_2); 
-context->pushExecuteCall(GLIXLAXXTOLHGL_execbr);
+DataChain* VWXKYVULCYJEFL = new DataChain(); 
+DataContainer* VWXKYVULCYJEFL_execbr = newRefExecBrackets(Div, VWXKYVULCYJEFL, "Div");
+result->append(VWXKYVULCYJEFL_execbr);
+VWXKYVULCYJEFL->append_copy(l_1, r_1); 
+VWXKYVULCYJEFL->append_copy(l_2, r_2); 
+context->pushExecuteCall(VWXKYVULCYJEFL_execbr);
 
 return result; 
 }
@@ -3774,43 +3779,43 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor VWXKYVULCYJEFL;
+/*DEF*/	DataCursor LOQZHLTMGTUJDC;
 /*DEF*/	DataCursor l_zn;
 /*DEF*/	DataCursor r_zn;
 /*SET*/	l_zn = arg_from;
-/*SET*/	VWXKYVULCYJEFL = arg_from;
-/*INC*/	if (!INC(VWXKYVULCYJEFL, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(VWXKYVULCYJEFL.container->type)) goto sentence_after_2;
-/*SET*/	r_zn = VWXKYVULCYJEFL;
+/*SET*/	LOQZHLTMGTUJDC = arg_from;
+/*INC*/	if (!INC(LOQZHLTMGTUJDC, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(LOQZHLTMGTUJDC.container->type)) goto sentence_after_2;
+/*SET*/	r_zn = LOQZHLTMGTUJDC;
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor LOQZHLTMGTUJDC;
+/*DEF*/	DataCursor UUGNROTLOTCPBN;
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = r_zn;
-/*SET*/	LOQZHLTMGTUJDC = r_zn;
-/*INC*/	if (!INC(LOQZHLTMGTUJDC, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(LOQZHLTMGTUJDC.container->type)) goto sentence_after_2;
-/*SET*/	r_1 = LOQZHLTMGTUJDC;
+/*SET*/	UUGNROTLOTCPBN = r_zn;
+/*INC*/	if (!INC(UUGNROTLOTCPBN, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(UUGNROTLOTCPBN.container->type)) goto sentence_after_2;
+/*SET*/	r_1 = UUGNROTLOTCPBN;
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor UUGNROTLOTCPBN;
+/*DEF*/	DataCursor YFHEJEGCMFPTQM;
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
 /*SET*/	l_2 = r_1;
-/*SET*/	UUGNROTLOTCPBN = r_1;
-/*INC*/	if (!INC(UUGNROTLOTCPBN, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(UUGNROTLOTCPBN.container->type)) goto sentence_after_2;
-/*SET*/	r_2 = UUGNROTLOTCPBN;
+/*SET*/	YFHEJEGCMFPTQM = r_1;
+/*INC*/	if (!INC(YFHEJEGCMFPTQM, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(YFHEJEGCMFPTQM.container->type)) goto sentence_after_2;
+/*SET*/	r_2 = YFHEJEGCMFPTQM;
 //// [ empty ] 
 /*ISEMPTY*/	if (r_2!=0 && arg_to != r_2) goto sentence_after_2;
 
 // подготовка подстановки 
 result->append(newRefText("1=")); 
-DataChain* YFHEJEGCMFPTQM = new DataChain(); 
-DataContainer* YFHEJEGCMFPTQM_execbr = newRefExecBrackets(Div, YFHEJEGCMFPTQM, "Div");
-result->append(YFHEJEGCMFPTQM_execbr);
-YFHEJEGCMFPTQM->append_copy(l_2, r_2); 
-YFHEJEGCMFPTQM->append_copy(l_1, r_1); 
-context->pushExecuteCall(YFHEJEGCMFPTQM_execbr);
+DataChain* VEGHMFBMVKLSQF = new DataChain(); 
+DataContainer* VEGHMFBMVKLSQF_execbr = newRefExecBrackets(Div, VEGHMFBMVKLSQF, "Div");
+result->append(VEGHMFBMVKLSQF_execbr);
+VEGHMFBMVKLSQF->append_copy(l_2, r_2); 
+VEGHMFBMVKLSQF->append_copy(l_1, r_1); 
+context->pushExecuteCall(VEGHMFBMVKLSQF_execbr);
 
 return result; 
 }
@@ -3829,12 +3834,12 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor VEGHMFBMVKLSQF;
-/*SET*/	VEGHMFBMVKLSQF = arg_from;
-/*INC*/	if (!INC(VEGHMFBMVKLSQF, arg_to)) goto sentence_after_1;
-	if (VEGHMFBMVKLSQF.container->type != text || *(VEGHMFBMVKLSQF.container->value.text + VEGHMFBMVKLSQF.index) != '1') goto sentence_after_1;
+/*DEF*/	DataCursor UBVXCTEPVMLJOH;
+/*SET*/	UBVXCTEPVMLJOH = arg_from;
+/*INC*/	if (!INC(UBVXCTEPVMLJOH, arg_to)) goto sentence_after_1;
+	if (UBVXCTEPVMLJOH.container->type != text || *(UBVXCTEPVMLJOH.container->value.text + UBVXCTEPVMLJOH.index) != '1') goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (VEGHMFBMVKLSQF!=0 && arg_to != VEGHMFBMVKLSQF) goto sentence_after_1;
+/*ISEMPTY*/	if (UBVXCTEPVMLJOH!=0 && arg_to != UBVXCTEPVMLJOH) goto sentence_after_1;
 
 // подготовка подстановки 
 result->append(newRefText("2")); 
@@ -3846,12 +3851,12 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ZXXOOLNVLAYGUO;
-/*SET*/	ZXXOOLNVLAYGUO = arg_from;
-/*INC*/	if (!INC(ZXXOOLNVLAYGUO, arg_to)) goto sentence_after_2;
-	if (ZXXOOLNVLAYGUO.container->type != text || *(ZXXOOLNVLAYGUO.container->value.text + ZXXOOLNVLAYGUO.index) != '2') goto sentence_after_2;
+/*DEF*/	DataCursor KQDAUPTYVJAFZZ;
+/*SET*/	KQDAUPTYVJAFZZ = arg_from;
+/*INC*/	if (!INC(KQDAUPTYVJAFZZ, arg_to)) goto sentence_after_2;
+	if (KQDAUPTYVJAFZZ.container->type != text || *(KQDAUPTYVJAFZZ.container->value.text + KQDAUPTYVJAFZZ.index) != '2') goto sentence_after_2;
 //// [ empty ] 
-/*ISEMPTY*/	if (ZXXOOLNVLAYGUO!=0 && arg_to != ZXXOOLNVLAYGUO) goto sentence_after_2;
+/*ISEMPTY*/	if (KQDAUPTYVJAFZZ!=0 && arg_to != KQDAUPTYVJAFZZ) goto sentence_after_2;
 
 // подготовка подстановки 
 result->append(newRefText("1")); 
@@ -3869,12 +3874,12 @@ sentence_after_2:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* KQTAXJLRBRUKKK = new DataChain(); 
-DataContainer* KQTAXJLRBRUKKK_execbr = newRefExecBrackets(Print, KQTAXJLRBRUKKK, "Print");
-result->append(KQTAXJLRBRUKKK_execbr);
-KQTAXJLRBRUKKK->append(newRefText("NextPl uncn.: ")); 
-KQTAXJLRBRUKKK->append_copy(l_e, r_e); 
-context->pushExecuteCall(KQTAXJLRBRUKKK_execbr);
+DataChain* IGJMXQRBAZLPDE = new DataChain(); 
+DataContainer* IGJMXQRBAZLPDE_execbr = newRefExecBrackets(Print, IGJMXQRBAZLPDE, "Print");
+result->append(IGJMXQRBAZLPDE_execbr);
+IGJMXQRBAZLPDE->append(newRefText("NextPl uncn.: ")); 
+IGJMXQRBAZLPDE->append_copy(l_e, r_e); 
+context->pushExecuteCall(IGJMXQRBAZLPDE_execbr);
 
 return result; 
 }
@@ -3899,11 +3904,11 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* IGJMXQRBAZLPDE = new DataChain(); 
-DataContainer* IGJMXQRBAZLPDE_execbr = newRefExecBrackets(Optima211, IGJMXQRBAZLPDE, "Optima211");
-result->append(IGJMXQRBAZLPDE_execbr);
-IGJMXQRBAZLPDE->append_copy(l_e, r_e); 
-context->pushExecuteCall(IGJMXQRBAZLPDE_execbr);
+DataChain* VPEZPBWSHVPCKL = new DataChain(); 
+DataContainer* VPEZPBWSHVPCKL_execbr = newRefExecBrackets(Optima211, VPEZPBWSHVPCKL, "Optima211");
+result->append(VPEZPBWSHVPCKL_execbr);
+VPEZPBWSHVPCKL->append_copy(l_e, r_e); 
+context->pushExecuteCall(VPEZPBWSHVPCKL_execbr);
 
 return result; 
 }
@@ -3926,43 +3931,43 @@ DataChain *tmp_chain = new DataChain();
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_VPEZPBWSHVPCKL_firststep;
-label_VPEZPBWSHVPCKL: 
+/*JMP*/	goto label_DQGIVLQPIRQVWQ_firststep;
+label_DQGIVLQPIRQVWQ: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_1;
-label_VPEZPBWSHVPCKL_firststep: 
+label_DQGIVLQPIRQVWQ_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor DQGIVLQPIRQVWQ;
-/*SET*/	DQGIVLQPIRQVWQ = r_1;
-/*INC*/	if (!INC(DQGIVLQPIRQVWQ, arg_to)) goto label_VPEZPBWSHVPCKL;
-	if (DQGIVLQPIRQVWQ.container->type != text || *(DQGIVLQPIRQVWQ.container->value.text + DQGIVLQPIRQVWQ.index) != '1') goto label_VPEZPBWSHVPCKL;
+/*DEF*/	DataCursor QUYXPIXQIREUQA;
+/*SET*/	QUYXPIXQIREUQA = r_1;
+/*INC*/	if (!INC(QUYXPIXQIREUQA, arg_to)) goto label_DQGIVLQPIRQVWQ;
+	if (QUYXPIXQIREUQA.container->type != text || *(QUYXPIXQIREUQA.container->value.text + QUYXPIXQIREUQA.index) != '1') goto label_DQGIVLQPIRQVWQ;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = DQGIVLQPIRQVWQ;
-/*SET*/	r_2 = DQGIVLQPIRQVWQ;
-/*JMP*/	goto label_QUYXPIXQIREUQA_firststep;
-label_QUYXPIXQIREUQA: 
-/*INC*/	if (!INC(r_2, arg_to)) goto label_VPEZPBWSHVPCKL;
-label_QUYXPIXQIREUQA_firststep: 
+/*SET*/	l_2 = QUYXPIXQIREUQA;
+/*SET*/	r_2 = QUYXPIXQIREUQA;
+/*JMP*/	goto label_MFFSVVNTGUXESI_firststep;
+label_MFFSVVNTGUXESI: 
+/*INC*/	if (!INC(r_2, arg_to)) goto label_DQGIVLQPIRQVWQ;
+label_MFFSVVNTGUXESI_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor MFFSVVNTGUXESI;
-/*SET*/	MFFSVVNTGUXESI = r_2;
-/*INC*/	if (!INC(MFFSVVNTGUXESI, arg_to)) goto label_QUYXPIXQIREUQA;
-	if (MFFSVVNTGUXESI.container->type != text || *(MFFSVVNTGUXESI.container->value.text + MFFSVVNTGUXESI.index) != '1') goto label_QUYXPIXQIREUQA;
+/*DEF*/	DataCursor DRNWWTQKDOZFPK;
+/*SET*/	DRNWWTQKDOZFPK = r_2;
+/*INC*/	if (!INC(DRNWWTQKDOZFPK, arg_to)) goto label_MFFSVVNTGUXESI;
+	if (DRNWWTQKDOZFPK.container->type != text || *(DRNWWTQKDOZFPK.container->value.text + DRNWWTQKDOZFPK.index) != '1') goto label_MFFSVVNTGUXESI;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = MFFSVVNTGUXESI;
+/*SET*/	l_3 = DRNWWTQKDOZFPK;
 /*SET*/	r_3 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("11")); 
-DataChain* BKUREHRQBBXAJE = new DataChain(); 
-DataContainer* BKUREHRQBBXAJE_execbr = newRefExecBrackets(Optima211, BKUREHRQBBXAJE, "Optima211");
-result->append(BKUREHRQBBXAJE_execbr);
-BKUREHRQBBXAJE->append_copy(l_1, r_1); 
-BKUREHRQBBXAJE->append_copy(l_3, r_3); 
-context->pushExecuteCall(BKUREHRQBBXAJE_execbr);
+DataChain* FBFHKZBPKAPBSZ = new DataChain(); 
+DataContainer* FBFHKZBPKAPBSZ_execbr = newRefExecBrackets(Optima211, FBFHKZBPKAPBSZ, "Optima211");
+result->append(FBFHKZBPKAPBSZ_execbr);
+FBFHKZBPKAPBSZ->append_copy(l_1, r_1); 
+FBFHKZBPKAPBSZ->append_copy(l_3, r_3); 
+context->pushExecuteCall(FBFHKZBPKAPBSZ_execbr);
 result->append_copy(l_2, r_2); 
 
 return result; 
@@ -3976,29 +3981,29 @@ sentence_after_1:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_FBFHKZBPKAPBSZ_firststep;
-label_FBFHKZBPKAPBSZ: 
+/*JMP*/	goto label_YSPDAAOXRAOJOT_firststep;
+label_YSPDAAOXRAOJOT: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_2;
-label_FBFHKZBPKAPBSZ_firststep: 
+label_YSPDAAOXRAOJOT_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor YSPDAAOXRAOJOT;
-/*SET*/	YSPDAAOXRAOJOT = r_1;
-/*INC*/	if (!INC(YSPDAAOXRAOJOT, arg_to)) goto label_FBFHKZBPKAPBSZ;
-	if (YSPDAAOXRAOJOT.container->type != text || *(YSPDAAOXRAOJOT.container->value.text + YSPDAAOXRAOJOT.index) != '1') goto label_FBFHKZBPKAPBSZ;
+/*DEF*/	DataCursor JUFSTURTJHUDPE;
+/*SET*/	JUFSTURTJHUDPE = r_1;
+/*INC*/	if (!INC(JUFSTURTJHUDPE, arg_to)) goto label_YSPDAAOXRAOJOT;
+	if (JUFSTURTJHUDPE.container->type != text || *(JUFSTURTJHUDPE.container->value.text + JUFSTURTJHUDPE.index) != '1') goto label_YSPDAAOXRAOJOT;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = YSPDAAOXRAOJOT;
+/*SET*/	l_2 = JUFSTURTJHUDPE;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("1")); 
-DataChain* TSGRZUIGUSNWLY = new DataChain(); 
-DataContainer* TSGRZUIGUSNWLY_execbr = newRefExecBrackets(Optima211, TSGRZUIGUSNWLY, "Optima211");
-result->append(TSGRZUIGUSNWLY_execbr);
-TSGRZUIGUSNWLY->append_copy(l_1, r_1); 
-TSGRZUIGUSNWLY->append_copy(l_2, r_2); 
-context->pushExecuteCall(TSGRZUIGUSNWLY_execbr);
+DataChain* RVFNKKMSDBUHVH = new DataChain(); 
+DataContainer* RVFNKKMSDBUHVH_execbr = newRefExecBrackets(Optima211, RVFNKKMSDBUHVH, "Optima211");
+result->append(RVFNKKMSDBUHVH_execbr);
+RVFNKKMSDBUHVH->append_copy(l_1, r_1); 
+RVFNKKMSDBUHVH->append_copy(l_2, r_2); 
+context->pushExecuteCall(RVFNKKMSDBUHVH_execbr);
 
 return result; 
 }
@@ -4038,17 +4043,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* RVFNKKMSDBUHVH = new DataChain(); 
-DataContainer* RVFNKKMSDBUHVH_execbr = newRefExecBrackets(Prout, RVFNKKMSDBUHVH, "Prout");
-result->append(RVFNKKMSDBUHVH_execbr);
-RVFNKKMSDBUHVH->append(newRefWord("Strategy:")); 
-RVFNKKMSDBUHVH->append_copy(l_e, r_e); 
-context->pushExecuteCall(RVFNKKMSDBUHVH_execbr);
 DataChain* FQTDVTNLEWFQUU = new DataChain(); 
-DataContainer* FQTDVTNLEWFQUU_execbr = newRefExecBrackets(Strategy__, FQTDVTNLEWFQUU, "Strategy__");
+DataContainer* FQTDVTNLEWFQUU_execbr = newRefExecBrackets(Prout, FQTDVTNLEWFQUU, "Prout");
 result->append(FQTDVTNLEWFQUU_execbr);
+FQTDVTNLEWFQUU->append(newRefWord("Strategy:")); 
 FQTDVTNLEWFQUU->append_copy(l_e, r_e); 
 context->pushExecuteCall(FQTDVTNLEWFQUU_execbr);
+DataChain* HTAINKEBBVZHTQ = new DataChain(); 
+DataContainer* HTAINKEBBVZHTQ_execbr = newRefExecBrackets(Strategy__, HTAINKEBBVZHTQ, "Strategy__");
+result->append(HTAINKEBBVZHTQ_execbr);
+HTAINKEBBVZHTQ->append_copy(l_e, r_e); 
+context->pushExecuteCall(HTAINKEBBVZHTQ_execbr);
 
 return result; 
 }
@@ -4082,29 +4087,29 @@ sentence_after_1:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_HTAINKEBBVZHTQ_firststep;
-label_HTAINKEBBVZHTQ: 
+/*JMP*/	goto label_BKDBMVHBSNJBTV_firststep;
+label_BKDBMVHBSNJBTV: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_2;
-label_HTAINKEBBVZHTQ_firststep: 
+label_BKDBMVHBSNJBTV_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor BKDBMVHBSNJBTV;
-/*SET*/	BKDBMVHBSNJBTV = r_1;
-/*INC*/	if (!INC(BKDBMVHBSNJBTV, arg_to)) goto label_HTAINKEBBVZHTQ;
-	if (BKDBMVHBSNJBTV.container->type != text || *(BKDBMVHBSNJBTV.container->value.text + BKDBMVHBSNJBTV.index) != '1') goto label_HTAINKEBBVZHTQ;
+/*DEF*/	DataCursor JTQNBCHIWFUQLZ;
+/*SET*/	JTQNBCHIWFUQLZ = r_1;
+/*INC*/	if (!INC(JTQNBCHIWFUQLZ, arg_to)) goto label_BKDBMVHBSNJBTV;
+	if (JTQNBCHIWFUQLZ.container->type != text || *(JTQNBCHIWFUQLZ.container->value.text + JTQNBCHIWFUQLZ.index) != '1') goto label_BKDBMVHBSNJBTV;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = BKDBMVHBSNJBTV;
+/*SET*/	l_2 = JTQNBCHIWFUQLZ;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("147")); 
-DataChain* SMXVFJTVQUITIV = new DataChain(); 
-DataContainer* SMXVFJTVQUITIV_execbr = newRefExecBrackets(Strategy, SMXVFJTVQUITIV, "Strategy");
-result->append(SMXVFJTVQUITIV_execbr);
-SMXVFJTVQUITIV->append_copy(l_1, r_1); 
-SMXVFJTVQUITIV->append_copy(l_2, r_2); 
-context->pushExecuteCall(SMXVFJTVQUITIV_execbr);
+DataChain* YHZPXCDJWIKFAT = new DataChain(); 
+DataContainer* YHZPXCDJWIKFAT_execbr = newRefExecBrackets(Strategy, YHZPXCDJWIKFAT, "Strategy");
+result->append(YHZPXCDJWIKFAT_execbr);
+YHZPXCDJWIKFAT->append_copy(l_1, r_1); 
+YHZPXCDJWIKFAT->append_copy(l_2, r_2); 
+context->pushExecuteCall(YHZPXCDJWIKFAT_execbr);
 
 return result; 
 }
@@ -4117,29 +4122,29 @@ sentence_after_2:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_YHZPXCDJWIKFAT_firststep;
-label_YHZPXCDJWIKFAT: 
+/*JMP*/	goto label_CANCHXSSJLUHLY_firststep;
+label_CANCHXSSJLUHLY: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_3;
-label_YHZPXCDJWIKFAT_firststep: 
+label_CANCHXSSJLUHLY_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor CANCHXSSJLUHLY;
-/*SET*/	CANCHXSSJLUHLY = r_1;
-/*INC*/	if (!INC(CANCHXSSJLUHLY, arg_to)) goto label_YHZPXCDJWIKFAT;
-	if (CANCHXSSJLUHLY.container->type != text || *(CANCHXSSJLUHLY.container->value.text + CANCHXSSJLUHLY.index) != '2') goto label_YHZPXCDJWIKFAT;
+/*DEF*/	DataCursor OEBCGNSQFZXXWG;
+/*SET*/	OEBCGNSQFZXXWG = r_1;
+/*INC*/	if (!INC(OEBCGNSQFZXXWG, arg_to)) goto label_CANCHXSSJLUHLY;
+	if (OEBCGNSQFZXXWG.container->type != text || *(OEBCGNSQFZXXWG.container->value.text + OEBCGNSQFZXXWG.index) != '2') goto label_CANCHXSSJLUHLY;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = CANCHXSSJLUHLY;
+/*SET*/	l_2 = OEBCGNSQFZXXWG;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("15")); 
-DataChain* LIUEJOBCFPVNYR = new DataChain(); 
-DataContainer* LIUEJOBCFPVNYR_execbr = newRefExecBrackets(Strategy, LIUEJOBCFPVNYR, "Strategy");
-result->append(LIUEJOBCFPVNYR_execbr);
-LIUEJOBCFPVNYR->append_copy(l_1, r_1); 
-LIUEJOBCFPVNYR->append_copy(l_2, r_2); 
-context->pushExecuteCall(LIUEJOBCFPVNYR_execbr);
+DataChain* RPKEGEQPVLHXEE = new DataChain(); 
+DataContainer* RPKEGEQPVLHXEE_execbr = newRefExecBrackets(Strategy, RPKEGEQPVLHXEE, "Strategy");
+result->append(RPKEGEQPVLHXEE_execbr);
+RPKEGEQPVLHXEE->append_copy(l_1, r_1); 
+RPKEGEQPVLHXEE->append_copy(l_2, r_2); 
+context->pushExecuteCall(RPKEGEQPVLHXEE_execbr);
 
 return result; 
 }
@@ -4152,29 +4157,29 @@ sentence_after_3:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_RPKEGEQPVLHXEE_firststep;
-label_RPKEGEQPVLHXEE: 
+/*JMP*/	goto label_OCMERJMZIUDTSQ_firststep;
+label_OCMERJMZIUDTSQ: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_4;
-label_RPKEGEQPVLHXEE_firststep: 
+label_OCMERJMZIUDTSQ_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor OCMERJMZIUDTSQ;
-/*SET*/	OCMERJMZIUDTSQ = r_1;
-/*INC*/	if (!INC(OCMERJMZIUDTSQ, arg_to)) goto label_RPKEGEQPVLHXEE;
-	if (OCMERJMZIUDTSQ.container->type != text || *(OCMERJMZIUDTSQ.container->value.text + OCMERJMZIUDTSQ.index) != '3') goto label_RPKEGEQPVLHXEE;
+/*DEF*/	DataCursor QOZVEJNRTIBVNJ;
+/*SET*/	QOZVEJNRTIBVNJ = r_1;
+/*INC*/	if (!INC(QOZVEJNRTIBVNJ, arg_to)) goto label_OCMERJMZIUDTSQ;
+	if (QOZVEJNRTIBVNJ.container->type != text || *(QOZVEJNRTIBVNJ.container->value.text + QOZVEJNRTIBVNJ.index) != '3') goto label_OCMERJMZIUDTSQ;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = OCMERJMZIUDTSQ;
+/*SET*/	l_2 = QOZVEJNRTIBVNJ;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("168")); 
-DataChain* EPFQDSMVSTMMWW = new DataChain(); 
-DataContainer* EPFQDSMVSTMMWW_execbr = newRefExecBrackets(Strategy, EPFQDSMVSTMMWW, "Strategy");
-result->append(EPFQDSMVSTMMWW_execbr);
-EPFQDSMVSTMMWW->append_copy(l_1, r_1); 
-EPFQDSMVSTMMWW->append_copy(l_2, r_2); 
-context->pushExecuteCall(EPFQDSMVSTMMWW_execbr);
+DataChain* WQKNNRMQMJCCPA = new DataChain(); 
+DataContainer* WQKNNRMQMJCCPA_execbr = newRefExecBrackets(Strategy, WQKNNRMQMJCCPA, "Strategy");
+result->append(WQKNNRMQMJCCPA_execbr);
+WQKNNRMQMJCCPA->append_copy(l_1, r_1); 
+WQKNNRMQMJCCPA->append_copy(l_2, r_2); 
+context->pushExecuteCall(WQKNNRMQMJCCPA_execbr);
 
 return result; 
 }
@@ -4187,29 +4192,29 @@ sentence_after_4:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_WQKNNRMQMJCCPA_firststep;
-label_WQKNNRMQMJCCPA: 
+/*JMP*/	goto label_OWAZFEURGPBFRY_firststep;
+label_OWAZFEURGPBFRY: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_5;
-label_WQKNNRMQMJCCPA_firststep: 
+label_OWAZFEURGPBFRY_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor OWAZFEURGPBFRY;
-/*SET*/	OWAZFEURGPBFRY = r_1;
-/*INC*/	if (!INC(OWAZFEURGPBFRY, arg_to)) goto label_WQKNNRMQMJCCPA;
-	if (OWAZFEURGPBFRY.container->type != text || *(OWAZFEURGPBFRY.container->value.text + OWAZFEURGPBFRY.index) != '4') goto label_WQKNNRMQMJCCPA;
+/*DEF*/	DataCursor EDQJRLTMYMHYSO;
+/*SET*/	EDQJRLTMYMHYSO = r_1;
+/*INC*/	if (!INC(EDQJRLTMYMHYSO, arg_to)) goto label_OWAZFEURGPBFRY;
+	if (EDQJRLTMYMHYSO.container->type != text || *(EDQJRLTMYMHYSO.container->value.text + EDQJRLTMYMHYSO.index) != '4') goto label_OWAZFEURGPBFRY;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = OWAZFEURGPBFRY;
+/*SET*/	l_2 = EDQJRLTMYMHYSO;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("24")); 
-DataChain* ICWUOHFEREBEAC = new DataChain(); 
-DataContainer* ICWUOHFEREBEAC_execbr = newRefExecBrackets(Strategy, ICWUOHFEREBEAC, "Strategy");
-result->append(ICWUOHFEREBEAC_execbr);
-ICWUOHFEREBEAC->append_copy(l_1, r_1); 
-ICWUOHFEREBEAC->append_copy(l_2, r_2); 
-context->pushExecuteCall(ICWUOHFEREBEAC_execbr);
+DataChain* AZUVJOXYIPMSGU = new DataChain(); 
+DataContainer* AZUVJOXYIPMSGU_execbr = newRefExecBrackets(Strategy, AZUVJOXYIPMSGU, "Strategy");
+result->append(AZUVJOXYIPMSGU_execbr);
+AZUVJOXYIPMSGU->append_copy(l_1, r_1); 
+AZUVJOXYIPMSGU->append_copy(l_2, r_2); 
+context->pushExecuteCall(AZUVJOXYIPMSGU_execbr);
 
 return result; 
 }
@@ -4222,29 +4227,29 @@ sentence_after_5:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_AZUVJOXYIPMSGU_firststep;
-label_AZUVJOXYIPMSGU: 
+/*JMP*/	goto label_FJIWLCFYWXTEYY_firststep;
+label_FJIWLCFYWXTEYY: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_6;
-label_AZUVJOXYIPMSGU_firststep: 
+label_FJIWLCFYWXTEYY_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor FJIWLCFYWXTEYY;
-/*SET*/	FJIWLCFYWXTEYY = r_1;
-/*INC*/	if (!INC(FJIWLCFYWXTEYY, arg_to)) goto label_AZUVJOXYIPMSGU;
-	if (FJIWLCFYWXTEYY.container->type != text || *(FJIWLCFYWXTEYY.container->value.text + FJIWLCFYWXTEYY.index) != '5') goto label_AZUVJOXYIPMSGU;
+/*DEF*/	DataCursor QDHXWJHIUDGHYX;
+/*SET*/	QDHXWJHIUDGHYX = r_1;
+/*INC*/	if (!INC(QDHXWJHIUDGHYX, arg_to)) goto label_FJIWLCFYWXTEYY;
+	if (QDHXWJHIUDGHYX.container->type != text || *(QDHXWJHIUDGHYX.container->value.text + QDHXWJHIUDGHYX.index) != '5') goto label_FJIWLCFYWXTEYY;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = FJIWLCFYWXTEYY;
+/*SET*/	l_2 = QDHXWJHIUDGHYX;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("2578")); 
-DataChain* YOXBSCEFTDRQEL = new DataChain(); 
-DataContainer* YOXBSCEFTDRQEL_execbr = newRefExecBrackets(Strategy, YOXBSCEFTDRQEL, "Strategy");
-result->append(YOXBSCEFTDRQEL_execbr);
-YOXBSCEFTDRQEL->append_copy(l_1, r_1); 
-YOXBSCEFTDRQEL->append_copy(l_2, r_2); 
-context->pushExecuteCall(YOXBSCEFTDRQEL_execbr);
+DataChain* XFVCFBBJJYFSVK = new DataChain(); 
+DataContainer* XFVCFBBJJYFSVK_execbr = newRefExecBrackets(Strategy, XFVCFBBJJYFSVK, "Strategy");
+result->append(XFVCFBBJJYFSVK_execbr);
+XFVCFBBJJYFSVK->append_copy(l_1, r_1); 
+XFVCFBBJJYFSVK->append_copy(l_2, r_2); 
+context->pushExecuteCall(XFVCFBBJJYFSVK_execbr);
 
 return result; 
 }
@@ -4257,29 +4262,29 @@ sentence_after_6:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_XFVCFBBJJYFSVK_firststep;
-label_XFVCFBBJJYFSVK: 
+/*JMP*/	goto label_VSAPDSHAKGDVHC_firststep;
+label_VSAPDSHAKGDVHC: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_7;
-label_XFVCFBBJJYFSVK_firststep: 
+label_VSAPDSHAKGDVHC_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor VSAPDSHAKGDVHC;
-/*SET*/	VSAPDSHAKGDVHC = r_1;
-/*INC*/	if (!INC(VSAPDSHAKGDVHC, arg_to)) goto label_XFVCFBBJJYFSVK;
-	if (VSAPDSHAKGDVHC.container->type != text || *(VSAPDSHAKGDVHC.container->value.text + VSAPDSHAKGDVHC.index) != '6') goto label_XFVCFBBJJYFSVK;
+/*DEF*/	DataCursor FMCEZTGJCMHXLH;
+/*SET*/	FMCEZTGJCMHXLH = r_1;
+/*INC*/	if (!INC(FMCEZTGJCMHXLH, arg_to)) goto label_VSAPDSHAKGDVHC;
+	if (FMCEZTGJCMHXLH.container->type != text || *(FMCEZTGJCMHXLH.container->value.text + FMCEZTGJCMHXLH.index) != '6') goto label_VSAPDSHAKGDVHC;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = VSAPDSHAKGDVHC;
+/*SET*/	l_2 = FMCEZTGJCMHXLH;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("26")); 
-DataChain* ASQKAUQLNFHGGT = new DataChain(); 
-DataContainer* ASQKAUQLNFHGGT_execbr = newRefExecBrackets(Strategy, ASQKAUQLNFHGGT, "Strategy");
-result->append(ASQKAUQLNFHGGT_execbr);
-ASQKAUQLNFHGGT->append_copy(l_1, r_1); 
-ASQKAUQLNFHGGT->append_copy(l_2, r_2); 
-context->pushExecuteCall(ASQKAUQLNFHGGT_execbr);
+DataChain* AGRNFFMNPINWLE = new DataChain(); 
+DataContainer* AGRNFFMNPINWLE_execbr = newRefExecBrackets(Strategy, AGRNFFMNPINWLE, "Strategy");
+result->append(AGRNFFMNPINWLE_execbr);
+AGRNFFMNPINWLE->append_copy(l_1, r_1); 
+AGRNFFMNPINWLE->append_copy(l_2, r_2); 
+context->pushExecuteCall(AGRNFFMNPINWLE_execbr);
 
 return result; 
 }
@@ -4292,29 +4297,29 @@ sentence_after_7:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_AGRNFFMNPINWLE_firststep;
-label_AGRNFFMNPINWLE: 
+/*JMP*/	goto label_XRQXISBFNHJZQV_firststep;
+label_XRQXISBFNHJZQV: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_8;
-label_AGRNFFMNPINWLE_firststep: 
+label_XRQXISBFNHJZQV_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor XRQXISBFNHJZQV;
-/*SET*/	XRQXISBFNHJZQV = r_1;
-/*INC*/	if (!INC(XRQXISBFNHJZQV, arg_to)) goto label_AGRNFFMNPINWLE;
-	if (XRQXISBFNHJZQV.container->type != text || *(XRQXISBFNHJZQV.container->value.text + XRQXISBFNHJZQV.index) != '7') goto label_AGRNFFMNPINWLE;
+/*DEF*/	DataCursor OXKUKYLZCRUPMI;
+/*SET*/	OXKUKYLZCRUPMI = r_1;
+/*INC*/	if (!INC(OXKUKYLZCRUPMI, arg_to)) goto label_XRQXISBFNHJZQV;
+	if (OXKUKYLZCRUPMI.container->type != text || *(OXKUKYLZCRUPMI.container->value.text + OXKUKYLZCRUPMI.index) != '7') goto label_XRQXISBFNHJZQV;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = XRQXISBFNHJZQV;
+/*SET*/	l_2 = OXKUKYLZCRUPMI;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("348")); 
-DataChain* BACPJZSNACLMNU = new DataChain(); 
-DataContainer* BACPJZSNACLMNU_execbr = newRefExecBrackets(Strategy, BACPJZSNACLMNU, "Strategy");
-result->append(BACPJZSNACLMNU_execbr);
-BACPJZSNACLMNU->append_copy(l_1, r_1); 
-BACPJZSNACLMNU->append_copy(l_2, r_2); 
-context->pushExecuteCall(BACPJZSNACLMNU_execbr);
+DataChain* QNBDIFZLUJQVNF = new DataChain(); 
+DataContainer* QNBDIFZLUJQVNF_execbr = newRefExecBrackets(Strategy, QNBDIFZLUJQVNF, "Strategy");
+result->append(QNBDIFZLUJQVNF_execbr);
+QNBDIFZLUJQVNF->append_copy(l_1, r_1); 
+QNBDIFZLUJQVNF->append_copy(l_2, r_2); 
+context->pushExecuteCall(QNBDIFZLUJQVNF_execbr);
 
 return result; 
 }
@@ -4327,29 +4332,29 @@ sentence_after_8:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_QNBDIFZLUJQVNF_firststep;
-label_QNBDIFZLUJQVNF: 
+/*JMP*/	goto label_JXXVKCZFKZZJQN_firststep;
+label_JXXVKCZFKZZJQN: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_9;
-label_QNBDIFZLUJQVNF_firststep: 
+label_JXXVKCZFKZZJQN_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor JXXVKCZFKZZJQN;
-/*SET*/	JXXVKCZFKZZJQN = r_1;
-/*INC*/	if (!INC(JXXVKCZFKZZJQN, arg_to)) goto label_QNBDIFZLUJQVNF;
-	if (JXXVKCZFKZZJQN.container->type != text || *(JXXVKCZFKZZJQN.container->value.text + JXXVKCZFKZZJQN.index) != '8') goto label_QNBDIFZLUJQVNF;
+/*DEF*/	DataCursor AQPOHYGJSJTAKZ;
+/*SET*/	AQPOHYGJSJTAKZ = r_1;
+/*INC*/	if (!INC(AQPOHYGJSJTAKZ, arg_to)) goto label_JXXVKCZFKZZJQN;
+	if (AQPOHYGJSJTAKZ.container->type != text || *(AQPOHYGJSJTAKZ.container->value.text + AQPOHYGJSJTAKZ.index) != '8') goto label_JXXVKCZFKZZJQN;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = JXXVKCZFKZZJQN;
+/*SET*/	l_2 = AQPOHYGJSJTAKZ;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("35")); 
-DataChain* RSOSYQHQUHKJCJ = new DataChain(); 
-DataContainer* RSOSYQHQUHKJCJ_execbr = newRefExecBrackets(Strategy, RSOSYQHQUHKJCJ, "Strategy");
-result->append(RSOSYQHQUHKJCJ_execbr);
-RSOSYQHQUHKJCJ->append_copy(l_1, r_1); 
-RSOSYQHQUHKJCJ->append_copy(l_2, r_2); 
-context->pushExecuteCall(RSOSYQHQUHKJCJ_execbr);
+DataChain* YUGTEDOGFURKXI = new DataChain(); 
+DataContainer* YUGTEDOGFURKXI_execbr = newRefExecBrackets(Strategy, YUGTEDOGFURKXI, "Strategy");
+result->append(YUGTEDOGFURKXI_execbr);
+YUGTEDOGFURKXI->append_copy(l_1, r_1); 
+YUGTEDOGFURKXI->append_copy(l_2, r_2); 
+context->pushExecuteCall(YUGTEDOGFURKXI_execbr);
 
 return result; 
 }
@@ -4362,29 +4367,29 @@ sentence_after_9:
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_YUGTEDOGFURKXI_firststep;
-label_YUGTEDOGFURKXI: 
+/*JMP*/	goto label_YQUFOTIAJMWHYI_firststep;
+label_YQUFOTIAJMWHYI: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_10;
-label_YUGTEDOGFURKXI_firststep: 
+label_YQUFOTIAJMWHYI_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor YQUFOTIAJMWHYI;
-/*SET*/	YQUFOTIAJMWHYI = r_1;
-/*INC*/	if (!INC(YQUFOTIAJMWHYI, arg_to)) goto label_YUGTEDOGFURKXI;
-	if (YQUFOTIAJMWHYI.container->type != text || *(YQUFOTIAJMWHYI.container->value.text + YQUFOTIAJMWHYI.index) != '9') goto label_YUGTEDOGFURKXI;
+/*DEF*/	DataCursor LTHMOEVLWLRXPW;
+/*SET*/	LTHMOEVLWLRXPW = r_1;
+/*INC*/	if (!INC(LTHMOEVLWLRXPW, arg_to)) goto label_YQUFOTIAJMWHYI;
+	if (LTHMOEVLWLRXPW.container->type != text || *(LTHMOEVLWLRXPW.container->value.text + LTHMOEVLWLRXPW.index) != '9') goto label_YQUFOTIAJMWHYI;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = YQUFOTIAJMWHYI;
+/*SET*/	l_2 = LTHMOEVLWLRXPW;
 /*SET*/	r_2 = arg_to;
 
 // подготовка подстановки 
 result->append(newRefText("367")); 
-DataChain* PZHSVBFZVTVHWY = new DataChain(); 
-DataContainer* PZHSVBFZVTVHWY_execbr = newRefExecBrackets(Strategy, PZHSVBFZVTVHWY, "Strategy");
-result->append(PZHSVBFZVTVHWY_execbr);
-PZHSVBFZVTVHWY->append_copy(l_1, r_1); 
-PZHSVBFZVTVHWY->append_copy(l_2, r_2); 
-context->pushExecuteCall(PZHSVBFZVTVHWY_execbr);
+DataChain* CFZNMAOMAFSYVY = new DataChain(); 
+DataContainer* CFZNMAOMAFSYVY_execbr = newRefExecBrackets(Strategy, CFZNMAOMAFSYVY, "Strategy");
+result->append(CFZNMAOMAFSYVY_execbr);
+CFZNMAOMAFSYVY->append_copy(l_1, r_1); 
+CFZNMAOMAFSYVY->append_copy(l_2, r_2); 
+context->pushExecuteCall(CFZNMAOMAFSYVY_execbr);
 
 return result; 
 }
@@ -4418,59 +4423,59 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor CFZNMAOMAFSYVY;
 /*DEF*/	DataCursor RQPIZTEUOXGTHF;
 /*DEF*/	DataCursor XSMXJRWPSURSGW;
-/*SET*/	CFZNMAOMAFSYVY = arg_from;
-/*INC*/	if (!INC(CFZNMAOMAFSYVY, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor THHILGDHZFZAXA;
+/*SET*/	RQPIZTEUOXGTHF = arg_from;
+/*INC*/	if (!INC(RQPIZTEUOXGTHF, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (CFZNMAOMAFSYVY.container->type != struct_bracket) goto sentence_after_1;
+	if (RQPIZTEUOXGTHF.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	RQPIZTEUOXGTHF = CFZNMAOMAFSYVY.container->value.bracket_data.chain->at_before_first();
-	XSMXJRWPSURSGW   = CFZNMAOMAFSYVY.container->value.bracket_data.chain->at_last();
+	XSMXJRWPSURSGW = RQPIZTEUOXGTHF.container->value.bracket_data.chain->at_before_first();
+	THHILGDHZFZAXA   = RQPIZTEUOXGTHF.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = RQPIZTEUOXGTHF;
-/*SET*/	r_1 = XSMXJRWPSURSGW;
+/*SET*/	l_1 = XSMXJRWPSURSGW;
+/*SET*/	r_1 = THHILGDHZFZAXA;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor THHILGDHZFZAXA;
 /*DEF*/	DataCursor DTKLHYHQZFDIMS;
 /*DEF*/	DataCursor RUEECXKQKRUDLM;
-/*SET*/	THHILGDHZFZAXA = CFZNMAOMAFSYVY;
-/*INC*/	if (!INC(THHILGDHZFZAXA, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor ZGDTNHMIVNNKCL;
+/*SET*/	DTKLHYHQZFDIMS = RQPIZTEUOXGTHF;
+/*INC*/	if (!INC(DTKLHYHQZFDIMS, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (THHILGDHZFZAXA.container->type != struct_bracket) goto sentence_after_1;
+	if (DTKLHYHQZFDIMS.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	DTKLHYHQZFDIMS = THHILGDHZFZAXA.container->value.bracket_data.chain->at_before_first();
-	RUEECXKQKRUDLM   = THHILGDHZFZAXA.container->value.bracket_data.chain->at_last();
+	RUEECXKQKRUDLM = DTKLHYHQZFDIMS.container->value.bracket_data.chain->at_before_first();
+	ZGDTNHMIVNNKCL   = DTKLHYHQZFDIMS.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = DTKLHYHQZFDIMS;
-/*SET*/	r_2 = RUEECXKQKRUDLM;
+/*SET*/	l_2 = RUEECXKQKRUDLM;
+/*SET*/	r_2 = ZGDTNHMIVNNKCL;
 //// [ empty ] 
-/*ISEMPTY*/	if (THHILGDHZFZAXA!=0 && arg_to != THHILGDHZFZAXA) goto sentence_after_1;
+/*ISEMPTY*/	if (DTKLHYHQZFDIMS!=0 && arg_to != DTKLHYHQZFDIMS) goto sentence_after_1;
 
 // подготовка подстановки 
-DataChain* ZGDTNHMIVNNKCL = new DataChain(); 
-DataContainer* ZGDTNHMIVNNKCL_execbr = newRefExecBrackets(Ifwin1, ZGDTNHMIVNNKCL, "Ifwin1");
-result->append(ZGDTNHMIVNNKCL_execbr);
 DataChain* GARYGYDQDHLTRS = new DataChain(); 
-ZGDTNHMIVNNKCL->append(newRefStructBrackets(GARYGYDQDHLTRS)); 
+DataContainer* GARYGYDQDHLTRS_execbr = newRefExecBrackets(Ifwin1, GARYGYDQDHLTRS, "Ifwin1");
+result->append(GARYGYDQDHLTRS_execbr);
 DataChain* THIDZYQAZFNOVK = new DataChain(); 
-DataContainer* THIDZYQAZFNOVK_execbr = newRefExecBrackets(Strategy, THIDZYQAZFNOVK, "Strategy");
-GARYGYDQDHLTRS->append(THIDZYQAZFNOVK_execbr);
-THIDZYQAZFNOVK->append_copy(l_1, r_1); 
-context->pushExecuteCall(THIDZYQAZFNOVK_execbr);
+GARYGYDQDHLTRS->append(newRefStructBrackets(THIDZYQAZFNOVK)); 
 DataChain* TQCOTCHCOLINEI = new DataChain(); 
-ZGDTNHMIVNNKCL->append(newRefStructBrackets(TQCOTCHCOLINEI)); 
+DataContainer* TQCOTCHCOLINEI_execbr = newRefExecBrackets(Strategy, TQCOTCHCOLINEI, "Strategy");
+THIDZYQAZFNOVK->append(TQCOTCHCOLINEI_execbr);
+TQCOTCHCOLINEI->append_copy(l_1, r_1); 
+context->pushExecuteCall(TQCOTCHCOLINEI_execbr);
 DataChain* YTYMRJSCYOEIVD = new DataChain(); 
-DataContainer* YTYMRJSCYOEIVD_execbr = newRefExecBrackets(Strategy, YTYMRJSCYOEIVD, "Strategy");
-TQCOTCHCOLINEI->append(YTYMRJSCYOEIVD_execbr);
-YTYMRJSCYOEIVD->append_copy(l_2, r_2); 
-context->pushExecuteCall(YTYMRJSCYOEIVD_execbr);
-context->pushExecuteCall(ZGDTNHMIVNNKCL_execbr);
+GARYGYDQDHLTRS->append(newRefStructBrackets(YTYMRJSCYOEIVD)); 
+DataChain* YHPHLJZHEZOHMI = new DataChain(); 
+DataContainer* YHPHLJZHEZOHMI_execbr = newRefExecBrackets(Strategy, YHPHLJZHEZOHMI, "Strategy");
+YTYMRJSCYOEIVD->append(YHPHLJZHEZOHMI_execbr);
+YHPHLJZHEZOHMI->append_copy(l_2, r_2); 
+context->pushExecuteCall(YHPHLJZHEZOHMI_execbr);
+context->pushExecuteCall(GARYGYDQDHLTRS_execbr);
 
 return result; 
 }
@@ -4489,83 +4494,83 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor YHPHLJZHEZOHMI;
 /*DEF*/	DataCursor URCPBLVWAAJIQU;
 /*DEF*/	DataCursor GTAOQMEMJLHGOX;
-/*SET*/	YHPHLJZHEZOHMI = arg_from;
-/*INC*/	if (!INC(YHPHLJZHEZOHMI, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor PRURTYMKKTDBNO;
+/*SET*/	URCPBLVWAAJIQU = arg_from;
+/*INC*/	if (!INC(URCPBLVWAAJIQU, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (YHPHLJZHEZOHMI.container->type != struct_bracket) goto sentence_after_1;
+	if (URCPBLVWAAJIQU.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	URCPBLVWAAJIQU = YHPHLJZHEZOHMI.container->value.bracket_data.chain->at_before_first();
-	GTAOQMEMJLHGOX   = YHPHLJZHEZOHMI.container->value.bracket_data.chain->at_last();
+	GTAOQMEMJLHGOX = URCPBLVWAAJIQU.container->value.bracket_data.chain->at_before_first();
+	PRURTYMKKTDBNO   = URCPBLVWAAJIQU.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = URCPBLVWAAJIQU;
-/*SET*/	r_1 = URCPBLVWAAJIQU;
-/*JMP*/	goto label_PRURTYMKKTDBNO_firststep;
-label_PRURTYMKKTDBNO: 
-/*INC*/	if (!INC(r_1, GTAOQMEMJLHGOX)) goto sentence_after_1;
-label_PRURTYMKKTDBNO_firststep: 
+/*SET*/	l_1 = GTAOQMEMJLHGOX;
+/*SET*/	r_1 = GTAOQMEMJLHGOX;
+/*JMP*/	goto label_XWTTGEEQIMLHCZ_firststep;
+label_XWTTGEEQIMLHCZ: 
+/*INC*/	if (!INC(r_1, PRURTYMKKTDBNO)) goto sentence_after_1;
+label_XWTTGEEQIMLHCZ_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor XWTTGEEQIMLHCZ;
+/*DEF*/	DataCursor TCTYPHMEQDSUYV;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_1;
-/*SET*/	XWTTGEEQIMLHCZ = r_1;
-/*INC*/	if (!INC(XWTTGEEQIMLHCZ, GTAOQMEMJLHGOX)) goto label_PRURTYMKKTDBNO;
-	if (! isSymbolType(XWTTGEEQIMLHCZ.container->type)) goto label_PRURTYMKKTDBNO;
-/*SET*/	r_A = XWTTGEEQIMLHCZ;
+/*SET*/	TCTYPHMEQDSUYV = r_1;
+/*INC*/	if (!INC(TCTYPHMEQDSUYV, PRURTYMKKTDBNO)) goto label_XWTTGEEQIMLHCZ;
+	if (! isSymbolType(TCTYPHMEQDSUYV.container->type)) goto label_XWTTGEEQIMLHCZ;
+/*SET*/	r_A = TCTYPHMEQDSUYV;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
 /*SET*/	l_2 = r_A;
 /*SET*/	r_2 = r_A;
-/*JMP*/	goto label_TCTYPHMEQDSUYV_firststep;
-label_TCTYPHMEQDSUYV: 
-/*INC*/	if (!INC(r_2, GTAOQMEMJLHGOX)) goto label_PRURTYMKKTDBNO;
-label_TCTYPHMEQDSUYV_firststep: 
+/*JMP*/	goto label_KKJOPLMZDCAKPJ_firststep;
+label_KKJOPLMZDCAKPJ: 
+/*INC*/	if (!INC(r_2, PRURTYMKKTDBNO)) goto label_XWTTGEEQIMLHCZ;
+label_KKJOPLMZDCAKPJ_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor KKJOPLMZDCAKPJ;
-/*SET*/	KKJOPLMZDCAKPJ = r_2;
- if (!SLIDE(KKJOPLMZDCAKPJ, GTAOQMEMJLHGOX, l_A, r_A)) goto label_TCTYPHMEQDSUYV;
+/*DEF*/	DataCursor VOZIMHXXQHDUIQ;
+/*SET*/	VOZIMHXXQHDUIQ = r_2;
+ if (!SLIDE(VOZIMHXXQHDUIQ, PRURTYMKKTDBNO, l_A, r_A)) goto label_KKJOPLMZDCAKPJ;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = KKJOPLMZDCAKPJ;
-/*SET*/	r_3 = KKJOPLMZDCAKPJ;
-/*JMP*/	goto label_VOZIMHXXQHDUIQ_firststep;
-label_VOZIMHXXQHDUIQ: 
-/*INC*/	if (!INC(r_3, GTAOQMEMJLHGOX)) goto label_TCTYPHMEQDSUYV;
-label_VOZIMHXXQHDUIQ_firststep: 
+/*SET*/	l_3 = VOZIMHXXQHDUIQ;
+/*SET*/	r_3 = VOZIMHXXQHDUIQ;
+/*JMP*/	goto label_EDLNGWGOOOUPNE_firststep;
+label_EDLNGWGOOOUPNE: 
+/*INC*/	if (!INC(r_3, PRURTYMKKTDBNO)) goto label_KKJOPLMZDCAKPJ;
+label_EDLNGWGOOOUPNE_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor EDLNGWGOOOUPNE;
-/*SET*/	EDLNGWGOOOUPNE = r_3;
- if (!SLIDE(EDLNGWGOOOUPNE, GTAOQMEMJLHGOX, l_A, r_A)) goto label_VOZIMHXXQHDUIQ;
+/*DEF*/	DataCursor DKSDGPMHHDAQBS;
+/*SET*/	DKSDGPMHHDAQBS = r_3;
+ if (!SLIDE(DKSDGPMHHDAQBS, PRURTYMKKTDBNO, l_A, r_A)) goto label_EDLNGWGOOOUPNE;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_4;
 /*DEF*/	DataCursor r_4;
-/*SET*/	l_4 = EDLNGWGOOOUPNE;
-/*SET*/	r_4 = GTAOQMEMJLHGOX;
+/*SET*/	l_4 = DKSDGPMHHDAQBS;
+/*SET*/	r_4 = PRURTYMKKTDBNO;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DKSDGPMHHDAQBS;
 /*DEF*/	DataCursor QRFPDRSYKHBUTS;
 /*DEF*/	DataCursor NUWJPPGDEEBJGS;
-/*SET*/	DKSDGPMHHDAQBS = YHPHLJZHEZOHMI;
-/*INC*/	if (!INC(DKSDGPMHHDAQBS, arg_to)) goto label_VOZIMHXXQHDUIQ;
+/*DEF*/	DataCursor DYFOECQQNLEMKI;
+/*SET*/	QRFPDRSYKHBUTS = URCPBLVWAAJIQU;
+/*INC*/	if (!INC(QRFPDRSYKHBUTS, arg_to)) goto label_EDLNGWGOOOUPNE;
 //// ISBRACKET 
-	if (DKSDGPMHHDAQBS.container->type != struct_bracket) goto label_VOZIMHXXQHDUIQ;
+	if (QRFPDRSYKHBUTS.container->type != struct_bracket) goto label_EDLNGWGOOOUPNE;
 //// JMP_BRACKET 
-	QRFPDRSYKHBUTS = DKSDGPMHHDAQBS.container->value.bracket_data.chain->at_before_first();
-	NUWJPPGDEEBJGS   = DKSDGPMHHDAQBS.container->value.bracket_data.chain->at_last();
+	NUWJPPGDEEBJGS = QRFPDRSYKHBUTS.container->value.bracket_data.chain->at_before_first();
+	DYFOECQQNLEMKI   = QRFPDRSYKHBUTS.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
-/*SET*/	l_e = QRFPDRSYKHBUTS;
-/*SET*/	r_e = NUWJPPGDEEBJGS;
+/*SET*/	l_e = NUWJPPGDEEBJGS;
+/*SET*/	r_e = DYFOECQQNLEMKI;
 //// [ empty ] 
-/*ISEMPTY*/	if (DKSDGPMHHDAQBS!=0 && arg_to != DKSDGPMHHDAQBS) goto label_VOZIMHXXQHDUIQ;
+/*ISEMPTY*/	if (QRFPDRSYKHBUTS!=0 && arg_to != QRFPDRSYKHBUTS) goto label_EDLNGWGOOOUPNE;
 
 // подготовка подстановки 
 result->append(newRefText("1")); 
@@ -4577,83 +4582,83 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DYFOECQQNLEMKI;
 /*DEF*/	DataCursor MIPECEHLBTMBWN;
 /*DEF*/	DataCursor KDXYMECLSSHVKM;
-/*SET*/	DYFOECQQNLEMKI = arg_from;
-/*INC*/	if (!INC(DYFOECQQNLEMKI, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor YWJXESHOIHMLGV;
+/*SET*/	MIPECEHLBTMBWN = arg_from;
+/*INC*/	if (!INC(MIPECEHLBTMBWN, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (DYFOECQQNLEMKI.container->type != struct_bracket) goto sentence_after_2;
+	if (MIPECEHLBTMBWN.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	MIPECEHLBTMBWN = DYFOECQQNLEMKI.container->value.bracket_data.chain->at_before_first();
-	KDXYMECLSSHVKM   = DYFOECQQNLEMKI.container->value.bracket_data.chain->at_last();
+	KDXYMECLSSHVKM = MIPECEHLBTMBWN.container->value.bracket_data.chain->at_before_first();
+	YWJXESHOIHMLGV   = MIPECEHLBTMBWN.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e;
 /*DEF*/	DataCursor r_e;
-/*SET*/	l_e = MIPECEHLBTMBWN;
-/*SET*/	r_e = KDXYMECLSSHVKM;
+/*SET*/	l_e = KDXYMECLSSHVKM;
+/*SET*/	r_e = YWJXESHOIHMLGV;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor YWJXESHOIHMLGV;
 /*DEF*/	DataCursor XILJVWLLFPNJZY;
 /*DEF*/	DataCursor WCPAMEVWTYGFPH;
-/*SET*/	YWJXESHOIHMLGV = DYFOECQQNLEMKI;
-/*INC*/	if (!INC(YWJXESHOIHMLGV, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor IFUBTTNWNPHDBY;
+/*SET*/	XILJVWLLFPNJZY = MIPECEHLBTMBWN;
+/*INC*/	if (!INC(XILJVWLLFPNJZY, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (YWJXESHOIHMLGV.container->type != struct_bracket) goto sentence_after_2;
+	if (XILJVWLLFPNJZY.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	XILJVWLLFPNJZY = YWJXESHOIHMLGV.container->value.bracket_data.chain->at_before_first();
-	WCPAMEVWTYGFPH   = YWJXESHOIHMLGV.container->value.bracket_data.chain->at_last();
+	WCPAMEVWTYGFPH = XILJVWLLFPNJZY.container->value.bracket_data.chain->at_before_first();
+	IFUBTTNWNPHDBY   = XILJVWLLFPNJZY.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = XILJVWLLFPNJZY;
-/*SET*/	r_1 = XILJVWLLFPNJZY;
-/*JMP*/	goto label_IFUBTTNWNPHDBY_firststep;
-label_IFUBTTNWNPHDBY: 
-/*INC*/	if (!INC(r_1, WCPAMEVWTYGFPH)) goto sentence_after_2;
-label_IFUBTTNWNPHDBY_firststep: 
+/*SET*/	l_1 = WCPAMEVWTYGFPH;
+/*SET*/	r_1 = WCPAMEVWTYGFPH;
+/*JMP*/	goto label_TWODCLRJPRSEQW_firststep;
+label_TWODCLRJPRSEQW: 
+/*INC*/	if (!INC(r_1, IFUBTTNWNPHDBY)) goto sentence_after_2;
+label_TWODCLRJPRSEQW_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor TWODCLRJPRSEQW;
+/*DEF*/	DataCursor RDWSVYNCGFRAZZ;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_1;
-/*SET*/	TWODCLRJPRSEQW = r_1;
-/*INC*/	if (!INC(TWODCLRJPRSEQW, WCPAMEVWTYGFPH)) goto label_IFUBTTNWNPHDBY;
-	if (! isSymbolType(TWODCLRJPRSEQW.container->type)) goto label_IFUBTTNWNPHDBY;
-/*SET*/	r_A = TWODCLRJPRSEQW;
+/*SET*/	RDWSVYNCGFRAZZ = r_1;
+/*INC*/	if (!INC(RDWSVYNCGFRAZZ, IFUBTTNWNPHDBY)) goto label_TWODCLRJPRSEQW;
+	if (! isSymbolType(RDWSVYNCGFRAZZ.container->type)) goto label_TWODCLRJPRSEQW;
+/*SET*/	r_A = RDWSVYNCGFRAZZ;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
 /*SET*/	l_2 = r_A;
 /*SET*/	r_2 = r_A;
-/*JMP*/	goto label_RDWSVYNCGFRAZZ_firststep;
-label_RDWSVYNCGFRAZZ: 
-/*INC*/	if (!INC(r_2, WCPAMEVWTYGFPH)) goto label_IFUBTTNWNPHDBY;
-label_RDWSVYNCGFRAZZ_firststep: 
+/*JMP*/	goto label_AODGGXWWBTJQUJ_firststep;
+label_AODGGXWWBTJQUJ: 
+/*INC*/	if (!INC(r_2, IFUBTTNWNPHDBY)) goto label_TWODCLRJPRSEQW;
+label_AODGGXWWBTJQUJ_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor AODGGXWWBTJQUJ;
-/*SET*/	AODGGXWWBTJQUJ = r_2;
- if (!SLIDE(AODGGXWWBTJQUJ, WCPAMEVWTYGFPH, l_A, r_A)) goto label_RDWSVYNCGFRAZZ;
+/*DEF*/	DataCursor RMCDPOMJRYLEDH;
+/*SET*/	RMCDPOMJRYLEDH = r_2;
+ if (!SLIDE(RMCDPOMJRYLEDH, IFUBTTNWNPHDBY, l_A, r_A)) goto label_AODGGXWWBTJQUJ;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = AODGGXWWBTJQUJ;
-/*SET*/	r_3 = AODGGXWWBTJQUJ;
-/*JMP*/	goto label_RMCDPOMJRYLEDH_firststep;
-label_RMCDPOMJRYLEDH: 
-/*INC*/	if (!INC(r_3, WCPAMEVWTYGFPH)) goto label_RDWSVYNCGFRAZZ;
-label_RMCDPOMJRYLEDH_firststep: 
+/*SET*/	l_3 = RMCDPOMJRYLEDH;
+/*SET*/	r_3 = RMCDPOMJRYLEDH;
+/*JMP*/	goto label_UFHWKHZKTNKYTG_firststep;
+label_UFHWKHZKTNKYTG: 
+/*INC*/	if (!INC(r_3, IFUBTTNWNPHDBY)) goto label_AODGGXWWBTJQUJ;
+label_UFHWKHZKTNKYTG_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor UFHWKHZKTNKYTG;
-/*SET*/	UFHWKHZKTNKYTG = r_3;
- if (!SLIDE(UFHWKHZKTNKYTG, WCPAMEVWTYGFPH, l_A, r_A)) goto label_RMCDPOMJRYLEDH;
+/*DEF*/	DataCursor JPMMGVXJCNJGZU;
+/*SET*/	JPMMGVXJCNJGZU = r_3;
+ if (!SLIDE(JPMMGVXJCNJGZU, IFUBTTNWNPHDBY, l_A, r_A)) goto label_UFHWKHZKTNKYTG;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_4;
 /*DEF*/	DataCursor r_4;
-/*SET*/	l_4 = UFHWKHZKTNKYTG;
-/*SET*/	r_4 = WCPAMEVWTYGFPH;
+/*SET*/	l_4 = JPMMGVXJCNJGZU;
+/*SET*/	r_4 = IFUBTTNWNPHDBY;
 //// [ empty ] 
-/*ISEMPTY*/	if (YWJXESHOIHMLGV!=0 && arg_to != YWJXESHOIHMLGV) goto label_RMCDPOMJRYLEDH;
+/*ISEMPTY*/	if (XILJVWLLFPNJZY!=0 && arg_to != XILJVWLLFPNJZY) goto label_UFHWKHZKTNKYTG;
 
 // подготовка подстановки 
 result->append(newRefText("2")); 
@@ -4665,39 +4670,39 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor JPMMGVXJCNJGZU;
 /*DEF*/	DataCursor HWQQSLDZCSFOJS;
 /*DEF*/	DataCursor WRQCNBQYXAAGIB;
-/*SET*/	JPMMGVXJCNJGZU = arg_from;
-/*INC*/	if (!INC(JPMMGVXJCNJGZU, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor PVTXDONPEASHNR;
+/*SET*/	HWQQSLDZCSFOJS = arg_from;
+/*INC*/	if (!INC(HWQQSLDZCSFOJS, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (JPMMGVXJCNJGZU.container->type != struct_bracket) goto sentence_after_3;
+	if (HWQQSLDZCSFOJS.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	HWQQSLDZCSFOJS = JPMMGVXJCNJGZU.container->value.bracket_data.chain->at_before_first();
-	WRQCNBQYXAAGIB   = JPMMGVXJCNJGZU.container->value.bracket_data.chain->at_last();
+	WRQCNBQYXAAGIB = HWQQSLDZCSFOJS.container->value.bracket_data.chain->at_before_first();
+	PVTXDONPEASHNR   = HWQQSLDZCSFOJS.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = HWQQSLDZCSFOJS;
-/*SET*/	r_1 = WRQCNBQYXAAGIB;
+/*SET*/	l_1 = WRQCNBQYXAAGIB;
+/*SET*/	r_1 = PVTXDONPEASHNR;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor PVTXDONPEASHNR;
 /*DEF*/	DataCursor OHUVOGLDXHSPRN;
 /*DEF*/	DataCursor GSOQDJFQTEXYRW;
-/*SET*/	PVTXDONPEASHNR = JPMMGVXJCNJGZU;
-/*INC*/	if (!INC(PVTXDONPEASHNR, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor IZZOEOWAQEZDLM;
+/*SET*/	OHUVOGLDXHSPRN = HWQQSLDZCSFOJS;
+/*INC*/	if (!INC(OHUVOGLDXHSPRN, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (PVTXDONPEASHNR.container->type != struct_bracket) goto sentence_after_3;
+	if (OHUVOGLDXHSPRN.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	OHUVOGLDXHSPRN = PVTXDONPEASHNR.container->value.bracket_data.chain->at_before_first();
-	GSOQDJFQTEXYRW   = PVTXDONPEASHNR.container->value.bracket_data.chain->at_last();
+	GSOQDJFQTEXYRW = OHUVOGLDXHSPRN.container->value.bracket_data.chain->at_before_first();
+	IZZOEOWAQEZDLM   = OHUVOGLDXHSPRN.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = OHUVOGLDXHSPRN;
-/*SET*/	r_2 = GSOQDJFQTEXYRW;
+/*SET*/	l_2 = GSOQDJFQTEXYRW;
+/*SET*/	r_2 = IZZOEOWAQEZDLM;
 //// [ empty ] 
-/*ISEMPTY*/	if (PVTXDONPEASHNR!=0 && arg_to != PVTXDONPEASHNR) goto sentence_after_3;
+/*ISEMPTY*/	if (OHUVOGLDXHSPRN!=0 && arg_to != OHUVOGLDXHSPRN) goto sentence_after_3;
 
 // подготовка подстановки 
 result->append(newRefText("0")); 
@@ -4725,17 +4730,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* IZZOEOWAQEZDLM = new DataChain(); 
-DataContainer* IZZOEOWAQEZDLM_execbr = newRefExecBrackets(Prout, IZZOEOWAQEZDLM, "Prout");
-result->append(IZZOEOWAQEZDLM_execbr);
-IZZOEOWAQEZDLM->append(newRefWord("Analiz:")); 
-IZZOEOWAQEZDLM->append_copy(l_e, r_e); 
-context->pushExecuteCall(IZZOEOWAQEZDLM_execbr);
 DataChain* WAFCOZVQCIEWGK = new DataChain(); 
-DataContainer* WAFCOZVQCIEWGK_execbr = newRefExecBrackets(Analiz__, WAFCOZVQCIEWGK, "Analiz__");
+DataContainer* WAFCOZVQCIEWGK_execbr = newRefExecBrackets(Prout, WAFCOZVQCIEWGK, "Prout");
 result->append(WAFCOZVQCIEWGK_execbr);
+WAFCOZVQCIEWGK->append(newRefWord("Analiz:")); 
 WAFCOZVQCIEWGK->append_copy(l_e, r_e); 
 context->pushExecuteCall(WAFCOZVQCIEWGK_execbr);
+DataChain* EKFGRCYVZSAHPS = new DataChain(); 
+DataContainer* EKFGRCYVZSAHPS_execbr = newRefExecBrackets(Analiz__, EKFGRCYVZSAHPS, "Analiz__");
+result->append(EKFGRCYVZSAHPS_execbr);
+EKFGRCYVZSAHPS->append_copy(l_e, r_e); 
+context->pushExecuteCall(EKFGRCYVZSAHPS_execbr);
 
 return result; 
 }
@@ -4758,39 +4763,39 @@ DataChain *tmp_chain = new DataChain();
 /*DEF*/	DataCursor r_1;
 /*SET*/	l_1 = arg_from;
 /*SET*/	r_1 = arg_from;
-/*JMP*/	goto label_EKFGRCYVZSAHPS_firststep;
-label_EKFGRCYVZSAHPS: 
+/*JMP*/	goto label_ZOBRIXWXKPICLQ_firststep;
+label_ZOBRIXWXKPICLQ: 
 /*INC*/	if (!INC(r_1, arg_to)) goto sentence_after_1;
-label_EKFGRCYVZSAHPS_firststep: 
+label_ZOBRIXWXKPICLQ_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ZOBRIXWXKPICLQ;
 /*DEF*/	DataCursor LJTKVNBIMPDKYE;
 /*DEF*/	DataCursor BCWLFKFFRLZZMK;
-/*SET*/	ZOBRIXWXKPICLQ = r_1;
-/*INC*/	if (!INC(ZOBRIXWXKPICLQ, arg_to)) goto label_EKFGRCYVZSAHPS;
+/*DEF*/	DataCursor VMHNLCIVWHWZTZ;
+/*SET*/	LJTKVNBIMPDKYE = r_1;
+/*INC*/	if (!INC(LJTKVNBIMPDKYE, arg_to)) goto label_ZOBRIXWXKPICLQ;
 //// ISBRACKET 
-	if (ZOBRIXWXKPICLQ.container->type != struct_bracket) goto label_EKFGRCYVZSAHPS;
+	if (LJTKVNBIMPDKYE.container->type != struct_bracket) goto label_ZOBRIXWXKPICLQ;
 //// JMP_BRACKET 
-	LJTKVNBIMPDKYE = ZOBRIXWXKPICLQ.container->value.bracket_data.chain->at_before_first();
-	BCWLFKFFRLZZMK   = ZOBRIXWXKPICLQ.container->value.bracket_data.chain->at_last();
+	BCWLFKFFRLZZMK = LJTKVNBIMPDKYE.container->value.bracket_data.chain->at_before_first();
+	VMHNLCIVWHWZTZ   = LJTKVNBIMPDKYE.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = LJTKVNBIMPDKYE;
-/*SET*/	r_3 = LJTKVNBIMPDKYE;
-/*JMP*/	goto label_VMHNLCIVWHWZTZ_firststep;
-label_VMHNLCIVWHWZTZ: 
-/*INC*/	if (!INC(r_3, BCWLFKFFRLZZMK)) goto label_EKFGRCYVZSAHPS;
-label_VMHNLCIVWHWZTZ_firststep: 
+/*SET*/	l_3 = BCWLFKFFRLZZMK;
+/*SET*/	r_3 = BCWLFKFFRLZZMK;
+/*JMP*/	goto label_RBXJCRTUVTXFKI_firststep;
+label_RBXJCRTUVTXFKI: 
+/*INC*/	if (!INC(r_3, VMHNLCIVWHWZTZ)) goto label_ZOBRIXWXKPICLQ;
+label_RBXJCRTUVTXFKI_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor RBXJCRTUVTXFKI;
-/*SET*/	RBXJCRTUVTXFKI = r_3;
-/*INC*/	if (!INC(RBXJCRTUVTXFKI, BCWLFKFFRLZZMK)) goto label_VMHNLCIVWHWZTZ;
-	if (RBXJCRTUVTXFKI.container->type != text || *(RBXJCRTUVTXFKI.container->value.text + RBXJCRTUVTXFKI.index) != '>') goto label_VMHNLCIVWHWZTZ;
+/*DEF*/	DataCursor DXHOAFYESYVIZV;
+/*SET*/	DXHOAFYESYVIZV = r_3;
+/*INC*/	if (!INC(DXHOAFYESYVIZV, VMHNLCIVWHWZTZ)) goto label_RBXJCRTUVTXFKI;
+	if (DXHOAFYESYVIZV.container->type != text || *(DXHOAFYESYVIZV.container->value.text + DXHOAFYESYVIZV.index) != '>') goto label_RBXJCRTUVTXFKI;
 //// [ empty ] 
-/*ISEMPTY*/	if (RBXJCRTUVTXFKI!=0 && BCWLFKFFRLZZMK != RBXJCRTUVTXFKI) goto label_VMHNLCIVWHWZTZ;
+/*ISEMPTY*/	if (DXHOAFYESYVIZV!=0 && VMHNLCIVWHWZTZ != DXHOAFYESYVIZV) goto label_RBXJCRTUVTXFKI;
 //// [ empty ] 
-/*ISEMPTY*/	if (ZOBRIXWXKPICLQ!=0 && arg_to != ZOBRIXWXKPICLQ) goto label_VMHNLCIVWHWZTZ;
+/*ISEMPTY*/	if (LJTKVNBIMPDKYE!=0 && arg_to != LJTKVNBIMPDKYE) goto label_RBXJCRTUVTXFKI;
 
 // подготовка подстановки 
 
@@ -4801,116 +4806,116 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor OZSQORQMQLESIX;
 /*DEF*/	DataCursor RNERZOOWRVWPMI;
 /*DEF*/	DataCursor BHHYFFUVKOUKDW;
-/*SET*/	OZSQORQMQLESIX = arg_from;
-/*INC*/	if (!INC(OZSQORQMQLESIX, arg_to)) goto sentence_after_2;
-//// ISBRACKET 
-	if (OZSQORQMQLESIX.container->type != struct_bracket) goto sentence_after_2;
-//// JMP_BRACKET 
-	RNERZOOWRVWPMI = OZSQORQMQLESIX.container->value.bracket_data.chain->at_before_first();
-	BHHYFFUVKOUKDW   = OZSQORQMQLESIX.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor JCVXQGLSCHJAGQ;
-/*SET*/	JCVXQGLSCHJAGQ = RNERZOOWRVWPMI;
-/*INC*/	if (!INC(JCVXQGLSCHJAGQ, BHHYFFUVKOUKDW)) goto sentence_after_2;
-	if (JCVXQGLSCHJAGQ.container->type != text || *(JCVXQGLSCHJAGQ.container->value.text + JCVXQGLSCHJAGQ.index) != '1') goto sentence_after_2;
+/*SET*/	RNERZOOWRVWPMI = arg_from;
+/*INC*/	if (!INC(RNERZOOWRVWPMI, arg_to)) goto sentence_after_2;
+//// ISBRACKET 
+	if (RNERZOOWRVWPMI.container->type != struct_bracket) goto sentence_after_2;
+//// JMP_BRACKET 
+	BHHYFFUVKOUKDW = RNERZOOWRVWPMI.container->value.bracket_data.chain->at_before_first();
+	JCVXQGLSCHJAGQ   = RNERZOOWRVWPMI.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor UEHPNHKYCPMJTG;
+/*SET*/	UEHPNHKYCPMJTG = BHHYFFUVKOUKDW;
+/*INC*/	if (!INC(UEHPNHKYCPMJTG, JCVXQGLSCHJAGQ)) goto sentence_after_2;
+	if (UEHPNHKYCPMJTG.container->type != text || *(UEHPNHKYCPMJTG.container->value.text + UEHPNHKYCPMJTG.index) != '1') goto sentence_after_2;
 //// [ empty ] 
-/*ISEMPTY*/	if (JCVXQGLSCHJAGQ!=0 && BHHYFFUVKOUKDW != JCVXQGLSCHJAGQ) goto sentence_after_2;
+/*ISEMPTY*/	if (UEHPNHKYCPMJTG!=0 && JCVXQGLSCHJAGQ != UEHPNHKYCPMJTG) goto sentence_after_2;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor LUDHRBEFJJFYTK;
 /*DEF*/	DataCursor XLBNVMDWSYXHGS;
 /*DEF*/	DataCursor CZHYJGDFGNWFPD;
-/*SET*/	LUDHRBEFJJFYTK = OZSQORQMQLESIX;
-/*INC*/	if (!INC(LUDHRBEFJJFYTK, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor TLKHPEKHJNCYLC;
+/*SET*/	XLBNVMDWSYXHGS = RNERZOOWRVWPMI;
+/*INC*/	if (!INC(XLBNVMDWSYXHGS, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (LUDHRBEFJJFYTK.container->type != struct_bracket) goto sentence_after_2;
+	if (XLBNVMDWSYXHGS.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	XLBNVMDWSYXHGS = LUDHRBEFJJFYTK.container->value.bracket_data.chain->at_before_first();
-	CZHYJGDFGNWFPD   = LUDHRBEFJJFYTK.container->value.bracket_data.chain->at_last();
+	CZHYJGDFGNWFPD = XLBNVMDWSYXHGS.container->value.bracket_data.chain->at_before_first();
+	TLKHPEKHJNCYLC   = XLBNVMDWSYXHGS.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = XLBNVMDWSYXHGS;
-/*SET*/	r_1 = CZHYJGDFGNWFPD;
+/*SET*/	l_1 = CZHYJGDFGNWFPD;
+/*SET*/	r_1 = TLKHPEKHJNCYLC;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor TLKHPEKHJNCYLC;
 /*DEF*/	DataCursor QMSSYGHWDVAEQJ;
 /*DEF*/	DataCursor KZMHIYDLXDJOHN;
-/*SET*/	TLKHPEKHJNCYLC = LUDHRBEFJJFYTK;
-/*INC*/	if (!INC(TLKHPEKHJNCYLC, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor SCGHBTUSWZUMSQ;
+/*SET*/	QMSSYGHWDVAEQJ = XLBNVMDWSYXHGS;
+/*INC*/	if (!INC(QMSSYGHWDVAEQJ, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (TLKHPEKHJNCYLC.container->type != struct_bracket) goto sentence_after_2;
+	if (QMSSYGHWDVAEQJ.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	QMSSYGHWDVAEQJ = TLKHPEKHJNCYLC.container->value.bracket_data.chain->at_before_first();
-	KZMHIYDLXDJOHN   = TLKHPEKHJNCYLC.container->value.bracket_data.chain->at_last();
+	KZMHIYDLXDJOHN = QMSSYGHWDVAEQJ.container->value.bracket_data.chain->at_before_first();
+	SCGHBTUSWZUMSQ   = QMSSYGHWDVAEQJ.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = QMSSYGHWDVAEQJ;
-/*SET*/	r_2 = KZMHIYDLXDJOHN;
+/*SET*/	l_2 = KZMHIYDLXDJOHN;
+/*SET*/	r_2 = SCGHBTUSWZUMSQ;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor SCGHBTUSWZUMSQ;
 /*DEF*/	DataCursor OYKIIDFWFXYAAA;
 /*DEF*/	DataCursor YMOIVFHJLRWYAX;
-/*SET*/	SCGHBTUSWZUMSQ = TLKHPEKHJNCYLC;
-/*INC*/	if (!INC(SCGHBTUSWZUMSQ, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor AWGEURBRNBERAZ;
+/*SET*/	OYKIIDFWFXYAAA = QMSSYGHWDVAEQJ;
+/*INC*/	if (!INC(OYKIIDFWFXYAAA, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (SCGHBTUSWZUMSQ.container->type != struct_bracket) goto sentence_after_2;
+	if (OYKIIDFWFXYAAA.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	OYKIIDFWFXYAAA = SCGHBTUSWZUMSQ.container->value.bracket_data.chain->at_before_first();
-	YMOIVFHJLRWYAX   = SCGHBTUSWZUMSQ.container->value.bracket_data.chain->at_last();
+	YMOIVFHJLRWYAX = OYKIIDFWFXYAAA.container->value.bracket_data.chain->at_before_first();
+	AWGEURBRNBERAZ   = OYKIIDFWFXYAAA.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = OYKIIDFWFXYAAA;
-/*SET*/	r_3 = OYKIIDFWFXYAAA;
-/*JMP*/	goto label_AWGEURBRNBERAZ_firststep;
-label_AWGEURBRNBERAZ: 
-/*INC*/	if (!INC(r_3, YMOIVFHJLRWYAX)) goto sentence_after_2;
-label_AWGEURBRNBERAZ_firststep: 
+/*SET*/	l_3 = YMOIVFHJLRWYAX;
+/*SET*/	r_3 = YMOIVFHJLRWYAX;
+/*JMP*/	goto label_SXTKAQUEHJFCEW_firststep;
+label_SXTKAQUEHJFCEW: 
+/*INC*/	if (!INC(r_3, AWGEURBRNBERAZ)) goto sentence_after_2;
+label_SXTKAQUEHJFCEW_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor SXTKAQUEHJFCEW;
-/*SET*/	SXTKAQUEHJFCEW = r_3;
-/*INC*/	if (!INC(SXTKAQUEHJFCEW, YMOIVFHJLRWYAX)) goto label_AWGEURBRNBERAZ;
-	if (SXTKAQUEHJFCEW.container->type != text || *(SXTKAQUEHJFCEW.container->value.text + SXTKAQUEHJFCEW.index) != '>') goto label_AWGEURBRNBERAZ;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor CTBFJTPQDLJHEH;
+/*SET*/	CTBFJTPQDLJHEH = r_3;
+/*INC*/	if (!INC(CTBFJTPQDLJHEH, AWGEURBRNBERAZ)) goto label_SXTKAQUEHJFCEW;
+	if (CTBFJTPQDLJHEH.container->type != text || *(CTBFJTPQDLJHEH.container->value.text + CTBFJTPQDLJHEH.index) != '>') goto label_SXTKAQUEHJFCEW;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor JOBMARGUQWSOKL;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
-/*SET*/	l_A = SXTKAQUEHJFCEW;
-/*SET*/	CTBFJTPQDLJHEH = SXTKAQUEHJFCEW;
-/*INC*/	if (!INC(CTBFJTPQDLJHEH, YMOIVFHJLRWYAX)) goto label_AWGEURBRNBERAZ;
-	if (! isSymbolType(CTBFJTPQDLJHEH.container->type)) goto label_AWGEURBRNBERAZ;
-/*SET*/	r_A = CTBFJTPQDLJHEH;
+/*SET*/	l_A = CTBFJTPQDLJHEH;
+/*SET*/	JOBMARGUQWSOKL = CTBFJTPQDLJHEH;
+/*INC*/	if (!INC(JOBMARGUQWSOKL, AWGEURBRNBERAZ)) goto label_SXTKAQUEHJFCEW;
+	if (! isSymbolType(JOBMARGUQWSOKL.container->type)) goto label_SXTKAQUEHJFCEW;
+/*SET*/	r_A = JOBMARGUQWSOKL;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_4;
 /*DEF*/	DataCursor r_4;
 /*SET*/	l_4 = r_A;
-/*SET*/	r_4 = YMOIVFHJLRWYAX;
+/*SET*/	r_4 = AWGEURBRNBERAZ;
 //// [ empty ] 
-/*ISEMPTY*/	if (SCGHBTUSWZUMSQ!=0 && arg_to != SCGHBTUSWZUMSQ) goto label_AWGEURBRNBERAZ;
+/*ISEMPTY*/	if (OYKIIDFWFXYAAA!=0 && arg_to != OYKIIDFWFXYAAA) goto label_SXTKAQUEHJFCEW;
 
 // подготовка подстановки 
-DataChain* DZSCSFACXFZXFJ = new DataChain(); 
-DataContainer* DZSCSFACXFZXFJ_execbr = newRefExecBrackets(PolnAnaliz, DZSCSFACXFZXFJ, "PolnAnaliz");
-result->append(DZSCSFACXFZXFJ_execbr);
 DataChain* QOVERSCJZBKMZD = new DataChain(); 
-DZSCSFACXFZXFJ->append(newRefStructBrackets(QOVERSCJZBKMZD)); 
-QOVERSCJZBKMZD->append(newRefText("2")); 
+DataContainer* QOVERSCJZBKMZD_execbr = newRefExecBrackets(PolnAnaliz, QOVERSCJZBKMZD, "PolnAnaliz");
+result->append(QOVERSCJZBKMZD_execbr);
 DataChain* NDOSIYHTYAVOXH = new DataChain(); 
-DZSCSFACXFZXFJ->append(newRefStructBrackets(NDOSIYHTYAVOXH)); 
-NDOSIYHTYAVOXH->append_copy(l_1, r_1); 
-NDOSIYHTYAVOXH->append_copy(l_A, r_A); 
+QOVERSCJZBKMZD->append(newRefStructBrackets(NDOSIYHTYAVOXH)); 
+NDOSIYHTYAVOXH->append(newRefText("2")); 
 DataChain* TAPYEKTUATPRWS = new DataChain(); 
-DZSCSFACXFZXFJ->append(newRefStructBrackets(TAPYEKTUATPRWS)); 
-TAPYEKTUATPRWS->append_copy(l_2, r_2); 
+QOVERSCJZBKMZD->append(newRefStructBrackets(TAPYEKTUATPRWS)); 
+TAPYEKTUATPRWS->append_copy(l_1, r_1); 
+TAPYEKTUATPRWS->append_copy(l_A, r_A); 
 DataChain* KXZCZNFDIUEHUW = new DataChain(); 
-DZSCSFACXFZXFJ->append(newRefStructBrackets(KXZCZNFDIUEHUW)); 
-KXZCZNFDIUEHUW->append_copy(l_3, r_3); 
-KXZCZNFDIUEHUW->append_copy(l_4, r_4); 
-context->pushExecuteCall(DZSCSFACXFZXFJ_execbr);
+QOVERSCJZBKMZD->append(newRefStructBrackets(KXZCZNFDIUEHUW)); 
+KXZCZNFDIUEHUW->append_copy(l_2, r_2); 
+DataChain* YMTXDRNKLSMDUS = new DataChain(); 
+QOVERSCJZBKMZD->append(newRefStructBrackets(YMTXDRNKLSMDUS)); 
+YMTXDRNKLSMDUS->append_copy(l_3, r_3); 
+YMTXDRNKLSMDUS->append_copy(l_4, r_4); 
+context->pushExecuteCall(QOVERSCJZBKMZD_execbr);
 
 return result; 
 }
@@ -4919,116 +4924,116 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor YMTXDRNKLSMDUS;
 /*DEF*/	DataCursor KVUTKFIUBZYBLW;
 /*DEF*/	DataCursor MPARMJDSPXYWXE;
-/*SET*/	YMTXDRNKLSMDUS = arg_from;
-/*INC*/	if (!INC(YMTXDRNKLSMDUS, arg_to)) goto sentence_after_3;
-//// ISBRACKET 
-	if (YMTXDRNKLSMDUS.container->type != struct_bracket) goto sentence_after_3;
-//// JMP_BRACKET 
-	KVUTKFIUBZYBLW = YMTXDRNKLSMDUS.container->value.bracket_data.chain->at_before_first();
-	MPARMJDSPXYWXE   = YMTXDRNKLSMDUS.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor RFTZLKORIEBSUP;
-/*SET*/	RFTZLKORIEBSUP = KVUTKFIUBZYBLW;
-/*INC*/	if (!INC(RFTZLKORIEBSUP, MPARMJDSPXYWXE)) goto sentence_after_3;
-	if (RFTZLKORIEBSUP.container->type != text || *(RFTZLKORIEBSUP.container->value.text + RFTZLKORIEBSUP.index) != '2') goto sentence_after_3;
+/*SET*/	KVUTKFIUBZYBLW = arg_from;
+/*INC*/	if (!INC(KVUTKFIUBZYBLW, arg_to)) goto sentence_after_3;
+//// ISBRACKET 
+	if (KVUTKFIUBZYBLW.container->type != struct_bracket) goto sentence_after_3;
+//// JMP_BRACKET 
+	MPARMJDSPXYWXE = KVUTKFIUBZYBLW.container->value.bracket_data.chain->at_before_first();
+	RFTZLKORIEBSUP   = KVUTKFIUBZYBLW.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor CPXCJWKUVEEREN;
+/*SET*/	CPXCJWKUVEEREN = MPARMJDSPXYWXE;
+/*INC*/	if (!INC(CPXCJWKUVEEREN, RFTZLKORIEBSUP)) goto sentence_after_3;
+	if (CPXCJWKUVEEREN.container->type != text || *(CPXCJWKUVEEREN.container->value.text + CPXCJWKUVEEREN.index) != '2') goto sentence_after_3;
 //// [ empty ] 
-/*ISEMPTY*/	if (RFTZLKORIEBSUP!=0 && MPARMJDSPXYWXE != RFTZLKORIEBSUP) goto sentence_after_3;
+/*ISEMPTY*/	if (CPXCJWKUVEEREN!=0 && RFTZLKORIEBSUP != CPXCJWKUVEEREN) goto sentence_after_3;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor LAITVYCICYZALW;
 /*DEF*/	DataCursor UIUZTEYCTMUIFE;
 /*DEF*/	DataCursor FYGAIAIOIIEDBY;
-/*SET*/	LAITVYCICYZALW = YMTXDRNKLSMDUS;
-/*INC*/	if (!INC(LAITVYCICYZALW, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor WRGRTDXVDKOCSA;
+/*SET*/	UIUZTEYCTMUIFE = KVUTKFIUBZYBLW;
+/*INC*/	if (!INC(UIUZTEYCTMUIFE, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (LAITVYCICYZALW.container->type != struct_bracket) goto sentence_after_3;
+	if (UIUZTEYCTMUIFE.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	UIUZTEYCTMUIFE = LAITVYCICYZALW.container->value.bracket_data.chain->at_before_first();
-	FYGAIAIOIIEDBY   = LAITVYCICYZALW.container->value.bracket_data.chain->at_last();
+	FYGAIAIOIIEDBY = UIUZTEYCTMUIFE.container->value.bracket_data.chain->at_before_first();
+	WRGRTDXVDKOCSA   = UIUZTEYCTMUIFE.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = UIUZTEYCTMUIFE;
-/*SET*/	r_1 = FYGAIAIOIIEDBY;
+/*SET*/	l_1 = FYGAIAIOIIEDBY;
+/*SET*/	r_1 = WRGRTDXVDKOCSA;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor WRGRTDXVDKOCSA;
 /*DEF*/	DataCursor EHFCILQJOEVAJN;
 /*DEF*/	DataCursor JTTKNRSPRTKRLK;
-/*SET*/	WRGRTDXVDKOCSA = LAITVYCICYZALW;
-/*INC*/	if (!INC(WRGRTDXVDKOCSA, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor JAPYMUZRPHZLCE;
+/*SET*/	EHFCILQJOEVAJN = UIUZTEYCTMUIFE;
+/*INC*/	if (!INC(EHFCILQJOEVAJN, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (WRGRTDXVDKOCSA.container->type != struct_bracket) goto sentence_after_3;
+	if (EHFCILQJOEVAJN.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	EHFCILQJOEVAJN = WRGRTDXVDKOCSA.container->value.bracket_data.chain->at_before_first();
-	JTTKNRSPRTKRLK   = WRGRTDXVDKOCSA.container->value.bracket_data.chain->at_last();
+	JTTKNRSPRTKRLK = EHFCILQJOEVAJN.container->value.bracket_data.chain->at_before_first();
+	JAPYMUZRPHZLCE   = EHFCILQJOEVAJN.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = EHFCILQJOEVAJN;
-/*SET*/	r_2 = JTTKNRSPRTKRLK;
+/*SET*/	l_2 = JTTKNRSPRTKRLK;
+/*SET*/	r_2 = JAPYMUZRPHZLCE;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor JAPYMUZRPHZLCE;
 /*DEF*/	DataCursor PAYTFAVEOPSZRN;
 /*DEF*/	DataCursor KVNEHRJSTZFLVY;
-/*SET*/	JAPYMUZRPHZLCE = WRGRTDXVDKOCSA;
-/*INC*/	if (!INC(JAPYMUZRPHZLCE, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor AHORKTKMGYCOUI;
+/*SET*/	PAYTFAVEOPSZRN = EHFCILQJOEVAJN;
+/*INC*/	if (!INC(PAYTFAVEOPSZRN, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (JAPYMUZRPHZLCE.container->type != struct_bracket) goto sentence_after_3;
+	if (PAYTFAVEOPSZRN.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	PAYTFAVEOPSZRN = JAPYMUZRPHZLCE.container->value.bracket_data.chain->at_before_first();
-	KVNEHRJSTZFLVY   = JAPYMUZRPHZLCE.container->value.bracket_data.chain->at_last();
+	KVNEHRJSTZFLVY = PAYTFAVEOPSZRN.container->value.bracket_data.chain->at_before_first();
+	AHORKTKMGYCOUI   = PAYTFAVEOPSZRN.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = PAYTFAVEOPSZRN;
-/*SET*/	r_3 = PAYTFAVEOPSZRN;
-/*JMP*/	goto label_AHORKTKMGYCOUI_firststep;
-label_AHORKTKMGYCOUI: 
-/*INC*/	if (!INC(r_3, KVNEHRJSTZFLVY)) goto sentence_after_3;
-label_AHORKTKMGYCOUI_firststep: 
+/*SET*/	l_3 = KVNEHRJSTZFLVY;
+/*SET*/	r_3 = KVNEHRJSTZFLVY;
+/*JMP*/	goto label_ERTLPBJCSXQLGY_firststep;
+label_ERTLPBJCSXQLGY: 
+/*INC*/	if (!INC(r_3, AHORKTKMGYCOUI)) goto sentence_after_3;
+label_ERTLPBJCSXQLGY_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ERTLPBJCSXQLGY;
-/*SET*/	ERTLPBJCSXQLGY = r_3;
-/*INC*/	if (!INC(ERTLPBJCSXQLGY, KVNEHRJSTZFLVY)) goto label_AHORKTKMGYCOUI;
-	if (ERTLPBJCSXQLGY.container->type != text || *(ERTLPBJCSXQLGY.container->value.text + ERTLPBJCSXQLGY.index) != '>') goto label_AHORKTKMGYCOUI;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor GLMVLYQXIXIPVW;
+/*SET*/	GLMVLYQXIXIPVW = r_3;
+/*INC*/	if (!INC(GLMVLYQXIXIPVW, AHORKTKMGYCOUI)) goto label_ERTLPBJCSXQLGY;
+	if (GLMVLYQXIXIPVW.container->type != text || *(GLMVLYQXIXIPVW.container->value.text + GLMVLYQXIXIPVW.index) != '>') goto label_ERTLPBJCSXQLGY;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor OQLNKAEQMARVXU;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
-/*SET*/	l_A = ERTLPBJCSXQLGY;
-/*SET*/	GLMVLYQXIXIPVW = ERTLPBJCSXQLGY;
-/*INC*/	if (!INC(GLMVLYQXIXIPVW, KVNEHRJSTZFLVY)) goto label_AHORKTKMGYCOUI;
-	if (! isSymbolType(GLMVLYQXIXIPVW.container->type)) goto label_AHORKTKMGYCOUI;
-/*SET*/	r_A = GLMVLYQXIXIPVW;
+/*SET*/	l_A = GLMVLYQXIXIPVW;
+/*SET*/	OQLNKAEQMARVXU = GLMVLYQXIXIPVW;
+/*INC*/	if (!INC(OQLNKAEQMARVXU, AHORKTKMGYCOUI)) goto label_ERTLPBJCSXQLGY;
+	if (! isSymbolType(OQLNKAEQMARVXU.container->type)) goto label_ERTLPBJCSXQLGY;
+/*SET*/	r_A = OQLNKAEQMARVXU;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_4;
 /*DEF*/	DataCursor r_4;
 /*SET*/	l_4 = r_A;
-/*SET*/	r_4 = KVNEHRJSTZFLVY;
+/*SET*/	r_4 = AHORKTKMGYCOUI;
 //// [ empty ] 
-/*ISEMPTY*/	if (JAPYMUZRPHZLCE!=0 && arg_to != JAPYMUZRPHZLCE) goto label_AHORKTKMGYCOUI;
+/*ISEMPTY*/	if (PAYTFAVEOPSZRN!=0 && arg_to != PAYTFAVEOPSZRN) goto label_ERTLPBJCSXQLGY;
 
 // подготовка подстановки 
-DataChain* MKRNJCOKVFKTQJ = new DataChain(); 
-DataContainer* MKRNJCOKVFKTQJ_execbr = newRefExecBrackets(PolnAnaliz, MKRNJCOKVFKTQJ, "PolnAnaliz");
-result->append(MKRNJCOKVFKTQJ_execbr);
 DataChain* DCUGBIDVBXRNSA = new DataChain(); 
-MKRNJCOKVFKTQJ->append(newRefStructBrackets(DCUGBIDVBXRNSA)); 
-DCUGBIDVBXRNSA->append(newRefText("1")); 
+DataContainer* DCUGBIDVBXRNSA_execbr = newRefExecBrackets(PolnAnaliz, DCUGBIDVBXRNSA, "PolnAnaliz");
+result->append(DCUGBIDVBXRNSA_execbr);
 DataChain* QWXTBFTQSNPAVY = new DataChain(); 
-MKRNJCOKVFKTQJ->append(newRefStructBrackets(QWXTBFTQSNPAVY)); 
-QWXTBFTQSNPAVY->append_copy(l_1, r_1); 
+DCUGBIDVBXRNSA->append(newRefStructBrackets(QWXTBFTQSNPAVY)); 
+QWXTBFTQSNPAVY->append(newRefText("1")); 
 DataChain* TODPJDPVYQXKSU = new DataChain(); 
-MKRNJCOKVFKTQJ->append(newRefStructBrackets(TODPJDPVYQXKSU)); 
-TODPJDPVYQXKSU->append_copy(l_2, r_2); 
-TODPJDPVYQXKSU->append_copy(l_A, r_A); 
+DCUGBIDVBXRNSA->append(newRefStructBrackets(TODPJDPVYQXKSU)); 
+TODPJDPVYQXKSU->append_copy(l_1, r_1); 
 DataChain* VZWZTJRWOVTTLN = new DataChain(); 
-MKRNJCOKVFKTQJ->append(newRefStructBrackets(VZWZTJRWOVTTLN)); 
-VZWZTJRWOVTTLN->append_copy(l_3, r_3); 
-VZWZTJRWOVTTLN->append_copy(l_4, r_4); 
-context->pushExecuteCall(MKRNJCOKVFKTQJ_execbr);
+DCUGBIDVBXRNSA->append(newRefStructBrackets(VZWZTJRWOVTTLN)); 
+VZWZTJRWOVTTLN->append_copy(l_2, r_2); 
+VZWZTJRWOVTTLN->append_copy(l_A, r_A); 
+DataChain* KZNQDQIAUAPWKC = new DataChain(); 
+DCUGBIDVBXRNSA->append(newRefStructBrackets(KZNQDQIAUAPWKC)); 
+KZNQDQIAUAPWKC->append_copy(l_3, r_3); 
+KZNQDQIAUAPWKC->append_copy(l_4, r_4); 
+context->pushExecuteCall(DCUGBIDVBXRNSA_execbr);
 
 return result; 
 }
@@ -5043,12 +5048,12 @@ sentence_after_3:
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* KZNQDQIAUAPWKC = new DataChain(); 
-DataContainer* KZNQDQIAUAPWKC_execbr = newRefExecBrackets(Prout, KZNQDQIAUAPWKC, "Prout");
-result->append(KZNQDQIAUAPWKC_execbr);
-KZNQDQIAUAPWKC->append(newRefText("No point: ")); 
-KZNQDQIAUAPWKC->append_copy(l_e, r_e); 
-context->pushExecuteCall(KZNQDQIAUAPWKC_execbr);
+DataChain* ZXRXOPENEUXFLG = new DataChain(); 
+DataContainer* ZXRXOPENEUXFLG_execbr = newRefExecBrackets(Prout, ZXRXOPENEUXFLG, "Prout");
+result->append(ZXRXOPENEUXFLG_execbr);
+ZXRXOPENEUXFLG->append(newRefText("No point: ")); 
+ZXRXOPENEUXFLG->append_copy(l_e, r_e); 
+context->pushExecuteCall(ZXRXOPENEUXFLG_execbr);
 
 return result; 
 }
@@ -5073,17 +5078,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* ZXRXOPENEUXFLG = new DataChain(); 
-DataContainer* ZXRXOPENEUXFLG_execbr = newRefExecBrackets(Prout, ZXRXOPENEUXFLG, "Prout");
-result->append(ZXRXOPENEUXFLG_execbr);
-ZXRXOPENEUXFLG->append(newRefWord("PolnAnaliz:")); 
-ZXRXOPENEUXFLG->append_copy(l_e, r_e); 
-context->pushExecuteCall(ZXRXOPENEUXFLG_execbr);
 DataChain* BDWJMHJGUZPEUD = new DataChain(); 
-DataContainer* BDWJMHJGUZPEUD_execbr = newRefExecBrackets(PolnAnaliz__, BDWJMHJGUZPEUD, "PolnAnaliz__");
+DataContainer* BDWJMHJGUZPEUD_execbr = newRefExecBrackets(Prout, BDWJMHJGUZPEUD, "Prout");
 result->append(BDWJMHJGUZPEUD_execbr);
+BDWJMHJGUZPEUD->append(newRefWord("PolnAnaliz:")); 
 BDWJMHJGUZPEUD->append_copy(l_e, r_e); 
 context->pushExecuteCall(BDWJMHJGUZPEUD_execbr);
+DataChain* DFEIMOZYFRQMFO = new DataChain(); 
+DataContainer* DFEIMOZYFRQMFO_execbr = newRefExecBrackets(PolnAnaliz__, DFEIMOZYFRQMFO, "PolnAnaliz__");
+result->append(DFEIMOZYFRQMFO_execbr);
+DFEIMOZYFRQMFO->append_copy(l_e, r_e); 
+context->pushExecuteCall(DFEIMOZYFRQMFO_execbr);
 
 return result; 
 }
@@ -5102,116 +5107,116 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DFEIMOZYFRQMFO;
 /*DEF*/	DataCursor ZISSCCRIFWQBHX;
 /*DEF*/	DataCursor YEHKTUSDGZXLAE;
-/*SET*/	DFEIMOZYFRQMFO = arg_from;
-/*INC*/	if (!INC(DFEIMOZYFRQMFO, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (DFEIMOZYFRQMFO.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	ZISSCCRIFWQBHX = DFEIMOZYFRQMFO.container->value.bracket_data.chain->at_before_first();
-	YEHKTUSDGZXLAE   = DFEIMOZYFRQMFO.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor YKEXQGQOEVJTFR;
+/*SET*/	ZISSCCRIFWQBHX = arg_from;
+/*INC*/	if (!INC(ZISSCCRIFWQBHX, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (ZISSCCRIFWQBHX.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	YEHKTUSDGZXLAE = ZISSCCRIFWQBHX.container->value.bracket_data.chain->at_before_first();
+	YKEXQGQOEVJTFR   = ZISSCCRIFWQBHX.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor AMUQGBDNRSMBXR;
 /*DEF*/	DataCursor l_g;
 /*DEF*/	DataCursor r_g;
-/*SET*/	l_g = ZISSCCRIFWQBHX;
-/*SET*/	YKEXQGQOEVJTFR = ZISSCCRIFWQBHX;
-/*INC*/	if (!INC(YKEXQGQOEVJTFR, YEHKTUSDGZXLAE)) goto sentence_after_1;
-	if (! isSymbolType(YKEXQGQOEVJTFR.container->type)) goto sentence_after_1;
-/*SET*/	r_g = YKEXQGQOEVJTFR;
+/*SET*/	l_g = YEHKTUSDGZXLAE;
+/*SET*/	AMUQGBDNRSMBXR = YEHKTUSDGZXLAE;
+/*INC*/	if (!INC(AMUQGBDNRSMBXR, YKEXQGQOEVJTFR)) goto sentence_after_1;
+	if (! isSymbolType(AMUQGBDNRSMBXR.container->type)) goto sentence_after_1;
+/*SET*/	r_g = AMUQGBDNRSMBXR;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_g!=0 && YEHKTUSDGZXLAE != r_g) goto sentence_after_1;
+/*ISEMPTY*/	if (r_g!=0 && YKEXQGQOEVJTFR != r_g) goto sentence_after_1;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor AMUQGBDNRSMBXR;
 /*DEF*/	DataCursor VBTFGLOWFFCTUJ;
 /*DEF*/	DataCursor TZQWZGGTLBHROP;
-/*SET*/	AMUQGBDNRSMBXR = DFEIMOZYFRQMFO;
-/*INC*/	if (!INC(AMUQGBDNRSMBXR, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor KWKBBWVNAKWVVD;
+/*SET*/	VBTFGLOWFFCTUJ = ZISSCCRIFWQBHX;
+/*INC*/	if (!INC(VBTFGLOWFFCTUJ, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (AMUQGBDNRSMBXR.container->type != struct_bracket) goto sentence_after_1;
+	if (VBTFGLOWFFCTUJ.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	VBTFGLOWFFCTUJ = AMUQGBDNRSMBXR.container->value.bracket_data.chain->at_before_first();
-	TZQWZGGTLBHROP   = AMUQGBDNRSMBXR.container->value.bracket_data.chain->at_last();
+	TZQWZGGTLBHROP = VBTFGLOWFFCTUJ.container->value.bracket_data.chain->at_before_first();
+	KWKBBWVNAKWVVD   = VBTFGLOWFFCTUJ.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = VBTFGLOWFFCTUJ;
-/*SET*/	r_1 = TZQWZGGTLBHROP;
+/*SET*/	l_1 = TZQWZGGTLBHROP;
+/*SET*/	r_1 = KWKBBWVNAKWVVD;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor KWKBBWVNAKWVVD;
 /*DEF*/	DataCursor YCXCZOZQIWORVP;
 /*DEF*/	DataCursor WKOQMQHCALYZVQ;
-/*SET*/	KWKBBWVNAKWVVD = AMUQGBDNRSMBXR;
-/*INC*/	if (!INC(KWKBBWVNAKWVVD, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor NKCXEKJQZVUESW;
+/*SET*/	YCXCZOZQIWORVP = VBTFGLOWFFCTUJ;
+/*INC*/	if (!INC(YCXCZOZQIWORVP, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (KWKBBWVNAKWVVD.container->type != struct_bracket) goto sentence_after_1;
+	if (YCXCZOZQIWORVP.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	YCXCZOZQIWORVP = KWKBBWVNAKWVVD.container->value.bracket_data.chain->at_before_first();
-	WKOQMQHCALYZVQ   = KWKBBWVNAKWVVD.container->value.bracket_data.chain->at_last();
+	WKOQMQHCALYZVQ = YCXCZOZQIWORVP.container->value.bracket_data.chain->at_before_first();
+	NKCXEKJQZVUESW   = YCXCZOZQIWORVP.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = YCXCZOZQIWORVP;
-/*SET*/	r_2 = WKOQMQHCALYZVQ;
+/*SET*/	l_2 = WKOQMQHCALYZVQ;
+/*SET*/	r_2 = NKCXEKJQZVUESW;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor NKCXEKJQZVUESW;
 /*DEF*/	DataCursor QKNZPYVYSDKHSO;
 /*DEF*/	DataCursor ICMHCZOHEFNASL;
-/*SET*/	NKCXEKJQZVUESW = KWKBBWVNAKWVVD;
-/*INC*/	if (!INC(NKCXEKJQZVUESW, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor XWXLLXLEWTZUWB;
+/*SET*/	QKNZPYVYSDKHSO = YCXCZOZQIWORVP;
+/*INC*/	if (!INC(QKNZPYVYSDKHSO, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (NKCXEKJQZVUESW.container->type != struct_bracket) goto sentence_after_1;
+	if (QKNZPYVYSDKHSO.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	QKNZPYVYSDKHSO = NKCXEKJQZVUESW.container->value.bracket_data.chain->at_before_first();
-	ICMHCZOHEFNASL   = NKCXEKJQZVUESW.container->value.bracket_data.chain->at_last();
+	ICMHCZOHEFNASL = QKNZPYVYSDKHSO.container->value.bracket_data.chain->at_before_first();
+	XWXLLXLEWTZUWB   = QKNZPYVYSDKHSO.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = QKNZPYVYSDKHSO;
-/*SET*/	r_n = ICMHCZOHEFNASL;
+/*SET*/	l_n = ICMHCZOHEFNASL;
+/*SET*/	r_n = XWXLLXLEWTZUWB;
 //// [ empty ] 
-/*ISEMPTY*/	if (NKCXEKJQZVUESW!=0 && arg_to != NKCXEKJQZVUESW) goto sentence_after_1;
+/*ISEMPTY*/	if (QKNZPYVYSDKHSO!=0 && arg_to != QKNZPYVYSDKHSO) goto sentence_after_1;
 
 // подготовка подстановки 
-DataChain* XWXLLXLEWTZUWB = new DataChain(); 
-DataContainer* XWXLLXLEWTZUWB_execbr = newRefExecBrackets(Ifmust, XWXLLXLEWTZUWB, "Ifmust");
-result->append(XWXLLXLEWTZUWB_execbr);
 DataChain* SUVSENEIQWHNEZ = new DataChain(); 
-XWXLLXLEWTZUWB->append(newRefStructBrackets(SUVSENEIQWHNEZ)); 
+DataContainer* SUVSENEIQWHNEZ_execbr = newRefExecBrackets(Ifmust, SUVSENEIQWHNEZ, "Ifmust");
+result->append(SUVSENEIQWHNEZ_execbr);
 DataChain* OJKXHORYESUGDH = new DataChain(); 
-DataContainer* OJKXHORYESUGDH_execbr = newRefExecBrackets(Strategy, OJKXHORYESUGDH, "Strategy");
-SUVSENEIQWHNEZ->append(OJKXHORYESUGDH_execbr);
-OJKXHORYESUGDH->append_copy(l_1, r_1); 
-context->pushExecuteCall(OJKXHORYESUGDH_execbr);
+SUVSENEIQWHNEZ->append(newRefStructBrackets(OJKXHORYESUGDH)); 
 DataChain* TJCKQJDFGNRDOI = new DataChain(); 
-XWXLLXLEWTZUWB->append(newRefStructBrackets(TJCKQJDFGNRDOI)); 
+DataContainer* TJCKQJDFGNRDOI_execbr = newRefExecBrackets(Strategy, TJCKQJDFGNRDOI, "Strategy");
+OJKXHORYESUGDH->append(TJCKQJDFGNRDOI_execbr);
+TJCKQJDFGNRDOI->append_copy(l_1, r_1); 
+context->pushExecuteCall(TJCKQJDFGNRDOI_execbr);
 DataChain* ZPYFMDLQLWQIOD = new DataChain(); 
-DataContainer* ZPYFMDLQLWQIOD_execbr = newRefExecBrackets(Strategy, ZPYFMDLQLWQIOD, "Strategy");
-TJCKQJDFGNRDOI->append(ZPYFMDLQLWQIOD_execbr);
-ZPYFMDLQLWQIOD->append_copy(l_2, r_2); 
-context->pushExecuteCall(ZPYFMDLQLWQIOD_execbr);
+SUVSENEIQWHNEZ->append(newRefStructBrackets(ZPYFMDLQLWQIOD)); 
 DataChain* CWFYGKIVBUJFIN = new DataChain(); 
-XWXLLXLEWTZUWB->append(newRefStructBrackets(CWFYGKIVBUJFIN)); 
+DataContainer* CWFYGKIVBUJFIN_execbr = newRefExecBrackets(Strategy, CWFYGKIVBUJFIN, "Strategy");
+ZPYFMDLQLWQIOD->append(CWFYGKIVBUJFIN_execbr);
+CWFYGKIVBUJFIN->append_copy(l_2, r_2); 
+context->pushExecuteCall(CWFYGKIVBUJFIN_execbr);
 DataChain* ZYHCEJCJOJONHG = new DataChain(); 
-DataContainer* ZYHCEJCJOJONHG_execbr = newRefExecBrackets(Strategy, ZYHCEJCJOJONHG, "Strategy");
-CWFYGKIVBUJFIN->append(ZYHCEJCJOJONHG_execbr);
-ZYHCEJCJOJONHG->append_copy(l_n, r_n); 
-context->pushExecuteCall(ZYHCEJCJOJONHG_execbr);
+SUVSENEIQWHNEZ->append(newRefStructBrackets(ZYHCEJCJOJONHG)); 
 DataChain* USTQJFNECOLOCM = new DataChain(); 
-XWXLLXLEWTZUWB->append(newRefStructBrackets(USTQJFNECOLOCM)); 
-USTQJFNECOLOCM->append_copy(l_g, r_g); 
+DataContainer* USTQJFNECOLOCM_execbr = newRefExecBrackets(Strategy, USTQJFNECOLOCM, "Strategy");
+ZYHCEJCJOJONHG->append(USTQJFNECOLOCM_execbr);
+USTQJFNECOLOCM->append_copy(l_n, r_n); 
+context->pushExecuteCall(USTQJFNECOLOCM_execbr);
 DataChain* FHPZXTGFPMUSCR = new DataChain(); 
-XWXLLXLEWTZUWB->append(newRefStructBrackets(FHPZXTGFPMUSCR)); 
-FHPZXTGFPMUSCR->append_copy(l_1, r_1); 
+SUVSENEIQWHNEZ->append(newRefStructBrackets(FHPZXTGFPMUSCR)); 
+FHPZXTGFPMUSCR->append_copy(l_g, r_g); 
 DataChain* LDURENNLQKWHHY = new DataChain(); 
-XWXLLXLEWTZUWB->append(newRefStructBrackets(LDURENNLQKWHHY)); 
-LDURENNLQKWHHY->append_copy(l_2, r_2); 
+SUVSENEIQWHNEZ->append(newRefStructBrackets(LDURENNLQKWHHY)); 
+LDURENNLQKWHHY->append_copy(l_1, r_1); 
 DataChain* IPQZEVBYKTBVTP = new DataChain(); 
-XWXLLXLEWTZUWB->append(newRefStructBrackets(IPQZEVBYKTBVTP)); 
-IPQZEVBYKTBVTP->append_copy(l_n, r_n); 
-context->pushExecuteCall(XWXLLXLEWTZUWB_execbr);
+SUVSENEIQWHNEZ->append(newRefStructBrackets(IPQZEVBYKTBVTP)); 
+IPQZEVBYKTBVTP->append_copy(l_2, r_2); 
+DataChain* WVTTGECAJYLQVU = new DataChain(); 
+SUVSENEIQWHNEZ->append(newRefStructBrackets(WVTTGECAJYLQVU)); 
+WVTTGECAJYLQVU->append_copy(l_n, r_n); 
+context->pushExecuteCall(SUVSENEIQWHNEZ_execbr);
 
 return result; 
 }
@@ -5236,17 +5241,17 @@ DataChain *tmp_chain = new DataChain();
 /*SET*/	r_e = arg_to;
 
 // подготовка подстановки 
-DataChain* WVTTGECAJYLQVU = new DataChain(); 
-DataContainer* WVTTGECAJYLQVU_execbr = newRefExecBrackets(Prout, WVTTGECAJYLQVU, "Prout");
-result->append(WVTTGECAJYLQVU_execbr);
-WVTTGECAJYLQVU->append(newRefWord("Ifmust:")); 
-WVTTGECAJYLQVU->append_copy(l_e, r_e); 
-context->pushExecuteCall(WVTTGECAJYLQVU_execbr);
 DataChain* IZFSOAYXZILJZE = new DataChain(); 
-DataContainer* IZFSOAYXZILJZE_execbr = newRefExecBrackets(Ifmust__, IZFSOAYXZILJZE, "Ifmust__");
+DataContainer* IZFSOAYXZILJZE_execbr = newRefExecBrackets(Prout, IZFSOAYXZILJZE, "Prout");
 result->append(IZFSOAYXZILJZE_execbr);
+IZFSOAYXZILJZE->append(newRefWord("Ifmust:")); 
 IZFSOAYXZILJZE->append_copy(l_e, r_e); 
 context->pushExecuteCall(IZFSOAYXZILJZE_execbr);
+DataChain* GBLCATMVEFQRZX = new DataChain(); 
+DataContainer* GBLCATMVEFQRZX_execbr = newRefExecBrackets(Ifmust__, GBLCATMVEFQRZX, "Ifmust__");
+result->append(GBLCATMVEFQRZX_execbr);
+GBLCATMVEFQRZX->append_copy(l_e, r_e); 
+context->pushExecuteCall(GBLCATMVEFQRZX_execbr);
 
 return result; 
 }
@@ -5265,142 +5270,142 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor GBLCATMVEFQRZX;
 /*DEF*/	DataCursor WKTNDPBBZDRWLP;
 /*DEF*/	DataCursor HLGDYWDOFNZXQL;
-/*SET*/	GBLCATMVEFQRZX = arg_from;
-/*INC*/	if (!INC(GBLCATMVEFQRZX, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor XVKHDJYALHVVPA;
+/*SET*/	WKTNDPBBZDRWLP = arg_from;
+/*INC*/	if (!INC(WKTNDPBBZDRWLP, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (GBLCATMVEFQRZX.container->type != struct_bracket) goto sentence_after_1;
+	if (WKTNDPBBZDRWLP.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	WKTNDPBBZDRWLP = GBLCATMVEFQRZX.container->value.bracket_data.chain->at_before_first();
-	HLGDYWDOFNZXQL   = GBLCATMVEFQRZX.container->value.bracket_data.chain->at_last();
+	HLGDYWDOFNZXQL = WKTNDPBBZDRWLP.container->value.bracket_data.chain->at_before_first();
+	XVKHDJYALHVVPA   = WKTNDPBBZDRWLP.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e1;
 /*DEF*/	DataCursor r_e1;
-/*SET*/	l_e1 = WKTNDPBBZDRWLP;
-/*SET*/	r_e1 = HLGDYWDOFNZXQL;
+/*SET*/	l_e1 = HLGDYWDOFNZXQL;
+/*SET*/	r_e1 = XVKHDJYALHVVPA;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor XVKHDJYALHVVPA;
 /*DEF*/	DataCursor ANGODNLXHLSXSH;
 /*DEF*/	DataCursor HTIFXICKOBIXBB;
-/*SET*/	XVKHDJYALHVVPA = GBLCATMVEFQRZX;
-/*INC*/	if (!INC(XVKHDJYALHVVPA, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor DUZVNGQIAGGCXF;
+/*SET*/	ANGODNLXHLSXSH = WKTNDPBBZDRWLP;
+/*INC*/	if (!INC(ANGODNLXHLSXSH, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (XVKHDJYALHVVPA.container->type != struct_bracket) goto sentence_after_1;
+	if (ANGODNLXHLSXSH.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	ANGODNLXHLSXSH = XVKHDJYALHVVPA.container->value.bracket_data.chain->at_before_first();
-	HTIFXICKOBIXBB   = XVKHDJYALHVVPA.container->value.bracket_data.chain->at_last();
+	HTIFXICKOBIXBB = ANGODNLXHLSXSH.container->value.bracket_data.chain->at_before_first();
+	DUZVNGQIAGGCXF   = ANGODNLXHLSXSH.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e21;
 /*DEF*/	DataCursor r_e21;
-/*SET*/	l_e21 = ANGODNLXHLSXSH;
-/*SET*/	r_e21 = ANGODNLXHLSXSH;
-/*JMP*/	goto label_DUZVNGQIAGGCXF_firststep;
-label_DUZVNGQIAGGCXF: 
-/*INC*/	if (!INC(r_e21, HTIFXICKOBIXBB)) goto sentence_after_1;
-label_DUZVNGQIAGGCXF_firststep: 
+/*SET*/	l_e21 = HTIFXICKOBIXBB;
+/*SET*/	r_e21 = HTIFXICKOBIXBB;
+/*JMP*/	goto label_GRJMARWUPAYBNQ_firststep;
+label_GRJMARWUPAYBNQ: 
+/*INC*/	if (!INC(r_e21, DUZVNGQIAGGCXF)) goto sentence_after_1;
+label_GRJMARWUPAYBNQ_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor GRJMARWUPAYBNQ;
+/*DEF*/	DataCursor GUDBEWKGWGTOCB;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_e21;
-/*SET*/	GRJMARWUPAYBNQ = r_e21;
-/*INC*/	if (!INC(GRJMARWUPAYBNQ, HTIFXICKOBIXBB)) goto label_DUZVNGQIAGGCXF;
-	if (! isSymbolType(GRJMARWUPAYBNQ.container->type)) goto label_DUZVNGQIAGGCXF;
-/*SET*/	r_A = GRJMARWUPAYBNQ;
+/*SET*/	GUDBEWKGWGTOCB = r_e21;
+/*INC*/	if (!INC(GUDBEWKGWGTOCB, DUZVNGQIAGGCXF)) goto label_GRJMARWUPAYBNQ;
+	if (! isSymbolType(GUDBEWKGWGTOCB.container->type)) goto label_GRJMARWUPAYBNQ;
+/*SET*/	r_A = GUDBEWKGWGTOCB;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e22;
 /*DEF*/	DataCursor r_e22;
 /*SET*/	l_e22 = r_A;
 /*SET*/	r_e22 = r_A;
-/*JMP*/	goto label_GUDBEWKGWGTOCB_firststep;
-label_GUDBEWKGWGTOCB: 
-/*INC*/	if (!INC(r_e22, HTIFXICKOBIXBB)) goto label_DUZVNGQIAGGCXF;
-label_GUDBEWKGWGTOCB_firststep: 
+/*JMP*/	goto label_LXJECCGQHBCZIB_firststep;
+label_LXJECCGQHBCZIB: 
+/*INC*/	if (!INC(r_e22, DUZVNGQIAGGCXF)) goto label_GRJMARWUPAYBNQ;
+label_LXJECCGQHBCZIB_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor LXJECCGQHBCZIB;
-/*SET*/	LXJECCGQHBCZIB = r_e22;
- if (!SLIDE(LXJECCGQHBCZIB, HTIFXICKOBIXBB, l_A, r_A)) goto label_GUDBEWKGWGTOCB;
+/*DEF*/	DataCursor HQUFQQXVLLVMTZ;
+/*SET*/	HQUFQQXVLLVMTZ = r_e22;
+ if (!SLIDE(HQUFQQXVLLVMTZ, DUZVNGQIAGGCXF, l_A, r_A)) goto label_LXJECCGQHBCZIB;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e23;
 /*DEF*/	DataCursor r_e23;
-/*SET*/	l_e23 = LXJECCGQHBCZIB;
-/*SET*/	r_e23 = HTIFXICKOBIXBB;
+/*SET*/	l_e23 = HQUFQQXVLLVMTZ;
+/*SET*/	r_e23 = DUZVNGQIAGGCXF;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor HQUFQQXVLLVMTZ;
 /*DEF*/	DataCursor HFMBEZPLHQAKBM;
 /*DEF*/	DataCursor MVAFQYXJYEXDSS;
-/*SET*/	HQUFQQXVLLVMTZ = XVKHDJYALHVVPA;
-/*INC*/	if (!INC(HQUFQQXVLLVMTZ, arg_to)) goto label_GUDBEWKGWGTOCB;
+/*DEF*/	DataCursor WBJIOUYMHLZCLT;
+/*SET*/	HFMBEZPLHQAKBM = ANGODNLXHLSXSH;
+/*INC*/	if (!INC(HFMBEZPLHQAKBM, arg_to)) goto label_LXJECCGQHBCZIB;
 //// ISBRACKET 
-	if (HQUFQQXVLLVMTZ.container->type != struct_bracket) goto label_GUDBEWKGWGTOCB;
+	if (HFMBEZPLHQAKBM.container->type != struct_bracket) goto label_LXJECCGQHBCZIB;
 //// JMP_BRACKET 
-	HFMBEZPLHQAKBM = HQUFQQXVLLVMTZ.container->value.bracket_data.chain->at_before_first();
-	MVAFQYXJYEXDSS   = HQUFQQXVLLVMTZ.container->value.bracket_data.chain->at_last();
+	MVAFQYXJYEXDSS = HFMBEZPLHQAKBM.container->value.bracket_data.chain->at_before_first();
+	WBJIOUYMHLZCLT   = HFMBEZPLHQAKBM.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_nn1;
 /*DEF*/	DataCursor r_nn1;
-/*SET*/	l_nn1 = HFMBEZPLHQAKBM;
-/*SET*/	r_nn1 = HFMBEZPLHQAKBM;
-/*JMP*/	goto label_WBJIOUYMHLZCLT_firststep;
-label_WBJIOUYMHLZCLT: 
-/*INC*/	if (!INC(r_nn1, MVAFQYXJYEXDSS)) goto label_GUDBEWKGWGTOCB;
-label_WBJIOUYMHLZCLT_firststep: 
+/*SET*/	l_nn1 = MVAFQYXJYEXDSS;
+/*SET*/	r_nn1 = MVAFQYXJYEXDSS;
+/*JMP*/	goto label_JUDOBFUOIWUBGE_firststep;
+label_JUDOBFUOIWUBGE: 
+/*INC*/	if (!INC(r_nn1, WBJIOUYMHLZCLT)) goto label_LXJECCGQHBCZIB;
+label_JUDOBFUOIWUBGE_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor JUDOBFUOIWUBGE;
-/*SET*/	JUDOBFUOIWUBGE = r_nn1;
- if (!SLIDE(JUDOBFUOIWUBGE, MVAFQYXJYEXDSS, l_A, r_A)) goto label_WBJIOUYMHLZCLT;
+/*DEF*/	DataCursor IDPMVKHOZHKDUC;
+/*SET*/	IDPMVKHOZHKDUC = r_nn1;
+ if (!SLIDE(IDPMVKHOZHKDUC, WBJIOUYMHLZCLT, l_A, r_A)) goto label_JUDOBFUOIWUBGE;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_nn2;
 /*DEF*/	DataCursor r_nn2;
-/*SET*/	l_nn2 = JUDOBFUOIWUBGE;
-/*SET*/	r_nn2 = MVAFQYXJYEXDSS;
+/*SET*/	l_nn2 = IDPMVKHOZHKDUC;
+/*SET*/	r_nn2 = WBJIOUYMHLZCLT;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor IDPMVKHOZHKDUC;
 /*DEF*/	DataCursor OMLGLTLVEINNCA;
 /*DEF*/	DataCursor IKNSUGJQCCASDX;
-/*SET*/	IDPMVKHOZHKDUC = HQUFQQXVLLVMTZ;
-/*INC*/	if (!INC(IDPMVKHOZHKDUC, arg_to)) goto label_WBJIOUYMHLZCLT;
-//// ISBRACKET 
-	if (IDPMVKHOZHKDUC.container->type != struct_bracket) goto label_WBJIOUYMHLZCLT;
-//// JMP_BRACKET 
-	OMLGLTLVEINNCA = IDPMVKHOZHKDUC.container->value.bracket_data.chain->at_before_first();
-	IKNSUGJQCCASDX   = IDPMVKHOZHKDUC.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor DAZCRTVLLKFVTE;
-/*SET*/	DAZCRTVLLKFVTE = OMLGLTLVEINNCA;
-/*INC*/	if (!INC(DAZCRTVLLKFVTE, IKNSUGJQCCASDX)) goto label_WBJIOUYMHLZCLT;
-	if (DAZCRTVLLKFVTE.container->type != text || *(DAZCRTVLLKFVTE.container->value.text + DAZCRTVLLKFVTE.index) != '2') goto label_WBJIOUYMHLZCLT;
+/*SET*/	OMLGLTLVEINNCA = HFMBEZPLHQAKBM;
+/*INC*/	if (!INC(OMLGLTLVEINNCA, arg_to)) goto label_JUDOBFUOIWUBGE;
+//// ISBRACKET 
+	if (OMLGLTLVEINNCA.container->type != struct_bracket) goto label_JUDOBFUOIWUBGE;
+//// JMP_BRACKET 
+	IKNSUGJQCCASDX = OMLGLTLVEINNCA.container->value.bracket_data.chain->at_before_first();
+	DAZCRTVLLKFVTE   = OMLGLTLVEINNCA.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor ZAZZCSCTLEGENL;
+/*SET*/	ZAZZCSCTLEGENL = IKNSUGJQCCASDX;
+/*INC*/	if (!INC(ZAZZCSCTLEGENL, DAZCRTVLLKFVTE)) goto label_JUDOBFUOIWUBGE;
+	if (ZAZZCSCTLEGENL.container->type != text || *(ZAZZCSCTLEGENL.container->value.text + ZAZZCSCTLEGENL.index) != '2') goto label_JUDOBFUOIWUBGE;
 //// [ empty ] 
-/*ISEMPTY*/	if (DAZCRTVLLKFVTE!=0 && IKNSUGJQCCASDX != DAZCRTVLLKFVTE) goto label_WBJIOUYMHLZCLT;
+/*ISEMPTY*/	if (ZAZZCSCTLEGENL!=0 && DAZCRTVLLKFVTE != ZAZZCSCTLEGENL) goto label_JUDOBFUOIWUBGE;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e1e2;
 /*DEF*/	DataCursor r_e1e2;
-/*SET*/	l_e1e2 = IDPMVKHOZHKDUC;
-/*SET*/	r_e1e2 = IDPMVKHOZHKDUC;
-/*JMP*/	goto label_LTVKZDQOWGOLJP_firststep;
-label_LTVKZDQOWGOLJP: 
-/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_WBJIOUYMHLZCLT;
-label_LTVKZDQOWGOLJP_firststep: 
+/*SET*/	l_e1e2 = OMLGLTLVEINNCA;
+/*SET*/	r_e1e2 = OMLGLTLVEINNCA;
+/*JMP*/	goto label_DSYQNCSDJSDCXX_firststep;
+label_DSYQNCSDJSDCXX: 
+/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_JUDOBFUOIWUBGE;
+label_DSYQNCSDJSDCXX_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DSYQNCSDJSDCXX;
 /*DEF*/	DataCursor YRGHRWPQINXMRI;
 /*DEF*/	DataCursor DXPDPQUNVKWXRY;
-/*SET*/	DSYQNCSDJSDCXX = r_e1e2;
-/*INC*/	if (!INC(DSYQNCSDJSDCXX, arg_to)) goto label_LTVKZDQOWGOLJP;
+/*DEF*/	DataCursor KXTLXYPPFMAJFH;
+/*SET*/	YRGHRWPQINXMRI = r_e1e2;
+/*INC*/	if (!INC(YRGHRWPQINXMRI, arg_to)) goto label_DSYQNCSDJSDCXX;
 //// ISBRACKET 
-	if (DSYQNCSDJSDCXX.container->type != struct_bracket) goto label_LTVKZDQOWGOLJP;
+	if (YRGHRWPQINXMRI.container->type != struct_bracket) goto label_DSYQNCSDJSDCXX;
 //// JMP_BRACKET 
-	YRGHRWPQINXMRI = DSYQNCSDJSDCXX.container->value.bracket_data.chain->at_before_first();
-	DXPDPQUNVKWXRY   = DSYQNCSDJSDCXX.container->value.bracket_data.chain->at_last();
+	DXPDPQUNVKWXRY = YRGHRWPQINXMRI.container->value.bracket_data.chain->at_before_first();
+	KXTLXYPPFMAJFH   = YRGHRWPQINXMRI.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = YRGHRWPQINXMRI;
-/*SET*/	r_n = DXPDPQUNVKWXRY;
+/*SET*/	l_n = DXPDPQUNVKWXRY;
+/*SET*/	r_n = KXTLXYPPFMAJFH;
 //// [ empty ] 
-/*ISEMPTY*/	if (DSYQNCSDJSDCXX!=0 && arg_to != DSYQNCSDJSDCXX) goto label_LTVKZDQOWGOLJP;
+/*ISEMPTY*/	if (YRGHRWPQINXMRI!=0 && arg_to != YRGHRWPQINXMRI) goto label_DSYQNCSDJSDCXX;
 
 // подготовка подстановки 
 result->append(newRefText("2")); 
@@ -5412,142 +5417,142 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor KXTLXYPPFMAJFH;
 /*DEF*/	DataCursor QYUDWTIGBJTMQM;
 /*DEF*/	DataCursor DLTCQZGCAIWSWF;
-/*SET*/	KXTLXYPPFMAJFH = arg_from;
-/*INC*/	if (!INC(KXTLXYPPFMAJFH, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor YRYHCWWIARUHII;
+/*SET*/	QYUDWTIGBJTMQM = arg_from;
+/*INC*/	if (!INC(QYUDWTIGBJTMQM, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (KXTLXYPPFMAJFH.container->type != struct_bracket) goto sentence_after_2;
+	if (QYUDWTIGBJTMQM.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	QYUDWTIGBJTMQM = KXTLXYPPFMAJFH.container->value.bracket_data.chain->at_before_first();
-	DLTCQZGCAIWSWF   = KXTLXYPPFMAJFH.container->value.bracket_data.chain->at_last();
+	DLTCQZGCAIWSWF = QYUDWTIGBJTMQM.container->value.bracket_data.chain->at_before_first();
+	YRYHCWWIARUHII   = QYUDWTIGBJTMQM.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e21;
 /*DEF*/	DataCursor r_e21;
-/*SET*/	l_e21 = QYUDWTIGBJTMQM;
-/*SET*/	r_e21 = QYUDWTIGBJTMQM;
-/*JMP*/	goto label_YRYHCWWIARUHII_firststep;
-label_YRYHCWWIARUHII: 
-/*INC*/	if (!INC(r_e21, DLTCQZGCAIWSWF)) goto sentence_after_2;
-label_YRYHCWWIARUHII_firststep: 
+/*SET*/	l_e21 = DLTCQZGCAIWSWF;
+/*SET*/	r_e21 = DLTCQZGCAIWSWF;
+/*JMP*/	goto label_BUJOPGRQNPIUGK_firststep;
+label_BUJOPGRQNPIUGK: 
+/*INC*/	if (!INC(r_e21, YRYHCWWIARUHII)) goto sentence_after_2;
+label_BUJOPGRQNPIUGK_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor BUJOPGRQNPIUGK;
+/*DEF*/	DataCursor DQTESOJACQHNWD;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_e21;
-/*SET*/	BUJOPGRQNPIUGK = r_e21;
-/*INC*/	if (!INC(BUJOPGRQNPIUGK, DLTCQZGCAIWSWF)) goto label_YRYHCWWIARUHII;
-	if (! isSymbolType(BUJOPGRQNPIUGK.container->type)) goto label_YRYHCWWIARUHII;
-/*SET*/	r_A = BUJOPGRQNPIUGK;
+/*SET*/	DQTESOJACQHNWD = r_e21;
+/*INC*/	if (!INC(DQTESOJACQHNWD, YRYHCWWIARUHII)) goto label_BUJOPGRQNPIUGK;
+	if (! isSymbolType(DQTESOJACQHNWD.container->type)) goto label_BUJOPGRQNPIUGK;
+/*SET*/	r_A = DQTESOJACQHNWD;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e22;
 /*DEF*/	DataCursor r_e22;
 /*SET*/	l_e22 = r_A;
 /*SET*/	r_e22 = r_A;
-/*JMP*/	goto label_DQTESOJACQHNWD_firststep;
-label_DQTESOJACQHNWD: 
-/*INC*/	if (!INC(r_e22, DLTCQZGCAIWSWF)) goto label_YRYHCWWIARUHII;
-label_DQTESOJACQHNWD_firststep: 
+/*JMP*/	goto label_AGNVXESFRFIEFA_firststep;
+label_AGNVXESFRFIEFA: 
+/*INC*/	if (!INC(r_e22, YRYHCWWIARUHII)) goto label_BUJOPGRQNPIUGK;
+label_AGNVXESFRFIEFA_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor AGNVXESFRFIEFA;
-/*SET*/	AGNVXESFRFIEFA = r_e22;
- if (!SLIDE(AGNVXESFRFIEFA, DLTCQZGCAIWSWF, l_A, r_A)) goto label_DQTESOJACQHNWD;
+/*DEF*/	DataCursor ABRADQEELKPKEC;
+/*SET*/	ABRADQEELKPKEC = r_e22;
+ if (!SLIDE(ABRADQEELKPKEC, YRYHCWWIARUHII, l_A, r_A)) goto label_AGNVXESFRFIEFA;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e23;
 /*DEF*/	DataCursor r_e23;
-/*SET*/	l_e23 = AGNVXESFRFIEFA;
-/*SET*/	r_e23 = DLTCQZGCAIWSWF;
+/*SET*/	l_e23 = ABRADQEELKPKEC;
+/*SET*/	r_e23 = YRYHCWWIARUHII;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ABRADQEELKPKEC;
 /*DEF*/	DataCursor VPSDWELPDJMMBP;
 /*DEF*/	DataCursor DUPZVTVJXYDKDN;
-/*SET*/	ABRADQEELKPKEC = KXTLXYPPFMAJFH;
-/*INC*/	if (!INC(ABRADQEELKPKEC, arg_to)) goto label_DQTESOJACQHNWD;
+/*DEF*/	DataCursor CUGGHONUCWEGVF;
+/*SET*/	VPSDWELPDJMMBP = QYUDWTIGBJTMQM;
+/*INC*/	if (!INC(VPSDWELPDJMMBP, arg_to)) goto label_AGNVXESFRFIEFA;
 //// ISBRACKET 
-	if (ABRADQEELKPKEC.container->type != struct_bracket) goto label_DQTESOJACQHNWD;
+	if (VPSDWELPDJMMBP.container->type != struct_bracket) goto label_AGNVXESFRFIEFA;
 //// JMP_BRACKET 
-	VPSDWELPDJMMBP = ABRADQEELKPKEC.container->value.bracket_data.chain->at_before_first();
-	DUPZVTVJXYDKDN   = ABRADQEELKPKEC.container->value.bracket_data.chain->at_last();
+	DUPZVTVJXYDKDN = VPSDWELPDJMMBP.container->value.bracket_data.chain->at_before_first();
+	CUGGHONUCWEGVF   = VPSDWELPDJMMBP.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e1;
 /*DEF*/	DataCursor r_e1;
-/*SET*/	l_e1 = VPSDWELPDJMMBP;
-/*SET*/	r_e1 = DUPZVTVJXYDKDN;
+/*SET*/	l_e1 = DUPZVTVJXYDKDN;
+/*SET*/	r_e1 = CUGGHONUCWEGVF;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor CUGGHONUCWEGVF;
 /*DEF*/	DataCursor JZBDWKBEVKGDWU;
 /*DEF*/	DataCursor BTJVTOQOTHGGTD;
-/*SET*/	CUGGHONUCWEGVF = ABRADQEELKPKEC;
-/*INC*/	if (!INC(CUGGHONUCWEGVF, arg_to)) goto label_DQTESOJACQHNWD;
+/*DEF*/	DataCursor RDOLGJMFUBZZPN;
+/*SET*/	JZBDWKBEVKGDWU = VPSDWELPDJMMBP;
+/*INC*/	if (!INC(JZBDWKBEVKGDWU, arg_to)) goto label_AGNVXESFRFIEFA;
 //// ISBRACKET 
-	if (CUGGHONUCWEGVF.container->type != struct_bracket) goto label_DQTESOJACQHNWD;
+	if (JZBDWKBEVKGDWU.container->type != struct_bracket) goto label_AGNVXESFRFIEFA;
 //// JMP_BRACKET 
-	JZBDWKBEVKGDWU = CUGGHONUCWEGVF.container->value.bracket_data.chain->at_before_first();
-	BTJVTOQOTHGGTD   = CUGGHONUCWEGVF.container->value.bracket_data.chain->at_last();
+	BTJVTOQOTHGGTD = JZBDWKBEVKGDWU.container->value.bracket_data.chain->at_before_first();
+	RDOLGJMFUBZZPN   = JZBDWKBEVKGDWU.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_nn1;
 /*DEF*/	DataCursor r_nn1;
-/*SET*/	l_nn1 = JZBDWKBEVKGDWU;
-/*SET*/	r_nn1 = JZBDWKBEVKGDWU;
-/*JMP*/	goto label_RDOLGJMFUBZZPN_firststep;
-label_RDOLGJMFUBZZPN: 
-/*INC*/	if (!INC(r_nn1, BTJVTOQOTHGGTD)) goto label_DQTESOJACQHNWD;
-label_RDOLGJMFUBZZPN_firststep: 
+/*SET*/	l_nn1 = BTJVTOQOTHGGTD;
+/*SET*/	r_nn1 = BTJVTOQOTHGGTD;
+/*JMP*/	goto label_HJAQWOTZQBLHMR_firststep;
+label_HJAQWOTZQBLHMR: 
+/*INC*/	if (!INC(r_nn1, RDOLGJMFUBZZPN)) goto label_AGNVXESFRFIEFA;
+label_HJAQWOTZQBLHMR_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor HJAQWOTZQBLHMR;
-/*SET*/	HJAQWOTZQBLHMR = r_nn1;
- if (!SLIDE(HJAQWOTZQBLHMR, BTJVTOQOTHGGTD, l_A, r_A)) goto label_RDOLGJMFUBZZPN;
+/*DEF*/	DataCursor FZFGYKZMUCWWPD;
+/*SET*/	FZFGYKZMUCWWPD = r_nn1;
+ if (!SLIDE(FZFGYKZMUCWWPD, RDOLGJMFUBZZPN, l_A, r_A)) goto label_HJAQWOTZQBLHMR;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_nn2;
 /*DEF*/	DataCursor r_nn2;
-/*SET*/	l_nn2 = HJAQWOTZQBLHMR;
-/*SET*/	r_nn2 = BTJVTOQOTHGGTD;
+/*SET*/	l_nn2 = FZFGYKZMUCWWPD;
+/*SET*/	r_nn2 = RDOLGJMFUBZZPN;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor FZFGYKZMUCWWPD;
 /*DEF*/	DataCursor YJVCTVFAMCGLTM;
 /*DEF*/	DataCursor JTMRCJIVHSYTNW;
-/*SET*/	FZFGYKZMUCWWPD = CUGGHONUCWEGVF;
-/*INC*/	if (!INC(FZFGYKZMUCWWPD, arg_to)) goto label_RDOLGJMFUBZZPN;
-//// ISBRACKET 
-	if (FZFGYKZMUCWWPD.container->type != struct_bracket) goto label_RDOLGJMFUBZZPN;
-//// JMP_BRACKET 
-	YJVCTVFAMCGLTM = FZFGYKZMUCWWPD.container->value.bracket_data.chain->at_before_first();
-	JTMRCJIVHSYTNW   = FZFGYKZMUCWWPD.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor MQQJVMOHFYESQX;
-/*SET*/	MQQJVMOHFYESQX = YJVCTVFAMCGLTM;
-/*INC*/	if (!INC(MQQJVMOHFYESQX, JTMRCJIVHSYTNW)) goto label_RDOLGJMFUBZZPN;
-	if (MQQJVMOHFYESQX.container->type != text || *(MQQJVMOHFYESQX.container->value.text + MQQJVMOHFYESQX.index) != '1') goto label_RDOLGJMFUBZZPN;
+/*SET*/	YJVCTVFAMCGLTM = JZBDWKBEVKGDWU;
+/*INC*/	if (!INC(YJVCTVFAMCGLTM, arg_to)) goto label_HJAQWOTZQBLHMR;
+//// ISBRACKET 
+	if (YJVCTVFAMCGLTM.container->type != struct_bracket) goto label_HJAQWOTZQBLHMR;
+//// JMP_BRACKET 
+	JTMRCJIVHSYTNW = YJVCTVFAMCGLTM.container->value.bracket_data.chain->at_before_first();
+	MQQJVMOHFYESQX   = YJVCTVFAMCGLTM.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor DVRJGFVGYMHLWD;
+/*SET*/	DVRJGFVGYMHLWD = JTMRCJIVHSYTNW;
+/*INC*/	if (!INC(DVRJGFVGYMHLWD, MQQJVMOHFYESQX)) goto label_HJAQWOTZQBLHMR;
+	if (DVRJGFVGYMHLWD.container->type != text || *(DVRJGFVGYMHLWD.container->value.text + DVRJGFVGYMHLWD.index) != '1') goto label_HJAQWOTZQBLHMR;
 //// [ empty ] 
-/*ISEMPTY*/	if (MQQJVMOHFYESQX!=0 && JTMRCJIVHSYTNW != MQQJVMOHFYESQX) goto label_RDOLGJMFUBZZPN;
+/*ISEMPTY*/	if (DVRJGFVGYMHLWD!=0 && MQQJVMOHFYESQX != DVRJGFVGYMHLWD) goto label_HJAQWOTZQBLHMR;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e1e2;
 /*DEF*/	DataCursor r_e1e2;
-/*SET*/	l_e1e2 = FZFGYKZMUCWWPD;
-/*SET*/	r_e1e2 = FZFGYKZMUCWWPD;
-/*JMP*/	goto label_XLOZMCQMVHTCEX_firststep;
-label_XLOZMCQMVHTCEX: 
-/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_RDOLGJMFUBZZPN;
-label_XLOZMCQMVHTCEX_firststep: 
+/*SET*/	l_e1e2 = YJVCTVFAMCGLTM;
+/*SET*/	r_e1e2 = YJVCTVFAMCGLTM;
+/*JMP*/	goto label_AMEYKVIXDAQVSS_firststep;
+label_AMEYKVIXDAQVSS: 
+/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_HJAQWOTZQBLHMR;
+label_AMEYKVIXDAQVSS_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor AMEYKVIXDAQVSS;
 /*DEF*/	DataCursor DWWOEDKLQENAFB;
 /*DEF*/	DataCursor CFNHWRHDKJCSXO;
-/*SET*/	AMEYKVIXDAQVSS = r_e1e2;
-/*INC*/	if (!INC(AMEYKVIXDAQVSS, arg_to)) goto label_XLOZMCQMVHTCEX;
+/*DEF*/	DataCursor HDVRBNLBLSEEND;
+/*SET*/	DWWOEDKLQENAFB = r_e1e2;
+/*INC*/	if (!INC(DWWOEDKLQENAFB, arg_to)) goto label_AMEYKVIXDAQVSS;
 //// ISBRACKET 
-	if (AMEYKVIXDAQVSS.container->type != struct_bracket) goto label_XLOZMCQMVHTCEX;
+	if (DWWOEDKLQENAFB.container->type != struct_bracket) goto label_AMEYKVIXDAQVSS;
 //// JMP_BRACKET 
-	DWWOEDKLQENAFB = AMEYKVIXDAQVSS.container->value.bracket_data.chain->at_before_first();
-	CFNHWRHDKJCSXO   = AMEYKVIXDAQVSS.container->value.bracket_data.chain->at_last();
+	CFNHWRHDKJCSXO = DWWOEDKLQENAFB.container->value.bracket_data.chain->at_before_first();
+	HDVRBNLBLSEEND   = DWWOEDKLQENAFB.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = DWWOEDKLQENAFB;
-/*SET*/	r_n = CFNHWRHDKJCSXO;
+/*SET*/	l_n = CFNHWRHDKJCSXO;
+/*SET*/	r_n = HDVRBNLBLSEEND;
 //// [ empty ] 
-/*ISEMPTY*/	if (AMEYKVIXDAQVSS!=0 && arg_to != AMEYKVIXDAQVSS) goto label_XLOZMCQMVHTCEX;
+/*ISEMPTY*/	if (DWWOEDKLQENAFB!=0 && arg_to != DWWOEDKLQENAFB) goto label_AMEYKVIXDAQVSS;
 
 // подготовка подстановки 
 result->append(newRefText("1")); 
@@ -5559,167 +5564,167 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor HDVRBNLBLSEEND;
 /*DEF*/	DataCursor UBKXAORTEJLRCM;
 /*DEF*/	DataCursor CVOVRSQRCOPNNP;
-/*SET*/	HDVRBNLBLSEEND = arg_from;
-/*INC*/	if (!INC(HDVRBNLBLSEEND, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor KUNKKCPOENVPKV;
+/*SET*/	UBKXAORTEJLRCM = arg_from;
+/*INC*/	if (!INC(UBKXAORTEJLRCM, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (HDVRBNLBLSEEND.container->type != struct_bracket) goto sentence_after_3;
+	if (UBKXAORTEJLRCM.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	UBKXAORTEJLRCM = HDVRBNLBLSEEND.container->value.bracket_data.chain->at_before_first();
-	CVOVRSQRCOPNNP   = HDVRBNLBLSEEND.container->value.bracket_data.chain->at_last();
+	CVOVRSQRCOPNNP = UBKXAORTEJLRCM.container->value.bracket_data.chain->at_before_first();
+	KUNKKCPOENVPKV   = UBKXAORTEJLRCM.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e1;
 /*DEF*/	DataCursor r_e1;
-/*SET*/	l_e1 = UBKXAORTEJLRCM;
-/*SET*/	r_e1 = CVOVRSQRCOPNNP;
+/*SET*/	l_e1 = CVOVRSQRCOPNNP;
+/*SET*/	r_e1 = KUNKKCPOENVPKV;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor KUNKKCPOENVPKV;
 /*DEF*/	DataCursor YGUNPABOUJVIRE;
 /*DEF*/	DataCursor LEHLGECTNAZVQP;
-/*SET*/	KUNKKCPOENVPKV = HDVRBNLBLSEEND;
-/*INC*/	if (!INC(KUNKKCPOENVPKV, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor SOUUBCPYFIKGQT;
+/*SET*/	YGUNPABOUJVIRE = UBKXAORTEJLRCM;
+/*INC*/	if (!INC(YGUNPABOUJVIRE, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (KUNKKCPOENVPKV.container->type != struct_bracket) goto sentence_after_3;
+	if (YGUNPABOUJVIRE.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	YGUNPABOUJVIRE = KUNKKCPOENVPKV.container->value.bracket_data.chain->at_before_first();
-	LEHLGECTNAZVQP   = KUNKKCPOENVPKV.container->value.bracket_data.chain->at_last();
+	LEHLGECTNAZVQP = YGUNPABOUJVIRE.container->value.bracket_data.chain->at_before_first();
+	SOUUBCPYFIKGQT   = YGUNPABOUJVIRE.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e21;
 /*DEF*/	DataCursor r_e21;
-/*SET*/	l_e21 = YGUNPABOUJVIRE;
-/*SET*/	r_e21 = YGUNPABOUJVIRE;
-/*JMP*/	goto label_SOUUBCPYFIKGQT_firststep;
-label_SOUUBCPYFIKGQT: 
-/*INC*/	if (!INC(r_e21, LEHLGECTNAZVQP)) goto sentence_after_3;
-label_SOUUBCPYFIKGQT_firststep: 
+/*SET*/	l_e21 = LEHLGECTNAZVQP;
+/*SET*/	r_e21 = LEHLGECTNAZVQP;
+/*JMP*/	goto label_UFVQQEVCPCJPMJ_firststep;
+label_UFVQQEVCPCJPMJ: 
+/*INC*/	if (!INC(r_e21, SOUUBCPYFIKGQT)) goto sentence_after_3;
+label_UFVQQEVCPCJPMJ_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor UFVQQEVCPCJPMJ;
+/*DEF*/	DataCursor HPUACSIASPTSKQ;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_e21;
-/*SET*/	UFVQQEVCPCJPMJ = r_e21;
-/*INC*/	if (!INC(UFVQQEVCPCJPMJ, LEHLGECTNAZVQP)) goto label_SOUUBCPYFIKGQT;
-	if (! isSymbolType(UFVQQEVCPCJPMJ.container->type)) goto label_SOUUBCPYFIKGQT;
-/*SET*/	r_A = UFVQQEVCPCJPMJ;
+/*SET*/	HPUACSIASPTSKQ = r_e21;
+/*INC*/	if (!INC(HPUACSIASPTSKQ, SOUUBCPYFIKGQT)) goto label_UFVQQEVCPCJPMJ;
+	if (! isSymbolType(HPUACSIASPTSKQ.container->type)) goto label_UFVQQEVCPCJPMJ;
+/*SET*/	r_A = HPUACSIASPTSKQ;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e22;
 /*DEF*/	DataCursor r_e22;
 /*SET*/	l_e22 = r_A;
 /*SET*/	r_e22 = r_A;
-/*JMP*/	goto label_HPUACSIASPTSKQ_firststep;
-label_HPUACSIASPTSKQ: 
-/*INC*/	if (!INC(r_e22, LEHLGECTNAZVQP)) goto label_SOUUBCPYFIKGQT;
-label_HPUACSIASPTSKQ_firststep: 
+/*JMP*/	goto label_YHITAUZFABLPQL_firststep;
+label_YHITAUZFABLPQL: 
+/*INC*/	if (!INC(r_e22, SOUUBCPYFIKGQT)) goto label_UFVQQEVCPCJPMJ;
+label_YHITAUZFABLPQL_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor YHITAUZFABLPQL;
-/*SET*/	YHITAUZFABLPQL = r_e22;
- if (!SLIDE(YHITAUZFABLPQL, LEHLGECTNAZVQP, l_A, r_A)) goto label_HPUACSIASPTSKQ;
+/*DEF*/	DataCursor KUKAHMLIVZAPRO;
+/*SET*/	KUKAHMLIVZAPRO = r_e22;
+ if (!SLIDE(KUKAHMLIVZAPRO, SOUUBCPYFIKGQT, l_A, r_A)) goto label_YHITAUZFABLPQL;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e23;
 /*DEF*/	DataCursor r_e23;
-/*SET*/	l_e23 = YHITAUZFABLPQL;
-/*SET*/	r_e23 = LEHLGECTNAZVQP;
+/*SET*/	l_e23 = KUKAHMLIVZAPRO;
+/*SET*/	r_e23 = SOUUBCPYFIKGQT;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor KUKAHMLIVZAPRO;
 /*DEF*/	DataCursor TLQDIUOEEYKIQZ;
 /*DEF*/	DataCursor AHFAVZZRFRZZEM;
-/*SET*/	KUKAHMLIVZAPRO = KUNKKCPOENVPKV;
-/*INC*/	if (!INC(KUKAHMLIVZAPRO, arg_to)) goto label_HPUACSIASPTSKQ;
+/*DEF*/	DataCursor IYZVOBXUOJORAW;
+/*SET*/	TLQDIUOEEYKIQZ = YGUNPABOUJVIRE;
+/*INC*/	if (!INC(TLQDIUOEEYKIQZ, arg_to)) goto label_YHITAUZFABLPQL;
 //// ISBRACKET 
-	if (KUKAHMLIVZAPRO.container->type != struct_bracket) goto label_HPUACSIASPTSKQ;
+	if (TLQDIUOEEYKIQZ.container->type != struct_bracket) goto label_YHITAUZFABLPQL;
 //// JMP_BRACKET 
-	TLQDIUOEEYKIQZ = KUKAHMLIVZAPRO.container->value.bracket_data.chain->at_before_first();
-	AHFAVZZRFRZZEM   = KUKAHMLIVZAPRO.container->value.bracket_data.chain->at_last();
+	AHFAVZZRFRZZEM = TLQDIUOEEYKIQZ.container->value.bracket_data.chain->at_before_first();
+	IYZVOBXUOJORAW   = TLQDIUOEEYKIQZ.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_nn1;
 /*DEF*/	DataCursor r_nn1;
-/*SET*/	l_nn1 = TLQDIUOEEYKIQZ;
-/*SET*/	r_nn1 = TLQDIUOEEYKIQZ;
-/*JMP*/	goto label_IYZVOBXUOJORAW_firststep;
-label_IYZVOBXUOJORAW: 
-/*INC*/	if (!INC(r_nn1, AHFAVZZRFRZZEM)) goto label_HPUACSIASPTSKQ;
-label_IYZVOBXUOJORAW_firststep: 
+/*SET*/	l_nn1 = AHFAVZZRFRZZEM;
+/*SET*/	r_nn1 = AHFAVZZRFRZZEM;
+/*JMP*/	goto label_URHJOPPNNCTEHR_firststep;
+label_URHJOPPNNCTEHR: 
+/*INC*/	if (!INC(r_nn1, IYZVOBXUOJORAW)) goto label_YHITAUZFABLPQL;
+label_URHJOPPNNCTEHR_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor URHJOPPNNCTEHR;
-/*SET*/	URHJOPPNNCTEHR = r_nn1;
- if (!SLIDE(URHJOPPNNCTEHR, AHFAVZZRFRZZEM, l_A, r_A)) goto label_IYZVOBXUOJORAW;
+/*DEF*/	DataCursor ULPGKOZUYWMOBC;
+/*SET*/	ULPGKOZUYWMOBC = r_nn1;
+ if (!SLIDE(ULPGKOZUYWMOBC, IYZVOBXUOJORAW, l_A, r_A)) goto label_URHJOPPNNCTEHR;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_nn2;
 /*DEF*/	DataCursor r_nn2;
-/*SET*/	l_nn2 = URHJOPPNNCTEHR;
-/*SET*/	r_nn2 = AHFAVZZRFRZZEM;
+/*SET*/	l_nn2 = ULPGKOZUYWMOBC;
+/*SET*/	r_nn2 = IYZVOBXUOJORAW;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ULPGKOZUYWMOBC;
 /*DEF*/	DataCursor DLBOFBJEJAZSRU;
 /*DEF*/	DataCursor LVQTAMMEMHQPYI;
-/*SET*/	ULPGKOZUYWMOBC = KUKAHMLIVZAPRO;
-/*INC*/	if (!INC(ULPGKOZUYWMOBC, arg_to)) goto label_IYZVOBXUOJORAW;
-//// ISBRACKET 
-	if (ULPGKOZUYWMOBC.container->type != struct_bracket) goto label_IYZVOBXUOJORAW;
-//// JMP_BRACKET 
-	DLBOFBJEJAZSRU = ULPGKOZUYWMOBC.container->value.bracket_data.chain->at_before_first();
-	LVQTAMMEMHQPYI   = ULPGKOZUYWMOBC.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor OWMNLQAEFZSIOT;
-/*SET*/	OWMNLQAEFZSIOT = DLBOFBJEJAZSRU;
-/*INC*/	if (!INC(OWMNLQAEFZSIOT, LVQTAMMEMHQPYI)) goto label_IYZVOBXUOJORAW;
-	if (OWMNLQAEFZSIOT.container->type != text || *(OWMNLQAEFZSIOT.container->value.text + OWMNLQAEFZSIOT.index) != '1') goto label_IYZVOBXUOJORAW;
+/*SET*/	DLBOFBJEJAZSRU = TLQDIUOEEYKIQZ;
+/*INC*/	if (!INC(DLBOFBJEJAZSRU, arg_to)) goto label_URHJOPPNNCTEHR;
+//// ISBRACKET 
+	if (DLBOFBJEJAZSRU.container->type != struct_bracket) goto label_URHJOPPNNCTEHR;
+//// JMP_BRACKET 
+	LVQTAMMEMHQPYI = DLBOFBJEJAZSRU.container->value.bracket_data.chain->at_before_first();
+	OWMNLQAEFZSIOT   = DLBOFBJEJAZSRU.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor PXJWOCJEUMCJDQ;
+/*SET*/	PXJWOCJEUMCJDQ = LVQTAMMEMHQPYI;
+/*INC*/	if (!INC(PXJWOCJEUMCJDQ, OWMNLQAEFZSIOT)) goto label_URHJOPPNNCTEHR;
+	if (PXJWOCJEUMCJDQ.container->type != text || *(PXJWOCJEUMCJDQ.container->value.text + PXJWOCJEUMCJDQ.index) != '1') goto label_URHJOPPNNCTEHR;
 //// [ empty ] 
-/*ISEMPTY*/	if (OWMNLQAEFZSIOT!=0 && LVQTAMMEMHQPYI != OWMNLQAEFZSIOT) goto label_IYZVOBXUOJORAW;
+/*ISEMPTY*/	if (PXJWOCJEUMCJDQ!=0 && OWMNLQAEFZSIOT != PXJWOCJEUMCJDQ) goto label_URHJOPPNNCTEHR;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e1e2;
 /*DEF*/	DataCursor r_e1e2;
-/*SET*/	l_e1e2 = ULPGKOZUYWMOBC;
-/*SET*/	r_e1e2 = ULPGKOZUYWMOBC;
-/*JMP*/	goto label_SZRRRUGIMNJBJA_firststep;
-label_SZRRRUGIMNJBJA: 
-/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_IYZVOBXUOJORAW;
-label_SZRRRUGIMNJBJA_firststep: 
+/*SET*/	l_e1e2 = DLBOFBJEJAZSRU;
+/*SET*/	r_e1e2 = DLBOFBJEJAZSRU;
+/*JMP*/	goto label_LQLRCEZJFXCHWD_firststep;
+label_LQLRCEZJFXCHWD: 
+/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_URHJOPPNNCTEHR;
+label_LQLRCEZJFXCHWD_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor LQLRCEZJFXCHWD;
 /*DEF*/	DataCursor DXONZMNJVLRJXR;
 /*DEF*/	DataCursor XWKDUOOERCTEEQ;
-/*SET*/	LQLRCEZJFXCHWD = r_e1e2;
-/*INC*/	if (!INC(LQLRCEZJFXCHWD, arg_to)) goto label_SZRRRUGIMNJBJA;
+/*DEF*/	DataCursor DVDLRWAMNKYXJS;
+/*SET*/	DXONZMNJVLRJXR = r_e1e2;
+/*INC*/	if (!INC(DXONZMNJVLRJXR, arg_to)) goto label_LQLRCEZJFXCHWD;
 //// ISBRACKET 
-	if (LQLRCEZJFXCHWD.container->type != struct_bracket) goto label_SZRRRUGIMNJBJA;
+	if (DXONZMNJVLRJXR.container->type != struct_bracket) goto label_LQLRCEZJFXCHWD;
 //// JMP_BRACKET 
-	DXONZMNJVLRJXR = LQLRCEZJFXCHWD.container->value.bracket_data.chain->at_before_first();
-	XWKDUOOERCTEEQ   = LQLRCEZJFXCHWD.container->value.bracket_data.chain->at_last();
+	XWKDUOOERCTEEQ = DXONZMNJVLRJXR.container->value.bracket_data.chain->at_before_first();
+	DVDLRWAMNKYXJS   = DXONZMNJVLRJXR.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = DXONZMNJVLRJXR;
-/*SET*/	r_n = XWKDUOOERCTEEQ;
+/*SET*/	l_n = XWKDUOOERCTEEQ;
+/*SET*/	r_n = DVDLRWAMNKYXJS;
 //// [ empty ] 
-/*ISEMPTY*/	if (LQLRCEZJFXCHWD!=0 && arg_to != LQLRCEZJFXCHWD) goto label_SZRRRUGIMNJBJA;
+/*ISEMPTY*/	if (DXONZMNJVLRJXR!=0 && arg_to != DXONZMNJVLRJXR) goto label_LQLRCEZJFXCHWD;
 
 // подготовка подстановки 
-DataChain* DVDLRWAMNKYXJS = new DataChain(); 
-DataContainer* DVDLRWAMNKYXJS_execbr = newRefExecBrackets(StepShag, DVDLRWAMNKYXJS, "StepShag");
-result->append(DVDLRWAMNKYXJS_execbr);
 DataChain* XPFDLZEHBGKVYP = new DataChain(); 
-DataContainer* XPFDLZEHBGKVYP_execbr = newRefExecBrackets(Lins, XPFDLZEHBGKVYP, "Lins");
-DVDLRWAMNKYXJS->append(XPFDLZEHBGKVYP_execbr);
+DataContainer* XPFDLZEHBGKVYP_execbr = newRefExecBrackets(StepShag, XPFDLZEHBGKVYP, "StepShag");
+result->append(XPFDLZEHBGKVYP_execbr);
 DataChain* XFSMQHIBNGJTGR = new DataChain(); 
-XPFDLZEHBGKVYP->append(newRefStructBrackets(XFSMQHIBNGJTGR)); 
-XFSMQHIBNGJTGR->append_copy(l_n, r_n); 
+DataContainer* XFSMQHIBNGJTGR_execbr = newRefExecBrackets(Lins, XFSMQHIBNGJTGR, "Lins");
+XPFDLZEHBGKVYP->append(XFSMQHIBNGJTGR_execbr);
 DataChain* KPFERAYXDZNPGK = new DataChain(); 
-DataContainer* KPFERAYXDZNPGK_execbr = newRefExecBrackets(AntiStrategy, KPFERAYXDZNPGK, "AntiStrategy");
-XPFDLZEHBGKVYP->append(KPFERAYXDZNPGK_execbr);
-KPFERAYXDZNPGK->append_copy(l_A, r_A); 
-context->pushExecuteCall(KPFERAYXDZNPGK_execbr);
-context->pushExecuteCall(XPFDLZEHBGKVYP_execbr);
+XFSMQHIBNGJTGR->append(newRefStructBrackets(KPFERAYXDZNPGK)); 
+KPFERAYXDZNPGK->append_copy(l_n, r_n); 
 DataChain* SDFPDJOBICQFQM = new DataChain(); 
-DVDLRWAMNKYXJS->append(newRefStructBrackets(SDFPDJOBICQFQM)); 
-SDFPDJOBICQFQM->append(newRefText("1")); 
-DVDLRWAMNKYXJS->append_copy(l_e1e2, r_e1e2); 
+DataContainer* SDFPDJOBICQFQM_execbr = newRefExecBrackets(AntiStrategy, SDFPDJOBICQFQM, "AntiStrategy");
+XFSMQHIBNGJTGR->append(SDFPDJOBICQFQM_execbr);
+SDFPDJOBICQFQM->append_copy(l_A, r_A); 
+context->pushExecuteCall(SDFPDJOBICQFQM_execbr);
+context->pushExecuteCall(XFSMQHIBNGJTGR_execbr);
 DataChain* FSTQHPFMCPMFDC = new DataChain(); 
-DVDLRWAMNKYXJS->append(newRefStructBrackets(FSTQHPFMCPMFDC)); 
-FSTQHPFMCPMFDC->append_copy(l_n, r_n); 
-context->pushExecuteCall(DVDLRWAMNKYXJS_execbr);
+XPFDLZEHBGKVYP->append(newRefStructBrackets(FSTQHPFMCPMFDC)); 
+FSTQHPFMCPMFDC->append(newRefText("1")); 
+XPFDLZEHBGKVYP->append_copy(l_e1e2, r_e1e2); 
+DataChain* DCCMODLQJQGWJO = new DataChain(); 
+XPFDLZEHBGKVYP->append(newRefStructBrackets(DCCMODLQJQGWJO)); 
+DCCMODLQJQGWJO->append_copy(l_n, r_n); 
+context->pushExecuteCall(XPFDLZEHBGKVYP_execbr);
 
 return result; 
 }
@@ -5728,167 +5733,167 @@ sentence_after_3:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DCCMODLQJQGWJO;
 /*DEF*/	DataCursor FNUQNPMHDVKZEB;
 /*DEF*/	DataCursor NLIGKJFSWCXWCU;
-/*SET*/	DCCMODLQJQGWJO = arg_from;
-/*INC*/	if (!INC(DCCMODLQJQGWJO, arg_to)) goto sentence_after_4;
+/*DEF*/	DataCursor JWHEPDBSGTFFKB;
+/*SET*/	FNUQNPMHDVKZEB = arg_from;
+/*INC*/	if (!INC(FNUQNPMHDVKZEB, arg_to)) goto sentence_after_4;
 //// ISBRACKET 
-	if (DCCMODLQJQGWJO.container->type != struct_bracket) goto sentence_after_4;
+	if (FNUQNPMHDVKZEB.container->type != struct_bracket) goto sentence_after_4;
 //// JMP_BRACKET 
-	FNUQNPMHDVKZEB = DCCMODLQJQGWJO.container->value.bracket_data.chain->at_before_first();
-	NLIGKJFSWCXWCU   = DCCMODLQJQGWJO.container->value.bracket_data.chain->at_last();
+	NLIGKJFSWCXWCU = FNUQNPMHDVKZEB.container->value.bracket_data.chain->at_before_first();
+	JWHEPDBSGTFFKB   = FNUQNPMHDVKZEB.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e21;
 /*DEF*/	DataCursor r_e21;
-/*SET*/	l_e21 = FNUQNPMHDVKZEB;
-/*SET*/	r_e21 = FNUQNPMHDVKZEB;
-/*JMP*/	goto label_JWHEPDBSGTFFKB_firststep;
-label_JWHEPDBSGTFFKB: 
-/*INC*/	if (!INC(r_e21, NLIGKJFSWCXWCU)) goto sentence_after_4;
-label_JWHEPDBSGTFFKB_firststep: 
+/*SET*/	l_e21 = NLIGKJFSWCXWCU;
+/*SET*/	r_e21 = NLIGKJFSWCXWCU;
+/*JMP*/	goto label_YKEUHNFZNGKPMV_firststep;
+label_YKEUHNFZNGKPMV: 
+/*INC*/	if (!INC(r_e21, JWHEPDBSGTFFKB)) goto sentence_after_4;
+label_YKEUHNFZNGKPMV_firststep: 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor YKEUHNFZNGKPMV;
+/*DEF*/	DataCursor QTHEJJRBZHRCGG;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = r_e21;
-/*SET*/	YKEUHNFZNGKPMV = r_e21;
-/*INC*/	if (!INC(YKEUHNFZNGKPMV, NLIGKJFSWCXWCU)) goto label_JWHEPDBSGTFFKB;
-	if (! isSymbolType(YKEUHNFZNGKPMV.container->type)) goto label_JWHEPDBSGTFFKB;
-/*SET*/	r_A = YKEUHNFZNGKPMV;
+/*SET*/	QTHEJJRBZHRCGG = r_e21;
+/*INC*/	if (!INC(QTHEJJRBZHRCGG, JWHEPDBSGTFFKB)) goto label_YKEUHNFZNGKPMV;
+	if (! isSymbolType(QTHEJJRBZHRCGG.container->type)) goto label_YKEUHNFZNGKPMV;
+/*SET*/	r_A = QTHEJJRBZHRCGG;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e22;
 /*DEF*/	DataCursor r_e22;
 /*SET*/	l_e22 = r_A;
 /*SET*/	r_e22 = r_A;
-/*JMP*/	goto label_QTHEJJRBZHRCGG_firststep;
-label_QTHEJJRBZHRCGG: 
-/*INC*/	if (!INC(r_e22, NLIGKJFSWCXWCU)) goto label_JWHEPDBSGTFFKB;
-label_QTHEJJRBZHRCGG_firststep: 
+/*JMP*/	goto label_OEWVRXBWYSZBLQ_firststep;
+label_OEWVRXBWYSZBLQ: 
+/*INC*/	if (!INC(r_e22, JWHEPDBSGTFFKB)) goto label_YKEUHNFZNGKPMV;
+label_OEWVRXBWYSZBLQ_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor OEWVRXBWYSZBLQ;
-/*SET*/	OEWVRXBWYSZBLQ = r_e22;
- if (!SLIDE(OEWVRXBWYSZBLQ, NLIGKJFSWCXWCU, l_A, r_A)) goto label_QTHEJJRBZHRCGG;
+/*DEF*/	DataCursor GPWJPLTJFRQCOC;
+/*SET*/	GPWJPLTJFRQCOC = r_e22;
+ if (!SLIDE(GPWJPLTJFRQCOC, JWHEPDBSGTFFKB, l_A, r_A)) goto label_OEWVRXBWYSZBLQ;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e23;
 /*DEF*/	DataCursor r_e23;
-/*SET*/	l_e23 = OEWVRXBWYSZBLQ;
-/*SET*/	r_e23 = NLIGKJFSWCXWCU;
+/*SET*/	l_e23 = GPWJPLTJFRQCOC;
+/*SET*/	r_e23 = JWHEPDBSGTFFKB;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor GPWJPLTJFRQCOC;
 /*DEF*/	DataCursor QXYLUTTLWHTZAS;
 /*DEF*/	DataCursor NQEOYJBXKIQMAJ;
-/*SET*/	GPWJPLTJFRQCOC = DCCMODLQJQGWJO;
-/*INC*/	if (!INC(GPWJPLTJFRQCOC, arg_to)) goto label_QTHEJJRBZHRCGG;
+/*DEF*/	DataCursor AGFHZZFBDVFUYU;
+/*SET*/	QXYLUTTLWHTZAS = FNUQNPMHDVKZEB;
+/*INC*/	if (!INC(QXYLUTTLWHTZAS, arg_to)) goto label_OEWVRXBWYSZBLQ;
 //// ISBRACKET 
-	if (GPWJPLTJFRQCOC.container->type != struct_bracket) goto label_QTHEJJRBZHRCGG;
+	if (QXYLUTTLWHTZAS.container->type != struct_bracket) goto label_OEWVRXBWYSZBLQ;
 //// JMP_BRACKET 
-	QXYLUTTLWHTZAS = GPWJPLTJFRQCOC.container->value.bracket_data.chain->at_before_first();
-	NQEOYJBXKIQMAJ   = GPWJPLTJFRQCOC.container->value.bracket_data.chain->at_last();
+	NQEOYJBXKIQMAJ = QXYLUTTLWHTZAS.container->value.bracket_data.chain->at_before_first();
+	AGFHZZFBDVFUYU   = QXYLUTTLWHTZAS.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e1;
 /*DEF*/	DataCursor r_e1;
-/*SET*/	l_e1 = QXYLUTTLWHTZAS;
-/*SET*/	r_e1 = NQEOYJBXKIQMAJ;
+/*SET*/	l_e1 = NQEOYJBXKIQMAJ;
+/*SET*/	r_e1 = AGFHZZFBDVFUYU;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor AGFHZZFBDVFUYU;
 /*DEF*/	DataCursor RLVURNWRAMCADU;
 /*DEF*/	DataCursor NWUGTUESHXMGZV;
-/*SET*/	AGFHZZFBDVFUYU = GPWJPLTJFRQCOC;
-/*INC*/	if (!INC(AGFHZZFBDVFUYU, arg_to)) goto label_QTHEJJRBZHRCGG;
+/*DEF*/	DataCursor SRMCIFBVRASUCU;
+/*SET*/	RLVURNWRAMCADU = QXYLUTTLWHTZAS;
+/*INC*/	if (!INC(RLVURNWRAMCADU, arg_to)) goto label_OEWVRXBWYSZBLQ;
 //// ISBRACKET 
-	if (AGFHZZFBDVFUYU.container->type != struct_bracket) goto label_QTHEJJRBZHRCGG;
+	if (RLVURNWRAMCADU.container->type != struct_bracket) goto label_OEWVRXBWYSZBLQ;
 //// JMP_BRACKET 
-	RLVURNWRAMCADU = AGFHZZFBDVFUYU.container->value.bracket_data.chain->at_before_first();
-	NWUGTUESHXMGZV   = AGFHZZFBDVFUYU.container->value.bracket_data.chain->at_last();
+	NWUGTUESHXMGZV = RLVURNWRAMCADU.container->value.bracket_data.chain->at_before_first();
+	SRMCIFBVRASUCU   = RLVURNWRAMCADU.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_nn1;
 /*DEF*/	DataCursor r_nn1;
-/*SET*/	l_nn1 = RLVURNWRAMCADU;
-/*SET*/	r_nn1 = RLVURNWRAMCADU;
-/*JMP*/	goto label_SRMCIFBVRASUCU_firststep;
-label_SRMCIFBVRASUCU: 
-/*INC*/	if (!INC(r_nn1, NWUGTUESHXMGZV)) goto label_QTHEJJRBZHRCGG;
-label_SRMCIFBVRASUCU_firststep: 
+/*SET*/	l_nn1 = NWUGTUESHXMGZV;
+/*SET*/	r_nn1 = NWUGTUESHXMGZV;
+/*JMP*/	goto label_VIVOWLZIVLIICZ_firststep;
+label_VIVOWLZIVLIICZ: 
+/*INC*/	if (!INC(r_nn1, SRMCIFBVRASUCU)) goto label_OEWVRXBWYSZBLQ;
+label_VIVOWLZIVLIICZ_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor VIVOWLZIVLIICZ;
-/*SET*/	VIVOWLZIVLIICZ = r_nn1;
- if (!SLIDE(VIVOWLZIVLIICZ, NWUGTUESHXMGZV, l_A, r_A)) goto label_SRMCIFBVRASUCU;
+/*DEF*/	DataCursor PUSSWAFKENWEMO;
+/*SET*/	PUSSWAFKENWEMO = r_nn1;
+ if (!SLIDE(PUSSWAFKENWEMO, SRMCIFBVRASUCU, l_A, r_A)) goto label_VIVOWLZIVLIICZ;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_nn2;
 /*DEF*/	DataCursor r_nn2;
-/*SET*/	l_nn2 = VIVOWLZIVLIICZ;
-/*SET*/	r_nn2 = NWUGTUESHXMGZV;
+/*SET*/	l_nn2 = PUSSWAFKENWEMO;
+/*SET*/	r_nn2 = SRMCIFBVRASUCU;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor PUSSWAFKENWEMO;
 /*DEF*/	DataCursor CIMLMSLEBFIIAR;
 /*DEF*/	DataCursor GFMUABIZMYQPTH;
-/*SET*/	PUSSWAFKENWEMO = AGFHZZFBDVFUYU;
-/*INC*/	if (!INC(PUSSWAFKENWEMO, arg_to)) goto label_SRMCIFBVRASUCU;
-//// ISBRACKET 
-	if (PUSSWAFKENWEMO.container->type != struct_bracket) goto label_SRMCIFBVRASUCU;
-//// JMP_BRACKET 
-	CIMLMSLEBFIIAR = PUSSWAFKENWEMO.container->value.bracket_data.chain->at_before_first();
-	GFMUABIZMYQPTH   = PUSSWAFKENWEMO.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor DMZEIEGQCJTSJH;
-/*SET*/	DMZEIEGQCJTSJH = CIMLMSLEBFIIAR;
-/*INC*/	if (!INC(DMZEIEGQCJTSJH, GFMUABIZMYQPTH)) goto label_SRMCIFBVRASUCU;
-	if (DMZEIEGQCJTSJH.container->type != text || *(DMZEIEGQCJTSJH.container->value.text + DMZEIEGQCJTSJH.index) != '2') goto label_SRMCIFBVRASUCU;
+/*SET*/	CIMLMSLEBFIIAR = RLVURNWRAMCADU;
+/*INC*/	if (!INC(CIMLMSLEBFIIAR, arg_to)) goto label_VIVOWLZIVLIICZ;
+//// ISBRACKET 
+	if (CIMLMSLEBFIIAR.container->type != struct_bracket) goto label_VIVOWLZIVLIICZ;
+//// JMP_BRACKET 
+	GFMUABIZMYQPTH = CIMLMSLEBFIIAR.container->value.bracket_data.chain->at_before_first();
+	DMZEIEGQCJTSJH   = CIMLMSLEBFIIAR.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor QKMVWZEDALKJDV;
+/*SET*/	QKMVWZEDALKJDV = GFMUABIZMYQPTH;
+/*INC*/	if (!INC(QKMVWZEDALKJDV, DMZEIEGQCJTSJH)) goto label_VIVOWLZIVLIICZ;
+	if (QKMVWZEDALKJDV.container->type != text || *(QKMVWZEDALKJDV.container->value.text + QKMVWZEDALKJDV.index) != '2') goto label_VIVOWLZIVLIICZ;
 //// [ empty ] 
-/*ISEMPTY*/	if (DMZEIEGQCJTSJH!=0 && GFMUABIZMYQPTH != DMZEIEGQCJTSJH) goto label_SRMCIFBVRASUCU;
+/*ISEMPTY*/	if (QKMVWZEDALKJDV!=0 && DMZEIEGQCJTSJH != QKMVWZEDALKJDV) goto label_VIVOWLZIVLIICZ;
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_e1e2;
 /*DEF*/	DataCursor r_e1e2;
-/*SET*/	l_e1e2 = PUSSWAFKENWEMO;
-/*SET*/	r_e1e2 = PUSSWAFKENWEMO;
-/*JMP*/	goto label_MZGRXOKCHGOALG_firststep;
-label_MZGRXOKCHGOALG: 
-/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_SRMCIFBVRASUCU;
-label_MZGRXOKCHGOALG_firststep: 
+/*SET*/	l_e1e2 = CIMLMSLEBFIIAR;
+/*SET*/	r_e1e2 = CIMLMSLEBFIIAR;
+/*JMP*/	goto label_UQCNQYROKQMJSZ_firststep;
+label_UQCNQYROKQMJSZ: 
+/*INC*/	if (!INC(r_e1e2, arg_to)) goto label_VIVOWLZIVLIICZ;
+label_UQCNQYROKQMJSZ_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor UQCNQYROKQMJSZ;
 /*DEF*/	DataCursor JWSDGCOFGLCQGD;
 /*DEF*/	DataCursor NDBYPQQIDCLZXS;
-/*SET*/	UQCNQYROKQMJSZ = r_e1e2;
-/*INC*/	if (!INC(UQCNQYROKQMJSZ, arg_to)) goto label_MZGRXOKCHGOALG;
+/*DEF*/	DataCursor QBJWIPLOXDERKL;
+/*SET*/	JWSDGCOFGLCQGD = r_e1e2;
+/*INC*/	if (!INC(JWSDGCOFGLCQGD, arg_to)) goto label_UQCNQYROKQMJSZ;
 //// ISBRACKET 
-	if (UQCNQYROKQMJSZ.container->type != struct_bracket) goto label_MZGRXOKCHGOALG;
+	if (JWSDGCOFGLCQGD.container->type != struct_bracket) goto label_UQCNQYROKQMJSZ;
 //// JMP_BRACKET 
-	JWSDGCOFGLCQGD = UQCNQYROKQMJSZ.container->value.bracket_data.chain->at_before_first();
-	NDBYPQQIDCLZXS   = UQCNQYROKQMJSZ.container->value.bracket_data.chain->at_last();
+	NDBYPQQIDCLZXS = JWSDGCOFGLCQGD.container->value.bracket_data.chain->at_before_first();
+	QBJWIPLOXDERKL   = JWSDGCOFGLCQGD.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n;
 /*DEF*/	DataCursor r_n;
-/*SET*/	l_n = JWSDGCOFGLCQGD;
-/*SET*/	r_n = NDBYPQQIDCLZXS;
+/*SET*/	l_n = NDBYPQQIDCLZXS;
+/*SET*/	r_n = QBJWIPLOXDERKL;
 //// [ empty ] 
-/*ISEMPTY*/	if (UQCNQYROKQMJSZ!=0 && arg_to != UQCNQYROKQMJSZ) goto label_MZGRXOKCHGOALG;
+/*ISEMPTY*/	if (JWSDGCOFGLCQGD!=0 && arg_to != JWSDGCOFGLCQGD) goto label_UQCNQYROKQMJSZ;
 
 // подготовка подстановки 
-DataChain* QBJWIPLOXDERKL = new DataChain(); 
-DataContainer* QBJWIPLOXDERKL_execbr = newRefExecBrackets(StepShag, QBJWIPLOXDERKL, "StepShag");
-result->append(QBJWIPLOXDERKL_execbr);
 DataChain* GBXGOGNWYUNRNU = new DataChain(); 
-DataContainer* GBXGOGNWYUNRNU_execbr = newRefExecBrackets(Lins, GBXGOGNWYUNRNU, "Lins");
-QBJWIPLOXDERKL->append(GBXGOGNWYUNRNU_execbr);
+DataContainer* GBXGOGNWYUNRNU_execbr = newRefExecBrackets(StepShag, GBXGOGNWYUNRNU, "StepShag");
+result->append(GBXGOGNWYUNRNU_execbr);
 DataChain* MFOLBALEZROKNK = new DataChain(); 
-GBXGOGNWYUNRNU->append(newRefStructBrackets(MFOLBALEZROKNK)); 
-MFOLBALEZROKNK->append_copy(l_n, r_n); 
+DataContainer* MFOLBALEZROKNK_execbr = newRefExecBrackets(Lins, MFOLBALEZROKNK, "Lins");
+GBXGOGNWYUNRNU->append(MFOLBALEZROKNK_execbr);
 DataChain* JNWRWEBGELZBGI = new DataChain(); 
-DataContainer* JNWRWEBGELZBGI_execbr = newRefExecBrackets(AntiStrategy, JNWRWEBGELZBGI, "AntiStrategy");
-GBXGOGNWYUNRNU->append(JNWRWEBGELZBGI_execbr);
-JNWRWEBGELZBGI->append_copy(l_A, r_A); 
-context->pushExecuteCall(JNWRWEBGELZBGI_execbr);
-context->pushExecuteCall(GBXGOGNWYUNRNU_execbr);
+MFOLBALEZROKNK->append(newRefStructBrackets(JNWRWEBGELZBGI)); 
+JNWRWEBGELZBGI->append_copy(l_n, r_n); 
 DataChain* QDSCWTSBXXZKGH = new DataChain(); 
-QBJWIPLOXDERKL->append(newRefStructBrackets(QDSCWTSBXXZKGH)); 
-QDSCWTSBXXZKGH->append(newRefText("2")); 
-QBJWIPLOXDERKL->append_copy(l_e1e2, r_e1e2); 
+DataContainer* QDSCWTSBXXZKGH_execbr = newRefExecBrackets(AntiStrategy, QDSCWTSBXXZKGH, "AntiStrategy");
+MFOLBALEZROKNK->append(QDSCWTSBXXZKGH_execbr);
+QDSCWTSBXXZKGH->append_copy(l_A, r_A); 
+context->pushExecuteCall(QDSCWTSBXXZKGH_execbr);
+context->pushExecuteCall(MFOLBALEZROKNK_execbr);
 DataChain* SKGEXLEVGXNYDQ = new DataChain(); 
-QBJWIPLOXDERKL->append(newRefStructBrackets(SKGEXLEVGXNYDQ)); 
-SKGEXLEVGXNYDQ->append_copy(l_n, r_n); 
-context->pushExecuteCall(QBJWIPLOXDERKL_execbr);
+GBXGOGNWYUNRNU->append(newRefStructBrackets(SKGEXLEVGXNYDQ)); 
+SKGEXLEVGXNYDQ->append(newRefText("2")); 
+GBXGOGNWYUNRNU->append_copy(l_e1e2, r_e1e2); 
+DataChain* VTYJSLLQKEHTLI = new DataChain(); 
+GBXGOGNWYUNRNU->append(newRefStructBrackets(VTYJSLLQKEHTLI)); 
+VTYJSLLQKEHTLI->append_copy(l_n, r_n); 
+context->pushExecuteCall(GBXGOGNWYUNRNU_execbr);
 
 return result; 
 }
@@ -5897,65 +5902,65 @@ sentence_after_4:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor VTYJSLLQKEHTLI;
 /*DEF*/	DataCursor AUYICCQDMFIEJR;
 /*DEF*/	DataCursor QNRNAZCRFHPBJM;
-/*SET*/	VTYJSLLQKEHTLI = arg_from;
-/*INC*/	if (!INC(VTYJSLLQKEHTLI, arg_to)) goto sentence_after_5;
+/*DEF*/	DataCursor RFBYQMHDABALHT;
+/*SET*/	AUYICCQDMFIEJR = arg_from;
+/*INC*/	if (!INC(AUYICCQDMFIEJR, arg_to)) goto sentence_after_5;
 //// ISBRACKET 
-	if (VTYJSLLQKEHTLI.container->type != struct_bracket) goto sentence_after_5;
+	if (AUYICCQDMFIEJR.container->type != struct_bracket) goto sentence_after_5;
 //// JMP_BRACKET 
-	AUYICCQDMFIEJR = VTYJSLLQKEHTLI.container->value.bracket_data.chain->at_before_first();
-	QNRNAZCRFHPBJM   = VTYJSLLQKEHTLI.container->value.bracket_data.chain->at_last();
+	QNRNAZCRFHPBJM = AUYICCQDMFIEJR.container->value.bracket_data.chain->at_before_first();
+	RFBYQMHDABALHT   = AUYICCQDMFIEJR.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e1;
 /*DEF*/	DataCursor r_e1;
-/*SET*/	l_e1 = AUYICCQDMFIEJR;
-/*SET*/	r_e1 = QNRNAZCRFHPBJM;
+/*SET*/	l_e1 = QNRNAZCRFHPBJM;
+/*SET*/	r_e1 = RFBYQMHDABALHT;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor RFBYQMHDABALHT;
 /*DEF*/	DataCursor IGPQMWFONTEPRC;
 /*DEF*/	DataCursor HDDWEQDOHSPJDG;
-/*SET*/	RFBYQMHDABALHT = VTYJSLLQKEHTLI;
-/*INC*/	if (!INC(RFBYQMHDABALHT, arg_to)) goto sentence_after_5;
+/*DEF*/	DataCursor VLZMJBMWEOILEJ;
+/*SET*/	IGPQMWFONTEPRC = AUYICCQDMFIEJR;
+/*INC*/	if (!INC(IGPQMWFONTEPRC, arg_to)) goto sentence_after_5;
 //// ISBRACKET 
-	if (RFBYQMHDABALHT.container->type != struct_bracket) goto sentence_after_5;
+	if (IGPQMWFONTEPRC.container->type != struct_bracket) goto sentence_after_5;
 //// JMP_BRACKET 
-	IGPQMWFONTEPRC = RFBYQMHDABALHT.container->value.bracket_data.chain->at_before_first();
-	HDDWEQDOHSPJDG   = RFBYQMHDABALHT.container->value.bracket_data.chain->at_last();
+	HDDWEQDOHSPJDG = IGPQMWFONTEPRC.container->value.bracket_data.chain->at_before_first();
+	VLZMJBMWEOILEJ   = IGPQMWFONTEPRC.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_e2;
 /*DEF*/	DataCursor r_e2;
-/*SET*/	l_e2 = IGPQMWFONTEPRC;
-/*SET*/	r_e2 = HDDWEQDOHSPJDG;
+/*SET*/	l_e2 = HDDWEQDOHSPJDG;
+/*SET*/	r_e2 = VLZMJBMWEOILEJ;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor VLZMJBMWEOILEJ;
 /*DEF*/	DataCursor RPKSBXEESTGPSM;
 /*DEF*/	DataCursor NMALPUSWIBUBAQ;
-/*SET*/	VLZMJBMWEOILEJ = RFBYQMHDABALHT;
-/*INC*/	if (!INC(VLZMJBMWEOILEJ, arg_to)) goto sentence_after_5;
+/*DEF*/	DataCursor VOTCAYTBTUZDTW;
+/*SET*/	RPKSBXEESTGPSM = IGPQMWFONTEPRC;
+/*INC*/	if (!INC(RPKSBXEESTGPSM, arg_to)) goto sentence_after_5;
 //// ISBRACKET 
-	if (VLZMJBMWEOILEJ.container->type != struct_bracket) goto sentence_after_5;
+	if (RPKSBXEESTGPSM.container->type != struct_bracket) goto sentence_after_5;
 //// JMP_BRACKET 
-	RPKSBXEESTGPSM = VLZMJBMWEOILEJ.container->value.bracket_data.chain->at_before_first();
-	NMALPUSWIBUBAQ   = VLZMJBMWEOILEJ.container->value.bracket_data.chain->at_last();
+	NMALPUSWIBUBAQ = RPKSBXEESTGPSM.container->value.bracket_data.chain->at_before_first();
+	VOTCAYTBTUZDTW   = RPKSBXEESTGPSM.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_nn;
 /*DEF*/	DataCursor r_nn;
-/*SET*/	l_nn = RPKSBXEESTGPSM;
-/*SET*/	r_nn = NMALPUSWIBUBAQ;
+/*SET*/	l_nn = NMALPUSWIBUBAQ;
+/*SET*/	r_nn = VOTCAYTBTUZDTW;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_hn;
 /*DEF*/	DataCursor r_hn;
-/*SET*/	l_hn = VLZMJBMWEOILEJ;
+/*SET*/	l_hn = RPKSBXEESTGPSM;
 /*SET*/	r_hn = arg_to;
 
 // подготовка подстановки 
-DataChain* VOTCAYTBTUZDTW = new DataChain(); 
-DataContainer* VOTCAYTBTUZDTW_execbr = newRefExecBrackets(PolnAnalizEny, VOTCAYTBTUZDTW, "PolnAnalizEny");
-result->append(VOTCAYTBTUZDTW_execbr);
-VOTCAYTBTUZDTW->append_copy(l_hn, r_hn); 
-context->pushExecuteCall(VOTCAYTBTUZDTW_execbr);
+DataChain* SYSJRVRWGIXZHX = new DataChain(); 
+DataContainer* SYSJRVRWGIXZHX_execbr = newRefExecBrackets(PolnAnalizEny, SYSJRVRWGIXZHX, "PolnAnalizEny");
+result->append(SYSJRVRWGIXZHX_execbr);
+SYSJRVRWGIXZHX->append_copy(l_hn, r_hn); 
+context->pushExecuteCall(SYSJRVRWGIXZHX_execbr);
 
 return result; 
 }
@@ -5974,115 +5979,115 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor SYSJRVRWGIXZHX;
+/*DEF*/	DataCursor WHIUHVQTKJPQZY;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = arg_from;
-/*SET*/	SYSJRVRWGIXZHX = arg_from;
-/*INC*/	if (!INC(SYSJRVRWGIXZHX, arg_to)) goto sentence_after_1;
-	if (! isSymbolType(SYSJRVRWGIXZHX.container->type)) goto sentence_after_1;
-/*SET*/	r_A = SYSJRVRWGIXZHX;
+/*SET*/	WHIUHVQTKJPQZY = arg_from;
+/*INC*/	if (!INC(WHIUHVQTKJPQZY, arg_to)) goto sentence_after_1;
+	if (! isSymbolType(WHIUHVQTKJPQZY.container->type)) goto sentence_after_1;
+/*SET*/	r_A = WHIUHVQTKJPQZY;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor WHIUHVQTKJPQZY;
 /*DEF*/	DataCursor YHHTXMJFMQLFWZ;
 /*DEF*/	DataCursor JFQVBENLERLKYA;
-/*SET*/	WHIUHVQTKJPQZY = r_A;
-/*INC*/	if (!INC(WHIUHVQTKJPQZY, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (WHIUHVQTKJPQZY.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	YHHTXMJFMQLFWZ = WHIUHVQTKJPQZY.container->value.bracket_data.chain->at_before_first();
-	JFQVBENLERLKYA   = WHIUHVQTKJPQZY.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor WOLVBTYZGEWXCC;
-/*SET*/	WOLVBTYZGEWXCC = YHHTXMJFMQLFWZ;
-/*INC*/	if (!INC(WOLVBTYZGEWXCC, JFQVBENLERLKYA)) goto sentence_after_1;
-	if (WOLVBTYZGEWXCC.container->type != text || *(WOLVBTYZGEWXCC.container->value.text + WOLVBTYZGEWXCC.index) != '1') goto sentence_after_1;
+/*SET*/	YHHTXMJFMQLFWZ = r_A;
+/*INC*/	if (!INC(YHHTXMJFMQLFWZ, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (YHHTXMJFMQLFWZ.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	JFQVBENLERLKYA = YHHTXMJFMQLFWZ.container->value.bracket_data.chain->at_before_first();
+	WOLVBTYZGEWXCC   = YHHTXMJFMQLFWZ.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor HSWMWGHBBANCUE;
+/*SET*/	HSWMWGHBBANCUE = JFQVBENLERLKYA;
+/*INC*/	if (!INC(HSWMWGHBBANCUE, WOLVBTYZGEWXCC)) goto sentence_after_1;
+	if (HSWMWGHBBANCUE.container->type != text || *(HSWMWGHBBANCUE.container->value.text + HSWMWGHBBANCUE.index) != '1') goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (WOLVBTYZGEWXCC!=0 && JFQVBENLERLKYA != WOLVBTYZGEWXCC) goto sentence_after_1;
+/*ISEMPTY*/	if (HSWMWGHBBANCUE!=0 && WOLVBTYZGEWXCC != HSWMWGHBBANCUE) goto sentence_after_1;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor JVMWGSFFVOWDLR;
 /*DEF*/	DataCursor YINXFIWFHTLDYT;
 /*DEF*/	DataCursor YGQKXRWDVRKCOY;
-/*SET*/	JVMWGSFFVOWDLR = WHIUHVQTKJPQZY;
-/*INC*/	if (!INC(JVMWGSFFVOWDLR, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor TXKCWEAGYDMHRP;
+/*SET*/	YINXFIWFHTLDYT = YHHTXMJFMQLFWZ;
+/*INC*/	if (!INC(YINXFIWFHTLDYT, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (JVMWGSFFVOWDLR.container->type != struct_bracket) goto sentence_after_1;
+	if (YINXFIWFHTLDYT.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	YINXFIWFHTLDYT = JVMWGSFFVOWDLR.container->value.bracket_data.chain->at_before_first();
-	YGQKXRWDVRKCOY   = JVMWGSFFVOWDLR.container->value.bracket_data.chain->at_last();
+	YGQKXRWDVRKCOY = YINXFIWFHTLDYT.container->value.bracket_data.chain->at_before_first();
+	TXKCWEAGYDMHRP   = YINXFIWFHTLDYT.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = YINXFIWFHTLDYT;
-/*SET*/	r_1 = YGQKXRWDVRKCOY;
+/*SET*/	l_1 = YGQKXRWDVRKCOY;
+/*SET*/	r_1 = TXKCWEAGYDMHRP;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor TXKCWEAGYDMHRP;
 /*DEF*/	DataCursor YQUIMWRBVEZZVV;
 /*DEF*/	DataCursor JPGIHCYFQZVADT;
-/*SET*/	TXKCWEAGYDMHRP = JVMWGSFFVOWDLR;
-/*INC*/	if (!INC(TXKCWEAGYDMHRP, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor DFYEMFQVYNBDLR;
+/*SET*/	YQUIMWRBVEZZVV = YINXFIWFHTLDYT;
+/*INC*/	if (!INC(YQUIMWRBVEZZVV, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (TXKCWEAGYDMHRP.container->type != struct_bracket) goto sentence_after_1;
+	if (YQUIMWRBVEZZVV.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	YQUIMWRBVEZZVV = TXKCWEAGYDMHRP.container->value.bracket_data.chain->at_before_first();
-	JPGIHCYFQZVADT   = TXKCWEAGYDMHRP.container->value.bracket_data.chain->at_last();
+	JPGIHCYFQZVADT = YQUIMWRBVEZZVV.container->value.bracket_data.chain->at_before_first();
+	DFYEMFQVYNBDLR   = YQUIMWRBVEZZVV.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = YQUIMWRBVEZZVV;
-/*SET*/	r_2 = JPGIHCYFQZVADT;
+/*SET*/	l_2 = JPGIHCYFQZVADT;
+/*SET*/	r_2 = DFYEMFQVYNBDLR;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor DFYEMFQVYNBDLR;
 /*DEF*/	DataCursor QHVAPGYSGGXDOR;
 /*DEF*/	DataCursor KVMVQEXPJFGVPI;
-/*SET*/	DFYEMFQVYNBDLR = TXKCWEAGYDMHRP;
-/*INC*/	if (!INC(DFYEMFQVYNBDLR, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor FYIDTTGGSDYJBV;
+/*SET*/	QHVAPGYSGGXDOR = YQUIMWRBVEZZVV;
+/*INC*/	if (!INC(QHVAPGYSGGXDOR, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (DFYEMFQVYNBDLR.container->type != struct_bracket) goto sentence_after_1;
+	if (QHVAPGYSGGXDOR.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	QHVAPGYSGGXDOR = DFYEMFQVYNBDLR.container->value.bracket_data.chain->at_before_first();
-	KVMVQEXPJFGVPI   = DFYEMFQVYNBDLR.container->value.bracket_data.chain->at_last();
+	KVMVQEXPJFGVPI = QHVAPGYSGGXDOR.container->value.bracket_data.chain->at_before_first();
+	FYIDTTGGSDYJBV   = QHVAPGYSGGXDOR.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_n1;
 /*DEF*/	DataCursor r_n1;
-/*SET*/	l_n1 = QHVAPGYSGGXDOR;
-/*SET*/	r_n1 = QHVAPGYSGGXDOR;
-/*JMP*/	goto label_FYIDTTGGSDYJBV_firststep;
-label_FYIDTTGGSDYJBV: 
-/*INC*/	if (!INC(r_n1, KVMVQEXPJFGVPI)) goto sentence_after_1;
-label_FYIDTTGGSDYJBV_firststep: 
+/*SET*/	l_n1 = KVMVQEXPJFGVPI;
+/*SET*/	r_n1 = KVMVQEXPJFGVPI;
+/*JMP*/	goto label_OLBMCGBRRVKUPT_firststep;
+label_OLBMCGBRRVKUPT: 
+/*INC*/	if (!INC(r_n1, FYIDTTGGSDYJBV)) goto sentence_after_1;
+label_OLBMCGBRRVKUPT_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor OLBMCGBRRVKUPT;
-/*SET*/	OLBMCGBRRVKUPT = r_n1;
- if (!SLIDE(OLBMCGBRRVKUPT, KVMVQEXPJFGVPI, l_A, r_A)) goto label_FYIDTTGGSDYJBV;
+/*DEF*/	DataCursor ANLZOSCTFNYSZK;
+/*SET*/	ANLZOSCTFNYSZK = r_n1;
+ if (!SLIDE(ANLZOSCTFNYSZK, FYIDTTGGSDYJBV, l_A, r_A)) goto label_OLBMCGBRRVKUPT;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n2;
 /*DEF*/	DataCursor r_n2;
-/*SET*/	l_n2 = OLBMCGBRRVKUPT;
-/*SET*/	r_n2 = KVMVQEXPJFGVPI;
+/*SET*/	l_n2 = ANLZOSCTFNYSZK;
+/*SET*/	r_n2 = FYIDTTGGSDYJBV;
 //// [ empty ] 
-/*ISEMPTY*/	if (DFYEMFQVYNBDLR!=0 && arg_to != DFYEMFQVYNBDLR) goto label_FYIDTTGGSDYJBV;
+/*ISEMPTY*/	if (QHVAPGYSGGXDOR!=0 && arg_to != QHVAPGYSGGXDOR) goto label_OLBMCGBRRVKUPT;
 
 // подготовка подстановки 
-DataChain* ANLZOSCTFNYSZK = new DataChain(); 
-DataContainer* ANLZOSCTFNYSZK_execbr = newRefExecBrackets(PolnAnaliz, ANLZOSCTFNYSZK, "PolnAnaliz");
-result->append(ANLZOSCTFNYSZK_execbr);
 DataChain* LRNZRKUXYJPWWM = new DataChain(); 
-ANLZOSCTFNYSZK->append(newRefStructBrackets(LRNZRKUXYJPWWM)); 
-LRNZRKUXYJPWWM->append(newRefText("2")); 
+DataContainer* LRNZRKUXYJPWWM_execbr = newRefExecBrackets(PolnAnaliz, LRNZRKUXYJPWWM, "PolnAnaliz");
+result->append(LRNZRKUXYJPWWM_execbr);
 DataChain* INHPLXGXWULGXH = new DataChain(); 
-ANLZOSCTFNYSZK->append(newRefStructBrackets(INHPLXGXWULGXH)); 
-INHPLXGXWULGXH->append_copy(l_1, r_1); 
-INHPLXGXWULGXH->append_copy(l_A, r_A); 
+LRNZRKUXYJPWWM->append(newRefStructBrackets(INHPLXGXWULGXH)); 
+INHPLXGXWULGXH->append(newRefText("2")); 
 DataChain* LMSBZRQUAJUAXP = new DataChain(); 
-ANLZOSCTFNYSZK->append(newRefStructBrackets(LMSBZRQUAJUAXP)); 
-LMSBZRQUAJUAXP->append_copy(l_2, r_2); 
+LRNZRKUXYJPWWM->append(newRefStructBrackets(LMSBZRQUAJUAXP)); 
+LMSBZRQUAJUAXP->append_copy(l_1, r_1); 
+LMSBZRQUAJUAXP->append_copy(l_A, r_A); 
 DataChain* DPSMWIWXXDVIPO = new DataChain(); 
-ANLZOSCTFNYSZK->append(newRefStructBrackets(DPSMWIWXXDVIPO)); 
-DPSMWIWXXDVIPO->append_copy(l_n1, r_n1); 
-DPSMWIWXXDVIPO->append_copy(l_n2, r_n2); 
-context->pushExecuteCall(ANLZOSCTFNYSZK_execbr);
+LRNZRKUXYJPWWM->append(newRefStructBrackets(DPSMWIWXXDVIPO)); 
+DPSMWIWXXDVIPO->append_copy(l_2, r_2); 
+DataChain* UXTLKQWWOWRQEA = new DataChain(); 
+LRNZRKUXYJPWWM->append(newRefStructBrackets(UXTLKQWWOWRQEA)); 
+UXTLKQWWOWRQEA->append_copy(l_n1, r_n1); 
+UXTLKQWWOWRQEA->append_copy(l_n2, r_n2); 
+context->pushExecuteCall(LRNZRKUXYJPWWM_execbr);
 
 return result; 
 }
@@ -6091,115 +6096,115 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ s.1 <any> ] 
-/*DEF*/	DataCursor UXTLKQWWOWRQEA;
+/*DEF*/	DataCursor TQBMMILPOXBIPW;
 /*DEF*/	DataCursor l_A;
 /*DEF*/	DataCursor r_A;
 /*SET*/	l_A = arg_from;
-/*SET*/	UXTLKQWWOWRQEA = arg_from;
-/*INC*/	if (!INC(UXTLKQWWOWRQEA, arg_to)) goto sentence_after_2;
-	if (! isSymbolType(UXTLKQWWOWRQEA.container->type)) goto sentence_after_2;
-/*SET*/	r_A = UXTLKQWWOWRQEA;
+/*SET*/	TQBMMILPOXBIPW = arg_from;
+/*INC*/	if (!INC(TQBMMILPOXBIPW, arg_to)) goto sentence_after_2;
+	if (! isSymbolType(TQBMMILPOXBIPW.container->type)) goto sentence_after_2;
+/*SET*/	r_A = TQBMMILPOXBIPW;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor TQBMMILPOXBIPW;
 /*DEF*/	DataCursor WEGHTFIQJQKBNJ;
 /*DEF*/	DataCursor HXDKUNEBQGRIZK;
-/*SET*/	TQBMMILPOXBIPW = r_A;
-/*INC*/	if (!INC(TQBMMILPOXBIPW, arg_to)) goto sentence_after_2;
-//// ISBRACKET 
-	if (TQBMMILPOXBIPW.container->type != struct_bracket) goto sentence_after_2;
-//// JMP_BRACKET 
-	WEGHTFIQJQKBNJ = TQBMMILPOXBIPW.container->value.bracket_data.chain->at_before_first();
-	HXDKUNEBQGRIZK   = TQBMMILPOXBIPW.container->value.bracket_data.chain->at_last();
-//// [ `a` <any> ] 
 /*DEF*/	DataCursor EKGERQQLYYFESO;
-/*SET*/	EKGERQQLYYFESO = WEGHTFIQJQKBNJ;
-/*INC*/	if (!INC(EKGERQQLYYFESO, HXDKUNEBQGRIZK)) goto sentence_after_2;
-	if (EKGERQQLYYFESO.container->type != text || *(EKGERQQLYYFESO.container->value.text + EKGERQQLYYFESO.index) != '2') goto sentence_after_2;
+/*SET*/	WEGHTFIQJQKBNJ = r_A;
+/*INC*/	if (!INC(WEGHTFIQJQKBNJ, arg_to)) goto sentence_after_2;
+//// ISBRACKET 
+	if (WEGHTFIQJQKBNJ.container->type != struct_bracket) goto sentence_after_2;
+//// JMP_BRACKET 
+	HXDKUNEBQGRIZK = WEGHTFIQJQKBNJ.container->value.bracket_data.chain->at_before_first();
+	EKGERQQLYYFESO   = WEGHTFIQJQKBNJ.container->value.bracket_data.chain->at_last();
+//// [ `a` <any> ] 
+/*DEF*/	DataCursor YKMVAYQBNKSTMD;
+/*SET*/	YKMVAYQBNKSTMD = HXDKUNEBQGRIZK;
+/*INC*/	if (!INC(YKMVAYQBNKSTMD, EKGERQQLYYFESO)) goto sentence_after_2;
+	if (YKMVAYQBNKSTMD.container->type != text || *(YKMVAYQBNKSTMD.container->value.text + YKMVAYQBNKSTMD.index) != '2') goto sentence_after_2;
 //// [ empty ] 
-/*ISEMPTY*/	if (EKGERQQLYYFESO!=0 && HXDKUNEBQGRIZK != EKGERQQLYYFESO) goto sentence_after_2;
+/*ISEMPTY*/	if (YKMVAYQBNKSTMD!=0 && EKGERQQLYYFESO != YKMVAYQBNKSTMD) goto sentence_after_2;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor EFRMTWKYLNONCH;
 /*DEF*/	DataCursor IGMTFBOURZHMFF;
 /*DEF*/	DataCursor FSRCBDZDFBEOST;
-/*SET*/	EFRMTWKYLNONCH = TQBMMILPOXBIPW;
-/*INC*/	if (!INC(EFRMTWKYLNONCH, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor FVSKREBTLJHZKR;
+/*SET*/	IGMTFBOURZHMFF = WEGHTFIQJQKBNJ;
+/*INC*/	if (!INC(IGMTFBOURZHMFF, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (EFRMTWKYLNONCH.container->type != struct_bracket) goto sentence_after_2;
+	if (IGMTFBOURZHMFF.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	IGMTFBOURZHMFF = EFRMTWKYLNONCH.container->value.bracket_data.chain->at_before_first();
-	FSRCBDZDFBEOST   = EFRMTWKYLNONCH.container->value.bracket_data.chain->at_last();
+	FSRCBDZDFBEOST = IGMTFBOURZHMFF.container->value.bracket_data.chain->at_before_first();
+	FVSKREBTLJHZKR   = IGMTFBOURZHMFF.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = IGMTFBOURZHMFF;
-/*SET*/	r_1 = FSRCBDZDFBEOST;
+/*SET*/	l_1 = FSRCBDZDFBEOST;
+/*SET*/	r_1 = FVSKREBTLJHZKR;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor FVSKREBTLJHZKR;
 /*DEF*/	DataCursor GHTSGBBDHLSICU;
 /*DEF*/	DataCursor TFMMJOUTFVEXDC;
-/*SET*/	FVSKREBTLJHZKR = EFRMTWKYLNONCH;
-/*INC*/	if (!INC(FVSKREBTLJHZKR, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor ZSCHYTBCRKLIWC;
+/*SET*/	GHTSGBBDHLSICU = IGMTFBOURZHMFF;
+/*INC*/	if (!INC(GHTSGBBDHLSICU, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (FVSKREBTLJHZKR.container->type != struct_bracket) goto sentence_after_2;
+	if (GHTSGBBDHLSICU.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	GHTSGBBDHLSICU = FVSKREBTLJHZKR.container->value.bracket_data.chain->at_before_first();
-	TFMMJOUTFVEXDC   = FVSKREBTLJHZKR.container->value.bracket_data.chain->at_last();
+	TFMMJOUTFVEXDC = GHTSGBBDHLSICU.container->value.bracket_data.chain->at_before_first();
+	ZSCHYTBCRKLIWC   = GHTSGBBDHLSICU.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = GHTSGBBDHLSICU;
-/*SET*/	r_2 = TFMMJOUTFVEXDC;
+/*SET*/	l_2 = TFMMJOUTFVEXDC;
+/*SET*/	r_2 = ZSCHYTBCRKLIWC;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor ZSCHYTBCRKLIWC;
 /*DEF*/	DataCursor XKGOQVUFYOGVFR;
 /*DEF*/	DataCursor NYMOPFWPNFUZEI;
-/*SET*/	ZSCHYTBCRKLIWC = FVSKREBTLJHZKR;
-/*INC*/	if (!INC(ZSCHYTBCRKLIWC, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor HXYXANSPRGGWDY;
+/*SET*/	XKGOQVUFYOGVFR = GHTSGBBDHLSICU;
+/*INC*/	if (!INC(XKGOQVUFYOGVFR, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (ZSCHYTBCRKLIWC.container->type != struct_bracket) goto sentence_after_2;
+	if (XKGOQVUFYOGVFR.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	XKGOQVUFYOGVFR = ZSCHYTBCRKLIWC.container->value.bracket_data.chain->at_before_first();
-	NYMOPFWPNFUZEI   = ZSCHYTBCRKLIWC.container->value.bracket_data.chain->at_last();
+	NYMOPFWPNFUZEI = XKGOQVUFYOGVFR.container->value.bracket_data.chain->at_before_first();
+	HXYXANSPRGGWDY   = XKGOQVUFYOGVFR.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_n1;
 /*DEF*/	DataCursor r_n1;
-/*SET*/	l_n1 = XKGOQVUFYOGVFR;
-/*SET*/	r_n1 = XKGOQVUFYOGVFR;
-/*JMP*/	goto label_HXYXANSPRGGWDY_firststep;
-label_HXYXANSPRGGWDY: 
-/*INC*/	if (!INC(r_n1, NYMOPFWPNFUZEI)) goto sentence_after_2;
-label_HXYXANSPRGGWDY_firststep: 
+/*SET*/	l_n1 = NYMOPFWPNFUZEI;
+/*SET*/	r_n1 = NYMOPFWPNFUZEI;
+/*JMP*/	goto label_AFAWQGQBTDGFFC_firststep;
+label_AFAWQGQBTDGFFC: 
+/*INC*/	if (!INC(r_n1, HXYXANSPRGGWDY)) goto sentence_after_2;
+label_AFAWQGQBTDGFFC_firststep: 
 //// [ &.name <any> ] 
-/*DEF*/	DataCursor AFAWQGQBTDGFFC;
-/*SET*/	AFAWQGQBTDGFFC = r_n1;
- if (!SLIDE(AFAWQGQBTDGFFC, NYMOPFWPNFUZEI, l_A, r_A)) goto label_HXYXANSPRGGWDY;
+/*DEF*/	DataCursor EGTPCYBQVRQUSQ;
+/*SET*/	EGTPCYBQVRQUSQ = r_n1;
+ if (!SLIDE(EGTPCYBQVRQUSQ, HXYXANSPRGGWDY, l_A, r_A)) goto label_AFAWQGQBTDGFFC;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_n2;
 /*DEF*/	DataCursor r_n2;
-/*SET*/	l_n2 = AFAWQGQBTDGFFC;
-/*SET*/	r_n2 = NYMOPFWPNFUZEI;
+/*SET*/	l_n2 = EGTPCYBQVRQUSQ;
+/*SET*/	r_n2 = HXYXANSPRGGWDY;
 //// [ empty ] 
-/*ISEMPTY*/	if (ZSCHYTBCRKLIWC!=0 && arg_to != ZSCHYTBCRKLIWC) goto label_HXYXANSPRGGWDY;
+/*ISEMPTY*/	if (XKGOQVUFYOGVFR!=0 && arg_to != XKGOQVUFYOGVFR) goto label_AFAWQGQBTDGFFC;
 
 // подготовка подстановки 
-DataChain* EGTPCYBQVRQUSQ = new DataChain(); 
-DataContainer* EGTPCYBQVRQUSQ_execbr = newRefExecBrackets(PolnAnaliz, EGTPCYBQVRQUSQ, "PolnAnaliz");
-result->append(EGTPCYBQVRQUSQ_execbr);
 DataChain* SYDYMVPEIBGXFF = new DataChain(); 
-EGTPCYBQVRQUSQ->append(newRefStructBrackets(SYDYMVPEIBGXFF)); 
-SYDYMVPEIBGXFF->append(newRefText("1")); 
+DataContainer* SYDYMVPEIBGXFF_execbr = newRefExecBrackets(PolnAnaliz, SYDYMVPEIBGXFF, "PolnAnaliz");
+result->append(SYDYMVPEIBGXFF_execbr);
 DataChain* NOPFYMRMQHUCGO = new DataChain(); 
-EGTPCYBQVRQUSQ->append(newRefStructBrackets(NOPFYMRMQHUCGO)); 
-NOPFYMRMQHUCGO->append_copy(l_1, r_1); 
+SYDYMVPEIBGXFF->append(newRefStructBrackets(NOPFYMRMQHUCGO)); 
+NOPFYMRMQHUCGO->append(newRefText("1")); 
 DataChain* MDIUXEMXBZYSLV = new DataChain(); 
-EGTPCYBQVRQUSQ->append(newRefStructBrackets(MDIUXEMXBZYSLV)); 
-MDIUXEMXBZYSLV->append_copy(l_2, r_2); 
-MDIUXEMXBZYSLV->append_copy(l_A, r_A); 
+SYDYMVPEIBGXFF->append(newRefStructBrackets(MDIUXEMXBZYSLV)); 
+MDIUXEMXBZYSLV->append_copy(l_1, r_1); 
 DataChain* LITWUBNSPBMEWW = new DataChain(); 
-EGTPCYBQVRQUSQ->append(newRefStructBrackets(LITWUBNSPBMEWW)); 
-LITWUBNSPBMEWW->append_copy(l_n1, r_n1); 
-LITWUBNSPBMEWW->append_copy(l_n2, r_n2); 
-context->pushExecuteCall(EGTPCYBQVRQUSQ_execbr);
+SYDYMVPEIBGXFF->append(newRefStructBrackets(LITWUBNSPBMEWW)); 
+LITWUBNSPBMEWW->append_copy(l_2, r_2); 
+LITWUBNSPBMEWW->append_copy(l_A, r_A); 
+DataChain* HGPMPRKCYFDXKM = new DataChain(); 
+SYDYMVPEIBGXFF->append(newRefStructBrackets(HGPMPRKCYFDXKM)); 
+HGPMPRKCYFDXKM->append_copy(l_n1, r_n1); 
+HGPMPRKCYFDXKM->append_copy(l_n2, r_n2); 
+context->pushExecuteCall(SYDYMVPEIBGXFF_execbr);
 
 return result; 
 }
@@ -6218,74 +6223,74 @@ DataChain *tmp_chain = new DataChain();
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor HGPMPRKCYFDXKM;
 /*DEF*/	DataCursor TUHEVOIXRWLMXW;
 /*DEF*/	DataCursor GCNOYZMMYOVRTE;
-/*SET*/	HGPMPRKCYFDXKM = arg_from;
-/*INC*/	if (!INC(HGPMPRKCYFDXKM, arg_to)) goto sentence_after_1;
-//// ISBRACKET 
-	if (HGPMPRKCYFDXKM.container->type != struct_bracket) goto sentence_after_1;
-//// JMP_BRACKET 
-	TUHEVOIXRWLMXW = HGPMPRKCYFDXKM.container->value.bracket_data.chain->at_before_first();
-	GCNOYZMMYOVRTE   = HGPMPRKCYFDXKM.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor PQTIBDVTHMPOAQ;
+/*SET*/	TUHEVOIXRWLMXW = arg_from;
+/*INC*/	if (!INC(TUHEVOIXRWLMXW, arg_to)) goto sentence_after_1;
+//// ISBRACKET 
+	if (TUHEVOIXRWLMXW.container->type != struct_bracket) goto sentence_after_1;
+//// JMP_BRACKET 
+	GCNOYZMMYOVRTE = TUHEVOIXRWLMXW.container->value.bracket_data.chain->at_before_first();
+	PQTIBDVTHMPOAQ   = TUHEVOIXRWLMXW.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor YDDQRXNVKIYADV;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
-/*SET*/	l_s = TUHEVOIXRWLMXW;
-/*SET*/	PQTIBDVTHMPOAQ = TUHEVOIXRWLMXW;
-/*INC*/	if (!INC(PQTIBDVTHMPOAQ, GCNOYZMMYOVRTE)) goto sentence_after_1;
-	if (! isSymbolType(PQTIBDVTHMPOAQ.container->type)) goto sentence_after_1;
-/*SET*/	r_s = PQTIBDVTHMPOAQ;
+/*SET*/	l_s = GCNOYZMMYOVRTE;
+/*SET*/	YDDQRXNVKIYADV = GCNOYZMMYOVRTE;
+/*INC*/	if (!INC(YDDQRXNVKIYADV, PQTIBDVTHMPOAQ)) goto sentence_after_1;
+	if (! isSymbolType(YDDQRXNVKIYADV.container->type)) goto sentence_after_1;
+/*SET*/	r_s = YDDQRXNVKIYADV;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_s!=0 && GCNOYZMMYOVRTE != r_s) goto sentence_after_1;
+/*ISEMPTY*/	if (r_s!=0 && PQTIBDVTHMPOAQ != r_s) goto sentence_after_1;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor YDDQRXNVKIYADV;
 /*DEF*/	DataCursor LOYEMCYCFCPYUW;
 /*DEF*/	DataCursor KZEBCJAEDSBVQQ;
-/*SET*/	YDDQRXNVKIYADV = HGPMPRKCYFDXKM;
-/*INC*/	if (!INC(YDDQRXNVKIYADV, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor IJQLGJYCJPKPXF;
+/*SET*/	LOYEMCYCFCPYUW = TUHEVOIXRWLMXW;
+/*INC*/	if (!INC(LOYEMCYCFCPYUW, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (YDDQRXNVKIYADV.container->type != struct_bracket) goto sentence_after_1;
+	if (LOYEMCYCFCPYUW.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	LOYEMCYCFCPYUW = YDDQRXNVKIYADV.container->value.bracket_data.chain->at_before_first();
-	KZEBCJAEDSBVQQ   = YDDQRXNVKIYADV.container->value.bracket_data.chain->at_last();
+	KZEBCJAEDSBVQQ = LOYEMCYCFCPYUW.container->value.bracket_data.chain->at_before_first();
+	IJQLGJYCJPKPXF   = LOYEMCYCFCPYUW.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = LOYEMCYCFCPYUW;
-/*SET*/	r_1 = KZEBCJAEDSBVQQ;
+/*SET*/	l_1 = KZEBCJAEDSBVQQ;
+/*SET*/	r_1 = IJQLGJYCJPKPXF;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor IJQLGJYCJPKPXF;
 /*DEF*/	DataCursor LCEONIYVQVURDI;
 /*DEF*/	DataCursor AQMSRTFGWTPEPU;
-/*SET*/	IJQLGJYCJPKPXF = YDDQRXNVKIYADV;
-/*INC*/	if (!INC(IJQLGJYCJPKPXF, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor NUGEAJDGZSJEWS;
+/*SET*/	LCEONIYVQVURDI = LOYEMCYCFCPYUW;
+/*INC*/	if (!INC(LCEONIYVQVURDI, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (IJQLGJYCJPKPXF.container->type != struct_bracket) goto sentence_after_1;
+	if (LCEONIYVQVURDI.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	LCEONIYVQVURDI = IJQLGJYCJPKPXF.container->value.bracket_data.chain->at_before_first();
-	AQMSRTFGWTPEPU   = IJQLGJYCJPKPXF.container->value.bracket_data.chain->at_last();
+	AQMSRTFGWTPEPU = LCEONIYVQVURDI.container->value.bracket_data.chain->at_before_first();
+	NUGEAJDGZSJEWS   = LCEONIYVQVURDI.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = LCEONIYVQVURDI;
-/*SET*/	r_2 = AQMSRTFGWTPEPU;
+/*SET*/	l_2 = AQMSRTFGWTPEPU;
+/*SET*/	r_2 = NUGEAJDGZSJEWS;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor NUGEAJDGZSJEWS;
 /*DEF*/	DataCursor QRMJZSSBXJVOTJ;
 /*DEF*/	DataCursor VJQCFQPTBZGKET;
-/*SET*/	NUGEAJDGZSJEWS = IJQLGJYCJPKPXF;
-/*INC*/	if (!INC(NUGEAJDGZSJEWS, arg_to)) goto sentence_after_1;
+/*DEF*/	DataCursor QKITTRHYUBKEWF;
+/*SET*/	QRMJZSSBXJVOTJ = LCEONIYVQVURDI;
+/*INC*/	if (!INC(QRMJZSSBXJVOTJ, arg_to)) goto sentence_after_1;
 //// ISBRACKET 
-	if (NUGEAJDGZSJEWS.container->type != struct_bracket) goto sentence_after_1;
+	if (QRMJZSSBXJVOTJ.container->type != struct_bracket) goto sentence_after_1;
 //// JMP_BRACKET 
-	QRMJZSSBXJVOTJ = NUGEAJDGZSJEWS.container->value.bracket_data.chain->at_before_first();
-	VJQCFQPTBZGKET   = NUGEAJDGZSJEWS.container->value.bracket_data.chain->at_last();
+	VJQCFQPTBZGKET = QRMJZSSBXJVOTJ.container->value.bracket_data.chain->at_before_first();
+	QKITTRHYUBKEWF   = QRMJZSSBXJVOTJ.container->value.bracket_data.chain->at_last();
 //// [ empty ] 
-/*ISEMPTY*/	if (QRMJZSSBXJVOTJ!=0 && VJQCFQPTBZGKET != QRMJZSSBXJVOTJ) goto sentence_after_1;
+/*ISEMPTY*/	if (VJQCFQPTBZGKET!=0 && QKITTRHYUBKEWF != VJQCFQPTBZGKET) goto sentence_after_1;
 //// [ empty ] 
-/*ISEMPTY*/	if (NUGEAJDGZSJEWS!=0 && arg_to != NUGEAJDGZSJEWS) goto sentence_after_1;
+/*ISEMPTY*/	if (QRMJZSSBXJVOTJ!=0 && arg_to != QRMJZSSBXJVOTJ) goto sentence_after_1;
 
 // подготовка подстановки 
 
@@ -6296,88 +6301,88 @@ sentence_after_1:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor QKITTRHYUBKEWF;
 /*DEF*/	DataCursor EKRCIHHXJEIGUT;
 /*DEF*/	DataCursor WIGDBBDXRBWMBR;
-/*SET*/	QKITTRHYUBKEWF = arg_from;
-/*INC*/	if (!INC(QKITTRHYUBKEWF, arg_to)) goto sentence_after_2;
-//// ISBRACKET 
-	if (QKITTRHYUBKEWF.container->type != struct_bracket) goto sentence_after_2;
-//// JMP_BRACKET 
-	EKRCIHHXJEIGUT = QKITTRHYUBKEWF.container->value.bracket_data.chain->at_before_first();
-	WIGDBBDXRBWMBR   = QKITTRHYUBKEWF.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor MBVGAOWLVDJYDD;
+/*SET*/	EKRCIHHXJEIGUT = arg_from;
+/*INC*/	if (!INC(EKRCIHHXJEIGUT, arg_to)) goto sentence_after_2;
+//// ISBRACKET 
+	if (EKRCIHHXJEIGUT.container->type != struct_bracket) goto sentence_after_2;
+//// JMP_BRACKET 
+	WIGDBBDXRBWMBR = EKRCIHHXJEIGUT.container->value.bracket_data.chain->at_before_first();
+	MBVGAOWLVDJYDD   = EKRCIHHXJEIGUT.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor YCTCOCKMGZVARP;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
-/*SET*/	l_s = EKRCIHHXJEIGUT;
-/*SET*/	MBVGAOWLVDJYDD = EKRCIHHXJEIGUT;
-/*INC*/	if (!INC(MBVGAOWLVDJYDD, WIGDBBDXRBWMBR)) goto sentence_after_2;
-	if (! isSymbolType(MBVGAOWLVDJYDD.container->type)) goto sentence_after_2;
-/*SET*/	r_s = MBVGAOWLVDJYDD;
+/*SET*/	l_s = WIGDBBDXRBWMBR;
+/*SET*/	YCTCOCKMGZVARP = WIGDBBDXRBWMBR;
+/*INC*/	if (!INC(YCTCOCKMGZVARP, MBVGAOWLVDJYDD)) goto sentence_after_2;
+	if (! isSymbolType(YCTCOCKMGZVARP.container->type)) goto sentence_after_2;
+/*SET*/	r_s = YCTCOCKMGZVARP;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_s!=0 && WIGDBBDXRBWMBR != r_s) goto sentence_after_2;
+/*ISEMPTY*/	if (r_s!=0 && MBVGAOWLVDJYDD != r_s) goto sentence_after_2;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor YCTCOCKMGZVARP;
 /*DEF*/	DataCursor FOBGMHPAOJOIQP;
 /*DEF*/	DataCursor QTXTUCRORYSMGT;
-/*SET*/	YCTCOCKMGZVARP = QKITTRHYUBKEWF;
-/*INC*/	if (!INC(YCTCOCKMGZVARP, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor XCFZLBJBIPFIMU;
+/*SET*/	FOBGMHPAOJOIQP = EKRCIHHXJEIGUT;
+/*INC*/	if (!INC(FOBGMHPAOJOIQP, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (YCTCOCKMGZVARP.container->type != struct_bracket) goto sentence_after_2;
+	if (FOBGMHPAOJOIQP.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	FOBGMHPAOJOIQP = YCTCOCKMGZVARP.container->value.bracket_data.chain->at_before_first();
-	QTXTUCRORYSMGT   = YCTCOCKMGZVARP.container->value.bracket_data.chain->at_last();
+	QTXTUCRORYSMGT = FOBGMHPAOJOIQP.container->value.bracket_data.chain->at_before_first();
+	XCFZLBJBIPFIMU   = FOBGMHPAOJOIQP.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = FOBGMHPAOJOIQP;
-/*SET*/	r_1 = QTXTUCRORYSMGT;
+/*SET*/	l_1 = QTXTUCRORYSMGT;
+/*SET*/	r_1 = XCFZLBJBIPFIMU;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor XCFZLBJBIPFIMU;
 /*DEF*/	DataCursor NEZPQAQJASIXVW;
 /*DEF*/	DataCursor OQYJVXKHCQPQIA;
-/*SET*/	XCFZLBJBIPFIMU = YCTCOCKMGZVARP;
-/*INC*/	if (!INC(XCFZLBJBIPFIMU, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor BUBQQDOFEHHJTZ;
+/*SET*/	NEZPQAQJASIXVW = FOBGMHPAOJOIQP;
+/*INC*/	if (!INC(NEZPQAQJASIXVW, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (XCFZLBJBIPFIMU.container->type != struct_bracket) goto sentence_after_2;
+	if (NEZPQAQJASIXVW.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	NEZPQAQJASIXVW = XCFZLBJBIPFIMU.container->value.bracket_data.chain->at_before_first();
-	OQYJVXKHCQPQIA   = XCFZLBJBIPFIMU.container->value.bracket_data.chain->at_last();
+	OQYJVXKHCQPQIA = NEZPQAQJASIXVW.container->value.bracket_data.chain->at_before_first();
+	BUBQQDOFEHHJTZ   = NEZPQAQJASIXVW.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
-/*SET*/	l_2 = NEZPQAQJASIXVW;
-/*SET*/	r_2 = OQYJVXKHCQPQIA;
+/*SET*/	l_2 = OQYJVXKHCQPQIA;
+/*SET*/	r_2 = BUBQQDOFEHHJTZ;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor BUBQQDOFEHHJTZ;
 /*DEF*/	DataCursor YQKTDMKAPSPBMY;
 /*DEF*/	DataCursor KOYLPNZOIPZWDM;
-/*SET*/	BUBQQDOFEHHJTZ = XCFZLBJBIPFIMU;
-/*INC*/	if (!INC(BUBQQDOFEHHJTZ, arg_to)) goto sentence_after_2;
+/*DEF*/	DataCursor KRBHDNTDKVPDEL;
+/*SET*/	YQKTDMKAPSPBMY = NEZPQAQJASIXVW;
+/*INC*/	if (!INC(YQKTDMKAPSPBMY, arg_to)) goto sentence_after_2;
 //// ISBRACKET 
-	if (BUBQQDOFEHHJTZ.container->type != struct_bracket) goto sentence_after_2;
+	if (YQKTDMKAPSPBMY.container->type != struct_bracket) goto sentence_after_2;
 //// JMP_BRACKET 
-	YQKTDMKAPSPBMY = BUBQQDOFEHHJTZ.container->value.bracket_data.chain->at_before_first();
-	KOYLPNZOIPZWDM   = BUBQQDOFEHHJTZ.container->value.bracket_data.chain->at_last();
+	KOYLPNZOIPZWDM = YQKTDMKAPSPBMY.container->value.bracket_data.chain->at_before_first();
+	KRBHDNTDKVPDEL   = YQKTDMKAPSPBMY.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_3;
 /*DEF*/	DataCursor r_3;
-/*SET*/	l_3 = YQKTDMKAPSPBMY;
-/*SET*/	r_3 = YQKTDMKAPSPBMY;
-/*JMP*/	goto label_KRBHDNTDKVPDEL_firststep;
-label_KRBHDNTDKVPDEL: 
-/*INC*/	if (!INC(r_3, KOYLPNZOIPZWDM)) goto sentence_after_2;
-label_KRBHDNTDKVPDEL_firststep: 
+/*SET*/	l_3 = KOYLPNZOIPZWDM;
+/*SET*/	r_3 = KOYLPNZOIPZWDM;
+/*JMP*/	goto label_ORQCJKQZZPINOQ_firststep;
+label_ORQCJKQZZPINOQ: 
+/*INC*/	if (!INC(r_3, KRBHDNTDKVPDEL)) goto sentence_after_2;
+label_ORQCJKQZZPINOQ_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ORQCJKQZZPINOQ;
-/*SET*/	ORQCJKQZZPINOQ = r_3;
-/*INC*/	if (!INC(ORQCJKQZZPINOQ, KOYLPNZOIPZWDM)) goto label_KRBHDNTDKVPDEL;
-	if (ORQCJKQZZPINOQ.container->type != text || *(ORQCJKQZZPINOQ.container->value.text + ORQCJKQZZPINOQ.index) != '>') goto label_KRBHDNTDKVPDEL;
+/*DEF*/	DataCursor LUIBJGNQQLFEWI;
+/*SET*/	LUIBJGNQQLFEWI = r_3;
+/*INC*/	if (!INC(LUIBJGNQQLFEWI, KRBHDNTDKVPDEL)) goto label_ORQCJKQZZPINOQ;
+	if (LUIBJGNQQLFEWI.container->type != text || *(LUIBJGNQQLFEWI.container->value.text + LUIBJGNQQLFEWI.index) != '>') goto label_ORQCJKQZZPINOQ;
 //// [ empty ] 
-/*ISEMPTY*/	if (ORQCJKQZZPINOQ!=0 && KOYLPNZOIPZWDM != ORQCJKQZZPINOQ) goto label_KRBHDNTDKVPDEL;
+/*ISEMPTY*/	if (LUIBJGNQQLFEWI!=0 && KRBHDNTDKVPDEL != LUIBJGNQQLFEWI) goto label_ORQCJKQZZPINOQ;
 //// [ empty ] 
-/*ISEMPTY*/	if (BUBQQDOFEHHJTZ!=0 && arg_to != BUBQQDOFEHHJTZ) goto label_KRBHDNTDKVPDEL;
+/*ISEMPTY*/	if (YQKTDMKAPSPBMY!=0 && arg_to != YQKTDMKAPSPBMY) goto label_ORQCJKQZZPINOQ;
 
 // подготовка подстановки 
 
@@ -6388,140 +6393,140 @@ sentence_after_2:
 {
 // подготовка предложения 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor OAMGMRCEMOAXVU;
 /*DEF*/	DataCursor FYQYPCHHGFMIZR;
 /*DEF*/	DataCursor CKLYHBPJJZRRUG;
-/*SET*/	OAMGMRCEMOAXVU = arg_from;
-/*INC*/	if (!INC(OAMGMRCEMOAXVU, arg_to)) goto sentence_after_3;
-//// ISBRACKET 
-	if (OAMGMRCEMOAXVU.container->type != struct_bracket) goto sentence_after_3;
-//// JMP_BRACKET 
-	FYQYPCHHGFMIZR = OAMGMRCEMOAXVU.container->value.bracket_data.chain->at_before_first();
-	CKLYHBPJJZRRUG   = OAMGMRCEMOAXVU.container->value.bracket_data.chain->at_last();
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor OFLUIOIVOVXMRA;
+/*SET*/	FYQYPCHHGFMIZR = arg_from;
+/*INC*/	if (!INC(FYQYPCHHGFMIZR, arg_to)) goto sentence_after_3;
+//// ISBRACKET 
+	if (FYQYPCHHGFMIZR.container->type != struct_bracket) goto sentence_after_3;
+//// JMP_BRACKET 
+	CKLYHBPJJZRRUG = FYQYPCHHGFMIZR.container->value.bracket_data.chain->at_before_first();
+	OFLUIOIVOVXMRA   = FYQYPCHHGFMIZR.container->value.bracket_data.chain->at_last();
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor WZSWPFNCNFYTMC;
 /*DEF*/	DataCursor l_s;
 /*DEF*/	DataCursor r_s;
-/*SET*/	l_s = FYQYPCHHGFMIZR;
-/*SET*/	OFLUIOIVOVXMRA = FYQYPCHHGFMIZR;
-/*INC*/	if (!INC(OFLUIOIVOVXMRA, CKLYHBPJJZRRUG)) goto sentence_after_3;
-	if (! isSymbolType(OFLUIOIVOVXMRA.container->type)) goto sentence_after_3;
-/*SET*/	r_s = OFLUIOIVOVXMRA;
+/*SET*/	l_s = CKLYHBPJJZRRUG;
+/*SET*/	WZSWPFNCNFYTMC = CKLYHBPJJZRRUG;
+/*INC*/	if (!INC(WZSWPFNCNFYTMC, OFLUIOIVOVXMRA)) goto sentence_after_3;
+	if (! isSymbolType(WZSWPFNCNFYTMC.container->type)) goto sentence_after_3;
+/*SET*/	r_s = WZSWPFNCNFYTMC;
 //// [ empty ] 
-/*ISEMPTY*/	if (r_s!=0 && CKLYHBPJJZRRUG != r_s) goto sentence_after_3;
+/*ISEMPTY*/	if (r_s!=0 && OFLUIOIVOVXMRA != r_s) goto sentence_after_3;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor WZSWPFNCNFYTMC;
 /*DEF*/	DataCursor FVWNRMFZGPZPOL;
 /*DEF*/	DataCursor TVNBMVWTHJSVHB;
-/*SET*/	WZSWPFNCNFYTMC = OAMGMRCEMOAXVU;
-/*INC*/	if (!INC(WZSWPFNCNFYTMC, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor XSEWQYCKWEXZPM;
+/*SET*/	FVWNRMFZGPZPOL = FYQYPCHHGFMIZR;
+/*INC*/	if (!INC(FVWNRMFZGPZPOL, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (WZSWPFNCNFYTMC.container->type != struct_bracket) goto sentence_after_3;
+	if (FVWNRMFZGPZPOL.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	FVWNRMFZGPZPOL = WZSWPFNCNFYTMC.container->value.bracket_data.chain->at_before_first();
-	TVNBMVWTHJSVHB   = WZSWPFNCNFYTMC.container->value.bracket_data.chain->at_last();
+	TVNBMVWTHJSVHB = FVWNRMFZGPZPOL.container->value.bracket_data.chain->at_before_first();
+	XSEWQYCKWEXZPM   = FVWNRMFZGPZPOL.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_I;
 /*DEF*/	DataCursor r_I;
-/*SET*/	l_I = FVWNRMFZGPZPOL;
-/*SET*/	r_I = TVNBMVWTHJSVHB;
+/*SET*/	l_I = TVNBMVWTHJSVHB;
+/*SET*/	r_I = XSEWQYCKWEXZPM;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor XSEWQYCKWEXZPM;
 /*DEF*/	DataCursor IEXGRJXJMDWBQY;
 /*DEF*/	DataCursor UIPXARRBPHNZWK;
-/*SET*/	XSEWQYCKWEXZPM = WZSWPFNCNFYTMC;
-/*INC*/	if (!INC(XSEWQYCKWEXZPM, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor BCLGBVOCYUZUTZ;
+/*SET*/	IEXGRJXJMDWBQY = FVWNRMFZGPZPOL;
+/*INC*/	if (!INC(IEXGRJXJMDWBQY, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (XSEWQYCKWEXZPM.container->type != struct_bracket) goto sentence_after_3;
+	if (IEXGRJXJMDWBQY.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	IEXGRJXJMDWBQY = XSEWQYCKWEXZPM.container->value.bracket_data.chain->at_before_first();
-	UIPXARRBPHNZWK   = XSEWQYCKWEXZPM.container->value.bracket_data.chain->at_last();
+	UIPXARRBPHNZWK = IEXGRJXJMDWBQY.container->value.bracket_data.chain->at_before_first();
+	BCLGBVOCYUZUTZ   = IEXGRJXJMDWBQY.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_Y;
 /*DEF*/	DataCursor r_Y;
-/*SET*/	l_Y = IEXGRJXJMDWBQY;
-/*SET*/	r_Y = UIPXARRBPHNZWK;
+/*SET*/	l_Y = UIPXARRBPHNZWK;
+/*SET*/	r_Y = BCLGBVOCYUZUTZ;
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor BCLGBVOCYUZUTZ;
 /*DEF*/	DataCursor YPIROCYYUCCLQZ;
 /*DEF*/	DataCursor CXTAWHXKHALPUK;
-/*SET*/	BCLGBVOCYUZUTZ = XSEWQYCKWEXZPM;
-/*INC*/	if (!INC(BCLGBVOCYUZUTZ, arg_to)) goto sentence_after_3;
+/*DEF*/	DataCursor JRMGSXOCKDRAAU;
+/*SET*/	YPIROCYYUCCLQZ = IEXGRJXJMDWBQY;
+/*INC*/	if (!INC(YPIROCYYUCCLQZ, arg_to)) goto sentence_after_3;
 //// ISBRACKET 
-	if (BCLGBVOCYUZUTZ.container->type != struct_bracket) goto sentence_after_3;
+	if (YPIROCYYUCCLQZ.container->type != struct_bracket) goto sentence_after_3;
 //// JMP_BRACKET 
-	YPIROCYYUCCLQZ = BCLGBVOCYUZUTZ.container->value.bracket_data.chain->at_before_first();
-	CXTAWHXKHALPUK   = BCLGBVOCYUZUTZ.container->value.bracket_data.chain->at_last();
+	CXTAWHXKHALPUK = YPIROCYYUCCLQZ.container->value.bracket_data.chain->at_before_first();
+	JRMGSXOCKDRAAU   = YPIROCYYUCCLQZ.container->value.bracket_data.chain->at_last();
 //// [ e.1 <any> ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = YPIROCYYUCCLQZ;
-/*SET*/	r_1 = YPIROCYYUCCLQZ;
-/*JMP*/	goto label_JRMGSXOCKDRAAU_firststep;
-label_JRMGSXOCKDRAAU: 
-/*INC*/	if (!INC(r_1, CXTAWHXKHALPUK)) goto sentence_after_3;
-label_JRMGSXOCKDRAAU_firststep: 
+/*SET*/	l_1 = CXTAWHXKHALPUK;
+/*SET*/	r_1 = CXTAWHXKHALPUK;
+/*JMP*/	goto label_ACXKPMRFLSPDLQ_firststep;
+label_ACXKPMRFLSPDLQ: 
+/*INC*/	if (!INC(r_1, JRMGSXOCKDRAAU)) goto sentence_after_3;
+label_ACXKPMRFLSPDLQ_firststep: 
 //// [ `a` <any> ] 
-/*DEF*/	DataCursor ACXKPMRFLSPDLQ;
-/*SET*/	ACXKPMRFLSPDLQ = r_1;
-/*INC*/	if (!INC(ACXKPMRFLSPDLQ, CXTAWHXKHALPUK)) goto label_JRMGSXOCKDRAAU;
-	if (ACXKPMRFLSPDLQ.container->type != text || *(ACXKPMRFLSPDLQ.container->value.text + ACXKPMRFLSPDLQ.index) != '>') goto label_JRMGSXOCKDRAAU;
-//// [ s.1 <any> ] 
 /*DEF*/	DataCursor KEWYQJFTFWAHGQ;
+/*SET*/	KEWYQJFTFWAHGQ = r_1;
+/*INC*/	if (!INC(KEWYQJFTFWAHGQ, JRMGSXOCKDRAAU)) goto label_ACXKPMRFLSPDLQ;
+	if (KEWYQJFTFWAHGQ.container->type != text || *(KEWYQJFTFWAHGQ.container->value.text + KEWYQJFTFWAHGQ.index) != '>') goto label_ACXKPMRFLSPDLQ;
+//// [ s.1 <any> ] 
+/*DEF*/	DataCursor OHKQNKTTIQFYRH;
 /*DEF*/	DataCursor l_sss;
 /*DEF*/	DataCursor r_sss;
-/*SET*/	l_sss = ACXKPMRFLSPDLQ;
-/*SET*/	KEWYQJFTFWAHGQ = ACXKPMRFLSPDLQ;
-/*INC*/	if (!INC(KEWYQJFTFWAHGQ, CXTAWHXKHALPUK)) goto label_JRMGSXOCKDRAAU;
-	if (! isSymbolType(KEWYQJFTFWAHGQ.container->type)) goto label_JRMGSXOCKDRAAU;
-/*SET*/	r_sss = KEWYQJFTFWAHGQ;
+/*SET*/	l_sss = KEWYQJFTFWAHGQ;
+/*SET*/	OHKQNKTTIQFYRH = KEWYQJFTFWAHGQ;
+/*INC*/	if (!INC(OHKQNKTTIQFYRH, JRMGSXOCKDRAAU)) goto label_ACXKPMRFLSPDLQ;
+	if (! isSymbolType(OHKQNKTTIQFYRH.container->type)) goto label_ACXKPMRFLSPDLQ;
+/*SET*/	r_sss = OHKQNKTTIQFYRH;
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_2;
 /*DEF*/	DataCursor r_2;
 /*SET*/	l_2 = r_sss;
-/*SET*/	r_2 = CXTAWHXKHALPUK;
+/*SET*/	r_2 = JRMGSXOCKDRAAU;
 //// [ empty ] 
-/*ISEMPTY*/	if (BCLGBVOCYUZUTZ!=0 && arg_to != BCLGBVOCYUZUTZ) goto label_JRMGSXOCKDRAAU;
+/*ISEMPTY*/	if (YPIROCYYUCCLQZ!=0 && arg_to != YPIROCYYUCCLQZ) goto label_ACXKPMRFLSPDLQ;
 
 // подготовка подстановки 
-DataChain* DSGEUEIVKRNEZU = new DataChain(); 
-DataContainer* DSGEUEIVKRNEZU_execbr = newRefExecBrackets(Analiz, DSGEUEIVKRNEZU, "Analiz");
-result->append(DSGEUEIVKRNEZU_execbr);
 DataChain* MCIRZFQXOZFCUH = new DataChain(); 
-DSGEUEIVKRNEZU->append(newRefStructBrackets(MCIRZFQXOZFCUH)); 
-MCIRZFQXOZFCUH->append_copy(l_s, r_s); 
+DataContainer* MCIRZFQXOZFCUH_execbr = newRefExecBrackets(Analiz, MCIRZFQXOZFCUH, "Analiz");
+result->append(MCIRZFQXOZFCUH_execbr);
 DataChain* CNSCQKCJBCHVRS = new DataChain(); 
-DSGEUEIVKRNEZU->append(newRefStructBrackets(CNSCQKCJBCHVRS)); 
-CNSCQKCJBCHVRS->append_copy(l_I, r_I); 
+MCIRZFQXOZFCUH->append(newRefStructBrackets(CNSCQKCJBCHVRS)); 
+CNSCQKCJBCHVRS->append_copy(l_s, r_s); 
 DataChain* PZOTKDBIDWWYGO = new DataChain(); 
-DSGEUEIVKRNEZU->append(newRefStructBrackets(PZOTKDBIDWWYGO)); 
-PZOTKDBIDWWYGO->append_copy(l_Y, r_Y); 
+MCIRZFQXOZFCUH->append(newRefStructBrackets(PZOTKDBIDWWYGO)); 
+PZOTKDBIDWWYGO->append_copy(l_I, r_I); 
 DataChain* WWQHNZFJQHFGIM = new DataChain(); 
-DSGEUEIVKRNEZU->append(newRefStructBrackets(WWQHNZFJQHFGIM)); 
-WWQHNZFJQHFGIM->append_copy(l_1, r_1); 
-WWQHNZFJQHFGIM->append(newRefText(">")); 
-WWQHNZFJQHFGIM->append_copy(l_sss, r_sss); 
-WWQHNZFJQHFGIM->append_copy(l_2, r_2); 
-context->pushExecuteCall(DSGEUEIVKRNEZU_execbr);
+MCIRZFQXOZFCUH->append(newRefStructBrackets(WWQHNZFJQHFGIM)); 
+WWQHNZFJQHFGIM->append_copy(l_Y, r_Y); 
 DataChain* WJGRJVQSPOOSLA = new DataChain(); 
-DataContainer* WJGRJVQSPOOSLA_execbr = newRefExecBrackets(PolnAnaliz, WJGRJVQSPOOSLA, "PolnAnaliz");
-result->append(WJGRJVQSPOOSLA_execbr);
+MCIRZFQXOZFCUH->append(newRefStructBrackets(WJGRJVQSPOOSLA)); 
+WJGRJVQSPOOSLA->append_copy(l_1, r_1); 
+WJGRJVQSPOOSLA->append(newRefText(">")); 
+WJGRJVQSPOOSLA->append_copy(l_sss, r_sss); 
+WJGRJVQSPOOSLA->append_copy(l_2, r_2); 
+context->pushExecuteCall(MCIRZFQXOZFCUH_execbr);
 DataChain* QKXZEHZEGKWUTI = new DataChain(); 
-WJGRJVQSPOOSLA->append(newRefStructBrackets(QKXZEHZEGKWUTI)); 
-QKXZEHZEGKWUTI->append_copy(l_s, r_s); 
+DataContainer* QKXZEHZEGKWUTI_execbr = newRefExecBrackets(PolnAnaliz, QKXZEHZEGKWUTI, "PolnAnaliz");
+result->append(QKXZEHZEGKWUTI_execbr);
 DataChain* YPZVVZTDURGODX = new DataChain(); 
-WJGRJVQSPOOSLA->append(newRefStructBrackets(YPZVVZTDURGODX)); 
-YPZVVZTDURGODX->append_copy(l_I, r_I); 
+QKXZEHZEGKWUTI->append(newRefStructBrackets(YPZVVZTDURGODX)); 
+YPZVVZTDURGODX->append_copy(l_s, r_s); 
 DataChain* VAAHGUIGPSGLHA = new DataChain(); 
-WJGRJVQSPOOSLA->append(newRefStructBrackets(VAAHGUIGPSGLHA)); 
-VAAHGUIGPSGLHA->append_copy(l_Y, r_Y); 
+QKXZEHZEGKWUTI->append(newRefStructBrackets(VAAHGUIGPSGLHA)); 
+VAAHGUIGPSGLHA->append_copy(l_I, r_I); 
 DataChain* BNQBWTQMBDSMBF = new DataChain(); 
-WJGRJVQSPOOSLA->append(newRefStructBrackets(BNQBWTQMBDSMBF)); 
-BNQBWTQMBDSMBF->append_copy(l_1, r_1); 
-BNQBWTQMBDSMBF->append_copy(l_sss, r_sss); 
-BNQBWTQMBDSMBF->append(newRefText(">")); 
-BNQBWTQMBDSMBF->append_copy(l_2, r_2); 
-context->pushExecuteCall(WJGRJVQSPOOSLA_execbr);
+QKXZEHZEGKWUTI->append(newRefStructBrackets(BNQBWTQMBDSMBF)); 
+BNQBWTQMBDSMBF->append_copy(l_Y, r_Y); 
+DataChain* ZTHYUMQUOWLDNO = new DataChain(); 
+QKXZEHZEGKWUTI->append(newRefStructBrackets(ZTHYUMQUOWLDNO)); 
+ZTHYUMQUOWLDNO->append_copy(l_1, r_1); 
+ZTHYUMQUOWLDNO->append_copy(l_sss, r_sss); 
+ZTHYUMQUOWLDNO->append(newRefText(">")); 
+ZTHYUMQUOWLDNO->append_copy(l_2, r_2); 
+context->pushExecuteCall(QKXZEHZEGKWUTI_execbr);
 
 return result; 
 }
@@ -6534,39 +6539,39 @@ sentence_after_3:
 /*DEF*/	DataCursor r_sIY;
 /*SET*/	l_sIY = arg_from;
 /*SET*/	r_sIY = arg_from;
-/*JMP*/	goto label_ZTHYUMQUOWLDNO_firststep;
-label_ZTHYUMQUOWLDNO: 
+/*JMP*/	goto label_VUCOIMMQSZMSRZ_firststep;
+label_VUCOIMMQSZMSRZ: 
 /*INC*/	if (!INC(r_sIY, arg_to)) goto sentence_after_4;
-label_ZTHYUMQUOWLDNO_firststep: 
+label_VUCOIMMQSZMSRZ_firststep: 
 //// [ (<any>) <any> ] 
-/*DEF*/	DataCursor VUCOIMMQSZMSRZ;
 /*DEF*/	DataCursor QPMADDCVHINJJD;
 /*DEF*/	DataCursor FYWRWSDAGMVYQH;
-/*SET*/	VUCOIMMQSZMSRZ = r_sIY;
-/*INC*/	if (!INC(VUCOIMMQSZMSRZ, arg_to)) goto label_ZTHYUMQUOWLDNO;
+/*DEF*/	DataCursor TQWFYIAISTVHBZ;
+/*SET*/	QPMADDCVHINJJD = r_sIY;
+/*INC*/	if (!INC(QPMADDCVHINJJD, arg_to)) goto label_VUCOIMMQSZMSRZ;
 //// ISBRACKET 
-	if (VUCOIMMQSZMSRZ.container->type != struct_bracket) goto label_ZTHYUMQUOWLDNO;
+	if (QPMADDCVHINJJD.container->type != struct_bracket) goto label_VUCOIMMQSZMSRZ;
 //// JMP_BRACKET 
-	QPMADDCVHINJJD = VUCOIMMQSZMSRZ.container->value.bracket_data.chain->at_before_first();
-	FYWRWSDAGMVYQH   = VUCOIMMQSZMSRZ.container->value.bracket_data.chain->at_last();
+	FYWRWSDAGMVYQH = QPMADDCVHINJJD.container->value.bracket_data.chain->at_before_first();
+	TQWFYIAISTVHBZ   = QPMADDCVHINJJD.container->value.bracket_data.chain->at_last();
 //// [ e.1 ] 
 /*DEF*/	DataCursor l_1;
 /*DEF*/	DataCursor r_1;
-/*SET*/	l_1 = QPMADDCVHINJJD;
-/*SET*/	r_1 = FYWRWSDAGMVYQH;
+/*SET*/	l_1 = FYWRWSDAGMVYQH;
+/*SET*/	r_1 = TQWFYIAISTVHBZ;
 //// [ empty ] 
-/*ISEMPTY*/	if (VUCOIMMQSZMSRZ!=0 && arg_to != VUCOIMMQSZMSRZ) goto label_ZTHYUMQUOWLDNO;
+/*ISEMPTY*/	if (QPMADDCVHINJJD!=0 && arg_to != QPMADDCVHINJJD) goto label_VUCOIMMQSZMSRZ;
 
 // подготовка подстановки 
-DataChain* TQWFYIAISTVHBZ = new DataChain(); 
-DataContainer* TQWFYIAISTVHBZ_execbr = newRefExecBrackets(PolnAnaliz, TQWFYIAISTVHBZ, "PolnAnaliz");
-result->append(TQWFYIAISTVHBZ_execbr);
-TQWFYIAISTVHBZ->append_copy(l_sIY, r_sIY); 
 DataChain* VROOVJFTEGSKJR = new DataChain(); 
-TQWFYIAISTVHBZ->append(newRefStructBrackets(VROOVJFTEGSKJR)); 
-VROOVJFTEGSKJR->append(newRefText(">")); 
-VROOVJFTEGSKJR->append_copy(l_1, r_1); 
-context->pushExecuteCall(TQWFYIAISTVHBZ_execbr);
+DataContainer* VROOVJFTEGSKJR_execbr = newRefExecBrackets(PolnAnaliz, VROOVJFTEGSKJR, "PolnAnaliz");
+result->append(VROOVJFTEGSKJR_execbr);
+VROOVJFTEGSKJR->append_copy(l_sIY, r_sIY); 
+DataChain* JYNGLSSHITXZGF = new DataChain(); 
+VROOVJFTEGSKJR->append(newRefStructBrackets(JYNGLSSHITXZGF)); 
+JYNGLSSHITXZGF->append(newRefText(">")); 
+JYNGLSSHITXZGF->append_copy(l_1, r_1); 
+context->pushExecuteCall(VROOVJFTEGSKJR_execbr);
 
 return result; 
 }

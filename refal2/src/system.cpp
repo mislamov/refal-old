@@ -27,11 +27,11 @@
 extern int debug;
 
 
-DataChain* Dec  (DataCursor prebeg, DataCursor end, ExecContext *context){  
-	return Sub(prebeg, end, context);  
+DataChain* Dec  (DataCursor prebeg, DataCursor end, ExecContext *context){
+	return Sub(prebeg, end, context);
 };
 
-DataChain* Div  (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Div  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	++prebeg;
 	if (prebeg+1 != end) RUNTIMEERRORn("2 arguments expected");
 	if (prebeg.container->type != end.container->type)  RUNTIMEERRORn("different types arguments");
@@ -39,7 +39,7 @@ DataChain* Div  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	return (new DataChain())->append(newRefInteger( prebeg.container->value.num / end.container->value.num ));
 };
 
-DataChain* Mul  (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Mul  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	++prebeg;
 	if (prebeg+1 != end) RUNTIMEERRORn("2 arguments expected");
 	if (prebeg.container->type != end.container->type)  RUNTIMEERRORn("different types arguments");
@@ -47,11 +47,11 @@ DataChain* Mul  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	return (new DataChain())->append(newRefInteger( prebeg.container->value.num * end.container->value.num ));
 };
 
-DataChain* Sum  (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Sum  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	return Add(prebeg, end, context);
 };
 
-DataChain* Mod  (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Mod  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	++prebeg;
 	if (prebeg+1 != end) RUNTIMEERRORn("2 arguments expected");
 	if (prebeg.container->type != end.container->type)  RUNTIMEERRORn("different types arguments");
@@ -75,7 +75,7 @@ DataChain* Mu (DataCursor prebeg, DataCursor end, ExecContext *context){  SYSTEM
 
 DataChain* Numb (DataCursor prebeg, DataCursor end, ExecContext *context){  SYSTEMERRORn("NYR");  }; // строку в число
 
-DataChain* Lenw (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Lenw (DataCursor prebeg, DataCursor end, ExecContext *context){
 	DataChain *result = new DataChain();
 	if (prebeg==end) return result->append(newRefInteger(0));
 	++prebeg;
@@ -128,10 +128,10 @@ DataChain* Add   (DataCursor prebeg, DataCursor end, ExecContext *context){
 	}
 
 	result->append(new DataContainer(integer, value));
-	return result; 
+	return result;
 }
 
-DataChain* Sub   (DataCursor prebeg, DataCursor end, ExecContext *context){ 
+DataChain* Sub   (DataCursor prebeg, DataCursor end, ExecContext *context){
 	++prebeg;
 	if (prebeg.container->type!=integer || end.container->type!=integer || prebeg.container->next!=end.container){
 		SYSTEMERRORn("Function Sub: bad arguments! ");
@@ -141,7 +141,7 @@ DataChain* Sub   (DataCursor prebeg, DataCursor end, ExecContext *context){
 	DataContainerValue value;
 	value.num = prebeg.container->value.num - end.container->value.num;
 	result->append(new DataContainer(integer, value));
-	return result; 
+	return result;
 };
 
 DataChain* Mount (DataCursor prebeg, DataCursor end, ExecContext *context){  SYSTEMERRORn("NYR");  };
@@ -154,9 +154,9 @@ inline unistring readline(std::istream &strm){
 	return s;
 }
 
-DataChain* Card  (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Card  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	if (prebeg != end) RUNTIMEERRORn("unexpected argument");
-	
+
 	unistring str = readline(std::cin);
 	if (str.length()==0) return std::cin.eof() ? (new DataChain())->append(newRefInteger(0)) : 0;
 
@@ -176,21 +176,25 @@ DataChain* Card  (DataCursor prebeg, DataCursor end, ExecContext *context){
 	return result;
 };
 
-DataChain* Prout (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Prout (DataCursor prebeg, DataCursor end, ExecContext *context){
 	std::cout << chain_to_text(prebeg, end) << '\n' << std::flush;
 	return 0;
 };
 
 DataChain* ProutDebug (DataCursor prebeg, DataCursor end, ExecContext *context){  SYSTEMERRORn("NYR");  };
 DataChain* StdErr(DataCursor prebeg, DataCursor end, ExecContext *context){  SYSTEMERRORn("NYR");  };
-DataChain* Print (DataCursor prebeg, DataCursor end, ExecContext *context){  
+DataChain* Print (DataCursor prebeg, DataCursor end, ExecContext *context){
 	if (prebeg==end) return 0;
 	DataChain *chain = new DataChain();
 	chain->append_copy(prebeg+1, end);
 	std::cout << chain_to_text(prebeg, end) << '\n' << std::flush;
 	return chain;
 };
-DataChain* Exit  (DataCursor prebeg, DataCursor end, ExecContext *context){  SYSTEMERRORn("NYR");  };
+
+DataChain* Exit  (DataCursor prebeg, DataCursor end, ExecContext *context){
+    //SYSTEMERRORn("NYR");
+    exit(0);
+};
 
 DataChain* RandomIdName(DataCursor prebeg, DataCursor end, ExecContext *context){  SYSTEMERRORn("NYR");  };
 

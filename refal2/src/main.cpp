@@ -46,51 +46,9 @@ void help(char *pname)
 
 
 extern DataChain* Go(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
-extern DataChain* FN(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
-
-/*
-DataCursor findExec (DataChain *ch, ExecContext *context)
-{
-	if (context->execStack.empty()) return 0;
-	DataContainer *dc =  context->execStack.front();
-	context->execStack.pop_front();
-	return DataCursor(dc);
+//extern DataChain* FN(DataCursor arg_from, DataCursor arg_to, ExecContext *context);
 
 
-
-	std::cout << ch->debug() << "\n" << std::flush;
-	DataCursor result = 0;
-	if (!ch || ch->isEmpty()) return 0;
-	for (
-		DataCursor i=ch->at_first(),
-		iend=ch->at_after_last();
-	i!=iend;
-	++i)
-	{
-		if (i.container->type != exec_bracket && i.container->type != struct_bracket) continue;
-
-		// <...>
-		if (i.container->type == exec_bracket){
-			DataCursor bb = findExec((DataChain*)i.container->value.bracket_data.chain, context);
-			if (!bb) {
-				result = i;
-				break;
-			}
-			result = bb;
-			break;
-		}
-
-		// (...)
-		DataCursor bb = findExec((DataChain*)i.container->value.bracket_data.chain, context);
-		if (bb!=0) {
-			result = bb;
-			break;
-		}
-	}
-
-	return result;
-}
-//*/
 int debug = 0;
 
 int main ( int , char **)
